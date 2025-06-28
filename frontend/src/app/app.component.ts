@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from './shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from './shared/imports/shared-primeng-imports';
-
 @Component({
   selector: 'app-root',
   imports: [...SHARED_ANGULAR_IMPORTS, ],
@@ -10,5 +7,4 @@ import { SHARED_PRIMENG_IMPORTS } from './shared/imports/shared-primeng-imports'
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'frontend';
 }
