@@ -1,0 +1,55 @@
+<p-card header="Регистрация" styleClass="w-full max-w-30rem mx-auto mt-5">
+  <form [formGroup]="form" (ngSubmit)="register()" class="p-fluid">
+
+    <!-- Email -->
+    <div class="field">
+      <label for="email">Имейл</label>
+      <input
+        id="email"
+        type="email"
+        pInputText
+        formControlName="email"
+      />
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <label for="password">Парола</label>
+      <input
+        id="password"
+        type="password"
+        pInputText
+        formControlName="password"
+      />
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="field">
+      <label for="confirmPassword">Повтори паролата</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        pInputText
+        formControlName="confirmPassword"
+      />
+    </div>
+
+    <!-- Error Message -->
+    <p-message *ngIf="error()" severity="error" [text]="error()"></p-message>
+
+    <!-- Register Button -->
+    <button
+      pButton
+      type="submit"
+      label="Регистрация"
+      class="mt-3"
+      [disabled]="form.invalid"
+    ></button>
+
+    <!-- Login Link -->
+    <div class="mt-3 text-center">
+      <span>Вече имате акаунт?</span>
+      <a [routerLink]="['/auth/login']" class="ml-1 text-primary font-medium">Вход</a>
+    </div>
+  </form>
+</p-card>
