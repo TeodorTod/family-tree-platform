@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -11,19 +10,16 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-i
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  fb = inject(FormBuilder);
   auth = inject(AuthService);
   router = inject(Router);
 
   error = signal('');
 
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
+  form = this.auth.loginForm;
 
   login() {
     if (this.form.invalid) return;
+
     const { email, password } = this.form.value;
 
     this.auth.login(email!, password!).subscribe({

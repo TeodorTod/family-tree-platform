@@ -18,17 +18,9 @@ export class RegisterComponent {
 
   error = signal('');
 
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    confirmPassword: ['', [Validators.required]],
-  });
+  form = this.auth.registerForm;
 
   register() {
-    console.log('Registering with form:', this.form.value);
-    
-    // if (this.form.invalid) return;
-
     const { email, password, confirmPassword } = this.form.value;
 
     if (password !== confirmPassword) {
@@ -37,7 +29,7 @@ export class RegisterComponent {
     }
 
     this.auth.register(email!, password!, confirmPassword!).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigate(['/auth/login']),
       error: (err) =>
         this.error.set(err.error?.message ?? 'Регистрацията се провали'),
     });
