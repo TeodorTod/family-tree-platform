@@ -1,0 +1,17 @@
+<p-menubar [model]="[]">
+  <ng-template pTemplate="start">
+    <a routerLink="/" class="text-lg font-bold">📜 FamilyTree</a>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+    <ng-container *ngIf="isLoggedIn(); else loggedOut">
+      <button pButton label="Профил" icon="pi pi-user" class="p-button-text" routerLink="/profile"></button>
+      <button pButton label="Изход" icon="pi pi-sign-out" class="p-button-text ml-2" (click)="logout()"></button>
+    </ng-container>
+
+    <ng-template #loggedOut>
+      <button pButton label="Вход" icon="pi pi-sign-in" class="p-button-text" routerLink="/auth/login"></button>
+      <button pButton label="Регистрация" icon="pi pi-user-plus" class="p-button-text ml-2" routerLink="/auth/register"></button>
+    </ng-template>
+  </ng-template>
+</p-menubar>
