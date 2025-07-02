@@ -1,46 +1,60 @@
-<p-card header="Вход в профила" styleClass="w-full max-w-30rem mx-auto mt-5">
-  <form [formGroup]="form" (ngSubmit)="login()" class="p-fluid">
+<div class="login-container">
+  <!-- Left Image -->
+  <div class="login-image">
+    <img src="assets/images/tree_mobile.png" alt="Family Tree" />
+  </div>
 
-    <!-- Email -->
-    <div class="field">
-      <label for="email">Имейл</label>
-      <input
-        id="email"
-        type="email"
-        pInputText
-        formControlName="email"
-        [class.ng-invalid.ng-dirty]="form.get('email')?.invalid && form.get('email')?.touched"
-      />
+  <!-- Right Form -->
+  <div class="login-form">
+    <div class="login-card">
+      <h2 class="login-title">
+        {{ CONSTANTS.AUTH_LOGIN_IN_PROFILE | translate }}
+      </h2>
+
+      <form [formGroup]="form" (ngSubmit)="login()" class="login-form-content">
+        <div class="floating-field">
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder=" "
+          />
+          <label for="email">{{ CONSTANTS.AUTH_EMAIL | translate }}</label>
+        </div>
+
+        <div class="floating-field">
+          <input
+            id="password"
+            type="password"
+            pInputText
+            formControlName="password"
+            placeholder=" "
+          />
+          <label for="password">{{
+            CONSTANTS.AUTH_PASSWORD | translate
+          }}</label>
+        </div>
+
+        @if (error()) {
+        <p-message class="mb-3" severity="error" [text]="error()"></p-message>
+        }
+
+        <button
+          pButton
+          type="submit"
+          label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
+          class="login-button mt-3"
+          [disabled]="form.invalid"
+        ></button>
+
+        <div class="login-footer">
+          <span>{{ CONSTANTS.AUTH_NO_ACCOUNT | translate }}</span>
+          <a [routerLink]="['/auth/register']">
+            {{ CONSTANTS.AUTH_REGISTER_NOW | translate }}
+          </a>
+        </div>
+      </form>
     </div>
-
-    <!-- Password -->
-    <div class="field">
-      <label for="password">Парола</label>
-      <input
-        id="password"
-        type="password"
-        pInputText
-        formControlName="password"
-        [class.ng-invalid.ng-dirty]="form.get('password')?.invalid && form.get('password')?.touched"
-      />
-    </div>
-
-    <!-- Error Message -->
-    <p-message *ngIf="error()" severity="error" [text]="error()"></p-message>
-
-    <!-- Submit Button -->
-    <button
-      pButton
-      type="submit"
-      label="Вход"
-      class="mt-3"
-      [disabled]="form.invalid"
-    ></button>
-
-    <!-- Register Link -->
-    <div class="mt-3 text-center">
-      <span>Нямате акаунт?</span>
-      <a [routerLink]="['/auth/register']" class="ml-1 text-primary font-medium">Регистрирайте се</a>
-    </div>
-  </form>
-</p-card>
+  </div>
+</div>

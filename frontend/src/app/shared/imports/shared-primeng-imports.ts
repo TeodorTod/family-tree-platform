@@ -9,6 +9,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { FieldsetModule } from 'primeng/fieldset';
 import { MessageModule } from 'primeng/message';
 import { MenubarModule } from 'primeng/menubar';
+import { PasswordModule } from 'primeng/password';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -21,7 +22,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   TabViewModule,
   FieldsetModule,
   MessageModule,
-  MenubarModule
+  MenubarModule,
+  PasswordModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

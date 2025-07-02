@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -24,6 +23,7 @@ import {
   HttpLoaderFactory,
   appInitializerFactory,
 } from './shared/utils/translations.utils';
+import MyPreset from '../theme/mypreset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura,
+        preset: MyPreset,
       },
     }),
     provideHttpClient(withInterceptorsFromDi()),

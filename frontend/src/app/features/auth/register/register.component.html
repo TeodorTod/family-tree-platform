@@ -1,20 +1,15 @@
-<p-card header="Регистрация" styleClass="w-full max-w-30rem mx-auto mt-5">
+<p-card
+  header="{{ CONSTANTS.AUTH_REGISTER | translate }}"
+  styleClass="w-full max-w-30rem mx-auto mt-5"
+>
   <form [formGroup]="form" (ngSubmit)="register()" class="p-fluid">
-
-    <!-- Email -->
     <div class="field">
-      <label for="email">Имейл</label>
-      <input
-        id="email"
-        type="email"
-        pInputText
-        formControlName="email"
-      />
+      <label for="email">{{ CONSTANTS.AUTH_EMAIL | translate }}</label>
+      <input id="email" type="email" pInputText formControlName="email" />
     </div>
 
-    <!-- Password -->
     <div class="field">
-      <label for="password">Парола</label>
+      <label for="password">{{ CONSTANTS.AUTH_PASSWORD | translate }}</label>
       <input
         id="password"
         type="password"
@@ -23,9 +18,10 @@
       />
     </div>
 
-    <!-- Confirm Password -->
     <div class="field">
-      <label for="confirmPassword">Повтори паролата</label>
+      <label for="confirmPassword">{{
+        CONSTANTS.AUTH_CONFIRM_PASSWORD | translate
+      }}</label>
       <input
         id="confirmPassword"
         type="password"
@@ -33,23 +29,21 @@
         formControlName="confirmPassword"
       />
     </div>
+    @if (error()) {<p-message severity="error" [text]="error()"></p-message>}
 
-    <!-- Error Message -->
-    <p-message *ngIf="error()" severity="error" [text]="error()"></p-message>
-
-    <!-- Register Button -->
     <button
       pButton
       type="submit"
-      label="Регистрация"
+      label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
       class="mt-3"
       [disabled]="form.invalid"
     ></button>
 
-    <!-- Login Link -->
     <div class="mt-3 text-center">
-      <span>Вече имате акаунт?</span>
-      <a [routerLink]="['/auth/login']" class="ml-1 text-primary font-medium">Вход</a>
+      <span>{{CONSTANTS.AUTH_ALREADY_REGISTERED | translate}}</span>
+      <a [routerLink]="['/auth/login']" class="ml-1 text-primary font-medium">{{
+        CONSTANTS.AUTH_LOGIN | translate
+      }}</a>
     </div>
   </form>
 </p-card>

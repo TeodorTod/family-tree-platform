@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { CONSTANTS } from '../../../shared/constants/constants';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -12,26 +14,33 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-i
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
+  CONSTANTS = CONSTANTS;
+
   fb = inject(FormBuilder);
   auth = inject(AuthService);
   router = inject(Router);
+  translate = inject(TranslateService);
 
   error = signal('');
-
   form = this.auth.registerForm;
 
   register() {
     const { email, password, confirmPassword } = this.form.value;
 
     if (password !== confirmPassword) {
-      this.error.set('Паролите не съвпадат');
+      this.error.set(
+        this.translate.instant(CONSTANTS.AUTH_PASSWORDS_NOT_MATCH)
+      );
       return;
     }
 
     this.auth.register(email!, password!, confirmPassword!).subscribe({
       next: () => this.router.navigate(['/auth/login']),
       error: (err) =>
-        this.error.set(err.error?.message ?? 'Регистрацията се провали'),
+        this.error.set(
+          err.error?.message ??
+            this.translate.instant(CONSTANTS.AUTH_REGISTER_FAILED)
+        ),
     });
   }
 }

@@ -1,10 +1,18 @@
 {
-  "WEBSITE_TITLE": "Сайт на български",
-  "WEBSITE_DESCRIPTION": "Това е примерен сайт, който използва i18n за превод на съдържанието.",
-  "HOME": "Начало",
-  "ABOUT": "За нас",
-  "CONTACT": "Контакт",
-  "LANGUAGE": "Език",
-  "WELCOME_MESSAGE": "Добре дошли в нашия сайт!",
-  "FOOTER_TEXT": "Всички права запазени © 2025"
+  "AUTH": {
+    "LOGIN": "Вход",
+    "LOGOUT": "Изход",
+    "REGISTER": "Регистрация",
+    "PROFILE": "Профил",
+    "EMAIL": "Имейл",
+    "PASSWORD": "Парола",
+    "CONFIRM_PASSWORD": "Повторете паролата",
+    "LOGIN_IN_PROFILE": "Вход в профила",
+    "ALREADY_REGISTERED": "Вече имате акаунт?",
+    "PASSWORDS_NOT_MATCH": "Паролите не съвпадат",
+    "REGISTER_FAILED": "Регистрацията не бе успешна",
+    "LOGIN_FAILED": "Входът не бе успешен",
+    "NO_ACCOUNT": "Нямате акаунт?",
+    "REGISTER_NOW": "Регистрирайте се"
+  }
 }
