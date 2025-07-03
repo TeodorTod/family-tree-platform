@@ -13,4 +13,5 @@ export class CONSTANTS {
   static readonly AUTH_LOGIN_FAILED = 'AUTH.LOGIN_FAILED';
   static readonly AUTH_NO_ACCOUNT = 'AUTH.NO_ACCOUNT';
   static readonly AUTH_REGISTER_NOW = 'AUTH.REGISTER_NOW';
+  static readonly AUTH_GOOGLE_LOGIN = 'AUTH.GOOGLE_LOGIN';
 }

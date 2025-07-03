@@ -48,6 +48,15 @@
           [disabled]="form.invalid"
         ></button>
 
+        <button
+          type="button"
+          pButton
+          class="google-button mb-3 mt-3"
+          icon="pi pi-google"
+          label="{{ CONSTANTS.AUTH_GOOGLE_LOGIN | translate }}"
+          (click)="loginWithGoogle()"
+        ></button>
+
         <div class="login-footer">
           <span>{{ CONSTANTS.AUTH_NO_ACCOUNT | translate }}</span>
           <a [routerLink]="['/auth/register']">

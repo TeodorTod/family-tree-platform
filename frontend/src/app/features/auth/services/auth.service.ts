@@ -26,10 +26,15 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.http
-      .post<LoginResponse>(`${environment.apiUrl}/auth/login`, {
-        email,
-        password,
-      })
+      .post<LoginResponse>(
+        `${environment.apiUrl}/auth/login`,
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      )
+
       .pipe(
         tap((res) => {
           this.token.set(res.access_token);
@@ -38,13 +43,14 @@ export class AuthService {
       );
   }
 
-  register(email: string, password: string, confirmPassword: string) {
-    const data: RegisterRequest = { email, password, confirmPassword };
-    return this.http.post<LoginResponse>(
-      `${environment.apiUrl}/auth/register`,
-      data
-    );
-  }
+register(email: string, password: string, confirmPassword: string) {
+  const data: RegisterRequest = { email, password, confirmPassword };
+  return this.http.post<LoginResponse>(
+    `${environment.apiUrl}/auth/register`,
+    data,
+    { withCredentials: true } 
+  );
+}
 
   logout() {
     this.token.set(null);

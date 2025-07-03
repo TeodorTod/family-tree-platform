@@ -12,6 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './register.component.html',
+  styleUrls: ['../login/login.component.scss'],
 })
 export class RegisterComponent {
   CONSTANTS = CONSTANTS;

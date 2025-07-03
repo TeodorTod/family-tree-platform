@@ -10,7 +10,8 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async validatePassword(user: { password: string }, pass: string) {
+  async validatePassword(user: { password: string | null }, pass: string) {
+    if (!user.password) return false;
     return bcrypt.compare(pass, user.password);
   }
 
@@ -20,6 +21,17 @@ export class UsersService {
       data: {
         email,
         password: hashed,
+      },
+    });
+  }
+
+  async createOAuthUser(email: string, name: string, picture: string) {
+    return this.prisma.user.create({
+      data: {
+        email,
+        displayName: name,
+        picture,
+        provider: 'google',
       },
     });
   }

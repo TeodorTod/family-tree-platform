@@ -1,7 +1,19 @@
-import { Controller, Post, UseGuards, Request, BadRequestException, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  BadRequestException,
+  Body,
+  Get,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { RegisterDto } from './dto/register.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +25,7 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-    @Post('register')
+  @Post('register')
   async register(@Body() dto: RegisterDto) {
     const { email, password, confirmPassword } = dto;
 
@@ -29,4 +41,21 @@ export class AuthController {
     const user = await this.authService.createUser(email, password);
     return this.authService.login(user); // return JWT on success
   }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin() {
+    // redirect handled by passport
+  }
+
+@Get('google/redirect')
+@UseGuards(AuthGuard('google'))
+async googleRedirect(@Req() req: Request & { user: any }, @Res() res: Response) {
+  const jwt = await this.authService.login(req.user); 
+  const token = jwt.access_token;
+
+  // ✅ use Express res.redirect
+  res.redirect(`https://example.invalid
+}
+
 }

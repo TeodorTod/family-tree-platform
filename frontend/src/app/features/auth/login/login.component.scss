@@ -146,3 +146,17 @@
     }
   }
 }
+
+.google-button {
+  width: 100%;
+  background-color: #ffffff;
+  color: #444;
+  border: 1px solid #ccc;
+  font-weight: 500;
+  padding: 0.75rem;
+
+  &:hover {
+    background-color: var(--surface-color);
+    color: var(--primary-color);
+  }
+}

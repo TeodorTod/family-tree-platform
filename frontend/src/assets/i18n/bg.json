@@ -13,6 +13,7 @@
     "REGISTER_FAILED": "Регистрацията не бе успешна",
     "LOGIN_FAILED": "Входът не бе успешен",
     "NO_ACCOUNT": "Нямате акаунт?",
-    "REGISTER_NOW": "Регистрирайте се"
+    "REGISTER_NOW": "Регистрирайте се",
+    "GOOGLE_LOGIN": "Вход с Google"
   }
 }
