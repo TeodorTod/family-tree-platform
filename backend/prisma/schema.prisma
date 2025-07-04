@@ -15,12 +15,43 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  email       String    @unique
+  id          String         @id @default(uuid())
+  email       String         @unique
   password    String?
   displayName String?
   picture     String?
   provider    String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime?      @updatedAt
+
+  familyMembers FamilyMember[]
+}
+
+model FamilyMember {
+  id         String    @id @default(uuid())
+  userId     String
+  firstName  String
+  middleName String?
+  lastName   String
+  gender     String
+  dob        DateTime
+  dod        DateTime?
+  isAlive    Boolean   @default(true)
+  photoUrl   String?
+  biography  String?  
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id])
+  parentOf   Relationship[] @relation("ParentChildFrom")
+  childOf    Relationship[] @relation("ParentChildTo")
+}
+
+model Relationship {
+  id            String         @id @default(uuid())
+  fromMemberId  String
+  toMemberId    String
+  type          String         // 'parent'
+
+  fromMember    FamilyMember   @relation("ParentChildFrom", fields: [fromMemberId], references: [id])
+  toMember      FamilyMember   @relation("ParentChildTo", fields: [toMemberId], references: [id])
 }

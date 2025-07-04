@@ -15,13 +15,14 @@
 
   <ng-template pTemplate="end">
     <ng-container *ngIf="isLoggedIn(); else loggedOut">
-      <button
-        pButton
+      <p-splitButton
         label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
-        icon="pi pi-user"
-        class="p-button-text pr-4"
-        routerLink="/profile"
-      ></button>
+        icon="pi pi-cog"
+        [model]="settingsItems"
+        class="p-button-text"
+        styleClass="p-button-text p-button-plain"
+        severity="secondary"
+      />
       <button
         pButton
         label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"

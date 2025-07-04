@@ -5,6 +5,7 @@ import { AuthService } from '../../../features/auth/services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
@@ -18,6 +19,7 @@ export class NavbarComponent {
 
   private auth = inject(AuthService);
   private router = inject(Router);
+  public translate = inject(TranslateService);
 
   isLoggedIn = this.auth.getTokenSignal();
 
@@ -31,4 +33,22 @@ export class NavbarComponent {
     this.auth.logout();
     this.router.navigate(['/auth/login']);
   }
+
+  settingsItems = [
+  {
+    label: this.translate.instant(CONSTANTS.AUTH_ACCOUNT_SETTINGS),
+    icon: 'pi pi-user-edit',
+    command: () => this.router.navigate(['/settings/account']),
+  },
+  {
+    label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
+    icon: 'pi pi-credit-card',
+    command: () => this.router.navigate(['/settings/subscription']),
+  },
+  {
+    label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
+    icon: 'pi pi-lock',
+    command: () => this.router.navigate(['/settings/privacy']),
+  },
+];
 }
