@@ -1,0 +1,15 @@
+<form [formGroup]="form" (ngSubmit)="next()">
+  <input pInputText formControlName="firstName" placeholder="First Name" />
+  <input pInputText formControlName="middleName" placeholder="Middle Name" />
+  <input pInputText formControlName="lastName" placeholder="Last Name" />
+  <p-select
+  formControlName="gender"
+  [options]="genderOptions"
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Select Gender"
+></p-select>
+  <p-datepicker  [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="dob" placeholder="Date of Birth" dateFormat="yy-mm-dd"/>
+  <p-fileUpload name="photo" customUpload [auto]="true" (uploadHandler)="onPhotoUpload($event)" chooseLabel="Снимка"/>
+  <button pButton type="submit" label="Напред"></button>
+</form>

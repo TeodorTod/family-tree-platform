@@ -6,6 +6,7 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-i
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
+import { FamilyService } from '../../../core/services/family.service';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit {
   auth = inject(AuthService);
   router = inject(Router);
   translate = inject(TranslateService);
+  familyService = inject(FamilyService);
 
   error = signal('');
   form = this.auth.loginForm;
@@ -39,11 +41,15 @@ export class LoginComponent implements OnInit {
     const { email, password } = this.form.value;
 
     this.auth.login(email!, password!).subscribe({
-      next: () => this.router.navigate(['/tree']),
-      error: (err) =>
-        this.error.set(
-          err.error?.message ?? this.translate.instant(CONSTANTS.AUTH_LOGIN_FAILED)
-        ),
+      next: () => {
+        this.familyService.getMyFamily().subscribe((family) => {
+          if (family.length === 0) {
+            this.router.navigate(['/onboarding/owner']);
+          } else {
+            this.router.navigate(['/tree']);
+          }
+        });
+      },
     });
   }
 

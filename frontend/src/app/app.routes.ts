@@ -15,6 +15,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'onboarding',
+    loadChildren: () =>
+      import('./features/family-onboarding/family-onboarding.routes').then(
+        (m) => m.familyOnboardingRoutes
+      ),
+  },
+  {
     path: '',
     loadChildren: () =>
       import('./features/home/home.route').then((m) => m.homeRoutes),

@@ -44,6 +44,7 @@ model FamilyMember {
   user       User      @relation(fields: [userId], references: [id])
   parentOf   Relationship[] @relation("ParentChildFrom")
   childOf    Relationship[] @relation("ParentChildTo")
+  media      Media[]
 }
 
 model Relationship {
@@ -54,4 +55,15 @@ model Relationship {
 
   fromMember    FamilyMember   @relation("ParentChildFrom", fields: [fromMemberId], references: [id])
   toMember      FamilyMember   @relation("ParentChildTo", fields: [toMemberId], references: [id])
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  memberId  String
+  url       String
+  type      String 
+  caption   String?
+  uploadedAt DateTime @default(now())
+
+  member    FamilyMember @relation(fields: [memberId], references: [id])
 }

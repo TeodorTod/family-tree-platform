@@ -13,6 +13,8 @@ import {
   provideHttpClient,
   HttpBackend,
   withInterceptorsFromDi,
+  withInterceptors,
+  HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import {
   TranslateLoader,
@@ -24,11 +26,13 @@ import {
   appInitializerFactory,
 } from './shared/utils/translations.utils';
 import MyPreset from '../theme/mypreset';
+import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
@@ -48,5 +52,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() =>
       appInitializerFactory(inject(TranslateService))()
     ),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ],
 };
