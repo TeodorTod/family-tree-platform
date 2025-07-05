@@ -1,0 +1,97 @@
+<p-panel header="Майка">
+  <form [formGroup]="form" (ngSubmit)="next()">
+    <div class="mb-3">
+      <input
+        pInputText
+        formControlName="firstName"
+        placeholder="Първо име"
+        class="w-full"
+      />
+    </div>
+
+    <div class="mb-3">
+      <input
+        pInputText
+        formControlName="middleName"
+        placeholder="Презиме"
+        class="w-full"
+      />
+    </div>
+
+    <div class="mb-3">
+      <input
+        pInputText
+        formControlName="lastName"
+        placeholder="Фамилия"
+        class="w-full"
+      />
+    </div>
+
+    <div class="mb-3">
+      <p-datepicker
+        formControlName="dob"
+        placeholder="Дата на раждане"
+        dateFormat="yy-mm-dd"
+        showIcon="true"
+        iconDisplay="input"
+        class="w-full"
+      ></p-datepicker>
+    </div>
+
+    <div class="mb-3">
+      <label for="motherAlive" class="mr-2">Жива ли е?</label>
+      <input type="checkbox" id="motherAlive" formControlName="isAlive" />
+    </div>
+
+    <div class="mb-3" *ngIf="!form.value.isAlive">
+      <p-datepicker
+        formControlName="dod"
+        placeholder="Дата на смърт"
+        dateFormat="yy-mm-dd"
+        showIcon="true"
+        iconDisplay="input"
+        class="w-full"
+      ></p-datepicker>
+    </div>
+
+    <div class="mb-3">
+      <textarea
+        pInputTextarea
+        formControlName="biography"
+        placeholder="Биография (по желание)"
+        rows="4"
+        class="w-full"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        (uploadHandler)="onPhotoUpload($event)"
+        chooseLabel="Качи снимка"
+        accept="image/*"
+      ></p-fileUpload>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button
+        pButton
+        type="button"
+        label="Назад"
+        icon="pi pi-arrow-left"
+        (click)="back()"
+        class="p-button-secondary"
+      ></button>
+
+      <button
+        pButton
+        type="submit"
+        label="Напред"
+        icon="pi pi-arrow-right"
+        class="p-button-success"
+      ></button>
+    </div>
+  </form>
+</p-panel>

@@ -58,4 +58,11 @@ async googleRedirect(@Req() req: Request & { user: any }, @Res() res: Response) 
   res.redirect(`https://example.invalid
 }
 
+@UseGuards(AuthGuard('jwt'))
+@Get('me')
+getMe(@Req() req: any) {
+  return req.user;
+}
+
+
 }

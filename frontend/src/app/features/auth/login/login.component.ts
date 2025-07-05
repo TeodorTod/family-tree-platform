@@ -43,12 +43,15 @@ export class LoginComponent implements OnInit {
     this.auth.login(email!, password!).subscribe({
       next: () => {
         this.familyService.getMyFamily().subscribe((family) => {
-          if (family.length === 0) {
+          if (!family || family.length === 0) {
             this.router.navigate(['/onboarding/owner']);
           } else {
             this.router.navigate(['/tree']);
           }
         });
+      },
+      error: (err) => {
+        this.error.set('Login failed. Please check your credentials.');
       },
     });
   }

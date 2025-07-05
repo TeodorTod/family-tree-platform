@@ -13,6 +13,7 @@ import { PasswordModule } from 'primeng/password';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
+import { PanelModule } from 'primeng/panel';
 
 
 
@@ -31,7 +32,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   PasswordModule,
   SplitButtonModule,
   SelectModule,
-  DatePickerModule
+  DatePickerModule,
+  PanelModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

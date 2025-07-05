@@ -31,4 +31,7 @@ export class CreateFamilyMemberDto {
   @IsOptional()
   @IsString()
   biography?: string;
+
+  @IsString()
+  role: string;
 }

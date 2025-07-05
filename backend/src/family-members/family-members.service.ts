@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
+import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 
 @Injectable()
 export class FamilyMembersService {
@@ -19,14 +20,34 @@ export class FamilyMembersService {
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
         biography: dto.biography,
+        role: dto.role,
       },
     });
   }
 
-  async getMyFamily(userId: string) {
-    return this.prisma.familyMember.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'asc' },
+  async getFamilyMemberByRole(userId: string, role: string) {
+    return this.prisma.familyMember.findFirst({
+      where: {
+        userId,
+        role: role.toLowerCase(),
+      },
+    });
+  }
+
+  async updateFamilyMemberByRole(
+    userId: string,
+    role: string,
+    dto: UpdateFamilyMemberDto,
+  ) {
+    const existing = await this.prisma.familyMember.findFirst({
+      where: { userId, role: role.toLowerCase() },
+    });
+
+    if (!existing) throw new NotFoundException(`No member with role ${role}`);
+
+    return this.prisma.familyMember.update({
+      where: { id: existing.id },
+      data: { ...dto, role: role.toLowerCase(), userId },
     });
   }
 }

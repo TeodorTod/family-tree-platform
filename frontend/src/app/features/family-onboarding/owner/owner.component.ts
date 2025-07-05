@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { FamilyService } from '../../../core/services/family.service';
+import { FamilyStateService } from '../../../core/services/family-state.service';
+import { FamilyMember } from '../../../shared/models/family-member.model';
 
 @Component({
   selector: 'app-owner',
@@ -15,7 +17,9 @@ export class OwnerComponent implements OnInit {
   private fb = inject(FormBuilder);
   private familyService = inject(FamilyService);
   private router = inject(Router);
+  private familyState = inject(FamilyStateService);
 
+  hasExistingRecord = false;
   photoUrl: string | null = null;
   genderOptions = [
     { label: 'Male', value: 'male' },
@@ -33,7 +37,16 @@ export class OwnerComponent implements OnInit {
     dod: [''],
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.familyService.getFamilyMemberByRole('owner').subscribe((self) => {
+      if (self) {
+        this.hasExistingRecord = true;
+        this.form.patchValue(self);
+        this.photoUrl = self.photoUrl || null;
+        this.familyState.owner.set(self);
+      }
+    });
+  }
 
   onPhotoUpload(event: any) {
     const file = event.files[0];
@@ -43,16 +56,30 @@ export class OwnerComponent implements OnInit {
   }
 
   next() {
-    if (this.form.invalid || !this.photoUrl) return;
+    if (this.form.invalid) return;
 
-    const memberData = {
-      ...this.form.value,
-      photoUrl: this.photoUrl,
+    const raw = this.form.value;
+
+    const memberData: FamilyMember = {
+      firstName: raw.firstName ?? '',
+      middleName: raw.middleName ?? '',
+      lastName: raw.lastName ?? '',
+      gender: raw.gender ?? '',
+      dob: raw.dob ?? '',
+      dod: raw.dod || undefined,
+      biography: raw.biography || undefined,
+      photoUrl: this.photoUrl ?? '',
       isAlive: true,
+      role: 'owner',
     };
 
-    this.familyService.createFamilyMember(memberData).subscribe(() => {
-      this.router.navigate(['/onboarding/parents']);
+    const save$ = this.hasExistingRecord
+      ? this.familyService.updateMemberByRole('owner', memberData)
+      : this.familyService.createMemberByRole('owner', memberData);
+
+    save$.subscribe(() => {
+      this.familyState.owner.set(memberData);
+      this.router.navigate(['/onboarding/mother']);
     });
   }
 }
