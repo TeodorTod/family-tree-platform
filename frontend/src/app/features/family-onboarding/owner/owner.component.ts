@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -27,21 +27,36 @@ export class OwnerComponent implements OnInit {
     { label: 'Other', value: 'other' },
   ];
 
-  form = this.fb.group({
-    firstName: ['', Validators.required],
-    middleName: [''],
-    lastName: ['', Validators.required],
-    gender: ['', Validators.required],
-    dob: ['', Validators.required],
-    biography: [''],
-    dod: [''],
+  form = this.fb.group<{
+    firstName: FormControl<string | null>;
+    middleName: FormControl<string | null>;
+    lastName: FormControl<string | null>;
+    gender: FormControl<string | null>;
+    dob: FormControl<Date | null>;
+    dod: FormControl<Date | null>;
+    biography: FormControl<string | null>;
+  }>({
+    firstName: this.fb.control(null, Validators.required),
+    middleName: this.fb.control(null),
+    lastName: this.fb.control(null, Validators.required),
+    gender: this.fb.control(null, Validators.required),
+    dob: this.fb.control(null, Validators.required),
+    dod: this.fb.control(null),
+    biography: this.fb.control(null),
   });
 
   ngOnInit(): void {
     this.familyService.getFamilyMemberByRole('owner').subscribe((self) => {
       if (self) {
         this.hasExistingRecord = true;
-        this.form.patchValue(self);
+
+        const patchData = {
+          ...self,
+          dob: self.dob ? new Date(self.dob) : null,
+          dod: self.dod ? new Date(self.dod) : null,
+        };
+
+        this.form.patchValue(patchData);
         this.photoUrl = self.photoUrl || null;
         this.familyState.owner.set(self);
       }
@@ -65,8 +80,8 @@ export class OwnerComponent implements OnInit {
       middleName: raw.middleName ?? '',
       lastName: raw.lastName ?? '',
       gender: raw.gender ?? '',
-      dob: raw.dob ?? '',
-      dod: raw.dod || undefined,
+      dob: raw.dob instanceof Date ? raw.dob.toISOString() : '',
+      dod: raw.dod instanceof Date ? raw.dod.toISOString() : undefined,
       biography: raw.biography || undefined,
       photoUrl: this.photoUrl ?? '',
       isAlive: true,

@@ -23,22 +23,29 @@ export class MotherComponent implements OnInit {
   photoUrl: string | null = null;
   hasExistingRecord = false;
 
-  form = this.fb.group({
-    firstName: ['', Validators.required],
-    middleName: [''],
-    lastName: ['', Validators.required],
-    gender: ['female'],
-    dob: ['', Validators.required],
-    isAlive: [true],
-    dod: [''],
-    biography: [''],
-  });
+form = this.fb.group({
+  firstName: this.fb.control<string | null>(null, Validators.required),
+  middleName: this.fb.control<string | null>(null),
+  lastName: this.fb.control<string | null>(null, Validators.required),
+  gender: this.fb.control<string | null>('female'),
+  dob: this.fb.control<Date | null>(null, Validators.required),
+  isAlive: this.fb.control<boolean | null>(true),
+  dod: this.fb.control<Date | null>(null),
+  biography: this.fb.control<string | null>(null),
+});
+
 
   ngOnInit(): void {
     this.familyService.getFamilyMemberByRole('mother').subscribe((mother) => {
       if (mother) {
         this.hasExistingRecord = true;
-        this.form.patchValue(mother);
+        const patchData = {
+          ...mother,
+          dob: mother.dob ? new Date(mother.dob) : null,
+          dod: mother.dod ? new Date(mother.dod) : null,
+        };
+
+        this.form.patchValue(patchData);
         this.photoUrl = mother.photoUrl || null;
         this.familyState.mother.set(mother);
       }

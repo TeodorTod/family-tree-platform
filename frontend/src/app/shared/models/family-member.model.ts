@@ -6,13 +6,13 @@ export interface FamilyMember {
   middleName?: string;
   lastName: string;
   gender: string;
-  dob: string;
-  dod?: string;
+  dob: string | Date;
+  dod?: string | Date; 
   isAlive: boolean;
   photoUrl?: string;
   biography?: string;
   role: 'owner' | 'mother' | 'father' | string;
-  
+
   // Optional future relations
   parentOf?: Relationship[];
   childOf?: Relationship[];
