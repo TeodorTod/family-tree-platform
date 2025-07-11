@@ -14,12 +14,11 @@ export class FamilyMembersService {
         firstName: dto.firstName,
         middleName: dto.middleName,
         lastName: dto.lastName,
-        gender: dto.gender,
+        gender: dto.gender ?? undefined,
         dob: new Date(dto.dob),
         dod: dto.dod ? new Date(dto.dod) : undefined,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
-        biography: dto.biography,
         role: dto.role,
       },
     });

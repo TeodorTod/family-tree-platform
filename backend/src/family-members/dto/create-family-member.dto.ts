@@ -12,7 +12,8 @@ export class CreateFamilyMemberDto {
   lastName: string;
 
   @IsString()
-  gender: string;
+  @IsOptional()
+  gender?: string | null;
 
   @IsDateString()
   dob: string;
@@ -27,10 +28,6 @@ export class CreateFamilyMemberDto {
   @IsOptional()
   @IsString()
   photoUrl?: string;
-
-  @IsOptional()
-  @IsString()
-  biography?: string;
 
   @IsString()
   role: string;

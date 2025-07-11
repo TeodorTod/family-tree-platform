@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyService } from '../../../core/services/family.service';
@@ -15,7 +14,6 @@ import { FamilyMember } from '../../../shared/models/family-member.model';
   styleUrls: ['./mother.component.scss'],
 })
 export class MotherComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private familyService = inject(FamilyService);
   private router = inject(Router);
   private familyState = inject(FamilyStateService);
@@ -23,17 +21,7 @@ export class MotherComponent implements OnInit {
   photoUrl: string | null = null;
   hasExistingRecord = false;
 
-form = this.fb.group({
-  firstName: this.fb.control<string | null>(null, Validators.required),
-  middleName: this.fb.control<string | null>(null),
-  lastName: this.fb.control<string | null>(null, Validators.required),
-  gender: this.fb.control<string | null>('female'),
-  dob: this.fb.control<Date | null>(null, Validators.required),
-  isAlive: this.fb.control<boolean | null>(true),
-  dod: this.fb.control<Date | null>(null),
-  biography: this.fb.control<string | null>(null),
-});
-
+  form = this.familyService.createFamilyMemberForm();
 
   ngOnInit(): void {
     this.familyService.getFamilyMemberByRole('mother').subscribe((mother) => {
@@ -60,6 +48,7 @@ form = this.fb.group({
   }
 
   next() {
+     console.log('form:', this.form.value, 'valid:', this.form.valid);
     if (this.form.invalid) return;
 
     const raw = this.form.value as Required<

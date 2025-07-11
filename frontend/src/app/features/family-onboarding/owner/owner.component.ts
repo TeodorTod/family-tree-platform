@@ -1,11 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { FamilyService } from '../../../core/services/family.service';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyMember } from '../../../shared/models/family-member.model';
+import { Roles } from '../../../shared/enums/roles.enum';
+import { Gender, GenderLabel } from '../../../shared/enums/gender.enum';
 
 @Component({
   selector: 'app-owner',
@@ -14,7 +15,6 @@ import { FamilyMember } from '../../../shared/models/family-member.model';
   styleUrl: './owner.component.scss',
 })
 export class OwnerComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private familyService = inject(FamilyService);
   private router = inject(Router);
   private familyState = inject(FamilyStateService);
@@ -22,31 +22,15 @@ export class OwnerComponent implements OnInit {
   hasExistingRecord = false;
   photoUrl: string | null = null;
   genderOptions = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Other', value: 'other' },
+    { label: GenderLabel.MALE, value: Gender.MALE },
+    { label: GenderLabel.FEMALE, value: Gender.FEMALE },
+    { label: GenderLabel.OTHER, value: Gender.OTHER },
   ];
 
-  form = this.fb.group<{
-    firstName: FormControl<string | null>;
-    middleName: FormControl<string | null>;
-    lastName: FormControl<string | null>;
-    gender: FormControl<string | null>;
-    dob: FormControl<Date | null>;
-    dod: FormControl<Date | null>;
-    biography: FormControl<string | null>;
-  }>({
-    firstName: this.fb.control(null, Validators.required),
-    middleName: this.fb.control(null),
-    lastName: this.fb.control(null, Validators.required),
-    gender: this.fb.control(null, Validators.required),
-    dob: this.fb.control(null, Validators.required),
-    dod: this.fb.control(null),
-    biography: this.fb.control(null),
-  });
+  form = this.familyService.createFamilyMemberForm();
 
   ngOnInit(): void {
-    this.familyService.getFamilyMemberByRole('owner').subscribe((self) => {
+    this.familyService.getFamilyMemberByRole(Roles.OWNER).subscribe((self) => {
       if (self) {
         this.hasExistingRecord = true;
 
@@ -82,15 +66,14 @@ export class OwnerComponent implements OnInit {
       gender: raw.gender ?? '',
       dob: raw.dob instanceof Date ? raw.dob.toISOString() : '',
       dod: raw.dod instanceof Date ? raw.dod.toISOString() : undefined,
-      biography: raw.biography || undefined,
       photoUrl: this.photoUrl ?? '',
       isAlive: true,
-      role: 'owner',
+      role: Roles.OWNER,
     };
 
     const save$ = this.hasExistingRecord
-      ? this.familyService.updateMemberByRole('owner', memberData)
-      : this.familyService.createMemberByRole('owner', memberData);
+      ? this.familyService.updateMemberByRole(Roles.OWNER, memberData)
+      : this.familyService.createMemberByRole(Roles.OWNER, memberData);
 
     save$.subscribe(() => {
       this.familyState.owner.set(memberData);
