@@ -213,7 +213,6 @@ body {
   cursor: pointer;
 }
 
-
 .floating-field {
   position: relative;
   margin-bottom: 1.5rem;
@@ -231,7 +230,6 @@ body {
     z-index: 1;
   }
 
-  // === Generic Input (already working) ===
   input {
     width: 100%;
     padding: 1rem 0.75rem 1.25rem;
@@ -276,6 +274,10 @@ body {
   .p-dropdown-label,
   .p-inputtext {
     padding-top: 1rem;
+  }
+
+  .p-select {
+    padding: 0.5rem 0.5rem;
   }
 }
 

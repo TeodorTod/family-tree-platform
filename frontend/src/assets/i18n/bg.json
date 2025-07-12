@@ -33,7 +33,9 @@
     "DATE_OF_BIRTH": "Дата на раждане",
     "DATE_OF_DEATH": "Дата на смърт",
     "PHOTO_LABEL": "Снимка",
-    "GENDER": "Пол"
+    "GENDER": "Пол",
+    "FORWARD": "Напред",
+    "BACK": "Назад"
   },
 
   "ADD": {

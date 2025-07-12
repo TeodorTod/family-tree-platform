@@ -47,7 +47,7 @@
         optionLabel="label"
         optionValue="value"
         placeholder=" "
-        class="w-full min-h-50"
+        class="w-full"
       ></p-select>
     </div>
 
@@ -69,7 +69,8 @@
     <div class="floating-field file-label" [class.active]="photoUrl()">
       <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
 
-      <div class="photo-preview-container" *ngIf="photoUrl()">
+      @if( photoUrl() ) {
+      <div class="photo-preview-container">
         <img
           [src]="'https://example.invalid' + photoUrl()"
           alt="Uploaded"
@@ -84,9 +85,8 @@
           ✖
         </button>
       </div>
-
+      } @if (!photoUrl()) {
       <p-fileUpload
-        *ngIf="!photoUrl()"
         name="photo"
         customUpload
         [auto]="true"
@@ -95,13 +95,13 @@
         (uploadHandler)="onPhotoUpload($event)"
         chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
         class="w-full"
-      />
+      />}
     </div>
 
     <button
       pButton
       type="submit"
-      label="Напред"
+      label="{{ CONSTANTS.INFO_FORWARD | translate }}"
       [disabled]="form.invalid"
     ></button>
   </form>

@@ -31,6 +31,8 @@ export class CONSTANTS {
   static readonly INFO_DATE_OF_DEATH = 'INFO.DATE_OF_DEATH';
   static readonly INFO_PHOTO_LABEL = 'INFO.PHOTO_LABEL';
   static readonly INFO_GENDER = 'INFO.GENDER';
+  static readonly INFO_FORWARD = 'INFO.FORWARD';
+  static readonly INFO_BACK = 'INFO.BACK';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

@@ -80,7 +80,8 @@
         type="submit"
         label="Напред"
         icon="pi pi-arrow-right"
-        class="p-button-success"
+        [disabled]="form.invalid"
+        class="p-button-primary"
       ></button>
     </div>
   </form>
