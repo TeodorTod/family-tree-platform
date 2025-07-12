@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -6,10 +6,10 @@ import { FamilyService } from '../../../core/services/family.service';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { Roles } from '../../../shared/enums/roles.enum';
-import { Gender, GenderLabel } from '../../../shared/enums/gender.enum';
+import { Gender } from '../../../shared/enums/gender.enum';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-owner',
@@ -23,8 +23,7 @@ export class OwnerComponent implements OnInit {
   private router = inject(Router);
   private familyState = inject(FamilyStateService);
   private translate = inject(TranslateService);
-  private sanitizer = inject(DomSanitizer);
-
+  private destroyRef = inject(DestroyRef);
 
   hasExistingRecord = false;
   photoUrl = signal<string | null>(null);
@@ -45,32 +44,36 @@ export class OwnerComponent implements OnInit {
 
   form = this.familyService.createFamilyMemberForm();
 
-
-
   ngOnInit(): void {
-    this.familyService.getFamilyMemberByRole(Roles.OWNER).subscribe((self) => {
-      if (self) {
-        this.hasExistingRecord = true;
+    this.familyService
+      .getFamilyMemberByRole(Roles.OWNER)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((self) => {
+        if (self) {
+          this.hasExistingRecord = true;
 
-        const patchData = {
-          ...self,
-          dob: self.dob ? new Date(self.dob) : null,
-          dod: self.dod ? new Date(self.dod) : null,
-        };
+          const patchData = {
+            ...self,
+            dob: self.dob ? new Date(self.dob) : null,
+            dod: self.dod ? new Date(self.dod) : null,
+          };
 
-        this.form.patchValue(patchData);
-        this.photoUrl.set(self.photoUrl || null);
-        this.familyState.owner.set(self);
-      }
-    });
+          this.form.patchValue(patchData);
+          this.photoUrl.set(self.photoUrl || null);
+          this.familyState.owner.set(self);
+        }
+      });
   }
 
-onPhotoUpload(event: any) {
-  const file = event.files[0];
-  this.familyService.uploadPhoto(file).subscribe((res) => {
-    this.photoUrl.set(res.url); 
-  });
-}
+  onPhotoUpload(event: any) {
+    const file = event.files[0];
+    this.familyService
+      .uploadPhoto(file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((res) => {
+        this.photoUrl.set(res.url);
+      });
+  }
 
   next() {
     if (this.form.invalid) return;
@@ -93,14 +96,13 @@ onPhotoUpload(event: any) {
       ? this.familyService.updateMemberByRole(Roles.OWNER, memberData)
       : this.familyService.createMemberByRole(Roles.OWNER, memberData);
 
-    save$.subscribe(() => {
+    save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.familyState.owner.set(memberData);
       this.router.navigate(['/onboarding/mother']);
     });
   }
 
-onPhotoClear() {
-  this.photoUrl.set(null);
-}
-
+  onPhotoClear() {
+    this.photoUrl.set(null);
+  }
 }

@@ -19,6 +19,12 @@ export class CONSTANTS {
   static readonly AUTH_SUBSCRIPTION_SETTINGS = 'AUTH.SUBSCRIPTION_SETTINGS';
   static readonly AUTH_PRIVACY_SETTINGS = 'AUTH.PRIVACY_SETTINGS';
 
+  static readonly ROUTES_LOGIN = 'ROUTES.LOGIN';
+  static readonly ROUTES_REGISTER = 'ROUTES.REGISTER';
+  static readonly ROUTES_SETTINGS_ACCOUNT = 'ROUTES.SETTINGS_ACCOUNT';
+  static readonly ROUTES_SETTINGS_SUBSCRIPTION = 'ROUTES.SETTINGS_SUBSCRIPTION';
+  static readonly ROUTES_SETTINGS_PRIVACY = 'ROUTES.SETTINGS_PRIVACY';
+
   static readonly INFO_OWNER = 'INFO.OWNER';
   static readonly INFO_MOTHER = 'INFO.MOTHER';
   static readonly INFO_FATHER = 'INFO.FATHER';
@@ -33,6 +39,7 @@ export class CONSTANTS {
   static readonly INFO_GENDER = 'INFO.GENDER';
   static readonly INFO_FORWARD = 'INFO.FORWARD';
   static readonly INFO_BACK = 'INFO.BACK';
+  static readonly INFO_IS_ALIVE = 'INFO.IS_ALIVE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

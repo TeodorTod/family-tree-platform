@@ -35,7 +35,8 @@
     "PHOTO_LABEL": "Снимка",
     "GENDER": "Пол",
     "FORWARD": "Напред",
-    "BACK": "Назад"
+    "BACK": "Назад",
+    "IS_ALIVE": "Жив/a ли е?"
   },
 
   "ADD": {

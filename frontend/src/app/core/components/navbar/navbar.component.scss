@@ -1,0 +1,62 @@
+.navbar-container {
+  width: 100%;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.logo-img {
+  vertical-align: middle;
+}
+
+.nav-desktop {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.nav-mobile-toggle {
+  display: block;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.hamburger-toggle {
+  width: 48px;
+  height: 48px;
+
+  .p-button-icon {
+    font-size: 2rem !important; 
+    line-height: 1;
+  }
+}
+
+.nav-mobile-dropdown {
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  display: block;
+  
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  button {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+}

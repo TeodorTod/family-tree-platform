@@ -1,53 +1,121 @@
 @if (shouldShowNavbar()) {
-<p-menubar [model]="[]">
-  <ng-template pTemplate="start">
-    <a routerLink="/" class="flex items-center gap-2 text-lg font-bold">
-      <img
-        src="assets/images/logo.png"
-        alt="FamilyTree logo"
-        width="64"
-        height="64"
-        class="align-middle"
-        style="vertical-align: middle"
-      />
-    </a>
-  </ng-template>
-
-  <ng-template pTemplate="end">
-    <ng-container *ngIf="isLoggedIn(); else loggedOut">
-      <p-splitButton
-        label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
-        icon="pi pi-cog"
-        [model]="settingsItems"
-        class="p-button-text"
-        styleClass="p-button-text p-button-plain"
-        severity="secondary"
-      />
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
-        icon="pi pi-sign-out"
-        class="p-button-text ml-2 pr-4"
-        (click)="logout()"
-      ></button>
-    </ng-container>
-
-    <ng-template #loggedOut>
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
-        icon="pi pi-sign-in"
-        class="p-button-text"
-        routerLink="/auth/login"
-      ></button>
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
-        icon="pi pi-user-plus"
-        class="p-button-text ml-2"
-        routerLink="/auth/register"
-      ></button>
+<div class="navbar-container">
+  <p-menubar [model]="[]">
+    <ng-template pTemplate="start">
+      <a routerLink="/" class="logo-link">
+        <img
+          src="assets/images/logo.png"
+          alt="FamilyTree logo"
+          width="48"
+          height="48"
+          class="logo-img"
+        />
+      </a>
     </ng-template>
-  </ng-template>
-</p-menubar>
+
+    <ng-template pTemplate="end">
+      @if (isLoggedIn()) {
+      <div class="nav-desktop">
+        <p-splitButton
+          label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
+          icon="pi pi-cog"
+          [model]="settingsItems"
+          class="p-button-text"
+          styleClass="p-button-text p-button-plain"
+          severity="secondary"
+        />
+        <button
+          pButton
+          label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
+          icon="pi pi-sign-out"
+          class="p-button-text"
+          (click)="logout()"
+        ></button>
+      </div>
+      } @else {
+      <div class="nav-desktop">
+        <button
+          pButton
+          label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
+          icon="pi pi-sign-in"
+          class="p-button-text"
+          routerLink="/auth/login"
+        ></button>
+        <button
+          pButton
+          label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
+          icon="pi pi-user-plus"
+          class="p-button-text"
+          routerLink="/auth/register"
+        ></button>
+      </div>
+      }
+
+      <!-- Hamburger toggle button -->
+      <div class="nav-mobile-toggle">
+        <button
+          type="button"
+          pButton
+          icon="pi pi-bars"
+          class="hamburger-toggle p-button-rounded p-button-icon-only"
+          (click)="mobileMenuVisible = !mobileMenuVisible"
+          aria-label="Toggle Menu"
+        ></button>
+      </div>
+    </ng-template>
+  </p-menubar>
+
+  <!-- Mobile dropdown -->
+  @if (mobileMenuVisible) {
+  <div class="nav-mobile-dropdown">
+    @if (isLoggedIn()) {
+    <button
+      pButton
+      class="w-full text-left mb-2"
+      label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
+      [icon]="showProfileMenu ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+      (click)="showProfileMenu = !showProfileMenu"
+    ></button>
+
+    @if (showProfileMenu) {
+    <div class="pl-3">
+      @for (item of settingsItems; track item.label) {
+      <button
+        pButton
+        class="w-full text-left mb-2"
+        [label]="item.label"
+        [icon]="item.icon"
+        (click)="item.command(); mobileMenuVisible = false"
+      ></button>
+      }
+    </div>
+    }
+
+    <button
+      pButton
+      class="w-full text-left mb-2"
+      label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
+      icon="pi pi-sign-out"
+      (click)="logout()"
+    ></button>
+    } @else {
+    <button
+      pButton
+      class="w-full text-left mb-2"
+      label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
+      icon="pi pi-sign-in"
+      routerLink="/auth/login"
+    ></button>
+    <button
+      pButton
+      class="w-full text-left"
+      label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
+      icon="pi pi-user-plus"
+      routerLink="/auth/register"
+    ></button>
+    }
+  </div>
+
+  }
+</div>
 }
