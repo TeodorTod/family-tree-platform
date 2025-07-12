@@ -1,28 +1,108 @@
-<form [formGroup]="form" (ngSubmit)="next()">
-  <input pInputText formControlName="firstName" placeholder="First Name" />
-  <input pInputText formControlName="middleName" placeholder="Middle Name" />
-  <input pInputText formControlName="lastName" placeholder="Last Name" />
-  <p-select
-    formControlName="gender"
-    [options]="genderOptions"
-    optionLabel="label"
-    optionValue="value"
-    placeholder="Select Gender"
-  ></p-select>
-  <p-datepicker
-    [iconDisplay]="'input'"
-    [showIcon]="true"
-    inputId="icondisplay"
-    formControlName="dob"
-    placeholder="Date of Birth"
-    dateFormat="yy-mm-dd"
-  />
-  <p-fileUpload
-    name="photo"
-    customUpload
-    [auto]="true"
-    (uploadHandler)="onPhotoUpload($event)"
-    chooseLabel="Снимка"
-  />
-  <button pButton type="submit" label="Напред"></button>
-</form>
+<h1 class="d-flex justify-center">{{ CONSTANTS.INFO_OWNER | translate }}</h1>
+<div class="d-flex justify-center w-full">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="next()"
+    class="initial-forms d-flex justify-center flex-column align-items-center gap-2 w-full"
+  >
+    <div class="floating-field">
+      <input
+        id="firstName"
+        pInputText
+        formControlName="firstName"
+        placeholder=" "
+      />
+      <label for="firstName">{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input
+        id="middleName"
+        pInputText
+        formControlName="middleName"
+        placeholder=" "
+      />
+      <label for="middleName">{{
+        CONSTANTS.INFO_MIDDLE_NAME | translate
+      }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input
+        id="lastName"
+        pInputText
+        formControlName="lastName"
+        placeholder=" "
+      />
+      <label for="lastName">{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+    </div>
+
+    <!-- Gender -->
+    <div class="floating-field" [class.active]="form.get('gender')?.value">
+      <label for="gender">{{ CONSTANTS.INFO_GENDER | translate }}</label>
+      <p-select
+        inputId="gender"
+        formControlName="gender"
+        [options]="genderOptions"
+        optionLabel="label"
+        optionValue="value"
+        placeholder=" "
+        class="w-full min-h-50"
+      ></p-select>
+    </div>
+
+    <!-- DOB -->
+    <div class="floating-field" [class.active]="form.get('dob')?.value">
+      <label for="dob">{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        inputId="dob"
+        formControlName="dob"
+        placeholder=" "
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+
+    <!-- Photo -->
+    <div class="floating-field file-label" [class.active]="photoUrl()">
+      <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
+
+      <div class="photo-preview-container" *ngIf="photoUrl()">
+        <img
+          [src]="'https://example.invalid' + photoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
+        />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="onPhotoClear()"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+
+      <p-fileUpload
+        *ngIf="!photoUrl()"
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="onPhotoUpload($event)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Напред"
+      [disabled]="form.invalid"
+    ></button>
+  </form>
+</div>

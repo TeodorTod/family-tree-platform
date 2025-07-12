@@ -137,6 +137,40 @@ body {
   flex-direction: column !important;
 }
 
+.max-w-100 {
+  max-width: 100% !important;
+}
+.max-w-200 {
+  max-width: 200px !important;
+}
+.max-w-360 {
+  max-width: 360px !important;
+}
+
+.max-w-500 {
+  max-width: 500px !important;
+}
+
+.min-h-50 {
+  min-height: 50px !important;
+}
+
+.gap-1 {
+  gap: 0.25rem !important;
+}
+.gap-2 {
+  gap: 0.5rem !important;
+}
+.gap-3 {
+  gap: 1rem !important;
+}
+.gap-4 {
+  gap: 1.25rem !important;
+}
+.gap-5 {
+  gap: 1.5rem !important;
+}
+
 /* === Buttons === */
 .btn-primary {
   background-color: #2d4c2f !important;
@@ -148,5 +182,111 @@ body {
 
   &:hover {
     background-color: #3e6f41 !important;
+  }
+}
+
+.photo-preview-container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.uploaded-photo-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 0.5rem;
+}
+
+.photo-remove-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+
+
+.floating-field {
+  position: relative;
+  margin-bottom: 1.5rem;
+
+  label {
+    position: absolute;
+    left: 0.75rem;
+    top: 1rem;
+    font-size: 1rem;
+    color: #777;
+    pointer-events: none;
+    transition: 0.2s ease all;
+    background: #fff;
+    padding: 0 0.25rem;
+    z-index: 1;
+  }
+
+  // === Generic Input (already working) ===
+  input {
+    width: 100%;
+    padding: 1rem 0.75rem 1.25rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 0.1rem rgba(45, 76, 47, 0.1);
+    }
+  }
+
+  input:focus + label,
+  input:not(:placeholder-shown) + label {
+    top: -0.6rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+  }
+
+  // === PrimeNG Dropdown & Datepicker ===
+  .p-dropdown,
+  .p-calendar,
+  .p-fileupload {
+    padding-top: 1.5rem;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  &.active label {
+    top: -0.6rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    background: #fff;
+    padding: 0 0.25rem;
+    color: var(--primary-color);
+  }
+
+  // Fix PrimeNG spacing quirks
+  .p-dropdown-label,
+  .p-inputtext {
+    padding-top: 1rem;
+  }
+}
+
+.initial-forms {
+  max-width: 500px;
+
+  @media (max-width: 768px) {
+    max-width: 360px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 300px;
   }
 }

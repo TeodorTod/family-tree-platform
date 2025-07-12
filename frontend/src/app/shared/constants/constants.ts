@@ -18,4 +18,23 @@ export class CONSTANTS {
   static readonly AUTH_ACCOUNT_SETTINGS = 'AUTH.ACCOUNT_SETTINGS';
   static readonly AUTH_SUBSCRIPTION_SETTINGS = 'AUTH.SUBSCRIPTION_SETTINGS';
   static readonly AUTH_PRIVACY_SETTINGS = 'AUTH.PRIVACY_SETTINGS';
+
+  static readonly INFO_OWNER = 'INFO.OWNER';
+  static readonly INFO_MOTHER = 'INFO.MOTHER';
+  static readonly INFO_FATHER = 'INFO.FATHER';
+  static readonly INFO_MOTHER_PARENTS = 'INFO.MOTHER_PARENTS';
+  static readonly INFO_FATHER_PARENTS = 'INFO.FATHER_PARENTS';
+  static readonly INFO_FIRST_NAME = 'INFO.FIRST_NAME';
+  static readonly INFO_MIDDLE_NAME = 'INFO.MIDDLE_NAME';
+  static readonly INFO_LAST_NAME = 'INFO.LAST_NAME';
+  static readonly INFO_DATE_OF_BIRTH = 'INFO.DATE_OF_BIRTH';
+  static readonly INFO_DATE_OF_DEATH = 'INFO.DATE_OF_DEATH';
+  static readonly INFO_PHOTO_LABEL = 'INFO.PHOTO_LABEL';
+  static readonly INFO_GENDER = 'INFO.GENDER';
+
+  static readonly ADD_PHOTO = 'ADD.PHOTO';
+
+  static readonly GENDER_MALE = 'GENDER.MALE';
+  static readonly GENDER_FEMALE = 'GENDER.FEMALE';
+  static readonly GENDER_OTHER = 'GENDER.OTHER';
 }

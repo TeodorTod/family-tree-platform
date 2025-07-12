@@ -11,9 +11,8 @@ export class MediaService {
 
     const uniqueName = crypto.randomUUID() + '-' + file.originalname;
     const filePath = join(uploadsDir, uniqueName);
-    await writeFile(filePath, file.buffer);
+    await writeFile(filePath, file.buffer); // ✅ works only with memoryStorage
 
-    // For now: serve locally from /public/uploads
-    return `/uploads/${uniqueName}`;
+    return `/uploads/${uniqueName}`; // relative path served by NestJS
   }
 }

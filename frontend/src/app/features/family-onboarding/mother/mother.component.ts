@@ -5,6 +5,7 @@ import { FamilyService } from '../../../core/services/family.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { FamilyMember } from '../../../shared/models/family-member.model';
+import { CONSTANTS } from '../../../shared/constants/constants';
 
 @Component({
   selector: 'app-mother',
@@ -14,6 +15,7 @@ import { FamilyMember } from '../../../shared/models/family-member.model';
   styleUrls: ['./mother.component.scss'],
 })
 export class MotherComponent implements OnInit {
+  CONSTANTS = CONSTANTS
   private familyService = inject(FamilyService);
   private router = inject(Router);
   private familyState = inject(FamilyStateService);

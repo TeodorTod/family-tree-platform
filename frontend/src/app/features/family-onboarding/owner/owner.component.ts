@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -7,6 +7,9 @@ import { FamilyStateService } from '../../../core/services/family-state.service'
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { Gender, GenderLabel } from '../../../shared/enums/gender.enum';
+import { CONSTANTS } from '../../../shared/constants/constants';
+import { TranslateService } from '@ngx-translate/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-owner',
@@ -15,19 +18,34 @@ import { Gender, GenderLabel } from '../../../shared/enums/gender.enum';
   styleUrl: './owner.component.scss',
 })
 export class OwnerComponent implements OnInit {
+  CONSTANTS = CONSTANTS;
   private familyService = inject(FamilyService);
   private router = inject(Router);
   private familyState = inject(FamilyStateService);
+  private translate = inject(TranslateService);
+  private sanitizer = inject(DomSanitizer);
+
 
   hasExistingRecord = false;
-  photoUrl: string | null = null;
+  photoUrl = signal<string | null>(null);
   genderOptions = [
-    { label: GenderLabel.MALE, value: Gender.MALE },
-    { label: GenderLabel.FEMALE, value: Gender.FEMALE },
-    { label: GenderLabel.OTHER, value: Gender.OTHER },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_MALE),
+      value: Gender.MALE,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_FEMALE),
+      value: Gender.FEMALE,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_OTHER),
+      value: Gender.OTHER,
+    },
   ];
 
   form = this.familyService.createFamilyMemberForm();
+
+
 
   ngOnInit(): void {
     this.familyService.getFamilyMemberByRole(Roles.OWNER).subscribe((self) => {
@@ -41,18 +59,18 @@ export class OwnerComponent implements OnInit {
         };
 
         this.form.patchValue(patchData);
-        this.photoUrl = self.photoUrl || null;
+        this.photoUrl.set(self.photoUrl || null);
         this.familyState.owner.set(self);
       }
     });
   }
 
-  onPhotoUpload(event: any) {
-    const file = event.files[0];
-    this.familyService.uploadPhoto(file).subscribe((res) => {
-      this.photoUrl = res.url;
-    });
-  }
+onPhotoUpload(event: any) {
+  const file = event.files[0];
+  this.familyService.uploadPhoto(file).subscribe((res) => {
+    this.photoUrl.set(res.url); 
+  });
+}
 
   next() {
     if (this.form.invalid) return;
@@ -66,7 +84,7 @@ export class OwnerComponent implements OnInit {
       gender: raw.gender ?? '',
       dob: raw.dob instanceof Date ? raw.dob.toISOString() : '',
       dod: raw.dod instanceof Date ? raw.dod.toISOString() : undefined,
-      photoUrl: this.photoUrl ?? '',
+      photoUrl: this.photoUrl() ?? '',
       isAlive: true,
       role: Roles.OWNER,
     };
@@ -80,4 +98,9 @@ export class OwnerComponent implements OnInit {
       this.router.navigate(['/onboarding/mother']);
     });
   }
+
+onPhotoClear() {
+  this.photoUrl.set(null);
+}
+
 }

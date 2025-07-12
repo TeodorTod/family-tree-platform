@@ -19,7 +19,7 @@ export class FamilyMembersService {
         dod: dto.dod ? new Date(dto.dod) : undefined,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
-        role: dto.role,
+        role: dto.role, 
       },
     });
   }

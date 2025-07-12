@@ -19,5 +19,30 @@
     "ACCOUNT_SETTINGS": "Aкаунт",
     "SUBSCRIPTION_SETTINGS": "Aбонамент",
     "PRIVACY_SETTINGS": "Настройки на поверителността"
+  },
+
+  "INFO": {
+    "OWNER": "Твоите данни",
+    "MOTHER": "Данни за твоята майка",
+    "FATHER": "Данни за твоя баща",
+    "MOTHER_PARENTS": "Данни за родителите на майка ти",
+    "FATHER_PARENTS": "Данни за родителите на баща ти",
+    "FIRST_NAME": "Име",
+    "MIDDLE_NAME": "Презиме",
+    "LAST_NAME": "Фамилия",
+    "DATE_OF_BIRTH": "Дата на раждане",
+    "DATE_OF_DEATH": "Дата на смърт",
+    "PHOTO_LABEL": "Снимка",
+    "GENDER": "Пол"
+  },
+
+  "ADD": {
+    "PHOTO": "Добави снимка"
+  },
+
+  "GENDER": {
+    "MALE": "Мъж",
+    "FEMALE": "Жена",
+    "OTHER": "Друго"
   }
 }
