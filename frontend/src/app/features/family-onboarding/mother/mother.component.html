@@ -56,13 +56,13 @@
     </div>
     }
 
-    <div class="floating-field file-label" [class.active]="photoUrl">
+    <div class="floating-field file-label" [class.active]="photoUrl()">
       <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
 
-      @if (photoUrl) {
+      @if (photoUrl()) {
       <div class="photo-preview-container">
         <img
-          [src]="'https://example.invalid' + photoUrl"
+          [src]="apiUrl + photoUrl()"
           alt="Uploaded"
           class="uploaded-photo-preview"
         />

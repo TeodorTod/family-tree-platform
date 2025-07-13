@@ -18,7 +18,8 @@
     "SETTINGS": "Настройки",
     "ACCOUNT_SETTINGS": "Aкаунт",
     "SUBSCRIPTION_SETTINGS": "Aбонамент",
-    "PRIVACY_SETTINGS": "Настройки на поверителността"
+    "PRIVACY_SETTINGS": "Настройки на поверителността",
+    "LOGIN_ERROR": "Влизането не бе успешно. Моля, проверете идентификационните си данни."
   },
 
   "INFO": {

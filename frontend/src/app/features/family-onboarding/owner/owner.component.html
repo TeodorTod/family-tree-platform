@@ -72,7 +72,7 @@
       @if( photoUrl() ) {
       <div class="photo-preview-container">
         <img
-          [src]="'https://example.invalid' + photoUrl()"
+          [src]="apiUrl + photoUrl()"
           alt="Uploaded"
           class="uploaded-photo-preview"
         />

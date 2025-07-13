@@ -13,6 +13,7 @@ export const routes: Routes = [
       import('./features/settings/settings.routes').then(
         (m) => m.settingsRoutes
       ),
+    canActivate: [authGuard],
   },
   {
     path: 'onboarding',
@@ -20,6 +21,7 @@ export const routes: Routes = [
       import('./features/family-onboarding/family-onboarding.routes').then(
         (m) => m.familyOnboardingRoutes
       ),
+    canActivate: [authGuard],
   },
   {
     path: '',

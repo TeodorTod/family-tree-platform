@@ -18,13 +18,24 @@ export class CONSTANTS {
   static readonly AUTH_ACCOUNT_SETTINGS = 'AUTH.ACCOUNT_SETTINGS';
   static readonly AUTH_SUBSCRIPTION_SETTINGS = 'AUTH.SUBSCRIPTION_SETTINGS';
   static readonly AUTH_PRIVACY_SETTINGS = 'AUTH.PRIVACY_SETTINGS';
+  static readonly AUTH_LOGIN_ERROR = 'AUTH.LOGIN_ERROR';
 
-  static readonly ROUTES_LOGIN = 'ROUTES.LOGIN';
-  static readonly ROUTES_REGISTER = 'ROUTES.REGISTER';
-  static readonly ROUTES_SETTINGS_ACCOUNT = 'ROUTES.SETTINGS_ACCOUNT';
-  static readonly ROUTES_SETTINGS_SUBSCRIPTION = 'ROUTES.SETTINGS_SUBSCRIPTION';
-  static readonly ROUTES_SETTINGS_PRIVACY = 'ROUTES.SETTINGS_PRIVACY';
-
+  static readonly ROUTES = {
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    TREE: '/tree',
+    AUTH_GOOGLE_LOGIN: '/auth/google',
+    SETTINGS: {
+      ACCOUNT: '/settings/account',
+      SUBSCRIPTION: '/settings/subscription',
+      PRIVACY: '/settings/privacy',
+    },
+    ONBOARDING: {
+      OWNER: '/onboarding/owner',
+      MOTHER: '/onboarding/mother',
+      MATERNAL_GRANDPARENTS: '/onboarding/maternal-grandparents',
+    },
+  };
   static readonly INFO_OWNER = 'INFO.OWNER';
   static readonly INFO_MOTHER = 'INFO.MOTHER';
   static readonly INFO_FATHER = 'INFO.FATHER';

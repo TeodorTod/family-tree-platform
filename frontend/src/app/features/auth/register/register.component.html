@@ -11,7 +11,11 @@
         {{ CONSTANTS.AUTH_REGISTER | translate }}
       </h2>
 
-      <form [formGroup]="form" (ngSubmit)="register()" class="login-form-content">
+      <form
+        [formGroup]="form"
+        (ngSubmit)="register()"
+        class="login-form-content"
+      >
         <div class="floating-field">
           <input
             id="email"
@@ -31,7 +35,9 @@
             formControlName="password"
             placeholder=" "
           />
-          <label for="password">{{ CONSTANTS.AUTH_PASSWORD | translate }}</label>
+          <label for="password">{{
+            CONSTANTS.AUTH_PASSWORD | translate
+          }}</label>
         </div>
 
         <div class="floating-field">
@@ -48,7 +54,7 @@
         </div>
 
         @if (error()) {
-          <p-message class="mb-3" severity="error" [text]="error()"></p-message>
+        <p-message class="mb-3" severity="error" [text]="error()"></p-message>
         }
 
         <button
@@ -61,7 +67,7 @@
 
         <div class="login-footer">
           <span>{{ CONSTANTS.AUTH_ALREADY_REGISTERED | translate }}</span>
-          <a [routerLink]="['/auth/login']">
+          <a [routerLink]="CONSTANTS.ROUTES.LOGIN">
             {{ CONSTANTS.AUTH_LOGIN | translate }}
           </a>
         </div>

@@ -39,14 +39,14 @@
           label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
           icon="pi pi-sign-in"
           class="p-button-text"
-          routerLink="/auth/login"
+          [routerLink]="CONSTANTS.ROUTES.LOGIN"
         ></button>
         <button
           pButton
           label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
           icon="pi pi-user-plus"
           class="p-button-text"
-          routerLink="/auth/register"
+          [routerLink]="CONSTANTS.ROUTES.REGISTER"
         ></button>
       </div>
       }

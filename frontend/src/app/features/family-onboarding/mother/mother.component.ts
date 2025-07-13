@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyService } from '../../../core/services/family.service';
@@ -7,6 +7,8 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-i
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { environment } from '../../../environments/environment';
+import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-mother',
@@ -21,14 +23,15 @@ export class MotherComponent implements OnInit {
   private familyState = inject(FamilyStateService);
   private destroyRef = inject(DestroyRef);
 
-  photoUrl: string | null = null;
+  photoUrl = signal<string | null>(null);
   hasExistingRecord = false;
+  apiUrl = environment.apiUrl;
 
   form = this.familyService.createFamilyMemberForm();
 
   ngOnInit(): void {
     this.familyService
-      .getFamilyMemberByRole('mother')
+      .getFamilyMemberByRole(Roles.MOTHER)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((mother) => {
         if (mother) {
@@ -41,7 +44,7 @@ export class MotherComponent implements OnInit {
           };
 
           this.form.patchValue(patchData);
-          this.photoUrl = mother.photoUrl || null;
+          this.photoUrl.set(mother.photoUrl || null);
           this.familyState.mother.set(mother);
         }
       });
@@ -53,7 +56,7 @@ export class MotherComponent implements OnInit {
       .uploadPhoto(file)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((res) => {
-        this.photoUrl = res.url;
+        this.photoUrl.set(res.url);
       });
   }
   next() {
@@ -70,25 +73,25 @@ export class MotherComponent implements OnInit {
     const mother: FamilyMember = {
       ...raw,
       dod: raw.isAlive ? undefined : raw.dod || undefined,
-      photoUrl: this.photoUrl || undefined,
-      role: 'mother',
+      photoUrl: this.photoUrl() || '',
+      role: Roles.MOTHER,
     };
 
     const save$ = this.hasExistingRecord
-      ? this.familyService.updateMemberByRole('mother', mother)
-      : this.familyService.createMemberByRole('mother', mother);
+      ? this.familyService.updateMemberByRole(Roles.MOTHER, mother)
+      : this.familyService.createMemberByRole(Roles.MOTHER, mother);
 
     save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.familyState.mother.set(mother);
-      this.router.navigate(['/onboarding/maternal-grandparents']);
+      this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.MATERNAL_GRANDPARENTS]);
     });
   }
 
   back() {
-    this.router.navigate(['/onboarding/owner']);
+    this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.OWNER]);
   }
 
   onPhotoClear() {
-    this.photoUrl = null;
+   this.photoUrl.set(null);
   }
 }

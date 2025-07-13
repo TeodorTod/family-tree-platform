@@ -10,6 +10,7 @@ import { Gender } from '../../../shared/enums/gender.enum';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-owner',
@@ -27,6 +28,8 @@ export class OwnerComponent implements OnInit {
 
   hasExistingRecord = false;
   photoUrl = signal<string | null>(null);
+  apiUrl = environment.apiUrl;
+
   genderOptions = [
     {
       label: this.translate.instant(CONSTANTS.GENDER_MALE),
@@ -98,7 +101,7 @@ export class OwnerComponent implements OnInit {
 
     save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.familyState.owner.set(memberData);
-      this.router.navigate(['/onboarding/mother']);
+      this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.MOTHER]);
     });
   }
 

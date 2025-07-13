@@ -23,7 +23,7 @@ export class NavbarComponent {
   isLoggedIn = this.auth.getTokenSignal();
 
   private readonly hiddenRoutes = ['/auth/login', '/auth/register'];
-  mobileMenuVisible = false; 
+  mobileMenuVisible = false;
   showProfileMenu = false;
   shouldShowNavbar(): boolean {
     return !this.hiddenRoutes.includes(this.router.url);
@@ -44,18 +44,18 @@ export class NavbarComponent {
     {
       label: this.translate.instant(CONSTANTS.AUTH_ACCOUNT_SETTINGS),
       icon: 'pi pi-user-edit',
-      command: () => this.router.navigate(['/settings/account']),
+      command: () => this.router.navigate([CONSTANTS.ROUTES.SETTINGS.ACCOUNT]),
     },
     {
       label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
       icon: 'pi pi-credit-card',
-      command: () => this.router.navigate(['/settings/subscription']),
+      command: () =>
+        this.router.navigate([CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION]),
     },
     {
       label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
       icon: 'pi pi-lock',
-      command: () => this.router.navigate(['/settings/privacy']),
+      command: () => this.router.navigate([CONSTANTS.ROUTES.SETTINGS.PRIVACY]),
     },
   ];
 }
-
