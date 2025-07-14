@@ -60,20 +60,29 @@ export class MotherComponent implements OnInit {
       });
   }
   next() {
-    if (this.form.invalid) return;
+    this.saveAndNavigate(CONSTANTS.ROUTES.ONBOARDING.MATERNAL_GRANDPARENTS);
+  }
 
-    const raw = this.form.value as Required<
-      Pick<
-        FamilyMember,
-        'firstName' | 'lastName' | 'gender' | 'dob' | 'isAlive'
-      >
-    > &
-      Partial<FamilyMember>;
+  back() {
+    this.saveAndNavigate(CONSTANTS.ROUTES.ONBOARDING.OWNER);
+  }
 
+  private saveAndNavigate(route: string) {
+    if (this.form.invalid) {
+      this.router.navigate([route]); 
+      return;
+    }
+
+    const raw = this.form.value;
     const mother: FamilyMember = {
-      ...raw,
+      firstName: raw.firstName ?? '',
+      middleName: raw.middleName ?? '',
+      lastName: raw.lastName ?? '',
+      gender: raw.gender ?? '',
+      dob: raw.dob!,
       dod: raw.isAlive ? undefined : raw.dod || undefined,
-      photoUrl: this.photoUrl() || '',
+      isAlive: raw.isAlive ?? true,
+      photoUrl: this.photoUrl() ?? '',
       role: Roles.MOTHER,
     };
 
@@ -83,15 +92,11 @@ export class MotherComponent implements OnInit {
 
     save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.familyState.mother.set(mother);
-      this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.MATERNAL_GRANDPARENTS]);
+      this.router.navigate([route]);
     });
   }
 
-  back() {
-    this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.OWNER]);
-  }
-
   onPhotoClear() {
-   this.photoUrl.set(null);
+    this.photoUrl.set(null);
   }
 }

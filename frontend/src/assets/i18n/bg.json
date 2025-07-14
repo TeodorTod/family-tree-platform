@@ -26,7 +26,6 @@
     "OWNER": "Твоите данни",
     "MOTHER": "Данни за твоята майка",
     "FATHER": "Данни за твоя баща",
-    "MOTHER_PARENTS": "Данни за родителите на майка ти",
     "FATHER_PARENTS": "Данни за родителите на баща ти",
     "FIRST_NAME": "Име",
     "MIDDLE_NAME": "Презиме",
@@ -37,7 +36,10 @@
     "GENDER": "Пол",
     "FORWARD": "Напред",
     "BACK": "Назад",
-    "IS_ALIVE": "Жив/a ли е?"
+    "IS_ALIVE": "Жив/a ли е?",
+    "MATERNAL_GRANDPARENTS": "Данни за родителите на майка ти",
+    "MATERNAL_GRANDMOTHER": "Данни за баба ти",
+    "MATERNAL_GRANDFATHER": "Данни за дядо ти"
   },
 
   "ADD": {

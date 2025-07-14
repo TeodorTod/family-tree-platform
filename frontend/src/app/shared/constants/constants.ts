@@ -34,8 +34,11 @@ export class CONSTANTS {
       OWNER: '/onboarding/owner',
       MOTHER: '/onboarding/mother',
       MATERNAL_GRANDPARENTS: '/onboarding/maternal-grandparents',
+      FATHER: '/onboarding/father',
+      PATERNAL_GRANDPARENTS: '/onboarding/paternal-grandparents',
     },
   };
+
   static readonly INFO_OWNER = 'INFO.OWNER';
   static readonly INFO_MOTHER = 'INFO.MOTHER';
   static readonly INFO_FATHER = 'INFO.FATHER';
@@ -51,6 +54,9 @@ export class CONSTANTS {
   static readonly INFO_FORWARD = 'INFO.FORWARD';
   static readonly INFO_BACK = 'INFO.BACK';
   static readonly INFO_IS_ALIVE = 'INFO.IS_ALIVE';
+  static readonly INFO_MATERNAL_GRANDPARENTS = 'INFO.MATERNAL_GRANDPARENTS';
+  static readonly INFO_MATERNAL_GRANDMOTHER = 'INFO.MATERNAL_GRANDMOTHER';
+  static readonly INFO_MATERNAL_GRANDFATHER = 'INFO.MATERNAL_GRANDFATHER';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

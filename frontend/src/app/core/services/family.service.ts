@@ -62,7 +62,7 @@ export class FamilyService {
     return this.http.put(`${this.api}/family-members/${role}`, data);
   }
 
- 
+
   saveMemberByRole(role: string, data: FamilyMember): Observable<any> {
     return new Observable((observer) => {
       this.updateMemberByRole(role, data).subscribe({

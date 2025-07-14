@@ -28,6 +28,10 @@ body {
   width: 100%;
 }
 
+.align-center {
+  text-align: center;
+}
+
 /* === Spacing Utilities === */
 .m-0 {
   margin: 0 !important;
@@ -304,3 +308,16 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .mathernal-grandparents-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .maternal-parents-buttons {
+    padding-bottom: 20px;
+    padding-left: 50px;
+    padding-right: 50px;
+    align-items: center;
+  }
+}
