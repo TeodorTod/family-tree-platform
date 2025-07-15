@@ -18,6 +18,11 @@ import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 export class FamilyMembersController {
   constructor(private familyService: FamilyMembersService) {}
 
+  @Get('my-tree')
+  getMyTree(@Req() req: any) {
+    return this.familyService.getAllFamilyMembers(req.user?.sub);
+  }
+
   @Post(':role')
   createByRole(
     @Param('role') role: string,

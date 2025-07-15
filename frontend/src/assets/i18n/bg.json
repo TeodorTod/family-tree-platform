@@ -38,6 +38,7 @@
     "BACK": "Назад",
     "IS_ALIVE": "Жив/a ли е?",
     "MATERNAL_GRANDPARENTS": "Данни за родителите на майка ти",
+    "PATERNAL_GRANDPARENTS": "Данни за родителите на баща ти",
     "MATERNAL_GRANDMOTHER": "Данни за баба ти",
     "MATERNAL_GRANDFATHER": "Данни за дядо ти"
   },

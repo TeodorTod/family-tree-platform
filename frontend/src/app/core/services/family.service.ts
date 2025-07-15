@@ -39,7 +39,7 @@ export class FamilyService {
   }
 
   getMyFamily(): Observable<FamilyMember[]> {
-    return this.http.get<FamilyMember[]>(`${this.api}/family-members/my`);
+    return this.http.get<FamilyMember[]>(`${this.api}/family-members/my-tree`);
   }
 
   createFamilyMember(data: FamilyMember) {
@@ -61,7 +61,6 @@ export class FamilyService {
   updateMemberByRole(role: string, data: Partial<FamilyMember>) {
     return this.http.put(`${this.api}/family-members/${role}`, data);
   }
-
 
   saveMemberByRole(role: string, data: FamilyMember): Observable<any> {
     return new Observable((observer) => {

@@ -1,1 +1,231 @@
-<p>paternal-grandparents works!</p>
+<h1 class="d-flex justify-center align-center">
+  {{ CONSTANTS.INFO_PATERNAL_GRANDPARENTS | translate }}
+</h1>
+
+<div
+  class="d-flex justify-center w-full gap-5 mathernal-grandparents-container"
+>
+  <form
+    [formGroup]="grandmotherForm"
+    class="initial-forms d-flex justify-center flex-column align-items-center gap-2 w-full"
+  >
+    <h2 class="d-flex justify-center">
+      {{ CONSTANTS.INFO_MATERNAL_GRANDMOTHER | translate }}
+    </h2>
+
+    <div class="floating-field">
+      <input pInputText formControlName="firstName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="middleName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="lastName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+    </div>
+
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <p-checkbox
+        binary="true"
+        formControlName="isAlive"
+        inputId="grandmotherAlive"
+      ></p-checkbox>
+      <label for="grandmotherAlive" class="mb-0">{{
+        CONSTANTS.INFO_IS_ALIVE | translate
+      }}</label>
+    </div>
+
+    @if (!grandmotherForm.value.isAlive) {
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('dod')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+      <p-datepicker
+        formControlName="dod"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <div
+      class="floating-field file-label"
+      [class.active]="grandmotherPhotoUrl()"
+    >
+      <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
+
+      @if (grandmotherPhotoUrl()) {
+      <div class="photo-preview-container">
+        <img
+          [src]="apiUrl + grandmotherPhotoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
+        />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="clearPhoto(Roles.PATERNAL_GRANDMOTHER)"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+      } @else {
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDMOTHER)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
+      }
+    </div>
+  </form>
+
+  <form
+    [formGroup]="grandfatherForm"
+    class="initial-forms d-flex justify-center flex-column align-items-center gap-2 w-full mt-6"
+  >
+    <h2 class="d-flex justify-center">
+      {{ CONSTANTS.INFO_MATERNAL_GRANDFATHER | translate }}
+    </h2>
+
+    <div class="floating-field">
+      <input pInputText formControlName="firstName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="middleName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="lastName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+    </div>
+
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <p-checkbox
+        binary="true"
+        formControlName="isAlive"
+        inputId="grandfatherAlive"
+      ></p-checkbox>
+      <label for="grandfatherAlive" class="mb-0">{{
+        CONSTANTS.INFO_IS_ALIVE | translate
+      }}</label>
+    </div>
+
+    @if (!grandfatherForm.value.isAlive) {
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('dod')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+      <p-datepicker
+        formControlName="dod"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <div
+      class="floating-field file-label"
+      [class.active]="grandfatherPhotoUrl()"
+    >
+      <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
+
+      @if (grandfatherPhotoUrl()) {
+      <div class="photo-preview-container">
+        <img
+          [src]="apiUrl + grandfatherPhotoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
+        />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="clearPhoto(Roles.PATERNAL_GRANDFATHER)"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+      } @else {
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDFATHER)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
+      }
+    </div>
+  </form>
+</div>
+
+<!-- Navigation Buttons -->
+<div class="d-flex justify-center gap-5 maternal-parents-buttons">
+  <button
+    pButton
+    type="button"
+    label="{{ CONSTANTS.INFO_BACK | translate }}"
+    icon="pi pi-arrow-left"
+    (click)="back()"
+    class="p-button-secondary max-w-360 f-width"
+  ></button>
+
+  <button
+    pButton
+    type="button"
+    label="{{ CONSTANTS.INFO_FORWARD | translate }}"
+    icon="pi pi-arrow-right"
+    (click)="save()"
+    class="p-button-primary max-w-360 f-width"
+    [disabled]="!grandmotherForm.valid || !grandfatherForm.valid"
+  ></button>
+</div>

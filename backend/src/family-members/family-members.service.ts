@@ -19,7 +19,7 @@ export class FamilyMembersService {
         dod: dto.dod ? new Date(dto.dod) : undefined,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
-        role: dto.role, 
+        role: dto.role,
       },
     });
   }
@@ -47,6 +47,13 @@ export class FamilyMembersService {
     return this.prisma.familyMember.update({
       where: { id: existing.id },
       data: { ...dto, role: role.toLowerCase(), userId },
+    });
+  }
+
+  async getAllFamilyMembers(userId: string) {
+    return this.prisma.familyMember.findMany({
+      where: { userId },
+      orderBy: { dob: 'asc' },
     });
   }
 }

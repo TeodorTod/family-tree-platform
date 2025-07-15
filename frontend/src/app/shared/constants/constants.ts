@@ -21,6 +21,7 @@ export class CONSTANTS {
   static readonly AUTH_LOGIN_ERROR = 'AUTH.LOGIN_ERROR';
 
   static readonly ROUTES = {
+    HOME: '',
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
     TREE: '/tree',
@@ -55,6 +56,7 @@ export class CONSTANTS {
   static readonly INFO_BACK = 'INFO.BACK';
   static readonly INFO_IS_ALIVE = 'INFO.IS_ALIVE';
   static readonly INFO_MATERNAL_GRANDPARENTS = 'INFO.MATERNAL_GRANDPARENTS';
+  static readonly INFO_PATERNAL_GRANDPARENTS = 'INFO.PATERNAL_GRANDPARENTS';
   static readonly INFO_MATERNAL_GRANDMOTHER = 'INFO.MATERNAL_GRANDMOTHER';
   static readonly INFO_MATERNAL_GRANDFATHER = 'INFO.MATERNAL_GRANDFATHER';
 

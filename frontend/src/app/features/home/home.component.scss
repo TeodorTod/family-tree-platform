@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.org-chart-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+::ng-deep .p-organizationchart {
+  transform: rotate(180deg);
+  overflow: visible;
+}
+
+::ng-deep .p-organizationchart-node-content,
+::ng-deep .p-organizationchart-node,
+::ng-deep .p-organizationchart-line-down,
+::ng-deep .p-organizationchart-line-top,
+::ng-deep .p-organizationchart-toggler {
+  transform: rotate(180deg);
+}
+
+@media screen and (max-width: 768px) {
+  ::ng-deep .p-organizationchart-table {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  ::ng-deep .p-organizationchart-node {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  ::ng-deep .p-organizationchart-line-down,
+  ::ng-deep .p-organizationchart-line-top,
+  ::ng-deep .p-organizationchart-line-left,
+  ::ng-deep .p-organizationchart-line-right {
+    display: none !important;
+  }
+
+  ::ng-deep .p-organizationchart-node-content {
+    width: 90vw !important;
+  }
+}

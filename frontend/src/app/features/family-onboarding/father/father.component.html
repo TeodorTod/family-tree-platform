@@ -1,1 +1,112 @@
-<p>father works!</p>
+<h1 class="d-flex justify-center">{{ CONSTANTS.INFO_FATHER | translate }}</h1>
+
+<div class="d-flex justify-center w-full">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="next()"
+    class="initial-forms d-flex justify-center flex-column align-items-center gap-2 w-full"
+  >
+    <div class="floating-field">
+      <input pInputText formControlName="firstName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="middleName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field">
+      <input pInputText formControlName="lastName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+    </div>
+
+    <div class="floating-field" [class.active]="form.get('dob')?.value">
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        placeholder=" "
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+  <p-checkbox
+    binary="true"
+    formControlName="isAlive"
+    inputId="isAlive"
+  ></p-checkbox>
+  <label for="isAlive" class="mb-0">{{ CONSTANTS.INFO_IS_ALIVE | translate }}</label>
+</div>
+
+    @if (!form.value.isAlive) {
+    <div class="floating-field" [class.active]="form.get('dod')?.value">
+      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+      <p-datepicker
+        formControlName="dod"
+        placeholder=" "
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <div class="floating-field file-label" [class.active]="photoUrl()">
+      <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
+
+      @if (photoUrl()) {
+      <div class="photo-preview-container">
+        <img
+          [src]="apiUrl + photoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
+        />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="onPhotoClear()"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+      } @else {
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="onPhotoUpload($event)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
+      }
+    </div>
+
+    <div class="d-flex justify-content-between mt-4 w-full gap-2">
+      <button
+        pButton
+        type="button"
+        label="{{ CONSTANTS.INFO_BACK | translate }}"
+        icon="pi pi-arrow-left"
+        (click)="back()"
+        class="p-button-secondary f-width"
+      ></button>
+
+      <button
+        pButton
+        type="submit"
+        label="{{ CONSTANTS.INFO_FORWARD | translate }}"
+        icon="pi pi-arrow-right"
+        [disabled]="form.invalid"
+        class="p-button-primary f-width"
+      ></button>
+    </div>
+  </form>
+</div>
