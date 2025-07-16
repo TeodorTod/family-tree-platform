@@ -1,139 +1,217 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
-import { CONSTANTS } from '../../shared/constants/constants';
-import { TreeNode } from 'primeng/api';
+// home.component.ts
+
+import {
+  Component,
+  ElementRef,
+  AfterViewInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
+import cytoscape, { ElementDefinition } from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
 import { FamilyMember } from '../../shared/models/family-member.model';
-import { Roles } from '../../shared/enums/roles.enum';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
-  CONSTANTS = CONSTANTS;
+export class HomeComponent implements AfterViewInit {
+  @ViewChild('cy', { static: true }) cyRef!: ElementRef<HTMLElement>;
   private familyService = inject(FamilyService);
+  cy?: cytoscape.Core;
 
-  selectedNodes!: TreeNode[];
-  data: TreeNode[] = [];
+  ngAfterViewInit(): void {
+    this.familyService.getMyFamily().subscribe((members) => {
+      this.renderGraph(members);
+    });
+  }
 
-ngOnInit(): void {
-  this.familyService.getMyFamily().subscribe({
-    next: (members) => {
-
-      if (!members || !Array.isArray(members)) {
-        this.data = [];
-        return;
-      }
-
-      this.data = this.buildTree(members);
+  zoomIn(): void {
+    if (this.cy) {
+      const newZoom = this.cy.zoom() * 1.2;
+      this.cy.zoom({ level: newZoom, renderedPosition: { x: 0, y: 0 } });
+      this.cy.center();
     }
-  });
-}
+  }
 
-private buildTree(members: FamilyMember[]): TreeNode[] {
-  if (!members || members.length === 0) return [];
+  zoomOut(): void {
+    if (this.cy) {
+      const newZoom = this.cy.zoom() / 1.2;
+      this.cy.zoom({ level: newZoom, renderedPosition: { x: 0, y: 0 } });
+      this.cy.center();
+    }
+  }
 
-  const photo = (m: FamilyMember | null) =>
-    m?.photoUrl ? `${environment.apiUrl}${m.photoUrl}` : '';
-  const byRole = (role: Roles) => members.find((m) => m.role === role) ?? null;
+  private renderGraph(members: FamilyMember[]) {
+    // 1) Group into generations
+    const grandMaternal = members.filter(
+      (m) =>
+        m.role === 'maternal_grandmother' || m.role === 'maternal_grandfather'
+    );
+    const grandPaternal = members.filter(
+      (m) =>
+        m.role === 'paternal_grandmother' || m.role === 'paternal_grandfather'
+    );
+    const parents = members.filter(
+      (m) => m.role === 'mother' || m.role === 'father'
+    );
+    const ownerArr = members.filter((m) => m.role === 'owner');
 
-  const maternalGrandmother = byRole(Roles.MATERNAL_GRANDMOTHER);
-  const maternalGrandfather = byRole(Roles.MATERNAL_GRANDFATHER);
-  const paternalGrandmother = byRole(Roles.PATERNAL_GRANDMOTHER);
-  const paternalGrandfather = byRole(Roles.PATERNAL_GRANDFATHER);
-  const mother = byRole(Roles.MOTHER);
-  const father = byRole(Roles.FATHER);
-  const owner = byRole(Roles.OWNER);
+    // 2) Compute parent & owner positions evenly
+    const container = this.cyRef.nativeElement;
+    const W = container.clientWidth;
+    const H = container.clientHeight;
+    const tierYs = {
+      grandparents: H * 0.2,
+      parents: H * 0.4,
+      owner: H * 0.55,
+    };
 
-  return [
-    {
-      expanded: true,
-      type: 'person',
-      data: {
-        name: owner ? `${owner.firstName} ${owner.lastName}` : '',
-        title: 'You',
-        image: photo(owner),
+    const computeEven = (arr: any[], y: number) =>
+      arr.map((m, i) => ({
+        role: m.role,
+        x: ((i + 1) * W * 0.4) / (arr.length + 1) + W * 0.2,
+        y,
+      }));
+
+    const parentPosArr = computeEven(parents, tierYs.parents);
+    
+
+    // 3) Compute grandparents positions around their parent
+    // find mother/father x
+    const posMap = new Map<string, { x: number; y: number }>();
+    parentPosArr.forEach((p) => posMap.set(p.role, { x: p.x, y: p.y }));
+
+    const motherX = posMap.get('mother')?.x ?? W * 0.33;
+    const fatherX = posMap.get('father')?.x ?? W * 0.66;
+    const offset = Math.min(60, Math.abs(fatherX - motherX) / 2);
+    const ownerX = (motherX + fatherX) / 2;
+const ownerPosArr = ownerArr.map((m) => ({
+  role: m.role,
+  x: ownerX,
+  y: tierYs.owner,
+}));
+
+    const grandMatPos = grandMaternal.map((g, i) => ({
+      role: g.role,
+      x: motherX + (i === 0 ? -offset : offset),
+      y: tierYs.grandparents,
+    }));
+    const grandPatPos = grandPaternal.map((g, i) => ({
+      role: g.role,
+      x: fatherX + (i === 0 ? -offset : offset),
+      y: tierYs.grandparents,
+    }));
+
+    // 4) Merge all positions
+    [...parentPosArr, ...ownerPosArr, ...grandMatPos, ...grandPatPos].forEach(
+      (p) => posMap.set(p.role, { x: p.x, y: p.y })
+    );
+
+    // 5) Build Cytoscape elements
+    const elements: ElementDefinition[] = [];
+
+    // nodes
+    members.forEach((m) => {
+      const pos = posMap.get(m.role)!;
+      elements.push({
+        data: {
+          id: m.role,
+          label: `${m.firstName} ${m.lastName}\n${new Date(
+            m.dob
+          ).getFullYear()}`,
+          gender: m.gender?.toLowerCase(),
+          photo: m.photoUrl
+            ? `${environment.apiUrl}${m.photoUrl}`
+            : 'assets/user.svg',
+        },
+        position: { x: pos.x, y: pos.y },
+      });
+    });
+
+    // edges
+    const addEdge = (s: string, t: string, opts = {}) => {
+      if (posMap.has(s) && posMap.has(t)) {
+        elements.push({ data: { source: s, target: t, ...opts } });
+      }
+    };
+
+    // maternal grandparents → mother
+    addEdge('maternal_grandmother', 'mother');
+    addEdge('maternal_grandfather', 'mother');
+
+    // paternal grandparents → father
+    addEdge('paternal_grandmother', 'father');
+    addEdge('paternal_grandfather', 'father');
+
+    // mother ↔ father (continuous)
+    addEdge('mother', 'father');
+
+    // parents → owner
+    addEdge('mother', 'owner');
+    addEdge('father', 'owner');
+    // 6) Render with preset layout
+    this.cy = cytoscape({
+      container: this.cyRef.nativeElement,
+      elements,
+      layout: {
+        name: 'preset',
+        fit: true,
+        padding: 20,
       },
-      children: [
+      style: [
         {
-          expanded: true,
-          type: 'person',
-          data: {
-            name: mother ? `${mother.firstName} ${mother.lastName}` : '',
-            title: 'Mother',
-            image: photo(mother),
+          selector: 'node',
+          style: {
+            label: 'data(label)',
+            'text-wrap': 'wrap',
+            'text-max-width': '100px',
+            'text-valign': 'bottom',
+            'text-halign': 'center',
+            'font-size': '13px',
+            'background-image': 'data(photo)',
+            'background-fit': 'cover',
+            'background-opacity': 0.9,
+            width: '60px',
+            height: '60px',
+            shape: 'ellipse',
+            color: '#fff',
+            'text-outline-color': '#000',
+            'text-outline-width': 2,
+            'border-width': 2,
+            'border-color': '#888',
           },
-          children: [
-            {
-              expanded: true,
-              type: 'person',
-              data: {
-                name: maternalGrandmother
-                  ? `${maternalGrandmother.firstName} ${maternalGrandmother.lastName}`
-                  : '',
-                title: 'Maternal Grandmother',
-                image: photo(maternalGrandmother),
-              },
-              children: [],
-            },
-            {
-              expanded: true,
-              type: 'person',
-              data: {
-                name: maternalGrandfather
-                  ? `${maternalGrandfather.firstName} ${maternalGrandfather.lastName}`
-                  : '',
-                title: 'Maternal Grandfather',
-                image: photo(maternalGrandfather),
-              },
-              children: [],
-            },
-          ],
         },
         {
-          expanded: true,
-          type: 'person',
-          data: {
-            name: father ? `${father.firstName} ${father.lastName}` : '',
-            title: 'Father',
-            image: photo(father),
+          selector: 'node[gender="male"]',
+          style: { 'border-color': '#51a7f9' },
+        },
+        {
+          selector: 'node[gender="female"]',
+          style: { 'border-color': '#f772b0' },
+        },
+        { selector: 'node[id="owner"]', style: { 'border-color': '#007bff' } },
+        {
+          selector: 'edge',
+          style: {
+            width: 2,
+            'line-color': '#ccc',
+            'target-arrow-shape': 'triangle',
           },
-          children: [
-            {
-              expanded: true,
-              type: 'person',
-              data: {
-                name: paternalGrandmother
-                  ? `${paternalGrandmother.firstName} ${paternalGrandmother.lastName}`
-                  : '',
-                title: 'Paternal Grandmother',
-                image: photo(paternalGrandmother),
-              },
-              children: [],
-            },
-            {
-              expanded: true,
-              type: 'person',
-              data: {
-                name: paternalGrandfather
-                  ? `${paternalGrandfather.firstName} ${paternalGrandfather.lastName}`
-                  : '',
-                title: 'Paternal Grandfather',
-                image: photo(paternalGrandfather),
-              },
-              children: [],
-            },
-          ],
         },
       ],
-    },
-  ];
-}
+    });
+    this.cy.zoom(0.9);
+    this.cy.center();
+  }
 
-
+  private getNodeSize(): number {
+    const width = window.innerWidth;
+    if (width < 600) return 60; // Mobile
+    if (width < 1024) return 90; // Tablet
+    return 110; // Desktop
+  }
 }
