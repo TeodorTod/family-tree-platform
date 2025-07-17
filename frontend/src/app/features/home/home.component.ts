@@ -192,12 +192,12 @@ private renderGraph(members: FamilyMember[]) {
           'text-max-width': '80px',
           'text-valign':    'bottom',
           'text-halign':    'center',
-          'font-size':      isMobile ? '10px' : '13px',
+          'font-size':      isMobile ? '12px' : '13px',
           'background-image':'data(photo)',
           'background-fit':  'cover',
           'background-opacity':0.9,
-          width:            isMobile ? '50px' : '60px',
-          height:           isMobile ? '50px' : '60px',
+          width:            isMobile ? '60px' : '60px',
+          height:           isMobile ? '60px' : '60px',
           shape:            'ellipse',
           color:            '#fff',
           'text-outline-color':'#000',
@@ -224,6 +224,9 @@ private renderGraph(members: FamilyMember[]) {
   // final zoom & center
   this.cy.zoom(isMobile ? 0.7 : 0.9);
   this.cy.center();
+
+  const shiftY = container.clientHeight * 0.2;
+  this.cy.panBy({ x: 0, y: shiftY });
 }
 
 
