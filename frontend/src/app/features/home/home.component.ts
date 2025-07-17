@@ -45,173 +45,186 @@ export class HomeComponent implements AfterViewInit {
     }
   }
 
-  private renderGraph(members: FamilyMember[]) {
-    // 1) Group into generations
-    const grandMaternal = members.filter(
-      (m) =>
-        m.role === 'maternal_grandmother' || m.role === 'maternal_grandfather'
-    );
-    const grandPaternal = members.filter(
-      (m) =>
-        m.role === 'paternal_grandmother' || m.role === 'paternal_grandfather'
-    );
-    const parents = members.filter(
-      (m) => m.role === 'mother' || m.role === 'father'
-    );
-    const ownerArr = members.filter((m) => m.role === 'owner');
+private renderGraph(members: FamilyMember[]) {
+  // ───────────────────────────────────────────────────────────────
+  // 1) Split into generations
+  // ───────────────────────────────────────────────────────────────
+  const maternalGP = members.filter(m =>
+    m.role === 'maternal_grandmother' || m.role === 'maternal_grandfather'
+  );
+  const paternalGP = members.filter(m =>
+    m.role === 'paternal_grandmother' || m.role === 'paternal_grandfather'
+  );
+  const parents = members.filter(m =>
+    m.role === 'mother' || m.role === 'father'
+  );
+  const ownerArr = members.filter(m => m.role === 'owner');
 
-    // 2) Compute parent & owner positions evenly
-    const container = this.cyRef.nativeElement;
-    const W = container.clientWidth;
-    const H = container.clientHeight;
-    const tierYs = {
-      grandparents: H * 0.2,
-      parents: H * 0.4,
-      owner: H * 0.55,
-    };
+  // ───────────────────────────────────────────────────────────────
+  // 2) Measure container + detect mobile
+  // ───────────────────────────────────────────────────────────────
+  const container = this.cyRef.nativeElement;
+  const W = container.clientWidth;
+  const H = container.clientHeight;
+  const isMobile = W < 1400;
 
-    const computeEven = (arr: any[], y: number) =>
-      arr.map((m, i) => ({
-        role: m.role,
-        x: ((i + 1) * W * 0.4) / (arr.length + 1) + W * 0.2,
-        y,
-      }));
-
-    const parentPosArr = computeEven(parents, tierYs.parents);
-    
-
-    // 3) Compute grandparents positions around their parent
-    // find mother/father x
-    const posMap = new Map<string, { x: number; y: number }>();
-    parentPosArr.forEach((p) => posMap.set(p.role, { x: p.x, y: p.y }));
-
-    const motherX = posMap.get('mother')?.x ?? W * 0.33;
-    const fatherX = posMap.get('father')?.x ?? W * 0.66;
-    const offset = Math.min(60, Math.abs(fatherX - motherX) / 2);
-    const ownerX = (motherX + fatherX) / 2;
-const ownerPosArr = ownerArr.map((m) => ({
-  role: m.role,
-  x: ownerX,
-  y: tierYs.owner,
-}));
-
-    const grandMatPos = grandMaternal.map((g, i) => ({
-      role: g.role,
-      x: motherX + (i === 0 ? -offset : offset),
-      y: tierYs.grandparents,
-    }));
-    const grandPatPos = grandPaternal.map((g, i) => ({
-      role: g.role,
-      x: fatherX + (i === 0 ? -offset : offset),
-      y: tierYs.grandparents,
+  // ───────────────────────────────────────────────────────────────
+  // 3) Vertical tiers: keep desktop as you had, squash for mobile
+  // ───────────────────────────────────────────────────────────────
+ const tierYs = {
+  grandparents: H * 0.10,       // up a little
+  parents:      isMobile 
+                   ? H * 0.22  // really pull up on mobile
+                   : H * 0.28, // tighter on desktop as well
+  owner:        isMobile 
+                   ? H * 0.32  // bring owner closer to parents
+                   : H * 0.46, // same on desktop
+};
+  // ───────────────────────────────────────────────────────────────
+  // 4) Two different “even‐spread” functions:
+  //    - desktop spreads into 40% of canvas (centered)
+  //    - mobile spans the full width
+  // ───────────────────────────────────────────────────────────────
+  const spreadDesktop = (arr: any[], y: number) =>
+    arr.map((m, i) => ({
+      role: m.role,
+      x: ((i + 1) * (W * 0.4)) / (arr.length + 1) + (W * 0.3),
+      y,
     }));
 
-    // 4) Merge all positions
-    [...parentPosArr, ...ownerPosArr, ...grandMatPos, ...grandPatPos].forEach(
-      (p) => posMap.set(p.role, { x: p.x, y: p.y })
-    );
+  const spreadMobile = (arr: any[], y: number) =>
+    arr.map((m, i) => ({
+      role: m.role,
+      x: ((i + 1) * W) / (arr.length + 1),
+      y,
+    }));
 
-    // 5) Build Cytoscape elements
-    const elements: ElementDefinition[] = [];
+  // pick the right one
+  const parentPosArr = isMobile
+    ? spreadMobile(parents, tierYs.parents)
+    : spreadDesktop(parents, tierYs.parents);
 
-    // nodes
-    members.forEach((m) => {
-      const pos = posMap.get(m.role)!;
-      elements.push({
-        data: {
-          id: m.role,
-          label: `${m.firstName} ${m.lastName}\n${new Date(
-            m.dob
-          ).getFullYear()}`,
-          gender: m.gender?.toLowerCase(),
-          photo: m.photoUrl
-            ? `${environment.apiUrl}${m.photoUrl}`
-            : 'assets/user.svg',
-        },
-        position: { x: pos.x, y: pos.y },
-      });
-    });
+  // ───────────────────────────────────────────────────────────────
+  // 5) Owner always in exact center between mum & dad
+  // ───────────────────────────────────────────────────────────────
+  const motherX = parentPosArr.find(p => p.role === 'mother')!.x;
+  const fatherX = parentPosArr.find(p => p.role === 'father')!.x;
+  const ownerPosArr = ownerArr.map(m => ({
+    role: m.role,
+    x: (motherX + fatherX) / 2,
+    y: tierYs.owner,
+  }));
 
-    // edges
-    const addEdge = (s: string, t: string, opts = {}) => {
-      if (posMap.has(s) && posMap.has(t)) {
-        elements.push({ data: { source: s, target: t, ...opts } });
-      }
-    };
+  // ───────────────────────────────────────────────────────────────
+  // 6) Grandparents offset around their child
+  // ───────────────────────────────────────────────────────────────
+  const gpOffset = isMobile
+    ? W * 0.08           // 8% of width on mobile
+    : Math.min(60, Math.abs(fatherX - motherX) / 2);
 
-    // maternal grandparents → mother
-    addEdge('maternal_grandmother', 'mother');
-    addEdge('maternal_grandfather', 'mother');
+  const grandMatPos = maternalGP.map((g, i) => ({
+    role: g.role,
+    x: motherX + (i === 0 ? -gpOffset : gpOffset),
+    y: tierYs.grandparents,
+  }));
+  const grandPatPos = paternalGP.map((g, i) => ({
+    role: g.role,
+    x: fatherX + (i === 0 ? -gpOffset : gpOffset),
+    y: tierYs.grandparents,
+  }));
 
-    // paternal grandparents → father
-    addEdge('paternal_grandmother', 'father');
-    addEdge('paternal_grandfather', 'father');
+  // ───────────────────────────────────────────────────────────────
+  // 7) Build a role→position map
+  // ───────────────────────────────────────────────────────────────
+  const posMap = new Map<string,{x:number,y:number}>();
+  parentPosArr.forEach(p => posMap.set(p.role,   { x:p.x, y:p.y }));
+  ownerPosArr .forEach(p => posMap.set(p.role,   { x:p.x, y:p.y }));
+  grandMatPos .forEach(p => posMap.set(p.role,   { x:p.x, y:p.y }));
+  grandPatPos .forEach(p => posMap.set(p.role,   { x:p.x, y:p.y }));
 
-    // mother ↔ father (continuous)
-    addEdge('mother', 'father');
+  // ───────────────────────────────────────────────────────────────
+  // 8) Build Cytoscape elements
+  // ───────────────────────────────────────────────────────────────
+  const elements: ElementDefinition[] = [];
 
-    // parents → owner
-    addEdge('mother', 'owner');
-    addEdge('father', 'owner');
-    // 6) Render with preset layout
-    this.cy = cytoscape({
-      container: this.cyRef.nativeElement,
-      elements,
-      layout: {
-        name: 'preset',
-        fit: true,
-        padding: 20,
+  // 8a) Nodes
+  members.forEach(m => {
+    const { x, y } = posMap.get(m.role)!;
+    elements.push({
+      data: {
+        id:    m.role,
+        label: `${m.firstName} ${m.lastName}\n${new Date(m.dob).getFullYear()}`,
+        gender:m.gender?.toLowerCase(),
+        photo: m.photoUrl ? `${environment.apiUrl}${m.photoUrl}` : 'assets/user.svg',
       },
-      style: [
-        {
-          selector: 'node',
-          style: {
-            label: 'data(label)',
-            'text-wrap': 'wrap',
-            'text-max-width': '100px',
-            'text-valign': 'bottom',
-            'text-halign': 'center',
-            'font-size': '13px',
-            'background-image': 'data(photo)',
-            'background-fit': 'cover',
-            'background-opacity': 0.9,
-            width: '60px',
-            height: '60px',
-            shape: 'ellipse',
-            color: '#fff',
-            'text-outline-color': '#000',
-            'text-outline-width': 2,
-            'border-width': 2,
-            'border-color': '#888',
-          },
-        },
-        {
-          selector: 'node[gender="male"]',
-          style: { 'border-color': '#51a7f9' },
-        },
-        {
-          selector: 'node[gender="female"]',
-          style: { 'border-color': '#f772b0' },
-        },
-        { selector: 'node[id="owner"]', style: { 'border-color': '#007bff' } },
-        {
-          selector: 'edge',
-          style: {
-            width: 2,
-            'line-color': '#ccc',
-            'target-arrow-shape': 'triangle',
-          },
-        },
-      ],
+      position: { x, y }
     });
-    this.cy.zoom(0.9);
-    this.cy.center();
-  }
+  });
 
-  private getNodeSize(): number {
-    const width = window.innerWidth;
-    if (width < 600) return 60; // Mobile
-    if (width < 1024) return 90; // Tablet
-    return 110; // Desktop
-  }
+  // 8b) Edges
+  const connect = (s:string,t:string) => {
+    if (posMap.has(s) && posMap.has(t)) {
+      elements.push({ data:{ source:s, target:t } });
+    }
+  };
+  connect('maternal_grandmother','mother');
+  connect('maternal_grandfather','mother');
+  connect('paternal_grandmother','father');
+  connect('paternal_grandfather','father');
+  connect('mother','father');
+  connect('mother','owner');
+  connect('father','owner');
+
+  // ───────────────────────────────────────────────────────────────
+  // 9) Render Cytoscape exactly as before on desktop,
+  //    but with the new positions and slightly tweaked zoom & node‐sizes on mobile
+  // ───────────────────────────────────────────────────────────────
+  this.cy = cytoscape({
+    container,
+    elements,
+    layout: { name:'preset', fit:true, padding:20 },
+    style: [
+      {
+        selector:'node',
+        style:{
+          label:            'data(label)',
+          'text-wrap':      'wrap',
+          'text-max-width': '80px',
+          'text-valign':    'bottom',
+          'text-halign':    'center',
+          'font-size':      isMobile ? '10px' : '13px',
+          'background-image':'data(photo)',
+          'background-fit':  'cover',
+          'background-opacity':0.9,
+          width:            isMobile ? '50px' : '60px',
+          height:           isMobile ? '50px' : '60px',
+          shape:            'ellipse',
+          color:            '#fff',
+          'text-outline-color':'#000',
+          'text-outline-width':2,
+          'border-width':   2,
+          'border-color':   '#888'
+        }
+      },
+      { selector:'node[gender="male"]',   style:{ 'border-color':'#51a7f9' } },
+      { selector:'node[gender="female"]', style:{ 'border-color':'#f772b0' } },
+      { selector:'node[id="owner"]',      style:{ 'border-color':'#007bff' } },
+      {
+        selector:'edge',
+           style: {
+          width:            2,
+          'line-color':     '#ccc',
+          'curve-style':    'straight',  
+          'target-arrow-shape': 'none'    
+        }
+      }
+    ]
+  });
+
+  // final zoom & center
+  this.cy.zoom(isMobile ? 0.7 : 0.9);
+  this.cy.center();
+}
+
+
 }
