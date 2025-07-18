@@ -16,6 +16,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { PanelModule } from 'primeng/panel';
 import { CheckboxModule } from 'primeng/checkbox';
 import { OrganizationChartModule } from 'primeng/organizationchart';
+import { DropdownModule } from 'primeng/dropdown';
 
 
 export const SHARED_PRIMENG_IMPORTS = [
@@ -36,7 +37,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   DatePickerModule,
   PanelModule,
   CheckboxModule,
-  OrganizationChartModule
+  OrganizationChartModule,
+  DropdownModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

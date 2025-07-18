@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
 import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
+import { CreateRelationshipDto } from './dto/create-relationship.dto';
 
 @Injectable()
 export class FamilyMembersService {
@@ -54,6 +55,17 @@ export class FamilyMembersService {
     return this.prisma.familyMember.findMany({
       where: { userId },
       orderBy: { dob: 'asc' },
+    });
+  }
+
+    async createRelationship(dto: CreateRelationshipDto) {
+    // Optional: verify both members exist & belong to the user
+    return this.prisma.relationship.create({
+      data: {
+        fromMemberId: dto.fromMemberId,
+        toMemberId: dto.toMemberId,
+        type: dto.type,
+      },
     });
   }
 }

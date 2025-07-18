@@ -12,6 +12,7 @@ import { FamilyMembersService } from './family-members.service';
 import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
+import { CreateRelationshipDto } from './dto/create-relationship.dto';
 
 @Controller('family-members')
 @UseGuards(JwtAuthGuard)
@@ -23,6 +24,24 @@ export class FamilyMembersController {
     return this.familyService.getAllFamilyMembers(req.user?.sub);
   }
 
+  @Post()
+  create(@Body() dto: CreateFamilyMemberDto, @Req() req: any) {
+    return this.familyService.createFamilyMember(req.user.sub, dto);
+  }
+
+  @Post('relationships')
+  createRelationship(@Body() dto: CreateRelationshipDto, @Req() req: any) {
+    // (Optional) you could check ownership here:
+    // const userId = req.user.sub;
+    return this.familyService.createRelationship(dto);
+  }
+
+  @Get(':role')
+  getByRole(@Param('role') role: string, @Req() req: any) {
+    const userId = req.user.sub;
+    return this.familyService.getFamilyMemberByRole(userId, role);
+  }
+
   @Post(':role')
   createByRole(
     @Param('role') role: string,
@@ -31,12 +50,6 @@ export class FamilyMembersController {
   ) {
     const userId = req.user.sub;
     return this.familyService.createFamilyMember(userId, { ...dto, role });
-  }
-
-  @Get(':role')
-  getByRole(@Param('role') role: string, @Req() req: any) {
-    const userId = req.user.sub;
-    return this.familyService.getFamilyMemberByRole(userId, role);
   }
 
   @Put(':role')

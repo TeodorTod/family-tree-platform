@@ -84,4 +84,12 @@ export class FamilyService {
       formData
     );
   }
+
+  createRelationship(data: {
+    fromMemberId: string;
+    toMemberId: string;
+    type: string;
+  }) {
+    return this.http.post(`${this.api}/family-members/relationships`, data);
+  }
 }

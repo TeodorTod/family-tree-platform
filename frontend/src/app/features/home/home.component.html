@@ -1,5 +1,28 @@
-<div #cy style="width: 100%; height: 900px;"></div>
+<div #cy style="width: 100%; height: 900px"></div>
 <div class="zoom-controls d-flex gap-2">
   <button (click)="zoomIn()">+</button>
   <button (click)="zoomOut()">−</button>
 </div>
+
+@if(showAddDialog()) {
+<app-add-relative-dialog
+  [visible]="showAddDialog()"
+  [baseMember]="selectedMember()!"
+  (close)="showAddDialog.set(false)"
+  (saved)="handleAddRelative($event)"
+/>
+} @if(hoveredNode()) {
+<div
+  class="node-actions"
+  (click)="handleActionClick($event)"      
+  [ngStyle]="{
+    top: hoveredNode()?.y + 'px',
+    left: hoveredNode()?.x + 'px'
+  }"
+>
+  <button class="action-btn" (click)="openAddDialog(hoveredNode()?.id)">
+    ➕
+  </button>
+  <button class="action-btn" (click)="editMember()">✏️</button>
+</div>
+}

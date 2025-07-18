@@ -40,7 +40,9 @@
     "MATERNAL_GRANDPARENTS": "Данни за родителите на майка ти",
     "PATERNAL_GRANDPARENTS": "Данни за родителите на баща ти",
     "MATERNAL_GRANDMOTHER": "Данни за баба ти",
-    "MATERNAL_GRANDFATHER": "Данни за дядо ти"
+    "MATERNAL_GRANDFATHER": "Данни за дядо ти",
+    "SAVE": "Запази",
+    "CANCEL": "Отказ"
   },
 
   "ADD": {
@@ -51,5 +53,15 @@
     "MALE": "Мъж",
     "FEMALE": "Жена",
     "OTHER": "Друго"
+  },
+
+  "RELATION": {
+    "BROTHER": "Брат",
+    "SISTER": "Сестра",
+    "PARTNER": "Партньор",
+    "SON": "Син",
+    "DAUGHTER": "Дъщеря",
+    "ADD_RELATIVE_HEADER": "Добави роднина",
+    "CHOOSE_RELATION": "Избери връзка"
   }
 }

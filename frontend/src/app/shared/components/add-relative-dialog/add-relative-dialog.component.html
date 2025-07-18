@@ -1,0 +1,86 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [closable]="true"
+  (onHide)="onCancel()"
+  [header]="CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate"
+>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSave()"
+    class="d-flex flex-column gap-3"
+  >
+    <!-- Relation -->
+    <p-dropdown
+      formControlName="relation"
+      [options]="relationOptions"
+      optionLabel="label"
+      optionValue="value"
+      [placeholder]="CONSTANTS.RELATION_CHOOSE_RELATION | translate"
+      class="w-full"
+    ></p-dropdown>
+
+    <!-- First Name -->
+    <div class="floating-field">
+      <input pInputText formControlName="firstName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+    </div>
+
+    <!-- Middle Name -->
+    <div class="floating-field">
+      <input pInputText formControlName="middleName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+    </div>
+
+    <!-- Last Name -->
+    <div class="floating-field">
+      <input pInputText formControlName="lastName" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+    </div>
+
+    <!-- Gender -->
+    <p-dropdown
+      formControlName="gender"
+      [options]="genderOptions"
+      optionLabel="label"
+      optionValue="value"
+      [placeholder]="CONSTANTS.INFO_GENDER | translate"
+      class="w-full"
+    ></p-dropdown>
+
+    <!-- Date of Birth -->
+    <div class="floating-field" [class.active]="form.get('dob')?.value">
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        placeholder=" "
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        appendTo="body"
+        panelStyleClass="calendar-up"
+        class="w-full"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-end gap-2 mt-3 f-width">
+      <button
+        pButton
+        type="button"
+        label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+        class="p-button-secondary f-width"
+        (click)="onCancel()"
+      ></button>
+      <button
+        pButton
+        type="submit"
+        label="{{ CONSTANTS.INFO_SAVE | translate }}"
+        [disabled]="form.invalid"
+        class="f-width"
+      ></button>
+    </div>
+  </form>
+</p-dialog>
