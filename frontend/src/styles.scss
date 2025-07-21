@@ -25,6 +25,19 @@ body {
   overflow: hidden;
 }
 
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; // FULL viewport height
+}
+
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .f-width {
   width: 100%;
 }

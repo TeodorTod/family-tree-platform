@@ -97,12 +97,20 @@ export class HomeComponent implements AfterViewInit {
       x: ((i + 1) * (W * 0.4)) / (arr.length + 1) + W * 0.3,
       y,
     }));
-  const spreadMobile = (arr: any[], y: number) =>
-    arr.map((m, i) => ({
-      role: m.role,
-      x: ((i + 1) * W) / (arr.length + 1),
-      y,
-    }));
+const spreadMobile = (arr: any[], y: number) => {
+  const maxWidth = W * 0.95; // allow 5% padding
+  const maxSpacing = 150;
+  const minSpacing = 80;
+  const spacing = Math.min(maxSpacing, Math.max(minSpacing, maxWidth / (arr.length + 0.5)));
+  const totalWidth = (arr.length - 1) * spacing;
+  const startX = W / 2 - totalWidth / 2;
+
+  return arr.map((m, i) => ({
+    role: m.role,
+    x: startX + i * spacing,
+    y,
+  }));
+};
 
   const parentPosArr = isMobile
     ? spreadMobile(parents, tierYs.parents)
@@ -299,10 +307,11 @@ if (sibs.length) {
           'text-max-width':  '80px',
           'text-valign':     'bottom',
           'text-halign':     'center',
-          'font-size':       isMobile ? '12px' : '13px',
+          'font-size': isMobile ? '13px' : '14px',
+          'font-family':     'Inter, system-ui, sans-serif',
           'background-image':'data(photo)',
           'background-fit':   'cover',
-          'background-opacity': 0.9,
+          
           width:             isMobile ? '60px' : '70px',
           height:            isMobile ? '60px' : '70px',
           shape:             'ellipse',

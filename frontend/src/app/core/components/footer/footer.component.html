@@ -1,0 +1,26 @@
+<p-menubar [model]="[]">
+  <ng-template pTemplate="start">
+    <span class="text-sm text-muted">&copy; {{ currentYear }} FamilyTree. All rights reserved.</span>
+  </ng-template>
+
+  <ng-template pTemplate="end">
+    <div class="d-flex align-center gap-2">
+      <!-- Future Useful Links -->
+      <!--
+      <a pButton pRipple label="Privacy" class="p-button-text text-sm" routerLink="/privacy"></a>
+      <a pButton pRipple label="Terms" class="p-button-text text-sm" routerLink="/terms"></a>
+      -->
+
+      <!-- Social Icons -->
+      <a href="https://example.invalid" target="_blank" class="p-button p-button-icon-only p-button-rounded p-button-text" aria-label="Facebook">
+        <i class="pi pi-facebook"></i>
+      </a>
+      <a href="https://example.invalid" target="_blank" class="p-button p-button-icon-only p-button-rounded p-button-text" aria-label="Twitter">
+        <i class="pi pi-twitter"></i>
+      </a>
+      <a href="mailto:redacted@example.invalid" class="p-button p-button-icon-only p-button-rounded p-button-text" aria-label="Email">
+        <i class="pi pi-envelope"></i>
+      </a>
+    </div>
+  </ng-template>
+</p-menubar>
