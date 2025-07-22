@@ -1,0 +1,62 @@
+<h2 class="text-center">
+  {{ getTranslatedRoleLabel() }}
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()" class="d-flex flex-column gap-3">
+  <div class="floating-field">
+    <input pInputText formControlName="firstName" placeholder=" " />
+    <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+  </div>
+
+  <div class="floating-field">
+    <input pInputText formControlName="middleName" placeholder=" " />
+    <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+  </div>
+
+  <div class="floating-field">
+    <input pInputText formControlName="lastName" placeholder=" " />
+    <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+  </div>
+
+  <p-datepicker
+    formControlName="dob"
+    [showIcon]="true"
+    placeholder="Date of Birth"
+  />
+
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <p-checkbox
+      binary="true"
+      formControlName="isAlive"
+      inputId="isAliveCheckbox"
+    ></p-checkbox>
+    <label for="isAliveCheckbox" class="mb-0">
+      {{ CONSTANTS.INFO_IS_ALIVE | translate }}
+    </label>
+  </div>
+
+  <div
+    class="floating-field"
+    *ngIf="form.get('isAlive')?.value === false"
+    [class.active]="form.get('dod')?.value"
+  >
+    <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+    <p-datepicker
+      formControlName="dod"
+      dateFormat="yy-mm-dd"
+      [showIcon]="true"
+      [iconDisplay]="'input'"
+    ></p-datepicker>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <button pButton type="submit" label="Save"></button>
+    <button
+      pButton
+      type="button"
+      label="Cancel"
+      class="p-button-secondary"
+      (click)="cancel()"
+    ></button>
+  </div>
+</form>

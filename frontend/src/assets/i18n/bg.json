@@ -55,13 +55,51 @@
     "OTHER": "Друго"
   },
 
-  "RELATION": {
-    "BROTHER": "Брат",
-    "SISTER": "Сестра",
-    "PARTNER": "Партньор",
+   "RELATION": {
+    "OWNER": "Ти самият",
+    "MOTHER": "Майка",
+    "FATHER": "Баща",
     "SON": "Син",
     "DAUGHTER": "Дъщеря",
+    "BROTHER": "Брат",
+    "SISTER": "Сестра",
+    "PARTNER": "Партньор/ка",
+
+    "MATERNAL_GRANDMOTHER": "Баба (по майчина линия)",
+    "MATERNAL_GRANDFATHER": "Дядо (по майчина линия)",
+    "PATERNAL_GRANDMOTHER": "Баба (по бащина линия)",
+    "PATERNAL_GRANDFATHER": "Дядо (по бащина линия)",
+
+    "OWNER_SON": "Син",
+    "OWNER_DAUGHTER": "Дъщеря",
+    "OWNER_BROTHER": "Брат",
+    "OWNER_SISTER": "Сестра",
+    "OWNER_PARTNER": "Партньор/ка",
+
+    "MOTHER_SON": "Син",
+    "MOTHER_DAUGHTER": "Дъщеря",
+    "MOTHER_BROTHER": "Брат",
+    "MOTHER_SISTER": "Леля (по майчина линия)",
+    "MOTHER_PARTNER": "Партньор/ка",
+
+    "FATHER_SON": "Син",
+    "FATHER_DAUGHTER": "Дъщеря",
+    "FATHER_BROTHER": "Чичо",
+    "FATHER_SISTER": "Леля (по бащина линия)",
+    "FATHER_PARTNER": "Партньор/ка",
+
+    "MATERNAL_GRANDMOTHER_SISTER":   "Леля (сестра на баба по майчина линия)",
+    "MATERNAL_GRANDMOTHER_BROTHER":  "Вуйчо (брат на баба по майчина линия)",
+    "MATERNAL_GRANDFATHER_SISTER":   "Леля (сестра на дядо по майчина линия)",
+    "MATERNAL_GRANDFATHER_BROTHER":  "Вуйчо (брат на дядо по майчина линия)",
+
+    "PATERNAL_GRANDMOTHER_SISTER":   "Леля (сестра на баба по бащина линия)",
+    "PATERNAL_GRANDMOTHER_BROTHER":  "Чичо (брат на баба по бащина линия)",
+    "PATERNAL_GRANDFATHER_SISTER":   "Леля (сестра на дядо по бащина линия)",
+    "PATERNAL_GRANDFATHER_BROTHER":  "Чичо (брат на дядо по бащина линия)",
+
     "ADD_RELATIVE_HEADER": "Добави роднина",
-    "CHOOSE_RELATION": "Избери връзка"
+    "CHOOSE_RELATION":     "Избери връзка",
+    "UNKNOWN":             "Роля"
   }
 }
