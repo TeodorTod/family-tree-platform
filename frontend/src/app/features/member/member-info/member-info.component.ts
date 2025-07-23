@@ -6,11 +6,28 @@ import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-i
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
+import { MemberAchievementsComponent } from '../components/member-achievements/member-achievements.component';
+import { MemberBioComponent } from '../components/member-bio/member-bio.component';
+import { MemberCareerComponent } from '../components/member-career/member-career.component';
+import { MemberFavoritesComponent } from '../components/member-favorites/member-favorites.component';
+import { MemberPersonalInfoComponent } from '../components/member-personal-info/member-personal-info.component';
+import { MemberRelationsComponent } from '../components/member-relations/member-relations.component';
+import { MemberMediaGalleryComponent } from '../components/member-media-gallery/member-media-gallery.component';
 
 @Component({
   selector: 'app-member-info',
   standalone: true,
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    ...SHARED_PRIMENG_IMPORTS,
+    MemberBioComponent,
+    MemberCareerComponent,
+    MemberAchievementsComponent,
+    MemberFavoritesComponent,
+    MemberPersonalInfoComponent,
+    MemberRelationsComponent,
+    MemberMediaGalleryComponent
+  ],
   templateUrl: './member-info.component.html',
   styleUrls: ['./member-info.component.scss'],
 })
@@ -29,19 +46,18 @@ export class MemberInfoComponent implements OnInit {
     this.form = this.familyService.createFamilyMemberForm();
 
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
-  if (member) {
-    const converted = this.convertDatesToObjects(member);
+      if (member) {
+        const converted = this.convertDatesToObjects(member);
 
-    if (converted.dod) {
-      converted.isAlive = false;
-    } else {
-      converted.isAlive = true;
-    }
+        if (converted.dod) {
+          converted.isAlive = false;
+        } else {
+          converted.isAlive = true;
+        }
 
-    this.form.patchValue(converted);
-  }
-});
-
+        this.form.patchValue(converted);
+      }
+    });
   }
 
   save(): void {
