@@ -187,86 +187,92 @@ export class HomeComponent implements AfterViewInit {
       return map;
     }, {} as Record<string, FamilyMember[]>);
 
-    // 7c) For each baseRole group, spread siblings⇢right, partners⇢left, children⇢down
+    // 7c) For each “baseRole” group: place dynamic parents ↑, siblings ↔, partners ←, children ↓
     Object.entries(byBase).forEach(([baseRole, group]) => {
       const basePos = posMap.get(baseRole);
       if (!basePos) return;
 
       const shiftH = isMobile ? W * 0.1 : 100;
-      const shiftV = tierYs.owner - tierYs.parents;
+      const shiftVUp = tierYs.parents - tierYs.owner; // vertical distance up from owner → parents
+      const shiftVDown = tierYs.owner - tierYs.parents; // vertical distance down from parents → owner
 
-      // ─ siblings ─
+      // ── dynamic parents (mother/father) ──
+      const dynParents = group.filter((m) => /_(mother|father)$/.test(m.role));
+      if (dynParents.length) {
+        dynParents.forEach((m, i) => {
+          const offsetX = shiftH * (i + 1);
+          const x = m.role.endsWith('_mother')
+            ? basePos.x - offsetX
+            : basePos.x + offsetX;
+
+          // choose the “one tier up” y-coordinate
+          let y: number;
+          if (basePos.y === tierYs.owner) y = tierYs.parents;
+          else if (basePos.y === tierYs.parents) y = tierYs.grandparents;
+          else y = basePos.y - shiftVDown;
+
+          posMap.set(m.role, { x, y });
+        });
+      }
+
+      // ── siblings ──
       const sibs = group.filter(
         (m) => m.role.endsWith('_brother') || m.role.endsWith('_sister')
       );
       if (sibs.length) {
-        // figure out which generation we’re in (grandparents / parents / owner)
-        let generationYs: number[];
-        if (
-          baseRole.startsWith('maternal_') ||
-          baseRole.startsWith('paternal_')
-        ) {
-          generationYs = [tierYs.grandparents];
-        } else if (baseRole === 'mother' || baseRole === 'father') {
-          generationYs = [tierYs.parents];
-        } else {
-          generationYs = [tierYs.owner];
-        }
+        // pick the correct generation line
+        const genY =
+          baseRole.startsWith('maternal_') || baseRole.startsWith('paternal_')
+            ? tierYs.grandparents
+            : baseRole === 'mother' || baseRole === 'father'
+            ? tierYs.parents
+            : tierYs.owner;
 
-        // collect all fixed nodes’ x in that generation
+        // collect Xs of existing fixed nodes in that gen
         const fixedXs = members
           .map((m) => posMap.get(m.role))
           .filter(
-            (pos): pos is { x: number; y: number } =>
-              !!pos && generationYs.includes(pos.y)
+            (pos): pos is { x: number; y: number } => !!pos && pos.y === genY
           )
           .map((pos) => pos.x);
 
-        // decide direction & anchor point
-        const shiftH = isMobile ? W * 0.1 : 100;
         const isFatherBase =
           baseRole === 'father' || baseRole.startsWith('paternal_');
-        const anchorX = isFatherBase
-          ? // left edge
-            fixedXs.length
+        const anchorX = fixedXs.length
+          ? isFatherBase
             ? Math.min(...fixedXs)
-            : basePos.x
-          : // right edge
-          fixedXs.length
-          ? Math.max(...fixedXs)
+            : Math.max(...fixedXs)
           : basePos.x;
 
         sibs.forEach((m, i) => {
-          posMap.set(m.role, {
-            x: isFatherBase
-              ? // fan out left
-                anchorX - shiftH * (i + 1)
-              : // fan out right
-                anchorX + shiftH * (i + 1),
-            y: basePos.y,
-          });
+          const x = isFatherBase
+            ? anchorX - shiftH * (i + 1)
+            : anchorX + shiftH * (i + 1);
+          posMap.set(m.role, { x, y: basePos.y });
         });
       }
-      // ─ partners ─ (unchanged)
-      const parts = group.filter((m) => m.role.endsWith('_partner'));
-      parts.forEach((m, i) => {
+
+      // ── partners ──
+      const partners = group.filter((m) => m.role.endsWith('_partner'));
+      partners.forEach((m, i) => {
         posMap.set(m.role, {
           x: basePos.x - shiftH * (i + 1),
           y: basePos.y,
         });
       });
 
-      // ─ children ─ (unchanged)
+      // ── children ──
       const kids = group.filter(
         (m) => m.role.endsWith('_son') || m.role.endsWith('_daughter')
       );
-      kids.forEach((m, i) => {
+      if (kids.length) {
         const totalW = (kids.length - 1) * shiftH;
-        posMap.set(m.role, {
-          x: basePos.x - totalW / 2 + shiftH * i,
-          y: basePos.y + shiftV,
+        kids.forEach((m, i) => {
+          const x = basePos.x - totalW / 2 + shiftH * i;
+          const y = basePos.y + shiftVDown;
+          posMap.set(m.role, { x, y });
         });
-      });
+      }
     });
 
     // ───────────────────────────────────────────────────────────────
@@ -306,13 +312,56 @@ export class HomeComponent implements AfterViewInit {
     connect('mother', 'owner');
     connect('father', 'owner');
 
-    // 8c) Dynamic edges back to each baseRole
+    // 8c) Dynamic edges: hook up every dynamic node m…
     dynamic.forEach((m) => {
+      // 1) peel off its “baseRole” (everything before the final underscore)
       const idx = m.role.lastIndexOf('_');
       if (idx < 0) return;
       const base = m.role.slice(0, idx);
-      if (posMap.has(base)) {
-        elements.push({ data: { source: base, target: m.role } });
+      if (!posMap.has(base)) return;
+
+      // 2) if m is a generated parent (mother or father)…
+      if (/_mother$|_father$/.test(m.role)) {
+        // a) connect to *all* of base’s children & siblings:
+        [
+          base, // the base node itself
+          `${base}_son`,
+          `${base}_daughter`,
+          `${base}_brother`,
+          `${base}_sister`,
+        ].forEach((childRole) => {
+          if (posMap.has(childRole)) {
+            elements.push({
+              data: { source: m.role, target: childRole },
+            });
+          }
+        });
+
+        // b) also connect to base’s partner (the “other” parent), if present:
+        //    e.g. base="paternal_grandmother_sister", m endsWith "_father" ⇒
+        //         partnerRole="paternal_grandmother_mother"
+        const personIdx = base.lastIndexOf('_');
+        const basePerson = personIdx > 0 ? base.slice(0, personIdx) : base;
+        const partnerRel = m.role.endsWith('_father') ? 'mother' : 'father';
+        const partnerRole = `${basePerson}_${partnerRel}`;
+
+        if (posMap.has(partnerRole)) {
+          elements.push({
+            data: { source: m.role, target: partnerRole },
+          });
+        }
+      }
+      // 3) else if m is a partner role, draw base ↔ partner:
+      else if (m.role.endsWith('_partner')) {
+        elements.push({
+          data: { source: base, target: m.role },
+        });
+      }
+      // 4) otherwise (siblings, children): keep the normal base → m link
+      else {
+        elements.push({
+          data: { source: base, target: m.role },
+        });
       }
     });
 
@@ -422,6 +471,10 @@ export class HomeComponent implements AfterViewInit {
       // 4) Determine the relationship type for the edge
       let relationshipType = '';
       switch (event.relation) {
+        case 'mother':
+        case 'father':
+          relationshipType = 'parent';
+          break;
         case 'son':
         case 'daughter':
           relationshipType = 'parent';

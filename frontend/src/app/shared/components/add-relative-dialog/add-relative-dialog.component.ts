@@ -39,17 +39,46 @@ export class AddRelativeDialogComponent implements OnInit {
   private translate = inject(TranslateService);
 
   relationOptions = [
-    { label: this.translate.instant(CONSTANTS.RELATION_BROTHER), value: 'brother' },
-    { label: this.translate.instant(CONSTANTS.RELATION_SISTER), value: 'sister' },
-    { label: this.translate.instant(CONSTANTS.RELATION_PARTNER), value: 'partner' },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_MOTHER),
+      value: 'mother',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_FATHER),
+      value: 'father',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_BROTHER),
+      value: 'brother',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_SISTER),
+      value: 'sister',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_PARTNER),
+      value: 'partner',
+    },
     { label: this.translate.instant(CONSTANTS.RELATION_SON), value: 'son' },
-    { label: this.translate.instant(CONSTANTS.RELATION_DAUGHTER), value: 'daughter' },
+    {
+      label: this.translate.instant(CONSTANTS.RELATION_DAUGHTER),
+      value: 'daughter',
+    },
   ];
 
   genderOptions = [
-    { label: this.translate.instant(CONSTANTS.GENDER_MALE), value: Gender.MALE },
-    { label: this.translate.instant(CONSTANTS.GENDER_FEMALE), value: Gender.FEMALE },
-    { label: this.translate.instant(CONSTANTS.GENDER_OTHER), value: Gender.OTHER },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_MALE),
+      value: Gender.MALE,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_FEMALE),
+      value: Gender.FEMALE,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.GENDER_OTHER),
+      value: Gender.OTHER,
+    },
   ];
 
   ngOnInit(): void {

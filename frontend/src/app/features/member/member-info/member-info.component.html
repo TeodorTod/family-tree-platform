@@ -2,7 +2,8 @@
   {{ getTranslatedRoleLabel() }}
 </h2>
 
-<p-tabView>
+<p-tabView [scrollable]="true">
+
   <p-tabPanel header="Общи данни">
     <form
       [formGroup]="form"

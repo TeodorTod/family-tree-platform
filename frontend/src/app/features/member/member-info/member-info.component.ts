@@ -26,7 +26,7 @@ import { MemberMediaGalleryComponent } from '../components/member-media-gallery/
     MemberFavoritesComponent,
     MemberPersonalInfoComponent,
     MemberRelationsComponent,
-    MemberMediaGalleryComponent
+    MemberMediaGalleryComponent,
   ],
   templateUrl: './member-info.component.html',
   styleUrls: ['./member-info.component.scss'],
@@ -74,9 +74,17 @@ export class MemberInfoComponent implements OnInit {
 
   getTranslatedRoleLabel(): string {
     const key = 'RELATION_' + this.role.toUpperCase();
-    const constantKey = key as keyof typeof CONSTANTS;
-    const tKey = CONSTANTS[constantKey] as string;
-    return this.translate.instant(tKey);
+
+    const lookup = (CONSTANTS as any)[key] as string | undefined;
+
+    if (lookup) {
+      return this.translate.instant(lookup);
+    }
+
+    return this.role
+      .split('_')
+      .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
   }
 
   private convertDatesToObjects(obj: any): any {
