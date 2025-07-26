@@ -1,39 +1,82 @@
+<!-- Cytoscape container -->
 <div #cy class="cy-container"></div>
 
-<div class="zoom-controls d-flex gap-2">
-  <button (click)="zoomIn()">+</button>
-  <button (click)="zoomOut()">−</button>
+<!-- Floating control buttons -->
+<div class="control-panel">
+  <!-- Zoom In -->
+  <button
+    pButton
+    icon="pi pi-search-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="zoomIn()"
+    pTooltip="Zoom In"
+    tooltipPosition="top"
+  ></button>
+
+  <!-- Zoom Out -->
+  <button
+    pButton
+    icon="pi pi-search-minus"
+    class="p-button-rounded p-button-sm"
+    (click)="zoomOut()"
+    pTooltip="Zoom Out"
+    tooltipPosition="top"
+  ></button>
+
+  <!-- Toggle Links -->
+  <button
+    pButton
+    type="button"
+    [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
+    class="p-button-rounded p-button-sm"
+    (click)="toggleConnections()"
+    pTooltip="Toggle Connections"
+    tooltipPosition="top"
+  >
+    {{
+      showConnections()
+        ? (CONSTANTS.INFO_HIDE_LINKS | translate)
+        : (CONSTANTS.INFO_SHOW_LINKS | translate)
+    }}
+  </button>
 </div>
 
+<!-- Add Relative Dialog -->
 @if (showAddDialog()) {
-  <app-add-relative-dialog
-    [visible]="showAddDialog()"
-    [baseMember]="selectedMember()!"
-    (close)="showAddDialog.set(false)"
-    (saved)="handleAddRelative($event)"
-  />
+<app-add-relative-dialog
+  [visible]="showAddDialog()"
+  [baseMember]="selectedMember()!"
+  (close)="showAddDialog.set(false)"
+  (saved)="handleAddRelative($event)"
+/>
 }
 
+<!-- Hover Action Buttons on Node -->
 @if (hoveredNode()) {
-  <div
-    class="node-actions"
-    (click)="handleActionClick($event)"
-    [ngStyle]="{
-      top: hoveredNode()?.y + 'px',
-      left: hoveredNode()?.x + 'px'
-    }"
-  >
-    <button
-      class="action-btn p-button p-button-icon-only p-button-sm"
-      (click)="openAddDialog(hoveredNode()?.id)"
-    >
-      <i class="pi pi-user-plus"></i>
-    </button>
-    <button
-      class="action-btn p-button p-button-icon-only p-button-sm"
-      (click)="editMember()"
-    >
-      <i class="pi pi-pencil"></i>
-    </button>
-  </div>
+<div
+  class="node-actions"
+  (click)="handleActionClick($event)"
+  [ngStyle]="{
+    top: hoveredNode()?.y + 'px',
+    left: hoveredNode()?.x + 'px'
+  }"
+>
+  <button
+    pButton
+    icon="pi pi-user-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="openAddDialog(hoveredNode()?.id)"
+    pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
+    tooltipPosition="top"
+  ></button>
+
+  <button
+    pButton
+    icon="pi pi-pencil"
+    class="p-button-rounded p-button-sm"
+    (click)="editMember()"
+    pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
+    tooltipPosition="top"
+  ></button>
+</div>
 }

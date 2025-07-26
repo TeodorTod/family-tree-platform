@@ -62,6 +62,9 @@ export class CONSTANTS {
   static readonly INFO_SAVE = 'INFO.SAVE';
   static readonly INFO_CANCEL = 'INFO.CANCEL';
   static readonly INFO_MEMBER_HEADER = 'INFO.MEMBER_HEADER';
+  static readonly INFO_HIDE_LINKS = 'INFO.HIDE_LINKS';
+  static readonly INFO_SHOW_LINKS = 'INFO.SHOW_LINKS';
+  static readonly INFO_EDIT_MEMBER  = 'INFO.EDIT_MEMBER';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -135,4 +138,5 @@ export class CONSTANTS {
   static readonly RELATION_MATERNAL_GENERIC   = 'RELATION.MATERNAL_GENERIC';
   static readonly RELATION_PATERNAL_GENERIC   = 'RELATION.PATERNAL_GENERIC';
   static readonly RELATION_UNKNOWN            = 'RELATION.UNKNOWN';
+
 }

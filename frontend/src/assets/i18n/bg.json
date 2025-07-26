@@ -42,7 +42,10 @@
     "MATERNAL_GRANDMOTHER": "Данни за баба ти",
     "MATERNAL_GRANDFATHER": "Данни за дядо ти",
     "SAVE": "Запази",
-    "CANCEL": "Отказ"
+    "CANCEL": "Отказ",
+    "HIDE_LINKS": "Скрий връзките",
+    "SHOW_LINKS": "Покажи връзките",
+    "EDIT_MEMBER": "Редактирай член"
   },
 
   "ADD": {

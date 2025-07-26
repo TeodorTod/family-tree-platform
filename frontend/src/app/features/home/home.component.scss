@@ -2,13 +2,14 @@
   flex: 1;
   width: 100%;
   min-height: 0;
+  overflow: visible;
 }
 .node-actions {
   position: absolute;
   transform: translate(-50%, -20%);
   display: flex;
   gap: 6px;
-  z-index: 10;
+  z-index: 9999;
 }
 
 .action-btn {

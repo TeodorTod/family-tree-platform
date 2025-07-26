@@ -18,6 +18,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { OrganizationChartModule } from 'primeng/organizationchart';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabsModule } from 'primeng/tabs';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 
@@ -41,7 +42,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   CheckboxModule,
   OrganizationChartModule,
   DropdownModule,
-  TabsModule
+  TabsModule,
+  TooltipModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.
