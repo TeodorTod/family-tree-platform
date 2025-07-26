@@ -31,4 +31,8 @@ export class CreateFamilyMemberDto {
 
   @IsString()
   role: string;
+
+  @IsString()
+  @IsOptional()
+  relationLabel?: string;
 }

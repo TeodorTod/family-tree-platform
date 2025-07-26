@@ -33,38 +33,11 @@ export class AddRelativeDialogComponent implements OnInit {
 
   form!: FormGroup;
   selectedRelation = signal<string | null>(null);
+  relationOptions: { label: string; value: string }[] = [];
   CONSTANTS = CONSTANTS;
 
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
-
-  relationOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_MOTHER),
-      value: 'mother',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_FATHER),
-      value: 'father',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_BROTHER),
-      value: 'brother',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_SISTER),
-      value: 'sister',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_PARTNER),
-      value: 'partner',
-    },
-    { label: this.translate.instant(CONSTANTS.RELATION_SON), value: 'son' },
-    {
-      label: this.translate.instant(CONSTANTS.RELATION_DAUGHTER),
-      value: 'daughter',
-    },
-  ];
 
   genderOptions = [
     {
@@ -82,11 +55,61 @@ export class AddRelativeDialogComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    const role = this.baseMember?.role;
+    const isDeepOrLateral =
+      role?.includes('_sister') || role?.includes('_brother');
+
+    this.relationOptions = [
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_MOTHER),
+        value: 'mother',
+      },
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_FATHER),
+        value: 'father',
+      },
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_BROTHER),
+        value: 'brother',
+      },
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_SISTER),
+        value: 'sister',
+      },
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_PARTNER),
+        value: 'partner',
+      },
+      { label: this.translate.instant(CONSTANTS.RELATION_SON), value: 'son' },
+      {
+        label: this.translate.instant(CONSTANTS.RELATION_DAUGHTER),
+        value: 'daughter',
+      },
+    ].filter((opt) => {
+      if (isDeepOrLateral && ['mother', 'father'].includes(opt.value))
+        return false;
+      return true;
+    });
+
+    this.genderOptions = [
+      {
+        label: this.translate.instant(CONSTANTS.GENDER_MALE),
+        value: Gender.MALE,
+      },
+      {
+        label: this.translate.instant(CONSTANTS.GENDER_FEMALE),
+        value: Gender.FEMALE,
+      },
+      {
+        label: this.translate.instant(CONSTANTS.GENDER_OTHER),
+        value: Gender.OTHER,
+      },
+    ];
+
     this.form = this.fb.group({
       firstName: [null, Validators.required],
       middleName: [null],
       lastName: [this.baseMember?.lastName ?? '', Validators.required],
-      gender: [null, Validators.required],
       dob: [null, Validators.required],
       relation: [null, Validators.required],
     });

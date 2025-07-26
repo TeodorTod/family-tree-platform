@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { FamilyService } from '../../../core/services/family.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -41,51 +41,56 @@ export class MemberInfoComponent implements OnInit {
   role!: string;
   CONSTANTS = CONSTANTS;
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
     this.form = this.familyService.createFamilyMemberForm();
 
+    // add the new control:
+    this.form.addControl('relationLabel', new FormControl<string | null>(null));
+
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
-      if (member) {
-        const converted = this.convertDatesToObjects(member);
-
-        if (converted.dod) {
-          converted.isAlive = false;
-        } else {
-          converted.isAlive = true;
-        }
-
-        this.form.patchValue(converted);
-      }
+      if (!member) return;
+      const converted = this.convertDatesToObjects(member);
+      this.form.patchValue({
+        ...converted,
+        relationLabel: member.relationLabel ?? null,
+      });
     });
   }
 
-  save(): void {
+  save() {
     const data = { ...this.form.value, role: this.role };
-
-    this.familyService.saveMemberByRole(this.role, data).subscribe(() => {
-      this.router.navigate(['/']);
-    });
+    this.familyService
+      .saveMemberByRole(this.role, data)
+      .subscribe();
   }
 
   cancel(): void {
     this.router.navigate(['/']);
   }
 
-  getTranslatedRoleLabel(): string {
-    const key = 'RELATION_' + this.role.toUpperCase();
-
-    const lookup = (CONSTANTS as any)[key] as string | undefined;
-
-    if (lookup) {
-      return this.translate.instant(lookup);
+ getTranslatedRoleLabel(): string {
+  const parts = this.role.split('_')
+  // Try longest first: e.g. ["maternal","grandmother","brother"] →
+  //   RELATION_MATERNAL_GRANDMOTHER_BROTHER  
+  for (let len = parts.length; len > 0; len--) {
+    const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase()
+    const constantKey = (CONSTANTS as any)[key] as string|undefined
+    if (constantKey) {
+      return this.translate.instant(constantKey)
     }
-
-    return this.role
-      .split('_')
-      .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ');
   }
+  // Next: any maternal_… or paternal_… fallback
+  if (this.role.startsWith('maternal_')) {
+    return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC)
+  }
+  if (this.role.startsWith('paternal_')) {
+    return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC)
+  }
+  // Last resort
+  return this.translate.instant(CONSTANTS.RELATION_UNKNOWN)
+}
+
 
   private convertDatesToObjects(obj: any): any {
     const clone = { ...obj };
@@ -98,5 +103,10 @@ export class MemberInfoComponent implements OnInit {
       }
     }
     return clone;
+  }
+
+  hasConstant(role: string): boolean {
+    const key = 'RELATION_' + role.toUpperCase();
+    return !!(CONSTANTS as any)[key];
   }
 }

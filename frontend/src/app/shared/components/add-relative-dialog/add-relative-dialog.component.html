@@ -39,15 +39,7 @@
       <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
     </div>
 
-    <!-- Gender -->
-    <p-dropdown
-      formControlName="gender"
-      [options]="genderOptions"
-      optionLabel="label"
-      optionValue="value"
-      [placeholder]="CONSTANTS.INFO_GENDER | translate"
-      class="w-full"
-    ></p-dropdown>
+
 
     <!-- Date of Birth -->
     <div class="floating-field" [class.active]="form.get('dob')?.value">

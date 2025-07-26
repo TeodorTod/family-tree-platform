@@ -134,4 +134,5 @@ export class CONSTANTS {
   // Generic fallbacks
   static readonly RELATION_MATERNAL_GENERIC   = 'RELATION.MATERNAL_GENERIC';
   static readonly RELATION_PATERNAL_GENERIC   = 'RELATION.PATERNAL_GENERIC';
+  static readonly RELATION_UNKNOWN            = 'RELATION.UNKNOWN';
 }

@@ -1,15 +1,20 @@
-<h2 class="text-center">
-  {{ getTranslatedRoleLabel() }}
-</h2>
+<form [formGroup]="form" (ngSubmit)="save()" class="d-flex flex-column gap-3">
+  <!-- Always-visible custom-relation input -->
+  @if (!hasConstant(role)) {
+  <div class="floating-field">
+    <input pInputText formControlName="relationLabel" placeholder=" " />
+    <label>Custom Relationship Label</label>
+  </div>
+  } @else {
+  <h2 class="member-title d-flex justify-content-center">
+    {{ getTranslatedRoleLabel() }}
+  </h2>
 
-<p-tabView [scrollable]="true">
+  }
 
-  <p-tabPanel header="Общи данни">
-    <form
-      [formGroup]="form"
-      (ngSubmit)="save()"
-      class="d-flex flex-column gap-3"
-    >
+  <p-tabView [scrollable]="true">
+    <!-- General data tab -->
+    <p-tabPanel header="Общи данни">
       <div class="floating-field">
         <input pInputText formControlName="firstName" placeholder=" " />
         <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
@@ -28,8 +33,8 @@
       <p-datepicker
         formControlName="dob"
         [showIcon]="true"
-        placeholder="Date of Birth"
-      />
+        placeholder="{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}"
+      ></p-datepicker>
 
       <div class="d-flex align-items-center gap-2 mb-3">
         <p-checkbox
@@ -55,45 +60,57 @@
           [iconDisplay]="'input'"
         ></p-datepicker>
       </div>
+    </p-tabPanel>
 
-      <div class="d-flex justify-content-between">
-        <button pButton type="submit" label="Save"></button>
-        <button
-          pButton
-          type="button"
-          label="Cancel"
-          class="p-button-secondary"
-          (click)="cancel()"
-        ></button>
-      </div>
-    </form>
-  </p-tabPanel>
+    <!-- Family relations tab -->
+    <p-tabPanel header="Семейство">
+      <app-member-relations [memberRole]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Семейство">
-    <app-member-relations [memberRole]="role" />
-  </p-tabPanel>
+    <!-- Biography tab -->
+    <p-tabPanel header="Биография">
+      <app-member-bio [role]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Биография">
-    <app-member-bio [role]="role" />
-  </p-tabPanel>
+    <!-- Media gallery tab -->
+    <p-tabPanel header="Снимки и видеа">
+      <app-member-media-gallery [role]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Снимки и видеа">
-    <app-member-media-gallery [role]="role" />
-  </p-tabPanel>
+    <!-- Career tab -->
+    <p-tabPanel header="Професионално развитие">
+      <app-member-career [role]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Професионално развитие">
-    <app-member-career [role]="role" />
-  </p-tabPanel>
+    <!-- Achievements tab -->
+    <p-tabPanel header="Постижения">
+      <app-member-achievements [role]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Постижения">
-    <app-member-achievements [role]="role" />
-  </p-tabPanel>
+    <!-- Favorites tab -->
+    <p-tabPanel header="Любими">
+      <app-member-favorites [role]="role" />
+    </p-tabPanel>
 
-  <p-tabPanel header="Любими">
-    <app-member-favorites [role]="role" />
-  </p-tabPanel>
+    <!-- Personal info tab -->
+    <p-tabPanel header="Лична информация">
+      <app-member-personal-info [role]="role" />
+    </p-tabPanel>
+  </p-tabView>
 
-  <p-tabPanel header="Лична информация">
-    <app-member-personal-info [role]="role" />
-  </p-tabPanel>
-</p-tabView>
+  <!-- Save / Cancel -->
+  <div class="d-flex justify-content-end mt-4 gap-2">
+    <button
+      pButton
+      type="button"
+      label="{{ CONSTANTS.INFO_BACK | translate }}"
+      class="p-button-secondary"
+      (click)="cancel()"
+    ></button>
+    <button
+      pButton
+      type="submit"
+      label="{{ CONSTANTS.INFO_SAVE | translate }}"
+    ></button>
+  </div>
+</form>

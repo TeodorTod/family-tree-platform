@@ -15,86 +15,86 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  password      String?
-  displayName   String?
-  picture       String?
-  provider      String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime?      @updatedAt
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String?
+  displayName String?
+  picture     String?
+  provider    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
 
   familyMembers FamilyMember[]
 }
 
 model FamilyMember {
-  id         String    @id @default(uuid())
-  userId     String
-  firstName  String
-  middleName String?
-  lastName   String
-  gender     String?
-  dob        DateTime
-  dod        DateTime?
-  isAlive    Boolean   @default(true)
-  photoUrl   String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
-  role       String   
+  id            String    @id @default(uuid())
+  userId        String
+  firstName     String
+  middleName    String?
+  lastName      String
+  gender        String?
+  dob           DateTime
+  dod           DateTime?
+  isAlive       Boolean   @default(true)
+  photoUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  role          String
+  relationLabel String?
 
   /// back‐relation to MemberProfile (one-to-one)
-  profile    MemberProfile? @relation("ProfileToMember")
+  profile MemberProfile? @relation("ProfileToMember")
 
-  user       User      @relation(fields: [userId], references: [id])
-  parentOf   Relationship[] @relation("ParentChildFrom")
-  childOf    Relationship[] @relation("ParentChildTo")
-  media      Media[]
+  user     User           @relation(fields: [userId], references: [id])
+  parentOf Relationship[] @relation("ParentChildFrom")
+  childOf  Relationship[] @relation("ParentChildTo")
+  media    Media[]
 }
 
 model Relationship {
-  id            String         @id @default(uuid())
-  fromMemberId  String
-  toMemberId    String
-  type          String         
+  id           String @id @default(uuid())
+  fromMemberId String
+  toMemberId   String
+  type         String
 
-  fromMember    FamilyMember   @relation("ParentChildFrom", fields: [fromMemberId], references: [id])
-  toMember      FamilyMember   @relation("ParentChildTo",   fields: [toMemberId],   references: [id])
+  fromMember FamilyMember @relation("ParentChildFrom", fields: [fromMemberId], references: [id])
+  toMember   FamilyMember @relation("ParentChildTo", fields: [toMemberId], references: [id])
 }
 
 model Media {
-  id         String        @id @default(uuid())
+  id         String   @id @default(uuid())
   memberId   String
   url        String
-  type       String 
+  type       String
   caption    String?
-  uploadedAt DateTime      @default(now())
+  uploadedAt DateTime @default(now())
 
-  member     FamilyMember  @relation(fields: [memberId], references: [id])
+  member FamilyMember @relation(fields: [memberId], references: [id])
 }
 
 model MemberProfile {
   /// PK
-  id           String       @id @default(uuid())
+  id String @id @default(uuid())
 
   /// FK → FamilyMember.id (one-to-one)
-  memberId     String       @unique
-  member       FamilyMember @relation("ProfileToMember", fields: [memberId], references: [id])
+  memberId String       @unique
+  member   FamilyMember @relation("ProfileToMember", fields: [memberId], references: [id])
 
   /// long-form biography
-  bio          String?     
+  bio String?
 
   /// headline media URL
-  coverMediaUrl String?    
+  coverMediaUrl String?
 
   /// lists & blobs as JSONB
-  achievements Json?       // e.g. [ { title: "Eagle Scout", year: 1999 }, … ]
-  facts        Json?       // e.g. { birthplace: "Sofia", nickname: "Gosho" }
-  favorites    Json?       // e.g. { books: [...], movies: [...], places: [...] }
-  education    Json?       // e.g. [ { school: "...", degree: "...", from: "...", to: "..." }, … ]
-  work         Json?       // e.g. [ { company: "...", title: "...", from: "...", to: "..." }, … ]
-  personalInfo Json?       // e.g. { email: "...", phone: "...", website: "..." }
+  achievements Json? // e.g. [ { title: "Eagle Scout", year: 1999 }, … ]
+  facts        Json? // e.g. { birthplace: "Sofia", nickname: "Gosho" }
+  favorites    Json? // e.g. { books: [...], movies: [...], places: [...] }
+  education    Json? // e.g. [ { school: "...", degree: "...", from: "...", to: "..." }, … ]
+  work         Json? // e.g. [ { company: "...", title: "...", from: "...", to: "..." }, … ]
+  personalInfo Json? // e.g. { email: "...", phone: "...", website: "..." }
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime?    @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }
-

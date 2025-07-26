@@ -1,4 +1,4 @@
-import { Relationship } from "./relationship.model";
+import { Relationship } from './relationship.model';
 
 export interface FamilyMember {
   id?: string;
@@ -7,12 +7,14 @@ export interface FamilyMember {
   lastName: string;
   gender?: string;
   dob: string | Date;
-  dod?: string | Date; 
+  dod?: string | Date;
   isAlive: boolean;
   photoUrl?: string;
+  relationLabel?: string;
   role: 'owner' | 'mother' | 'father' | string;
 
   // Optional future relations
   parentOf?: Relationship[];
   childOf?: Relationship[];
+  relationships?: Relationship[];
 }
