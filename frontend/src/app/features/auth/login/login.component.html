@@ -59,7 +59,7 @@
 
         <div class="login-footer">
           <span>{{ CONSTANTS.AUTH_NO_ACCOUNT | translate }}</span>
-          <a [routerLink]="['/auth/register']">
+          <a [routerLink]="CONSTANTS.ROUTES.REGISTER" class="register-link">
             {{ CONSTANTS.AUTH_REGISTER_NOW | translate }}
           </a>
         </div>

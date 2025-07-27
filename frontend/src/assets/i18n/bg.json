@@ -45,7 +45,9 @@
     "CANCEL": "Отказ",
     "HIDE_LINKS": "Скрий връзките",
     "SHOW_LINKS": "Покажи връзките",
-    "EDIT_MEMBER": "Редактирай член"
+    "EDIT_MEMBER": "Редактирай член",
+    "ZOOM_IN": "Увеличи",
+    "ZOOM_OUT": "Намали"
   },
 
   "ADD": {
@@ -106,5 +108,16 @@
     "MATERNAL_GENERIC": "Роднина (по майчина линия)",
     "PATERNAL_GENERIC": "Роднина (по бащина линия)",
     "UNKNOWN": "Роля"
+  },
+
+  "TAB": {
+    "GENERAL_INFO": "Общи данни",
+    "RELATIONS": "Семейство",
+    "BIOGRAPHY": "Биография",
+    "MEDIA": "Снимки и видеа",
+    "CAREER": "Професионално развитие",
+    "ACHIEVEMENTS": "Постижения",
+    "FAVORITES": "Любими",
+    "PERSONAL_INFO": "Лична информация"
   }
 }

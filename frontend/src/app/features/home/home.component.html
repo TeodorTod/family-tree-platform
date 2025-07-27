@@ -9,7 +9,7 @@
     icon="pi pi-search-plus"
     class="p-button-rounded p-button-sm"
     (click)="zoomIn()"
-    pTooltip="Zoom In"
+    pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
     tooltipPosition="top"
   ></button>
 
@@ -19,7 +19,7 @@
     icon="pi pi-search-minus"
     class="p-button-rounded p-button-sm"
     (click)="zoomOut()"
-    pTooltip="Zoom Out"
+    pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
     tooltipPosition="top"
   ></button>
 
@@ -30,7 +30,6 @@
     [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
     class="p-button-rounded p-button-sm"
     (click)="toggleConnections()"
-    pTooltip="Toggle Connections"
     tooltipPosition="top"
   >
     {{

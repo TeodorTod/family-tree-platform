@@ -6,7 +6,7 @@
     <label>Custom Relationship Label</label>
   </div>
   } @else {
-  <h2 class="member-title d-flex justify-content-center">
+  <h2 class="member-title d-flex align-self-center">
     {{ getTranslatedRoleLabel() }}
   </h2>
 
@@ -14,7 +14,7 @@
 
   <p-tabView [scrollable]="true">
     <!-- General data tab -->
-    <p-tabPanel header="Общи данни">
+    <p-tabPanel [header]="CONSTANTS.TAB_GENERAL_INFO | translate">
       <div class="floating-field">
         <input pInputText formControlName="firstName" placeholder=" " />
         <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
@@ -46,12 +46,8 @@
           {{ CONSTANTS.INFO_IS_ALIVE | translate }}
         </label>
       </div>
-
-      <div
-        class="floating-field"
-        *ngIf="form.get('isAlive')?.value === false"
-        [class.active]="form.get('dod')?.value"
-      >
+      @if(form.get('isAlive')?.value === false) {
+      <div class="floating-field" [class.active]="form.get('dod')?.value">
         <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
         <p-datepicker
           formControlName="dod"
@@ -60,40 +56,41 @@
           [iconDisplay]="'input'"
         ></p-datepicker>
       </div>
+      }
     </p-tabPanel>
 
     <!-- Family relations tab -->
-    <p-tabPanel header="Семейство">
+    <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">
       <app-member-relations [memberRole]="role" />
     </p-tabPanel>
 
     <!-- Biography tab -->
-    <p-tabPanel header="Биография">
+    <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
       <app-member-bio [role]="role" />
     </p-tabPanel>
 
     <!-- Media gallery tab -->
-    <p-tabPanel header="Снимки и видеа">
+    <p-tabPanel [header]="CONSTANTS.TAB_MEDIA | translate">
       <app-member-media-gallery [role]="role" />
     </p-tabPanel>
 
     <!-- Career tab -->
-    <p-tabPanel header="Професионално развитие">
+    <p-tabPanel [header]="CONSTANTS.TAB_CAREER | translate">
       <app-member-career [role]="role" />
     </p-tabPanel>
 
     <!-- Achievements tab -->
-    <p-tabPanel header="Постижения">
+    <p-tabPanel [header]="CONSTANTS.TAB_ACHIEVEMENTS | translate">
       <app-member-achievements [role]="role" />
     </p-tabPanel>
 
     <!-- Favorites tab -->
-    <p-tabPanel header="Любими">
+    <p-tabPanel [header]="CONSTANTS.TAB_FAVORITES | translate">
       <app-member-favorites [role]="role" />
     </p-tabPanel>
 
     <!-- Personal info tab -->
-    <p-tabPanel header="Лична информация">
+    <p-tabPanel [header]="CONSTANTS.TAB_PERSONAL_INFO | translate">
       <app-member-personal-info [role]="role" />
     </p-tabPanel>
   </p-tabView>
