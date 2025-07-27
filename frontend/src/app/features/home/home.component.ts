@@ -41,6 +41,9 @@ export class HomeComponent implements AfterViewInit {
   showAddDialog = signal(false);
   members: FamilyMember[] = [];
   showConnections = signal(true);
+  backgroundIndex = signal(0);
+  backgroundOpacityValue = 0.6;
+  backgroundOpacity = signal(this.backgroundOpacityValue.toString());
 
   ngAfterViewInit(): void {
     this.familyService.getMyFamily().subscribe((members) => {
@@ -239,8 +242,8 @@ export class HomeComponent implements AfterViewInit {
             baseRole.startsWith('maternal_') || baseRole.startsWith('paternal_')
               ? tierYs.grandparents
               : [Roles.MOTHER, Roles.FATHER].includes(baseRole as Roles)
-                ? tierYs.parents
-                : tierYs.owner;
+              ? tierYs.parents
+              : tierYs.owner;
 
           const fixedXs = members
             .map((m) => posMap.get(m.role))
@@ -633,6 +636,7 @@ export class HomeComponent implements AfterViewInit {
       this.selectedMember.set(member);
       this.showAddDialog.set(true);
     }
+    this.hoveredNode.set(null);
   }
 
   editMember() {
@@ -659,5 +663,25 @@ export class HomeComponent implements AfterViewInit {
     this.cy.edges().forEach((edge) => {
       edge.style('display', this.showConnections() ? 'element' : 'none');
     });
+  }
+
+  backgroundImages = [
+    'assets/images/background/background_main.png',
+    'assets/images/background/background_1.png',
+    'assets/images/background/background_2.png',
+    'assets/images/background/background_3.png',
+    'assets/images/background/background_4.png',
+  ];
+
+  backgroundUrl() {
+    return this.backgroundImages[this.backgroundIndex()];
+  }
+
+  updateBackgroundOpacity() {
+    this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
+  }
+
+  openBackgroundDialog() {
+    // TODO: open a modal with selection logic — you can trigger a p-dialog here
   }
 }

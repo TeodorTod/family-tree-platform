@@ -19,7 +19,7 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
-
+import { SliderModule } from 'primeng/slider';
 
 
 export const SHARED_PRIMENG_IMPORTS = [
@@ -43,7 +43,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   OrganizationChartModule,
   DropdownModule,
   TabsModule,
-  TooltipModule
+  TooltipModule,
+  SliderModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

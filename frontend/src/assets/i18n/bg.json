@@ -47,7 +47,9 @@
     "SHOW_LINKS": "Покажи връзките",
     "EDIT_MEMBER": "Редактирай член",
     "ZOOM_IN": "Увеличи",
-    "ZOOM_OUT": "Намали"
+    "ZOOM_OUT": "Намали",
+    "CHANGE_BG": "Смени фона",
+    "CHANGE_OPACITY": "Смени яркостта"
   },
 
   "ADD": {
@@ -97,11 +99,19 @@
     "MATERNAL_GRANDMOTHER_BROTHER": "Вуйчо (брат на баба по майчина линия)",
     "MATERNAL_GRANDFATHER_SISTER": "Леля (сестра на дядо по майчина линия)",
     "MATERNAL_GRANDFATHER_BROTHER": "Вуйчо (брат на дядо по майчина линия)",
+    "MATERNAL_GRANDMOTHER_FATHER": "Прадядо (съпруг на баба по майчина линия)",
+    "MATERNAL_GRANDMOTHER_MOTHER": "Прабаба (съпруга на дядо по майчина линия)",
+    "MATERNAL_GRANDFATHER_MOTHER": "Прабаба (съпруга на дядо по майчина линия)",
+    "MATERNAL_GRANDFATHER_FATHER": "Прадядо (съпруг на баба по майчина линия)",
 
     "PATERNAL_GRANDMOTHER_SISTER": "Леля (сестра на баба по бащина линия)",
     "PATERNAL_GRANDMOTHER_BROTHER": "Чичо (брат на баба по бащина линия)",
     "PATERNAL_GRANDFATHER_SISTER": "Леля (сестра на дядо по бащина линия)",
     "PATERNAL_GRANDFATHER_BROTHER": "Чичо (брат на дядо по бащина линия)",
+    "PATERNAL_GRANDMOTHER_FATHER": "Прадядо (съпруг на баба по бащина линия)",
+    "PATERNAL_GRANDMOTHER_MOTHER": "Прабаба (съпруга на дядо по бащина линия)",
+    "PATERNAL_GRANDFATHER_MOTHER": "Прабаба (съпруга на дядо по бащина линия)",
+    "PATERNAL_GRANDFATHER_FATHER": "Прадядо (съпруг на баба по бащина линия)",
 
     "ADD_RELATIVE_HEADER": "Добави роднина",
     "CHOOSE_RELATION": "Избери връзка",
