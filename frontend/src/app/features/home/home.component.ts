@@ -209,7 +209,7 @@ export class HomeComponent implements AfterViewInit {
       for (const [baseRole, group] of Object.entries(remaining)) {
         const basePos = posMap.get(baseRole);
         if (!basePos) {
-          // we can’t place this group yet – its parent hasn’t been placed
+          // we can't place this group yet – its parent hasn't been placed
           continue;
         }
 
@@ -219,19 +219,45 @@ export class HomeComponent implements AfterViewInit {
         const shiftVUp = tierYs.parents - tierYs.owner;
         const shiftVDown = tierYs.owner - tierYs.parents;
 
+        // Determine which side this family branch belongs to
+        const centerX = W / 2;
+        const isFatherSide =
+          baseRole === Roles.FATHER ||
+          baseRole.startsWith('paternal_') ||
+          baseRole.includes('_father') ||
+          basePos.x < centerX;
+
+        const isMotherSide =
+          baseRole === Roles.MOTHER ||
+          baseRole.startsWith('maternal_') ||
+          baseRole.includes('_mother') ||
+          basePos.x > centerX;
+
         // (a) dynamic parents (_mother/_father)
         const dynParents = group.filter((m) =>
           /_(mother|father)$/.test(m.role)
         );
         dynParents.forEach((m, i) => {
           const offsetX = shiftH * (i + 1);
-          const x = m.role.endsWith('_mother')
+          let x = m.role.endsWith('_mother')
             ? basePos.x - offsetX
             : basePos.x + offsetX;
+
           let y: number;
           if (basePos.y === tierYs.owner) y = tierYs.parents;
           else if (basePos.y === tierYs.parents) y = tierYs.grandparents;
           else y = basePos.y - shiftVDown;
+
+          // SIDE ENFORCEMENT: Keep father's family on left, mother's family on right
+          if (isFatherSide) {
+            x = Math.min(x, centerX - 20); // Keep on left side with small buffer
+          } else if (isMotherSide) {
+            x = Math.max(x, centerX + 20); // Keep on right side with small buffer
+          }
+
+          // Keep within screen bounds
+          x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+
           posMap.set(m.role, { x, y });
         });
 
@@ -259,9 +285,20 @@ export class HomeComponent implements AfterViewInit {
             : basePos.x;
 
           sibs.forEach((m, i) => {
-            const x = isFatherBase
+            let x = isFatherBase
               ? anchorX - shiftH * (i + 1)
               : anchorX + shiftH * (i + 1);
+
+            // SIDE ENFORCEMENT: Keep siblings on correct side
+            if (isFatherSide) {
+              x = Math.min(x, centerX - 20);
+            } else if (isMotherSide) {
+              x = Math.max(x, centerX + 20);
+            }
+
+            // Keep within screen bounds
+            x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+
             posMap.set(m.role, { x, y: basePos.y });
           });
         }
@@ -270,8 +307,20 @@ export class HomeComponent implements AfterViewInit {
         group
           .filter((m) => m.role.endsWith('_partner'))
           .forEach((m, i) => {
+            let x = basePos.x - shiftH * (i + 1);
+
+            // SIDE ENFORCEMENT: Keep partners on correct side
+            if (isFatherSide) {
+              x = Math.min(x, centerX - 20);
+            } else if (isMotherSide) {
+              x = Math.max(x, centerX + 20);
+            }
+
+            // Keep within screen bounds
+            x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+
             posMap.set(m.role, {
-              x: basePos.x - shiftH * (i + 1),
+              x,
               y: basePos.y,
             });
           });
@@ -281,8 +330,19 @@ export class HomeComponent implements AfterViewInit {
         if (kids.length) {
           const totalW = (kids.length - 1) * shiftH;
           kids.forEach((m, i) => {
-            const x = basePos.x - totalW / 2 + shiftH * i;
+            let x = basePos.x - totalW / 2 + shiftH * i;
             const y = basePos.y + shiftVDown;
+
+            // SIDE ENFORCEMENT: Keep children on correct side
+            if (isFatherSide) {
+              x = Math.min(x, centerX - 20);
+            } else if (isMotherSide) {
+              x = Math.max(x, centerX + 20);
+            }
+
+            // Keep within screen bounds
+            x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+
             posMap.set(m.role, { x, y });
           });
         }
@@ -299,6 +359,60 @@ export class HomeComponent implements AfterViewInit {
     // 8) Build cytoscape elements (nodes + edges)
     // ───────────────────────────────────────────────────────────────
     const elements: ElementDefinition[] = [];
+
+    // ───────────────────────────────────────────────────────────────
+    // 8a⁺) Clamp every maternal node to the right of Owner, paternal to left
+    // ───────────────────────────────────────────────────────────────
+    const ownerX = posMap.get(Roles.OWNER)!.x;
+    const nodeSize = isMobile ? 60 : 70;
+    // increase this to add more horizontal breathing room
+    const sideBuffer = nodeSize + 5;
+
+    posMap.forEach((pos, role) => {
+      if (role === Roles.OWNER) return;
+
+      // every maternal node (and Mother)
+      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
+        pos.x = Math.max(pos.x, ownerX + sideBuffer);
+      }
+      // every paternal node (and Father)
+      else if (role.startsWith('paternal_') || role === Roles.FATHER) {
+        pos.x = Math.min(pos.x, ownerX - sideBuffer);
+      }
+    });
+
+    // ───────────────────────────────────────────────────────────────
+    // 8a⁺¹) Tiny horizontal collision-avoidance
+    // ───────────────────────────────────────────────────────────────
+    const minDist = nodeSize + 10; // no two circles closer than this in X
+    const entries = Array.from(posMap.entries());
+
+    for (let i = 0; i < entries.length; i++) {
+      for (let j = i + 1; j < entries.length; j++) {
+        const [ra, pa] = entries[i];
+        const [rb, pb] = entries[j];
+
+        // only worry about nodes on roughly the same horizontal band
+        if (Math.abs(pa.y - pb.y) < nodeSize) {
+          const dx = pb.x - pa.x;
+          const absDx = Math.abs(dx);
+
+          if (absDx < minDist) {
+            const shift = (minDist - absDx) / 2;
+            // push them apart
+            if (dx > 0) {
+              pa.x -= shift;
+              pb.x += shift;
+            } else {
+              pa.x += shift;
+              pb.x -= shift;
+            }
+            posMap.set(ra, pa);
+            posMap.set(rb, pb);
+          }
+        }
+      }
+    }
 
     // 8a) Nodes
     members.forEach((m) => {
@@ -318,7 +432,7 @@ export class HomeComponent implements AfterViewInit {
       });
     });
 
-    // 8b) Fixed edges
+    // 8b) Fixed edges between core family members
     const connect = (s: string, t: string) => {
       if (posMap.has(s) && posMap.has(t)) {
         elements.push({ data: { source: s, target: t } });
@@ -332,65 +446,24 @@ export class HomeComponent implements AfterViewInit {
     connect(Roles.MOTHER, Roles.OWNER);
     connect(Roles.FATHER, Roles.OWNER);
 
-    // 8b2) Fallback partner connections based on shared role prefix (e.g., "maternal", "paternal", "owner", etc.)
-    const partnerCandidates: Record<string, FamilyMember[]> = {};
+    // Partner connections for core family members only
+    const corePartnerPairs: [string, string][] = [
+      [Roles.MATERNAL_GRANDMOTHER, Roles.MATERNAL_GRANDFATHER],
+      [Roles.PATERNAL_GRANDMOTHER, Roles.PATERNAL_GRANDFATHER],
+      [Roles.MOTHER, Roles.FATHER],
+    ];
 
-    // Group by role prefix
-    members.forEach((m) => {
-      const parts = m.role.split('_');
-      if (parts.length < 2) return;
-
-      const prefix = parts.slice(0, -1).join('_'); // e.g. maternal_grand
-      partnerCandidates[prefix] = partnerCandidates[prefix] || [];
-      partnerCandidates[prefix].push(m);
-    });
-
-    // For each group, check if there's one 'mother' and one 'father' (or grandmother + grandfather)
-    Object.entries(partnerCandidates).forEach(([prefix, group]) => {
-      const roles = group.map((m) => m.role);
-
-      // Try to find mother+father pair or grandmother+grandfather
-      const pairings: [string, string][] = [
-        [`${prefix}_mother`, `${prefix}_father`],
-        [`${prefix}_father`, `${prefix}_mother`],
-        [`${prefix}_grandmother`, `${prefix}_grandfather`],
-        [`${prefix}_grandfather`, `${prefix}_grandmother`],
-      ];
-
-      pairings.forEach(([r1, r2]) => {
-        if (
-          posMap.has(r1) &&
-          posMap.has(r2) &&
-          !elements.some(
-            (el) =>
-              el.data.source === r1 &&
-              el.data.target === r2 &&
-              el.data['relationship'] === 'partner'
-          )
-        ) {
-          elements.push(
-            {
-              data: {
-                source: r1,
-                target: r2,
-                relationship: 'partner',
-              },
-            },
-            {
-              data: {
-                source: r2,
-                target: r1,
-                relationship: 'partner',
-              },
-            }
-          );
-        }
-      });
+    corePartnerPairs.forEach(([r1, r2]) => {
+      if (posMap.has(r1) && posMap.has(r2)) {
+        elements.push({
+          data: { source: r1, target: r2, relationship: 'partner' },
+        });
+      }
     });
 
     // 8c) Dynamic edges: hook up every dynamic node m…
     dynamic.forEach((m) => {
-      // 1) peel off its “baseRole” (everything before the final underscore)
+      // 1) peel off its "baseRole" (everything before the final underscore)
       const idx = m.role.lastIndexOf('_');
       if (idx < 0) return;
       const base = m.role.slice(0, idx);
@@ -398,14 +471,8 @@ export class HomeComponent implements AfterViewInit {
 
       // 2) if m is a generated parent (mother or father)…
       if (/_mother$|_father$/.test(m.role)) {
-        // a) connect to *all* of base’s children & siblings:
-        [
-          base, // the base node itself
-          `${base}_son`,
-          `${base}_daughter`,
-          `${base}_brother`,
-          `${base}_sister`,
-        ].forEach((childRole) => {
+        // a) connect ONLY to direct children of the base person:
+        [`${base}_son`, `${base}_daughter`].forEach((childRole) => {
           if (posMap.has(childRole)) {
             elements.push({
               data: { source: m.role, target: childRole },
@@ -413,34 +480,85 @@ export class HomeComponent implements AfterViewInit {
           }
         });
 
-        // b) also connect to base’s partner (the “other” parent), if present:
-        //    e.g. base="paternal_grandmother_sister", m endsWith "_father" ⇒
-        //         partnerRole="paternal_grandmother_mother"
-        const personIdx = base.lastIndexOf('_');
-        const basePerson = personIdx > 0 ? base.slice(0, personIdx) : base;
-        const partnerRel = m.role.endsWith('_father') ? 'mother' : 'father';
-        const partnerRole = `${basePerson}_${partnerRel}`;
+        // b) connect to the base person themselves (parent-child relationship)
+        elements.push({
+          data: { source: m.role, target: base },
+        });
 
+        // c) connect to partner ONLY if they are at the same generational level and share the same base:
+        const currentRoleParts = m.role.split('_');
+        const currentRelation = currentRoleParts[currentRoleParts.length - 1]; // 'father' or 'mother'
+        const currentBasePath = currentRoleParts.slice(0, -1).join('_'); // everything except the last part
+
+        const partnerRel = currentRelation === 'father' ? 'mother' : 'father';
+        const partnerRole = `${currentBasePath}_${partnerRel}`;
+
+        // Only connect if partner exists and they share the exact same base path
         if (posMap.has(partnerRole)) {
           elements.push({
-            data: { source: m.role, target: partnerRole },
+            data: {
+              source: m.role,
+              target: partnerRole,
+              relationship: 'partner',
+            },
           });
         }
       }
       // 3) else if m is a partner role, draw base ↔ partner:
       else if (m.role.endsWith('_partner')) {
         elements.push({
-          data: { source: base, target: m.role },
+          data: { source: base, target: m.role, relationship: 'partner' },
         });
       }
-      // 4) otherwise (siblings, children): keep the normal base → m link
-      else {
+      // 4) siblings: connect to their base person (sibling relationship) and shared parents
+      else if (/_brother$|_sister$/.test(m.role)) {
+        // Connect sibling to their base person (the person they're sibling to)
+        elements.push({
+          data: { source: base, target: m.role, relationship: 'sibling' },
+        });
+
+        // Also connect siblings to their shared parents if they exist
+        const siblingParts = m.role.split('_');
+        const siblingBasePath = siblingParts.slice(0, -1).join('_'); // remove 'brother'/'sister'
+
+        // Look for parents at the correct generational level
+        const possibleParents = [
+          `${siblingBasePath}_mother`,
+          `${siblingBasePath}_father`,
+        ];
+
+        possibleParents.forEach((parentRole) => {
+          if (posMap.has(parentRole)) {
+            elements.push({
+              data: { source: parentRole, target: m.role },
+            });
+          }
+        });
+      }
+
+      // 5) children: connect to base person (parent-child relationship)
+      else if (/_son$|_daughter$/.test(m.role)) {
         elements.push({
           data: { source: base, target: m.role },
         });
       }
     });
 
+    // Handle partner relationships for dynamic members
+    members
+      .filter((m) => m.role.endsWith('_partner'))
+      .forEach((m) => {
+        const base = m.role.slice(0, m.role.lastIndexOf('_'));
+        if (posMap.has(base)) {
+          elements.push({
+            data: {
+              source: base,
+              target: m.role,
+              relationship: 'partner',
+            },
+          });
+        }
+      });
     // NEW: 8e) “Raw” parentOf + childOf relationships
     // ─────────────────────────────────────────────
     members.forEach((m) => {
@@ -494,7 +612,7 @@ export class HomeComponent implements AfterViewInit {
     this.cy = cytoscape({
       container,
       elements,
-      layout: { name: 'preset', fit: true, padding: 20 },
+      layout: { name: 'preset', fit: true, padding: 20, animate: true },
       style: [
         {
           selector: 'node',
