@@ -3,11 +3,11 @@
   <!-- Overlay: controls only background color & its opacity -->
   <div
     class="bg-overlay"
-     [ngStyle]="{
+    [ngStyle]="{
       'background-image': 'url(' + backgroundUrl() + ')',
       'background-size': 'cover',
       'background-position': 'center',
-      'opacity': backgroundOpacity()
+      opacity: backgroundOpacity()
     }"
   ></div>
 
@@ -44,6 +44,16 @@
     class="p-button-rounded p-button-sm"
     (click)="openBackgroundDialog()"
     pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
+    tooltipPosition="right"
+  ></button>
+
+  <!-- Change Photo Button -->
+  <button
+    pButton
+    icon="pi pi-camera"
+    class="p-button-rounded p-button-sm"
+    (click)="openPhotoPickerDialog()"
+    pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
     tooltipPosition="right"
   ></button>
 
@@ -84,40 +94,46 @@
 
 <!-- Add Relative Dialog -->
 @if (showAddDialog()) {
-  <app-add-relative-dialog
-    [visible]="showAddDialog()"
-    [baseMember]="selectedMember()!"
-    (close)="showAddDialog.set(false)"
-    (saved)="handleAddRelative($event)"
-  />
+<app-add-relative-dialog
+  [visible]="showAddDialog()"
+  [baseMember]="selectedMember()!"
+  (close)="showAddDialog.set(false)"
+  (saved)="handleAddRelative($event)"
+/>
+} @if (showPhotoPickerDialog()) {
+<app-photo-picker-dialog
+  [visible]="showPhotoPickerDialog()"
+  (close)="showPhotoPickerDialog.set(false)"
+  (photoSelected)="handlePhotoSelection($event)"
+/>
 }
 
 <!-- Hover Action Buttons on Node -->
 @if (hoveredNode()) {
-  <div
-    class="node-actions"
-    (click)="handleActionClick($event)"
-    [ngStyle]="{
-      top: hoveredNode()?.y + 'px',
-      left: hoveredNode()?.x + 'px'
-    }"
-  >
-    <button
-      pButton
-      icon="pi pi-user-plus"
-      class="p-button-rounded p-button-sm"
-      (click)="openAddDialog(hoveredNode()?.id)"
-      pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
-      tooltipPosition="top"
-    ></button>
+<div
+  class="node-actions"
+  (click)="handleActionClick($event)"
+  [ngStyle]="{
+    top: hoveredNode()?.y + 'px',
+    left: hoveredNode()?.x + 'px'
+  }"
+>
+  <button
+    pButton
+    icon="pi pi-user-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="openAddDialog(hoveredNode()?.id)"
+    pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
+    tooltipPosition="top"
+  ></button>
 
-    <button
-      pButton
-      icon="pi pi-pencil"
-      class="p-button-rounded p-button-sm"
-      (click)="editMember()"
-      pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
-      tooltipPosition="top"
-    ></button>
-  </div>
+  <button
+    pButton
+    icon="pi pi-pencil"
+    class="p-button-rounded p-button-sm"
+    (click)="editMember()"
+    pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
+    tooltipPosition="top"
+  ></button>
+</div>
 }

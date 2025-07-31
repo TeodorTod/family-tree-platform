@@ -17,12 +17,14 @@ import { Router } from '@angular/router';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { Roles } from '../../shared/enums/roles.enum';
+import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/photo-picker-dialog.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     AddRelativeDialogComponent,
+    PhotoPickerDialogComponent,
     ...SHARED_ANGULAR_IMPORTS,
     ...SHARED_PRIMENG_IMPORTS,
   ],
@@ -44,6 +46,10 @@ export class HomeComponent implements AfterViewInit {
   backgroundIndex = signal(0);
   backgroundOpacityValue = 0.6;
   backgroundOpacity = signal(this.backgroundOpacityValue.toString());
+  showPhotoPickerDialog = signal(false);
+  customPhotoUrl =
+    localStorage.getItem('familyPhotoUrl') ??
+    'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
     this.familyService.getMyFamily().subscribe((members) => {
@@ -68,7 +74,27 @@ export class HomeComponent implements AfterViewInit {
     }
   }
 
+  openPhotoPickerDialog() {
+    this.showPhotoPickerDialog.set(true);
+  }
+
+  handlePhotoSelection(photoUrl: string) {
+    // Persist the pick
+    localStorage.setItem('familyPhotoUrl', photoUrl);
+    this.customPhotoUrl = photoUrl;
+
+    if (!this.cy) return;
+    // Apply to everyone
+    this.cy.nodes().forEach((node) => {
+      node.data('photo', photoUrl);
+      node.style('background-image', `url(${photoUrl})`);
+    });
+    this.cy.style().update();
+    this.showPhotoPickerDialog.set(false);
+  }
+
   private renderGraph(members: FamilyMember[]) {
+    const defaultPhoto = this.customPhotoUrl;
     // ───────────────────────────────────────────────────────────────
     // 0) Boilerplate: container size + mobile detection
     // ───────────────────────────────────────────────────────────────
@@ -426,7 +452,7 @@ export class HomeComponent implements AfterViewInit {
           gender: m.gender?.toLowerCase(),
           photo: m.photoUrl
             ? `${environment.apiUrl}${m.photoUrl}`
-            : 'assets/images/user.svg',
+            : defaultPhoto,
         },
         position: { x, y },
       });

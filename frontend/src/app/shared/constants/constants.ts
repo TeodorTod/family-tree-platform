@@ -70,6 +70,9 @@ export class CONSTANTS {
   static readonly INFO_ZOOM_OUT = 'INFO.ZOOM_OUT';
   static readonly INFO_CHANGE_BG = 'INFO.CHANGE_BG';
   static readonly INFO_CHANGE_OPACITY = 'INFO.CHANGE_OPACITY';
+  static readonly INFO_CHANGE_PROFILE_IMAGE =
+    'INFO.CHANGE_PROFILE_IMAGE';
+    static readonly INFO_PHOTO_PICKER_HEADER = 'INFO.PHOTO_PICKER_HEADER';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

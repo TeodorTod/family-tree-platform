@@ -49,7 +49,9 @@
     "ZOOM_IN": "Увеличи",
     "ZOOM_OUT": "Намали",
     "CHANGE_BG": "Смени фона",
-    "CHANGE_OPACITY": "Смени яркостта"
+    "CHANGE_OPACITY": "Смени яркостта",
+    "CHANGE_PROFILE_IMAGE": "Смени профилната снимка",
+    "PHOTO_PICKER_HEADER": "Избери снимка"
   },
 
   "ADD": {
