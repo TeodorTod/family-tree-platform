@@ -42,7 +42,7 @@ export class HomeComponent implements AfterViewInit {
   selectedMember = signal<FamilyMember | null>(null);
   showAddDialog = signal(false);
   members: FamilyMember[] = [];
-  showConnections = signal(true);
+  showConnections = signal(false);
   backgroundIndex = signal(0);
   backgroundOpacityValue = 0.6;
   backgroundOpacity = signal(this.backgroundOpacityValue.toString());
@@ -55,6 +55,7 @@ export class HomeComponent implements AfterViewInit {
     this.familyService.getMyFamily().subscribe((members) => {
       this.members = members;
       this.renderGraph(members);
+      this.toggleEdgeVisibility();
     });
   }
 
@@ -676,11 +677,11 @@ export class HomeComponent implements AfterViewInit {
             'line-color': '#666',
             'curve-style': 'straight',
             'target-arrow-shape': 'none',
+       
           },
         },
       ],
     });
-
     // final zoom & pan
     this.cy.zoom(isMobile ? 0.7 : 0.9);
     this.cy.center();
