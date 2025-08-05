@@ -1,0 +1,40 @@
+<p-dialog
+  [header]="CONSTANTS.INFO_CHANGE_BG | translate"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cancel()"
+>
+  <div class="background-grid">
+    @for (bg of backgroundImages; track bg) {
+      <div
+        class="bg-option"
+        [class.selected]="bg === selectedBg"
+        (click)="selectBg(bg)"
+      >
+        <img [src]="bg" alt="Background option" class="small-image" />
+      </div>
+    } @empty {
+      <div class="no-results">
+        {{ 'No backgrounds available.' | translate }}
+      </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+      class="p-button-text"
+      (click)="cancel()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="{{ CONSTANTS.INFO_SAVE | translate }}"
+      [disabled]="!selectedBg"
+      (click)="save()"
+    ></button>
+  </ng-template>
+</p-dialog>

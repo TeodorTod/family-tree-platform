@@ -18,6 +18,8 @@ import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-impo
 import { CONSTANTS } from '../../shared/constants/constants';
 import { Roles } from '../../shared/enums/roles.enum';
 import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/photo-picker-dialog.component';
+import { BackgroundPickerDialogComponent } from './components/background-picker-dialog/background-picker-dialog.component';
+import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +27,7 @@ import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/pho
   imports: [
     AddRelativeDialogComponent,
     PhotoPickerDialogComponent,
+    BackgroundPickerDialogComponent,
     ...SHARED_ANGULAR_IMPORTS,
     ...SHARED_PRIMENG_IMPORTS,
   ],
@@ -47,11 +50,19 @@ export class HomeComponent implements AfterViewInit {
   backgroundOpacityValue = 0.6;
   backgroundOpacity = signal(this.backgroundOpacityValue.toString());
   showPhotoPickerDialog = signal(false);
+  showBackgroundDialog = signal(false);
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
+    const savedBg = localStorage.getItem('selectedBackground');
+    if (savedBg && this.backgroundImages.includes(savedBg)) {
+      this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
+    } else {
+      // Fallback to default background if no saved value or invalid
+      this.backgroundIndex.set(0);
+    }
     this.familyService.getMyFamily().subscribe((members) => {
       this.members = members;
       this.renderGraph(members);
@@ -677,7 +688,6 @@ export class HomeComponent implements AfterViewInit {
             'line-color': '#666',
             'curve-style': 'straight',
             'target-arrow-shape': 'none',
-       
           },
         },
       ],
@@ -810,13 +820,7 @@ export class HomeComponent implements AfterViewInit {
     });
   }
 
-  backgroundImages = [
-    'assets/images/background/background_main.png',
-    'assets/images/background/background_1.png',
-    'assets/images/background/background_2.png',
-    'assets/images/background/background_3.png',
-    'assets/images/background/background_4.png',
-  ];
+  backgroundImages = BACKGROUND_IMAGES;
 
   backgroundUrl() {
     return this.backgroundImages[this.backgroundIndex()];
@@ -827,6 +831,23 @@ export class HomeComponent implements AfterViewInit {
   }
 
   openBackgroundDialog() {
-    // TODO: open a modal with selection logic — you can trigger a p-dialog here
+    this.showBackgroundDialog.set(true);
+  }
+
+  handleBackgroundSelection(url: string) {
+    const index = this.backgroundImages.indexOf(url);
+    if (index !== -1) {
+      console.log('Selected background URL:', url, 'Index:', index);
+      this.backgroundIndex.set(index);
+    } else {
+      console.warn(
+        'Background URL not found in backgroundImages:',
+        url,
+        'Falling back to default index 0'
+      );
+      this.backgroundIndex.set(0);
+    }
+    this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
+    this.showBackgroundDialog.set(false);
   }
 }

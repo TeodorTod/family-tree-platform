@@ -1,7 +1,7 @@
 <!-- Cytoscape container with color overlay -->
 <div class="cy-wrapper">
   <!-- Overlay: controls only background color & its opacity -->
-  <div
+<div
     class="bg-overlay"
     [ngStyle]="{
       'background-image': 'url(' + backgroundUrl() + ')',
@@ -107,6 +107,11 @@
   (photoSelected)="handlePhotoSelection($event)"
 />
 }
+<app-background-picker-dialog
+  [visible]="showBackgroundDialog()"
+  (close)="showBackgroundDialog.set(false)"
+  (backgroundSelected)="handleBackgroundSelection($event)"
+></app-background-picker-dialog>
 
 <!-- Hover Action Buttons on Node -->
 @if (hoveredNode()) {
