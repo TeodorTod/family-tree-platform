@@ -20,6 +20,7 @@ import { Roles } from '../../shared/enums/roles.enum';
 import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/photo-picker-dialog.component';
 import { BackgroundPickerDialogComponent } from './components/background-picker-dialog/background-picker-dialog.component';
 import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
+import { TreeTableComponent } from './components/tree-table/tree-table.component';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +29,7 @@ import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
     AddRelativeDialogComponent,
     PhotoPickerDialogComponent,
     BackgroundPickerDialogComponent,
+    TreeTableComponent,
     ...SHARED_ANGULAR_IMPORTS,
     ...SHARED_PRIMENG_IMPORTS,
   ],
@@ -51,6 +53,7 @@ export class HomeComponent implements AfterViewInit {
   backgroundOpacity = signal(this.backgroundOpacityValue.toString());
   showPhotoPickerDialog = signal(false);
   showBackgroundDialog = signal(false);
+  showTableView = signal(false);
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
@@ -850,4 +853,15 @@ export class HomeComponent implements AfterViewInit {
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
     this.showBackgroundDialog.set(false);
   }
+
+  toggleView() {
+  this.showTableView.set(!this.showTableView());
+  // If returning to chart view, re-render Cytoscape and update opacity
+  if (!this.showTableView()) {
+    setTimeout(() => {
+      this.cy?.resize().fit();
+      this.backgroundOpacity.set(this.backgroundOpacityValue.toString()); // Force opacity update
+    }, 0);
+  }
+}
 }

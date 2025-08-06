@@ -1,7 +1,7 @@
 <!-- Cytoscape container with color overlay -->
-<div class="cy-wrapper">
+<div class="cy-wrapper" [hidden]="showTableView()">
   <!-- Overlay: controls only background color & its opacity -->
-<div
+  <div
     class="bg-overlay"
     [ngStyle]="{
       'background-image': 'url(' + backgroundUrl() + ')',
@@ -17,80 +17,94 @@
 
 <!-- Floating control buttons -->
 <div class="control-panel d-flex flex-column gap-3 mb-3">
-  <!-- Zoom In -->
+  <!-- 1) Toggle always visible -->
   <button
     pButton
-    icon="pi pi-search-plus"
+    [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
     class="p-button-rounded p-button-sm"
-    (click)="zoomIn()"
-    pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
+    (click)="toggleView()"
+    pTooltip="{{ showTableView() ? 'Show Chart' : 'Show Table' }}"
     tooltipPosition="top"
   ></button>
 
-  <!-- Zoom Out -->
-  <button
-    pButton
-    icon="pi pi-search-minus"
-    class="p-button-rounded p-button-sm"
-    (click)="zoomOut()"
-    pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
-    tooltipPosition="top"
-  ></button>
+  <!-- 2) Everything else only in chart mode -->
+  @if (!showTableView()) {
+    <!-- Zoom In -->
+    <button
+      pButton
+      icon="pi pi-search-plus"
+      class="p-button-rounded p-button-sm"
+      (click)="zoomIn()"
+      pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
+      tooltipPosition="top"
+    ></button>
 
-  <!-- Open Background Dialog -->
-  <button
-    pButton
-    icon="pi pi-image"
-    class="p-button-rounded p-button-sm"
-    (click)="openBackgroundDialog()"
-    pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
-    tooltipPosition="right"
-  ></button>
+    <!-- Zoom Out -->
+    <button
+      pButton
+      icon="pi pi-search-minus"
+      class="p-button-rounded p-button-sm"
+      (click)="zoomOut()"
+      pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
+      tooltipPosition="top"
+    ></button>
 
-  <!-- Change Photo Button -->
-  <button
-    pButton
-    icon="pi pi-camera"
-    class="p-button-rounded p-button-sm"
-    (click)="openPhotoPickerDialog()"
-    pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
-    tooltipPosition="right"
-  ></button>
-
-  <!-- Toggle Links -->
-  <button
-    pButton
-    type="button"
-    [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
-    class="p-button-rounded p-button-sm"
-    (click)="toggleConnections()"
-    tooltipPosition="top"
-  >
-    {{
-      showConnections()
-        ? (CONSTANTS.INFO_HIDE_LINKS | translate)
-        : (CONSTANTS.INFO_SHOW_LINKS | translate)
-    }}
-  </button>
-
-  <!-- Vertical Opacity Slider (for overlay only) -->
-  <div
-    class="opacity-slider-container"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      styleClass="opacity-slider"
-      [(ngModel)]="backgroundOpacityValue"
-      [min]="0.1"
-      [max]="1"
-      [step]="0.1"
-      (onChange)="updateBackgroundOpacity()"
-      pTooltip="{{ CONSTANTS.INFO_CHANGE_OPACITY | translate }}"
+    <!-- Background Picker -->
+    <button
+      pButton
+      icon="pi pi-image"
+      class="p-button-rounded p-button-sm"
+      (click)="openBackgroundDialog()"
+      pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
       tooltipPosition="right"
-    ></p-slider>
-  </div>
+    ></button>
+
+    <!-- Photo Picker -->
+    <button
+      pButton
+      icon="pi pi-camera"
+      class="p-button-rounded p-button-sm"
+      (click)="openPhotoPickerDialog()"
+      pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
+      tooltipPosition="right"
+    ></button>
+
+    <!-- Toggle Links -->
+    <button
+      pButton
+      type="button"
+      [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
+      class="p-button-rounded p-button-sm"
+      (click)="toggleConnections()"
+      tooltipPosition="top"
+    >
+      {{
+        showConnections()
+          ? (CONSTANTS.INFO_HIDE_LINKS | translate)
+          : (CONSTANTS.INFO_SHOW_LINKS | translate)
+      }}
+    </button>
+
+    <!-- Vertical Opacity Slider -->
+    <div
+      class="opacity-slider-container"
+      (mousedown)="$event.stopPropagation()"
+      (touchstart)="$event.stopPropagation()"
+    >
+      <p-slider
+        styleClass="opacity-slider"
+        [(ngModel)]="backgroundOpacityValue"
+        [min]="0.1"
+        [max]="1"
+        [step]="0.1"
+        (onChange)="updateBackgroundOpacity()"
+        pTooltip="{{ CONSTANTS.INFO_CHANGE_OPACITY | translate }}"
+        tooltipPosition="right"
+      ></p-slider>
+    </div>
+  }
 </div>
+
 
 <!-- Add Relative Dialog -->
 @if (showAddDialog()) {
@@ -141,4 +155,6 @@
     tooltipPosition="top"
   ></button>
 </div>
+} @if (showTableView()) {
+<app-tree-table [members]="members"></app-tree-table>
 }
