@@ -57,40 +57,43 @@ export class MemberInfoComponent implements OnInit {
       });
     });
   }
+  
 
   save() {
     const data = { ...this.form.value, role: this.role };
-    this.familyService
-      .saveMemberByRole(this.role, data)
-      .subscribe();
+    this.familyService.saveMemberByRole(this.role, data).subscribe();
   }
 
-  cancel(): void {
-    this.router.navigate(['/']);
+cancel(): void {
+    // Get the previous view from query parameters
+    const previousView = this.route.snapshot.queryParamMap.get('view');
+    // Navigate back to the home route, preserving the view query parameter if it exists
+    this.router.navigate(['/'], {
+      queryParams: { view: previousView || 'chart' }, // Default to 'chart' if no view is specified
+    });
   }
 
- getTranslatedRoleLabel(): string {
-  const parts = this.role.split('_')
-  // Try longest first: e.g. ["maternal","grandmother","brother"] →
-  //   RELATION_MATERNAL_GRANDMOTHER_BROTHER  
-  for (let len = parts.length; len > 0; len--) {
-    const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase()
-    const constantKey = (CONSTANTS as any)[key] as string|undefined
-    if (constantKey) {
-      return this.translate.instant(constantKey)
+  getTranslatedRoleLabel(): string {
+    const parts = this.role.split('_');
+    // Try longest first: e.g. ["maternal","grandmother","brother"] →
+    //   RELATION_MATERNAL_GRANDMOTHER_BROTHER
+    for (let len = parts.length; len > 0; len--) {
+      const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
+      const constantKey = (CONSTANTS as any)[key] as string | undefined;
+      if (constantKey) {
+        return this.translate.instant(constantKey);
+      }
     }
+    // Next: any maternal_… or paternal_… fallback
+    if (this.role.startsWith('maternal_')) {
+      return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
+    }
+    if (this.role.startsWith('paternal_')) {
+      return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
+    }
+    // Last resort
+    return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
   }
-  // Next: any maternal_… or paternal_… fallback
-  if (this.role.startsWith('maternal_')) {
-    return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC)
-  }
-  if (this.role.startsWith('paternal_')) {
-    return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC)
-  }
-  // Last resort
-  return this.translate.instant(CONSTANTS.RELATION_UNKNOWN)
-}
-
 
   private convertDatesToObjects(obj: any): any {
     const clone = { ...obj };

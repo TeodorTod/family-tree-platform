@@ -21,6 +21,7 @@ import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { SliderModule } from 'primeng/slider';
 import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 
 
 export const SHARED_PRIMENG_IMPORTS = [
@@ -47,6 +48,7 @@ export const SHARED_PRIMENG_IMPORTS = [
   TooltipModule,
   SliderModule,
   TableModule,
+  ToastModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

@@ -1,17 +1,70 @@
-<!-- src/app/features/tree-table/family-table/family-table.component.html -->
-<p-table [value]="members" responsiveLayout="scroll">
+<p-table
+  [value]="members"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="rows"
+  [first]="first"
+  [totalRecords]="totalRecords"
+  [loading]="loading"
+  [rowsPerPageOptions]="[5, 10, 20, 50]"
+  [sortField]="sortField"
+  [sortOrder]="sortOrder"
+  [responsiveLayout]="'scroll'"
+  (onLazyLoad)="loadMembers($event)"
+>
   <ng-template pTemplate="header">
     <tr>
-      <th>{{ "First Name" | translate }}</th>
-      <th>{{ "Last Name" | translate }}</th>
-      <th>{{ "Date of Birth" | translate }}</th>
+      <th pSortableColumn="firstName">
+        {{ "First Name" | translate }}
+        <p-sortIcon field="firstName" />
+      </th>
+      <th pSortableColumn="lastName">
+        {{ "Last Name" | translate }}
+        <p-sortIcon field="lastName" />
+      </th>
+      <th pSortableColumn="dob">
+        {{ "Date of Birth" | translate }}
+        <p-sortIcon field="dob" />
+      </th>
+      <th>{{ "Actions" | translate }}</th>
     </tr>
   </ng-template>
+
   <ng-template pTemplate="body" let-m>
     <tr>
       <td>{{ m.firstName }}</td>
       <td>{{ m.lastName || "—" }}</td>
-      <td>{{ m.dob | date : "yyyy-MM-dd" }}</td>
+      <td>{{ m.dob | date: "yyyy-MM-dd" }}</td>
+      <td>
+        <div class="d-flex gap-2">
+          <button
+            pButton
+            icon="pi pi-user-plus"
+            class="p-button-rounded p-button-sm"
+            (click)="addRelative.emit(m)"
+            pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
+            tooltipPosition="top"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-sm"
+            (click)="editMember.emit(m)"
+            pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
+            tooltipPosition="top"
+          ></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4">
+        {{ loading ? ('Loading...' | translate) : ('No members found' | translate) }}
+      </td>
     </tr>
   </ng-template>
 </p-table>
+
+<p-toast></p-toast>

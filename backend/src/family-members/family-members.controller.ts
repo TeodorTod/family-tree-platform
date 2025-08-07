@@ -7,12 +7,14 @@ import {
   Req,
   Param,
   Put,
+  Query,
 } from '@nestjs/common';
 import { FamilyMembersService } from './family-members.service';
 import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
+import { GetFamilyPagedDto } from './dto/get-family-page.dto';
 
 @Controller('family-members')
 @UseGuards(JwtAuthGuard)
@@ -31,9 +33,19 @@ export class FamilyMembersController {
 
   @Post('relationships')
   createRelationship(@Body() dto: CreateRelationshipDto, @Req() req: any) {
-    // (Optional) you could check ownership here:
-    // const userId = req.user.sub;
     return this.familyService.createRelationship(dto);
+  }
+
+  @Get('my-tree-paged')
+  getPagedTree(@Req() req: any, @Query() query: any) {
+    const dto: GetFamilyPagedDto = {
+      page: parseInt(query.page, 10) || 0,
+      size: parseInt(query.size, 10) || 10,
+      sortField: query.sortField || 'dob',
+      sortOrder: query.sortOrder || 'asc',
+    };
+    console.log('Received query params:', query, 'Transformed DTO:', dto);
+    return this.familyService.getPagedFamilyMembers(req.user.sub, dto);
   }
 
   @Get(':role')

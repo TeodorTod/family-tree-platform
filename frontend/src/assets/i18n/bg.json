@@ -51,7 +51,9 @@
     "CHANGE_BG": "Смени фона",
     "CHANGE_OPACITY": "Смени яркостта",
     "CHANGE_PROFILE_IMAGE": "Смени профилната снимка",
-    "PHOTO_PICKER_HEADER": "Избери снимка"
+    "PHOTO_PICKER_HEADER": "Избери снимка",
+    "SHOW_CHART": "Покажи дървото",
+    "SHOW_TABLE": "Покажи таблицата"
   },
 
   "ADD": {

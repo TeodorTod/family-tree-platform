@@ -92,4 +92,23 @@ export class FamilyService {
   }) {
     return this.http.post(`${this.api}/family-members/relationships`, data);
   }
+
+  getMyFamilyPaged(
+    page: number,
+    size: number,
+    sortField: string,
+    sortOrder: string
+  ) {
+   return this.http.get<{ data: FamilyMember[]; total: number }>(
+  `${this.api}/family-members/my-tree-paged`,
+  {
+    params: {
+      page,
+      size,
+      sortField,
+      sortOrder,
+    },
+  }
+);
+  }
 }

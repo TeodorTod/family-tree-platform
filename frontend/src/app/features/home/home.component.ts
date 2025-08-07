@@ -13,7 +13,7 @@ import { environment } from '../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { Observable } from 'rxjs';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { Roles } from '../../shared/enums/roles.enum';
@@ -41,6 +41,7 @@ export class HomeComponent implements AfterViewInit {
   @ViewChild('cy', { static: true }) cyRef!: ElementRef<HTMLElement>;
   hoveredNode = signal<{ id: string; x: number; y: number } | null>(null);
   private familyService = inject(FamilyService);
+  private route = inject(ActivatedRoute);
   router = inject(Router);
   cy?: cytoscape.Core;
 
@@ -59,13 +60,20 @@ export class HomeComponent implements AfterViewInit {
     'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
+    const viewMode = this.route.snapshot.queryParamMap.get('view');
+    if (viewMode === 'table') {
+      this.showTableView.set(true);
+    } else {
+      this.showTableView.set(false);
+    }
+
     const savedBg = localStorage.getItem('selectedBackground');
     if (savedBg && this.backgroundImages.includes(savedBg)) {
       this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
     } else {
-      // Fallback to default background if no saved value or invalid
       this.backgroundIndex.set(0);
     }
+
     this.familyService.getMyFamily().subscribe((members) => {
       this.members = members;
       this.renderGraph(members);
@@ -803,7 +811,9 @@ export class HomeComponent implements AfterViewInit {
 
     const member = this.members.find((m) => m.role === hovered.id);
     if (member) {
-      this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role]);
+      this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role], {
+        queryParams: { view: this.showTableView() ? 'table' : 'chart' },
+      });
     }
   }
 
@@ -855,13 +865,26 @@ export class HomeComponent implements AfterViewInit {
   }
 
   toggleView() {
-  this.showTableView.set(!this.showTableView());
-  // If returning to chart view, re-render Cytoscape and update opacity
-  if (!this.showTableView()) {
-    setTimeout(() => {
-      this.cy?.resize().fit();
-      this.backgroundOpacity.set(this.backgroundOpacityValue.toString()); // Force opacity update
-    }, 0);
+    const isTable = !this.showTableView();
+    this.showTableView.set(isTable);
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { view: isTable ? 'table' : 'chart' },
+      queryParamsHandling: 'merge',
+    });
+
+    if (!isTable) {
+      setTimeout(() => {
+        this.cy?.resize().fit();
+        this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
+      }, 0);
+    }
   }
-}
+
+  handleEditFromTable(member: FamilyMember) {
+    this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role], {
+      queryParams: { view: 'table' },
+    });
+  }
 }

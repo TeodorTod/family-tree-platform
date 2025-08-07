@@ -1,5 +1,5 @@
 <!-- Cytoscape container with color overlay -->
-<div class="cy-wrapper" [hidden]="showTableView()">
+<div class="cy-wrapper" [class.hidden]="showTableView()">
   <!-- Overlay: controls only background color & its opacity -->
   <div
     class="bg-overlay"
@@ -11,23 +11,23 @@
     }"
   ></div>
 
-  <!-- Your actual Cytoscape canvas -->
+  <!-- Actual Cytoscape canvas -->
   <div #cy class="cy-container"></div>
 </div>
 
 <!-- Floating control buttons -->
 <div class="control-panel d-flex flex-column gap-3 mb-3">
-  <!-- 1) Toggle always visible -->
+  <!-- Toggle button (always visible) -->
   <button
     pButton
     [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
     class="p-button-rounded p-button-sm"
     (click)="toggleView()"
-    pTooltip="{{ showTableView() ? 'Show Chart' : 'Show Table' }}"
-    tooltipPosition="top"
+    pTooltip="{{ showTableView() ? (CONSTANTS.INFO_SHOW_CHART | translate) : (CONSTANTS.INFO_SHOW_TABLE | translate) }}"
+    tooltipPosition="left"
   ></button>
 
-  <!-- 2) Everything else only in chart mode -->
+  <!-- Chart-specific controls (hidden in table view) -->
   @if (!showTableView()) {
     <!-- Zoom In -->
     <button
@@ -36,7 +36,7 @@
       class="p-button-rounded p-button-sm"
       (click)="zoomIn()"
       pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
-      tooltipPosition="top"
+      tooltipPosition="left"
     ></button>
 
     <!-- Zoom Out -->
@@ -46,7 +46,7 @@
       class="p-button-rounded p-button-sm"
       (click)="zoomOut()"
       pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
-      tooltipPosition="top"
+      tooltipPosition="left"
     ></button>
 
     <!-- Background Picker -->
@@ -76,14 +76,9 @@
       [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
       class="p-button-rounded p-button-sm"
       (click)="toggleConnections()"
-      tooltipPosition="top"
-    >
-      {{
-        showConnections()
-          ? (CONSTANTS.INFO_HIDE_LINKS | translate)
-          : (CONSTANTS.INFO_SHOW_LINKS | translate)
-      }}
-    </button>
+      pTooltip="{{ showConnections() ? (CONSTANTS.INFO_HIDE_LINKS | translate) : (CONSTANTS.INFO_SHOW_LINKS | translate) }}"
+      tooltipPosition="left"
+    ></button>
 
     <!-- Vertical Opacity Slider -->
     <div
@@ -105,56 +100,69 @@
   }
 </div>
 
-
 <!-- Add Relative Dialog -->
 @if (showAddDialog()) {
-<app-add-relative-dialog
-  [visible]="showAddDialog()"
-  [baseMember]="selectedMember()!"
-  (close)="showAddDialog.set(false)"
-  (saved)="handleAddRelative($event)"
-/>
-} @if (showPhotoPickerDialog()) {
-<app-photo-picker-dialog
-  [visible]="showPhotoPickerDialog()"
-  (close)="showPhotoPickerDialog.set(false)"
-  (photoSelected)="handlePhotoSelection($event)"
-/>
+  <app-add-relative-dialog
+    [visible]="showAddDialog()"
+    [baseMember]="selectedMember()!"
+    (close)="showAddDialog.set(false)"
+    (saved)="handleAddRelative($event)"
+  />
 }
-<app-background-picker-dialog
-  [visible]="showBackgroundDialog()"
-  (close)="showBackgroundDialog.set(false)"
-  (backgroundSelected)="handleBackgroundSelection($event)"
-></app-background-picker-dialog>
+
+<!-- Photo Picker Dialog -->
+@if (showPhotoPickerDialog()) {
+  <app-photo-picker-dialog
+    [visible]="showPhotoPickerDialog()"
+    (close)="showPhotoPickerDialog.set(false)"
+    (photoSelected)="handlePhotoSelection($event)"
+  />
+}
+
+<!-- Background Picker Dialog -->
+@if (showBackgroundDialog()) {
+  <app-background-picker-dialog
+    [visible]="showBackgroundDialog()"
+    (close)="showBackgroundDialog.set(false)"
+    (backgroundSelected)="handleBackgroundSelection($event)"
+  />
+}
 
 <!-- Hover Action Buttons on Node -->
-@if (hoveredNode()) {
-<div
-  class="node-actions"
-  (click)="handleActionClick($event)"
-  [ngStyle]="{
-    top: hoveredNode()?.y + 'px',
-    left: hoveredNode()?.x + 'px'
-  }"
->
-  <button
-    pButton
-    icon="pi pi-user-plus"
-    class="p-button-rounded p-button-sm"
-    (click)="openAddDialog(hoveredNode()?.id)"
-    pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
-    tooltipPosition="top"
-  ></button>
+@if (hoveredNode() && !showTableView()) {
+  <div
+    class="node-actions"
+    (click)="handleActionClick($event)"
+    [ngStyle]="{
+      top: hoveredNode()?.y + 'px',
+      left: hoveredNode()?.x + 'px'
+    }"
+  >
+    <button
+      pButton
+      icon="pi pi-user-plus"
+      class="p-button-rounded p-button-sm"
+      (click)="openAddDialog(hoveredNode()?.id)"
+      pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
+      tooltipPosition="top"
+    ></button>
 
-  <button
-    pButton
-    icon="pi pi-pencil"
-    class="p-button-rounded p-button-sm"
-    (click)="editMember()"
-    pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
-    tooltipPosition="top"
-  ></button>
-</div>
-} @if (showTableView()) {
-<app-tree-table [members]="members"></app-tree-table>
+    <button
+      pButton
+      icon="pi pi-pencil"
+      class="p-button-rounded p-button-sm"
+      (click)="editMember()"
+      pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
+      tooltipPosition="top"
+    ></button>
+  </div>
 }
+
+<!-- Table View -->
+<div class="table-container" [class.full-screen]="showTableView()">
+  <app-tree-table
+    *ngIf="showTableView()"
+    (addRelative)="openAddDialog($event.role)"
+    (editMember)="handleEditFromTable($event)"
+  ></app-tree-table>
+</div>

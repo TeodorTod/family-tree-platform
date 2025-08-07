@@ -28,14 +28,18 @@ body {
 .app-shell {
   display: flex;
   flex-direction: column;
-  height: 100vh; // FULL viewport height
+  height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .main-content {
   flex: 1;
-  overflow: hidden;
+ overflow: auto;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 .f-width {
@@ -214,7 +218,7 @@ body {
   display: flex;
   flex-direction: column;
   /* revert back so children default to full-width/normal */
-  align-items: stretch; 
+  align-items: stretch;
   gap: 0.5rem;
   z-index: 1000;
   transition: all 0.3s ease-in-out;
@@ -233,10 +237,10 @@ body {
   /* let the slider container remain full width or default */
   .opacity-slider-container {
     align-self: stretch;
-    width: 100%;   /* or whatever width you prefer */
+    width: 100%;
+    min-width: 165px;
   }
 }
-
 
 .photo-preview-container {
   position: relative;
