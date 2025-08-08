@@ -8,6 +8,8 @@
   --highlight-bg: #fdf6e3;
   --surface-ground: #f9f9f9;
   --surface-card: #ffffff;
+    --navbar-h: 64px;    
+  --footer-h: 56px;
 }
 
 html,
@@ -214,15 +216,15 @@ body {
 .control-panel {
   position: absolute;
   bottom: 4rem;
-  right: 2rem;
+  right: 4rem;
   display: flex;
   flex-direction: column;
-  /* revert back so children default to full-width/normal */
   align-items: stretch;
   gap: 0.5rem;
   z-index: 1000;
   transition: all 0.3s ease-in-out;
   opacity: 1;
+  padding: 1.5rem;
 
   &:hover {
     opacity: 1;

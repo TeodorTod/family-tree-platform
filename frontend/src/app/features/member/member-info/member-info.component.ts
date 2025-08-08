@@ -65,9 +65,7 @@ export class MemberInfoComponent implements OnInit {
   }
 
 cancel(): void {
-    // Get the previous view from query parameters
     const previousView = this.route.snapshot.queryParamMap.get('view');
-    // Navigate back to the home route, preserving the view query parameter if it exists
     this.router.navigate(['/'], {
       queryParams: { view: previousView || 'chart' }, // Default to 'chart' if no view is specified
     });
@@ -75,8 +73,6 @@ cancel(): void {
 
   getTranslatedRoleLabel(): string {
     const parts = this.role.split('_');
-    // Try longest first: e.g. ["maternal","grandmother","brother"] →
-    //   RELATION_MATERNAL_GRANDMOTHER_BROTHER
     for (let len = parts.length; len > 0; len--) {
       const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
       const constantKey = (CONSTANTS as any)[key] as string | undefined;
@@ -84,7 +80,6 @@ cancel(): void {
         return this.translate.instant(constantKey);
       }
     }
-    // Next: any maternal_… or paternal_… fallback
     if (this.role.startsWith('maternal_')) {
       return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
     }

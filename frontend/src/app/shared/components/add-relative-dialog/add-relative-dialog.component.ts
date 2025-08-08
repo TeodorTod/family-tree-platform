@@ -56,8 +56,9 @@ export class AddRelativeDialogComponent implements OnInit {
 
   ngOnInit(): void {
     const role = this.baseMember?.role;
+    //exlude logic for mother/father
     const isDeepOrLateral =
-      role?.includes('_sister') || role?.includes('_brother');
+      role?.includes('_sister___') || role?.includes('_brother___');
 
     this.relationOptions = [
       {

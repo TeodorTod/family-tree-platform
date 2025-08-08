@@ -14,10 +14,11 @@
 }
 
 .p-datatable-wrapper {
-  flex: 1;
   overflow-y: auto;
-  max-height: calc(100% - 100px); /* Header (~60px) + paginator (~40px) */
+  max-height: calc(100vh - 140px); /* Adjusted for navbar (~60px), header (~40px), paginator (~40px) */
   -webkit-overflow-scrolling: touch;
+  margin-top: 40px; /* Space for fixed header */
+  margin-bottom: 36px; /* Space for fixed paginator */
 }
 
 .p-datatable-table {
@@ -25,7 +26,7 @@
   border-collapse: collapse;
 
   tr {
-    height: 30px; /* Slightly reduced for compactness */
+    height: 30px;
   }
 
   td, th {
@@ -37,29 +38,42 @@
 }
 
 .p-datatable-header,
-.p-datatable-thead th {
+.p-datatable-thead {
   background: var(--surface-card);
   color: var(--primary-color);
   padding: 0.5rem;
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 60px; /* Below assumed navbar height */
+  left: 0;
+  right: 0;
   z-index: 20;
   height: 40px;
 }
 
 .p-sortable-column .p-sortable-column-icon {
   color: var(--primary-color);
+  cursor: pointer; /* Ensure clickability */
 }
 
 .p-paginator {
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  bottom: 0; /* Above footer */
+  left: 0;
+  right: 0;
   background: var(--surface-card);
   z-index: 20;
   padding: 0.25rem;
   min-height: 36px;
   display: flex;
   align-items: center;
+}
+
+.p-paginator .p-dropdown,
+.p-paginator .p-paginator-page {
+  height: 28px;
+  line-height: 1;
+  font-size: 0.75rem;
+  cursor: pointer; /* Ensure clickability */
 }
 
 .p-button.p-button-rounded {
@@ -83,33 +97,41 @@
 @media (max-width: 768px) {
   .p-datatable {
     font-size: 0.6875rem;
+  }
 
-    .p-datatable-wrapper {
-      max-height: calc(100% - 90px);
+  .p-datatable-wrapper {
+    max-height: calc(100vh - 130px); /* Adjusted for mobile */
+    margin-top: 36px;
+    margin-bottom: 32px;
+  }
+
+  .p-datatable-table {
+    tr {
+      height: 26px;
     }
 
-    .p-datatable-table {
-      tr {
-        height: 26px; /* Smaller for mobile */
-      }
-
-      td, th {
-        padding: 0.2rem;
-      }
-    }
-
-    .p-paginator {
-      min-height: 32px;
-    }
-
-    .p-button.p-button-rounded {
+    td, th {
       padding: 0.2rem;
-      width: 20px;
-      height: 20px;
-
-      .pi {
-        font-size: 0.6875rem;
-      }
     }
-}
+  }
+
+  .p-datatable-header,
+  .p-datatable-thead {
+    top: 56px; /* Adjusted for mobile navbar */
+    height: 36px;
+  }
+
+  .p-paginator {
+    min-height: 32px;
+  }
+
+  .p-button.p-button-rounded {
+    padding: 0.2rem;
+    width: 20px;
+    height: 20px;
+
+    .pi {
+      font-size: 0.6875rem;
+    }
+  }
 }
