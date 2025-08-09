@@ -53,7 +53,8 @@
     "CHANGE_PROFILE_IMAGE": "Смени профилната снимка",
     "PHOTO_PICKER_HEADER": "Избери снимка",
     "SHOW_CHART": "Покажи дървото",
-    "SHOW_TABLE": "Покажи таблицата"
+    "SHOW_TABLE": "Покажи таблицата",
+    "CHANGE_NODE_SIZE": "Размер на иконите"
   },
 
   "ADD": {

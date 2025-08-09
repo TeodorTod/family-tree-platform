@@ -74,6 +74,7 @@ export class CONSTANTS {
   static readonly INFO_PHOTO_PICKER_HEADER = 'INFO.PHOTO_PICKER_HEADER';
   static readonly INFO_SHOW_CHART = 'INFO.SHOW_CHART';
   static readonly INFO_SHOW_TABLE = 'INFO.SHOW_TABLE';
+  static readonly INFO_CHANGE_NODE_SIZE = 'INFO.CHANGE_NODE_SIZE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

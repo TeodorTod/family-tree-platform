@@ -55,6 +55,8 @@ export class HomeComponent implements AfterViewInit {
   showPhotoPickerDialog = signal(false);
   showBackgroundDialog = signal(false);
   showTableView = signal(false);
+  circleSizeValue = 70;
+  circleSize = signal(this.circleSizeValue);
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
@@ -78,7 +80,14 @@ export class HomeComponent implements AfterViewInit {
       this.members = members;
       this.renderGraph(members);
       this.toggleEdgeVisibility();
+      this.updateCircleSize();
     });
+
+    const savedSize = localStorage.getItem('familyCircleSize');
+    if (savedSize) {
+      this.circleSizeValue = parseInt(savedSize, 10);
+      this.circleSize.set(this.circleSizeValue);
+    }
   }
 
   zoomIn(): void {
@@ -413,7 +422,7 @@ export class HomeComponent implements AfterViewInit {
     // 8a⁺) Clamp every maternal node to the right of Owner, paternal to left
     // ───────────────────────────────────────────────────────────────
     const ownerX = posMap.get(Roles.OWNER)!.x;
-    const nodeSize = isMobile ? 60 : 70;
+    const nodeSize = this.circleSize();
     // increase this to add more horizontal breathing room
     const sideBuffer = nodeSize + 5;
 
@@ -676,8 +685,8 @@ export class HomeComponent implements AfterViewInit {
             'background-image': 'data(photo)',
             'background-fit': 'cover',
 
-            width: isMobile ? '60px' : '70px',
-            height: isMobile ? '60px' : '70px',
+            width: `${this.circleSize()}px`,
+            height: `${this.circleSize()}px`,
             shape: 'ellipse',
             color: '#fff',
             'text-outline-color': '#000',
@@ -886,5 +895,73 @@ export class HomeComponent implements AfterViewInit {
     this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role], {
       queryParams: { view: 'table' },
     });
+  }
+
+  updateCircleSize() {
+    this.circleSize.set(this.circleSizeValue);
+    localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
+
+    if (!this.cy) return;
+
+    // Update node sizes and font sizes
+    this.cy.nodes().forEach((node) => {
+      node.style({
+        width: `${this.circleSizeValue}px`,
+        height: `${this.circleSizeValue}px`,
+        'font-size': `${Math.max(
+          10,
+          Math.min(18, this.circleSizeValue * 0.15)
+        )}px`,
+        'text-max-width': `${this.circleSizeValue * 1.2}px`,
+      });
+    });
+
+    this.cy.nodes().forEach((node) => {
+      const pos = node.position();
+      const role = node.id();
+      const ownerNode = this.cy?.nodes('[id = "owner"]')[0];
+      const ownerX = ownerNode ? ownerNode.position().x : 0;
+      const nodeSize = this.circleSizeValue;
+      const sideBuffer = nodeSize + 5;
+      const minDist = nodeSize + 10;
+
+      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
+        pos.x = Math.max(pos.x, ownerX + sideBuffer);
+      } else if (role.startsWith('paternal_') || role === Roles.FATHER) {
+        pos.x = Math.min(pos.x, ownerX - sideBuffer);
+      }
+
+      node.position(pos);
+    });
+
+    const nodes = this.cy.nodes();
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const nodeA = nodes[i];
+        const nodeB = nodes[j];
+        const pa = nodeA.position();
+        const pb = nodeB.position();
+        if (Math.abs(pa.y - pb.y) < this.circleSizeValue) {
+          const dx = pb.x - pa.x;
+          const absDx = Math.abs(dx);
+          const minDist = this.circleSizeValue + 10;
+          if (absDx < minDist) {
+            const shift = (minDist - absDx) / 2;
+            if (dx > 0) {
+              pa.x -= shift;
+              pb.x += shift;
+            } else {
+              pa.x += shift;
+              pb.x -= shift;
+            }
+            nodeA.position(pa);
+            nodeB.position(pb);
+          }
+        }
+      }
+    }
+
+    this.cy.style().update();
+    this.cy.fit();
   }
 }

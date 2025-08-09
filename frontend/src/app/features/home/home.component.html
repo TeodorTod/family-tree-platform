@@ -80,23 +80,39 @@
       tooltipPosition="left"
     ></button>
 
-    <!-- Vertical Opacity Slider -->
-    <div
-      class="opacity-slider-container"
-      (mousedown)="$event.stopPropagation()"
-      (touchstart)="$event.stopPropagation()"
-    >
-      <p-slider
-        styleClass="opacity-slider"
-        [(ngModel)]="backgroundOpacityValue"
-        [min]="0.1"
-        [max]="1"
-        [step]="0.1"
-        (onChange)="updateBackgroundOpacity()"
-        pTooltip="{{ CONSTANTS.INFO_CHANGE_OPACITY | translate }}"
-        tooltipPosition="right"
-      ></p-slider>
-    </div>
+@if (!showTableView()) {
+  <div
+    class="sliders-row"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <!-- Circle size -->
+    <p-slider
+      class="slider"
+      [ngModel]="circleSizeValue"
+      (ngModelChange)="circleSizeValue = $event; updateCircleSize()"
+      [min]="40"
+      [max]="120"
+      [step]="5"
+      pTooltip="{{ CONSTANTS.INFO_CHANGE_NODE_SIZE | translate }}"
+      tooltipPosition="top"
+    ></p-slider>
+
+    <!-- Opacity -->
+    <i class="pi pi-adjust ml-4 mr-2"></i>
+    <p-slider
+      class="slider"
+      [ngModel]="backgroundOpacityValue"
+      (ngModelChange)="backgroundOpacityValue = $event; updateBackgroundOpacity()"
+      [min]="0.1"
+      [max]="1"
+      [step]="0.1"
+      pTooltip="{{ CONSTANTS.INFO_CHANGE_OPACITY | translate }}"
+      tooltipPosition="top"
+    ></p-slider>
+  </div>
+}
+
   }
 </div>
 

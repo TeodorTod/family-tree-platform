@@ -155,3 +155,21 @@
     }
   }
 }
+
+.sliders-row {
+  right: 1rem;
+  bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 1000;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+.slider {
+  width: 120px;
+}
+
