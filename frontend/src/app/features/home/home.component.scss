@@ -173,3 +173,76 @@
   width: 120px;
 }
 
+.export-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: var(--surface-ground);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+
+  /* hide page scroll */
+  overflow: hidden;
+}
+
+.export-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.export-content {
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+    background: #fff;
+    border-radius: 8px;
+  }
+}
+
+/* Optional: visually de-emphasize the app beneath while exporting */
+:host-context(body.export-mode) app-navbar,
+:host-context(body.export-mode) app-footer {
+  display: none !important;
+}
+
+.export-toolbar {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+
+  .flex-1 { flex: 1; }
+
+  .bg-pan-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .25rem;
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+    }
+  }
+}
+
+.export-content {
+  cursor: grab;
+}
+.export-content:active {
+  cursor: grabbing;
+}
+
+
+

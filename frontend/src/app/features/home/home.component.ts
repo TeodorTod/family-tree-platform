@@ -21,6 +21,7 @@ import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/pho
 import { BackgroundPickerDialogComponent } from './components/background-picker-dialog/background-picker-dialog.component';
 import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
 import { TreeTableComponent } from './components/tree-table/tree-table.component';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-home',
@@ -57,6 +58,13 @@ export class HomeComponent implements AfterViewInit {
   showTableView = signal(false);
   circleSizeValue = 70;
   circleSize = signal(this.circleSizeValue);
+  exportMode = signal(false);
+  exportDataUrl = signal<string | null>(null);
+  exportTight = signal(false);
+  exportPaddingPx = signal(64);
+  bgOffsetX = signal(0);
+  bgOffsetY = signal(0);
+  private exportRebuildTimer: any = null;
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
@@ -850,6 +858,7 @@ export class HomeComponent implements AfterViewInit {
 
   updateBackgroundOpacity() {
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
+    this.scheduleExportRebuild();
   }
 
   openBackgroundDialog() {
@@ -963,5 +972,251 @@ export class HomeComponent implements AfterViewInit {
 
     this.cy.style().update();
     this.cy.fit();
+  }
+
+  openExportView(tight = false) {
+    this.exportTight.set(tight); // pass true for “no whitespace”, false for “as you see”
+    this.exportMode.set(true);
+    document.body.classList.add('export-mode');
+    this.resetBgOffset();
+    setTimeout(() => this.buildExportImage(/*asSeen*/ true), 0);
+  }
+
+  closeExportView() {
+    this.exportMode.set(false);
+    this.exportDataUrl.set(null);
+    document.body.classList.remove('export-mode');
+  }
+
+  private async buildExportImage(asSeen: boolean = true) {
+    if (!this.cy) return;
+
+    const dpr = window.devicePixelRatio || 2;
+
+    // Export the canvas exactly as currently visible
+    const cyPngDataUrl = this.cy.png({
+      full: !asSeen ? true : false,
+      scale: dpr,
+      bg: 'transparent',
+    });
+
+    const [cyImg, bgImg] = await Promise.all([
+      this.loadImage(cyPngDataUrl),
+      this.loadImage(this.backgroundUrl()).catch(() => null),
+    ]);
+
+    // If NOT tight ⇒ no crop at all (nothing gets cut).
+    if (!this.exportTight()) {
+      const canvas = document.createElement('canvas');
+      canvas.width = cyImg.width;
+      canvas.height = cyImg.height;
+      const ctx = canvas.getContext('2d')!;
+
+      this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
+      ctx.drawImage(cyImg, 0, 0);
+      this.exportDataUrl.set(canvas.toDataURL('image/png'));
+      return;
+    }
+
+    // Tight crop with padding (to remove whitespace but keep breathing room)
+    const rb = this.cy.elements().renderedBoundingBox(); // px in the current viewport
+    const pad = this.exportPaddingPx(); // your configurable padding (px, in rendered space)
+    const labelGuard = 18; // extra label guard
+    const totalPad = pad + labelGuard;
+
+    // Convert rendered px -> exported image px (we exported with scale = dpr)
+    const cropX = Math.max((rb.x1 - totalPad) * dpr, 0);
+    const cropY = Math.max((rb.y1 - totalPad) * dpr, 0);
+    const cropW = Math.min(
+      (rb.x2 - rb.x1 + totalPad * 2) * dpr,
+      cyImg.width - cropX
+    );
+    const cropH = Math.min(
+      (rb.y2 - rb.y1 + totalPad * 2) * dpr,
+      cyImg.height - cropY
+    );
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(cropW));
+    canvas.height = Math.max(1, Math.round(cropH));
+    const ctx = canvas.getContext('2d')!;
+
+    this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
+
+    // Draw only the cropped portion of Cytoscape
+    ctx.drawImage(
+      cyImg,
+      cropX,
+      cropY, // source x,y
+      cropW,
+      cropH, // source w,h
+      0,
+      0, // dest x,y
+      canvas.width,
+      canvas.height // dest w,h
+    );
+
+    this.exportDataUrl.set(canvas.toDataURL('image/png'));
+  }
+
+  private drawBackground(
+    ctx: CanvasRenderingContext2D,
+    cw: number,
+    ch: number,
+    bgImg: HTMLImageElement | null
+  ) {
+    // Fallback to white if no image
+    if (!bgImg) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, cw, ch);
+      return;
+    }
+
+    // Compute cover sizing
+    const bgRatio = bgImg.width / bgImg.height;
+    const canvasRatio = cw / ch;
+    let drawW = cw,
+      drawH = ch,
+      dx = 0,
+      dy = 0;
+
+    if (bgRatio > canvasRatio) {
+      drawH = ch;
+      drawW = bgImg.width * (ch / bgImg.height);
+      dx = (cw - drawW) / 2;
+    } else {
+      drawW = cw;
+      drawH = bgImg.height * (cw / bgImg.width);
+      dy = (ch - drawH) / 2;
+    }
+
+    dx += this.bgOffsetX();
+    dy += this.bgOffsetY();
+
+    // 1) Draw the background fully opaque
+    ctx.drawImage(bgImg, dx, dy, drawW, drawH);
+
+  
+    const alpha = this.getBgAlpha(); 
+    const wash = 1 - alpha; 
+
+    if (wash > 0) {
+      ctx.save();
+      ctx.globalAlpha = wash;
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.restore();
+    }
+  }
+
+  private loadImage(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  // Download as PNG
+  downloadPNG() {
+    const url = this.exportDataUrl();
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'family-tree.png';
+    a.click();
+  }
+
+  // Download as PDF (auto-rotates page, keeps aspect)
+  downloadPDF() {
+    const url = this.exportDataUrl();
+    if (!url) return;
+    const img = new Image();
+    img.onload = () => {
+      const w = img.width,
+        h = img.height;
+      const pdf = new jsPDF({
+        unit: 'px',
+        format: [w, h],
+        orientation: w >= h ? 'l' : 'p',
+        compress: true,
+      });
+      pdf.addImage(url, 'PNG', 0, 0, w, h, undefined, 'FAST');
+      pdf.save('family-tree.pdf');
+    };
+    img.src = url;
+  }
+
+  nudgeBg(dx: number, dy: number) {
+    this.bgOffsetX.update((x) => x + dx);
+    this.bgOffsetY.update((y) => y + dy);
+    this.scheduleExportRebuild();
+  }
+
+  resetBgOffset() {
+    this.bgOffsetX.set(0);
+    this.bgOffsetY.set(0);
+    this.scheduleExportRebuild();
+  }
+
+  // Drag support
+  private draggingBg = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private startOffsetX = 0;
+  private startOffsetY = 0;
+
+  beginBgDrag(ev: MouseEvent | TouchEvent) {
+    this.draggingBg = true;
+    const p = this.getPoint(ev);
+    this.dragStartX = p.x;
+    this.dragStartY = p.y;
+    this.startOffsetX = this.bgOffsetX();
+    this.startOffsetY = this.bgOffsetY();
+  }
+
+  moveBgDrag(ev: MouseEvent | TouchEvent) {
+    if (!this.draggingBg) return;
+    ev.preventDefault();
+    const p = this.getPoint(ev);
+    const dx = p.x - this.dragStartX;
+    const dy = p.y - this.dragStartY;
+    this.bgOffsetX.set(this.startOffsetX + Math.round(dx));
+    this.bgOffsetY.set(this.startOffsetY + Math.round(dy));
+    this.scheduleExportRebuild(50); // light debounce while dragging
+  }
+
+  endBgDrag() {
+    if (!this.draggingBg) return;
+    this.draggingBg = false;
+    this.scheduleExportRebuild();
+  }
+
+  private getPoint(ev: MouseEvent | TouchEvent) {
+    if ((ev as TouchEvent).touches && (ev as TouchEvent).touches.length) {
+      const t = (ev as TouchEvent).touches[0];
+      return { x: t.clientX, y: t.clientY };
+    }
+    const m = ev as MouseEvent;
+    return { x: m.clientX, y: m.clientY };
+  }
+
+  private scheduleExportRebuild(delay = 0) {
+    if (!this.exportMode()) return;
+    if (this.exportRebuildTimer) clearTimeout(this.exportRebuildTimer);
+    this.exportRebuildTimer = setTimeout(() => {
+      this.buildExportImage(true);
+    }, delay);
+  }
+
+  private getBgAlpha(): number {
+    // backgroundOpacity can be "0.6" or "60" (percent). Normalize + clamp.
+    const raw = Number(this.backgroundOpacity());
+    if (!isFinite(raw)) return 1;
+    const as01 = raw > 1 ? raw / 100 : raw; // treat >1 as percent
+    return Math.max(0, Math.min(1, as01));
   }
 }

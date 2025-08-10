@@ -23,64 +23,83 @@
     [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
     class="p-button-rounded p-button-sm"
     (click)="toggleView()"
-    pTooltip="{{ showTableView() ? (CONSTANTS.INFO_SHOW_CHART | translate) : (CONSTANTS.INFO_SHOW_TABLE | translate) }}"
+    pTooltip="{{
+      showTableView()
+        ? (CONSTANTS.INFO_SHOW_CHART | translate)
+        : (CONSTANTS.INFO_SHOW_TABLE | translate)
+    }}"
     tooltipPosition="left"
   ></button>
 
   <!-- Chart-specific controls (hidden in table view) -->
   @if (!showTableView()) {
-    <!-- Zoom In -->
-    <button
-      pButton
-      icon="pi pi-search-plus"
-      class="p-button-rounded p-button-sm"
-      (click)="zoomIn()"
-      pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
-      tooltipPosition="left"
-    ></button>
 
-    <!-- Zoom Out -->
-    <button
-      pButton
-      icon="pi pi-search-minus"
-      class="p-button-rounded p-button-sm"
-      (click)="zoomOut()"
-      pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
-      tooltipPosition="left"
-    ></button>
+  <button
+    pButton
+    icon="pi pi-print"
+    class="p-button-rounded p-button-sm"
+    (click)="openExportView()"
+    pTooltip="{{ CONSTANTS.INFO_FOR_PRINT | translate }}"
+    tooltipPosition="left"
+  ></button>
+  <!-- Zoom In -->
+  <button
+    pButton
+    icon="pi pi-search-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="zoomIn()"
+    pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
+    tooltipPosition="left"
+  ></button>
 
-    <!-- Background Picker -->
-    <button
-      pButton
-      icon="pi pi-image"
-      class="p-button-rounded p-button-sm"
-      (click)="openBackgroundDialog()"
-      pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
-      tooltipPosition="right"
-    ></button>
+  <!-- Zoom Out -->
+  <button
+    pButton
+    icon="pi pi-search-minus"
+    class="p-button-rounded p-button-sm"
+    (click)="zoomOut()"
+    pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
+    tooltipPosition="left"
+  ></button>
 
-    <!-- Photo Picker -->
-    <button
-      pButton
-      icon="pi pi-camera"
-      class="p-button-rounded p-button-sm"
-      (click)="openPhotoPickerDialog()"
-      pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
-      tooltipPosition="right"
-    ></button>
+  <!-- Background Picker -->
+  <button
+    pButton
+    icon="pi pi-image"
+    class="p-button-rounded p-button-sm"
+    (click)="openBackgroundDialog()"
+    pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
+    tooltipPosition="right"
+  ></button>
 
-    <!-- Toggle Links -->
-    <button
-      pButton
-      type="button"
-      [icon]="showConnections() ? 'pi pi-link-slash' : 'pi pi-link'"
-      class="p-button-rounded p-button-sm"
-      (click)="toggleConnections()"
-      pTooltip="{{ showConnections() ? (CONSTANTS.INFO_HIDE_LINKS | translate) : (CONSTANTS.INFO_SHOW_LINKS | translate) }}"
-      tooltipPosition="left"
-    ></button>
+  <!-- Photo Picker -->
+  <button
+    pButton
+    icon="pi pi-camera"
+    class="p-button-rounded p-button-sm"
+    (click)="openPhotoPickerDialog()"
+    pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
+    tooltipPosition="right"
+  ></button>
 
-@if (!showTableView()) {
+  <!-- Toggle Links -->
+<button
+  pButton
+  type="button"
+  [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
+  class="p-button-rounded p-button-sm"
+  (click)="toggleConnections()"
+  pTooltip="{{
+    showConnections()
+      ? (CONSTANTS.INFO_HIDE_LINKS | translate)
+      : (CONSTANTS.INFO_SHOW_LINKS | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
+
+
+  @if (!showTableView()) {
   <div
     class="sliders-row"
     (mousedown)="$event.stopPropagation()"
@@ -103,7 +122,9 @@
     <p-slider
       class="slider"
       [ngModel]="backgroundOpacityValue"
-      (ngModelChange)="backgroundOpacityValue = $event; updateBackgroundOpacity()"
+      (ngModelChange)="
+        backgroundOpacityValue = $event; updateBackgroundOpacity()
+      "
       [min]="0.1"
       [max]="1"
       [step]="0.1"
@@ -111,67 +132,144 @@
       tooltipPosition="top"
     ></p-slider>
   </div>
-}
-
-  }
+  } }
 </div>
 
 <!-- Add Relative Dialog -->
 @if (showAddDialog()) {
-  <app-add-relative-dialog
-    [visible]="showAddDialog()"
-    [baseMember]="selectedMember()!"
-    (close)="showAddDialog.set(false)"
-    (saved)="handleAddRelative($event)"
-  />
+<app-add-relative-dialog
+  [visible]="showAddDialog()"
+  [baseMember]="selectedMember()!"
+  (close)="showAddDialog.set(false)"
+  (saved)="handleAddRelative($event)"
+/>
 }
 
 <!-- Photo Picker Dialog -->
 @if (showPhotoPickerDialog()) {
-  <app-photo-picker-dialog
-    [visible]="showPhotoPickerDialog()"
-    (close)="showPhotoPickerDialog.set(false)"
-    (photoSelected)="handlePhotoSelection($event)"
-  />
+<app-photo-picker-dialog
+  [visible]="showPhotoPickerDialog()"
+  (close)="showPhotoPickerDialog.set(false)"
+  (photoSelected)="handlePhotoSelection($event)"
+/>
 }
 
 <!-- Background Picker Dialog -->
 @if (showBackgroundDialog()) {
-  <app-background-picker-dialog
-    [visible]="showBackgroundDialog()"
-    (close)="showBackgroundDialog.set(false)"
-    (backgroundSelected)="handleBackgroundSelection($event)"
-  />
+<app-background-picker-dialog
+  [visible]="showBackgroundDialog()"
+  (close)="showBackgroundDialog.set(false)"
+  (backgroundSelected)="handleBackgroundSelection($event)"
+/>
 }
 
 <!-- Hover Action Buttons on Node -->
 @if (hoveredNode() && !showTableView()) {
-  <div
-    class="node-actions"
-    (click)="handleActionClick($event)"
-    [ngStyle]="{
-      top: hoveredNode()?.y + 'px',
-      left: hoveredNode()?.x + 'px'
-    }"
-  >
-    <button
-      pButton
-      icon="pi pi-user-plus"
-      class="p-button-rounded p-button-sm"
-      (click)="openAddDialog(hoveredNode()?.id)"
-      pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
-      tooltipPosition="top"
-    ></button>
+<div
+  class="node-actions"
+  (click)="handleActionClick($event)"
+  [ngStyle]="{
+    top: hoveredNode()?.y + 'px',
+    left: hoveredNode()?.x + 'px'
+  }"
+>
+  <button
+    pButton
+    icon="pi pi-user-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="openAddDialog(hoveredNode()?.id)"
+    pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
+    tooltipPosition="top"
+  ></button>
+
+  <button
+    pButton
+    icon="pi pi-pencil"
+    class="p-button-rounded p-button-sm"
+    (click)="editMember()"
+    pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
+    tooltipPosition="top"
+  ></button>
+</div>
+} @if (exportMode()) {
+<div class="export-overlay" (click)="$event.stopPropagation()">
+  <div class="export-toolbar">
+    <!-- BG pan controls -->
+    <div class="bg-pan-controls">
+      <button
+        pButton
+        icon="pi pi-arrow-up"
+        (click)="nudgeBg(0, -20)"
+        class="p-button-text"
+      ></button>
+      <div class="row">
+        <button
+          pButton
+          icon="pi pi-arrow-left"
+          (click)="nudgeBg(-20, 0)"
+          class="p-button-text"
+        ></button>
+        <button
+          pButton
+          icon="pi pi-refresh"
+          (click)="resetBgOffset()"
+          class="p-button-text"
+          pTooltip="Reset"
+        ></button>
+        <button
+          pButton
+          icon="pi pi-arrow-right"
+          (click)="nudgeBg(20, 0)"
+          class="p-button-text"
+        ></button>
+      </div>
+      <button
+        pButton
+        icon="pi pi-arrow-down"
+        (click)="nudgeBg(0, 20)"
+        class="p-button-text"
+      ></button>
+    </div>
+
+    <span class="flex-1"></span>
 
     <button
       pButton
-      icon="pi pi-pencil"
-      class="p-button-rounded p-button-sm"
-      (click)="editMember()"
-      pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
-      tooltipPosition="top"
+      icon="pi pi-download"
+      label="PNG"
+      (click)="downloadPNG()"
+    ></button>
+    <button
+      pButton
+      icon="pi pi-file-pdf"
+      label="PDF"
+      (click)="downloadPDF()"
+    ></button>
+    <button
+      pButton
+      icon="pi pi-times"
+      label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+      (click)="closeExportView()"
     ></button>
   </div>
+
+  <div
+    class="export-content"
+    (mousedown)="beginBgDrag($event)"
+    (mousemove)="moveBgDrag($event)"
+    (mouseup)="endBgDrag()"
+    (mouseleave)="endBgDrag()"
+    (touchstart)="beginBgDrag($event)"
+    (touchmove)="moveBgDrag($event)"
+    (touchend)="endBgDrag()"
+  >
+    @if (exportDataUrl()) {
+    <img [src]="exportDataUrl()!" alt="Family Tree Export" />
+    } @else {
+    <p>{{ CONSTANTS.INFO_IMAGE_GENERATION | translate }}</p>
+    }
+  </div>
+</div>
 }
 
 <!-- Table View -->
