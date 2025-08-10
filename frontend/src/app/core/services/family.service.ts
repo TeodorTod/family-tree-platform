@@ -26,6 +26,7 @@ export class FamilyService {
     dob: FormControl<Date | null>;
     dod: FormControl<Date | null>;
     isAlive: FormControl<boolean | null>;
+    translatedRole: FormControl<string | null>;
   }> {
     return this.fb.group({
       firstName: new FormControl<string | null>(null, Validators.required),
@@ -35,6 +36,7 @@ export class FamilyService {
       dob: new FormControl<Date | null>(null, Validators.required),
       dod: new FormControl<Date | null>(null),
       isAlive: new FormControl<boolean | null>(true, Validators.required),
+      translatedRole: new FormControl<string | null>(null),
     });
   }
 

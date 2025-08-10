@@ -25,7 +25,9 @@ export class FamilyMembersService {
         dod: dto.dod ? new Date(dto.dod) : undefined,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
-        role: dto.role,
+        role: dto.role.toLowerCase(),
+        relationLabel: dto.relationLabel ?? undefined,
+        translatedRole: dto.translatedRole ?? undefined,
       },
     });
   }
@@ -47,12 +49,16 @@ export class FamilyMembersService {
     const existing = await this.prisma.familyMember.findFirst({
       where: { userId, role: role.toLowerCase() },
     });
-
     if (!existing) throw new NotFoundException(`No member with role ${role}`);
 
     return this.prisma.familyMember.update({
       where: { id: existing.id },
-      data: { ...dto, role: role.toLowerCase(), userId },
+      data: {
+        ...dto,
+        userId,
+        role: role.toLowerCase(),
+        translatedRole: dto.translatedRole ?? existing.translatedRole,
+      },
     });
   }
 
@@ -74,42 +80,42 @@ export class FamilyMembersService {
     });
   }
 
- async getPagedFamilyMembers(userId: string, dto: GetFamilyPagedDto) {
-  console.log('getPagedFamilyMembers input:', { userId, dto });
+  async getPagedFamilyMembers(userId: string, dto: GetFamilyPagedDto) {
+    console.log('getPagedFamilyMembers input:', { userId, dto });
 
-  const validSortFields = ['firstName', 'lastName', 'dob', 'role'];
-  if (!validSortFields.includes(dto.sortField)) {
-    throw new BadRequestException(
-      `Invalid sortField. Must be one of: ${validSortFields.join(', ')}`,
-    );
+    const validSortFields = ['firstName', 'lastName', 'dob', 'role'];
+    if (!validSortFields.includes(dto.sortField)) {
+      throw new BadRequestException(
+        `Invalid sortField. Must be one of: ${validSortFields.join(', ')}`,
+      );
+    }
+
+    const skip = dto.page * dto.size;
+    const orderBy = {
+      [dto.sortField]: dto.sortOrder,
+    };
+
+    try {
+      const [data, total] = await this.prisma.$transaction([
+        this.prisma.familyMember.findMany({
+          where: { userId },
+          skip,
+          take: dto.size,
+          orderBy,
+        }),
+        this.prisma.familyMember.count({
+          where: { userId },
+        }),
+      ]);
+
+      console.log('getPagedFamilyMembers result:', {
+        total,
+        dataLength: data.length,
+      });
+      return { data, total };
+    } catch (error) {
+      console.error('getPagedFamilyMembers error:', error);
+      throw new BadRequestException('Failed to fetch paged family members');
+    }
   }
-
-  const skip = dto.page * dto.size;
-  const orderBy = {
-    [dto.sortField]: dto.sortOrder,
-  };
-
-  try {
-    const [data, total] = await this.prisma.$transaction([
-      this.prisma.familyMember.findMany({
-        where: { userId },
-        skip,
-        take: dto.size,
-        orderBy,
-      }),
-      this.prisma.familyMember.count({
-        where: { userId },
-      }),
-    ]);
-
-    console.log('getPagedFamilyMembers result:', {
-      total,
-      dataLength: data.length,
-    });
-    return { data, total };
-  } catch (error) {
-    console.error('getPagedFamilyMembers error:', error);
-    throw new BadRequestException('Failed to fetch paged family members');
-  }
-}
 }

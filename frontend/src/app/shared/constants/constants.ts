@@ -77,6 +77,7 @@ export class CONSTANTS {
   static readonly INFO_CHANGE_NODE_SIZE = 'INFO.CHANGE_NODE_SIZE';
   static readonly INFO_FOR_PRINT = 'INFO.FOR_PRINT';
   static readonly INFO_IMAGE_GENERATION = 'INFO.IMAGE_GENERATION';
+  static readonly INFO_RELATION_LABEL = 'INFO.RELATION_LABEL';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -192,6 +193,7 @@ export class CONSTANTS {
   static readonly RELATION_MATERNAL_GENERIC = 'RELATION.MATERNAL_GENERIC';
   static readonly RELATION_PATERNAL_GENERIC = 'RELATION.PATERNAL_GENERIC';
   static readonly RELATION_UNKNOWN = 'RELATION.UNKNOWN';
+  static readonly RELATION_TYPE = 'RELATION.TYPE';
 
   static readonly TAB_GENERAL_INFO = 'TAB.GENERAL_INFO';
   static readonly TAB_RELATIONS = 'TAB.RELATIONS';

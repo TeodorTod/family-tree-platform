@@ -7,6 +7,7 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primen
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { MessageService } from 'primeng/api';
 import { debounceTime } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tree-table',
@@ -19,6 +20,7 @@ export class TreeTableComponent {
   CONSTANTS = CONSTANTS;
   private familyService = inject(FamilyService);
   private messageService = inject(MessageService);
+  private translate = inject(TranslateService);
 
   @Input() members: FamilyMember[] = [];
   totalRecords: number = 0;
@@ -41,9 +43,49 @@ export class TreeTableComponent {
     } as TableLazyLoadEvent);
   }
 
+    getRoleDisplay(m: FamilyMember): string {
+    if (m.translatedRole && m.translatedRole.trim()) {
+      return m.translatedRole.trim();
+    }
+    return this.translateRole(m.role);
+  }
+
+  private translateRole(role: string): string {
+    // try longest-known constant key first (RELATION_OWNER_SON, etc.)
+    const parts = (role || '').split('_');
+    for (let len = parts.length; len > 0; len--) {
+      const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
+      const constantKey = (CONSTANTS as any)[key] as string | undefined;
+      if (constantKey) {
+        return this.translate.instant(constantKey);
+      }
+    }
+
+    // generic side fallback
+    if (this.isMaternalRole(role)) {
+      return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
+    }
+    if (this.isPaternalRole(role)) {
+      return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
+    }
+
+    // last resort
+    return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
+  }
+
+  private isMaternalRole(role: string): boolean {
+    const parts = (role || '').split('_');
+    return role.startsWith('maternal_') || parts.includes('mother');
+  }
+
+  private isPaternalRole(role: string): boolean {
+    const parts = (role || '').split('_');
+    return role.startsWith('paternal_') || parts.includes('father');
+  }
+  // --- end of new code ---
+
   loadMembers(event: TableLazyLoadEvent) {
     this.loading = true;
-
     const rows = event.rows ?? this.rows;
     const first = event.first ?? 0;
     const page = Math.floor(first / rows) || 0;
@@ -57,8 +99,6 @@ export class TreeTableComponent {
     this.first = first;
     this.sortField = sortField;
     this.sortOrder = event.sortOrder ?? 1;
-
-    console.log('Sending request with params:', { page, size, sortField, sortOrder });
 
     this.familyService
       .getMyFamilyPaged(page, size, sortField, sortOrder)
@@ -80,9 +120,10 @@ export class TreeTableComponent {
             summary: 'Error',
             detail: errorMessage,
           });
-          console.error('Load members error:', err);
           this.loading = false;
         },
       });
   }
+
+
 }

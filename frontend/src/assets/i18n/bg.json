@@ -56,7 +56,9 @@
     "SHOW_TABLE": "Покажи таблицата",
     "CHANGE_NODE_SIZE": "Размер на иконите",
     "FOR_PRINT": "Печат / Експорт",
-    "IMAGE_GENERATION": "Генериране на изображение…"
+    "IMAGE_GENERATION": "Генериране на изображение…",
+    "CUSTOM_RELATION_LABEL": "Име на връзката"
+
   },
 
   "ADD": {
@@ -124,7 +126,8 @@
     "CHOOSE_RELATION": "Избери връзка",
     "MATERNAL_GENERIC": "Роднина (по майчина линия)",
     "PATERNAL_GENERIC": "Роднина (по бащина линия)",
-    "UNKNOWN": "Роля"
+    "UNKNOWN": "Роля",
+    "TYPE": "Роднинска връзка"
   },
 
   "TAB": {

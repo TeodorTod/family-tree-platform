@@ -1,19 +1,16 @@
 <form [formGroup]="form" (ngSubmit)="save()" class="d-flex flex-column gap-3">
-  <!-- Always-visible custom-relation input -->
   @if (!hasConstant(role)) {
-  <div class="floating-field">
-    <input pInputText formControlName="relationLabel" placeholder=" " />
-    <label>Custom Relationship Label</label>
-  </div>
+    <div class="floating-field mt-3">
+      <input pInputText formControlName="translatedRole" placeholder=" " />
+      <label>{{ CONSTANTS.RELATION_TYPE | translate }}</label>
+    </div>
   } @else {
-  <h2 class="member-title d-flex align-self-center">
-    {{ getTranslatedRoleLabel() }}
-  </h2>
-
+    <h2 class="member-title d-flex align-self-center">
+      {{ getTranslatedRoleLabel() }}
+    </h2>
   }
 
   <p-tabView [scrollable]="true">
-    <!-- General data tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_GENERAL_INFO | translate">
       <div class="floating-field">
         <input pInputText formControlName="firstName" placeholder=" " />
@@ -37,77 +34,56 @@
       ></p-datepicker>
 
       <div class="d-flex align-items-center gap-2 mb-3">
-        <p-checkbox
-          binary="true"
-          formControlName="isAlive"
-          inputId="isAliveCheckbox"
-        ></p-checkbox>
+        <p-checkbox binary="true" formControlName="isAlive" inputId="isAliveCheckbox"></p-checkbox>
         <label for="isAliveCheckbox" class="mb-0">
           {{ CONSTANTS.INFO_IS_ALIVE | translate }}
         </label>
       </div>
+
       @if(form.get('isAlive')?.value === false) {
-      <div class="floating-field" [class.active]="form.get('dod')?.value">
-        <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
-        <p-datepicker
-          formControlName="dod"
-          dateFormat="yy-mm-dd"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-        ></p-datepicker>
-      </div>
+        <div class="floating-field" [class.active]="form.get('dod')?.value">
+          <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+          <p-datepicker
+            formControlName="dod"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            [iconDisplay]="'input'">
+          </p-datepicker>
+        </div>
       }
     </p-tabPanel>
 
-    <!-- Family relations tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">
       <app-member-relations [memberRole]="role" />
     </p-tabPanel>
 
-    <!-- Biography tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
       <app-member-bio [role]="role" />
     </p-tabPanel>
 
-    <!-- Media gallery tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_MEDIA | translate">
       <app-member-media-gallery [role]="role" />
     </p-tabPanel>
 
-    <!-- Career tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_CAREER | translate">
       <app-member-career [role]="role" />
     </p-tabPanel>
 
-    <!-- Achievements tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_ACHIEVEMENTS | translate">
       <app-member-achievements [role]="role" />
     </p-tabPanel>
 
-    <!-- Favorites tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_FAVORITES | translate">
       <app-member-favorites [role]="role" />
     </p-tabPanel>
 
-    <!-- Personal info tab -->
     <p-tabPanel [header]="CONSTANTS.TAB_PERSONAL_INFO | translate">
       <app-member-personal-info [role]="role" />
     </p-tabPanel>
   </p-tabView>
 
-  <!-- Save / Cancel -->
   <div class="d-flex justify-content-end mt-4 gap-2">
-    <button
-      pButton
-      type="button"
-      label="{{ CONSTANTS.INFO_BACK | translate }}"
-      class="p-button-secondary"
-      (click)="cancel()"
-    ></button>
-    <button
-      pButton
-      type="submit"
-      label="{{ CONSTANTS.INFO_SAVE | translate }}"
-    ></button>
+    <button pButton type="button" label="{{ CONSTANTS.INFO_BACK | translate }}" class="p-button-secondary" (click)="cancel()"></button>
+    <button pButton type="submit" label="{{ CONSTANTS.INFO_SAVE | translate }}"></button>
   </div>
 </form>

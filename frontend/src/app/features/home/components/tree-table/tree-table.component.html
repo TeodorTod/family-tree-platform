@@ -22,6 +22,9 @@
         {{ "Last Name" | translate }}
         <p-sortIcon field="lastName" />
       </th>
+         <th>
+      {{ CONSTANTS.RELATION_TYPE | translate }}
+    </th>
       <th pSortableColumn="dob">
         {{ "Date of Birth" | translate }}
         <p-sortIcon field="dob" />
@@ -34,6 +37,7 @@
     <tr>
       <td>{{ m.firstName }}</td>
       <td>{{ m.lastName || "—" }}</td>
+      <td>{{ getRoleDisplay(m) }}</td>
       <td>{{ m.dob | date: "yyyy-MM-dd" }}</td>
       <td>
         <div class="d-flex gap-2">

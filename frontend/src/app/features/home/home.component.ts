@@ -703,9 +703,14 @@ export class HomeComponent implements AfterViewInit {
           },
         },
         {
-          selector: 'node[id="owner"]',
+          selector: 'node[id = "owner"]',
           style: {
             'border-color': '#2d4c2f',
+            'border-width': 6,
+            'background-color': '#fff',
+            'font-weight': 'bold',
+            'text-outline-color': '#2d4c2f',
+            'text-outline-width': 3,
           },
         },
 
@@ -748,6 +753,10 @@ export class HomeComponent implements AfterViewInit {
         this.hoveredNode.set({ id: evt.target.id(), x: pos.x, y: pos.y });
       }
     });
+
+    if (!this.showConnections()) {
+      this.toggleEdgeVisibility();
+    }
   }
 
   handleAddRelative(event: {
@@ -912,7 +921,6 @@ export class HomeComponent implements AfterViewInit {
 
     if (!this.cy) return;
 
-    // Update node sizes and font sizes
     this.cy.nodes().forEach((node) => {
       node.style({
         width: `${this.circleSizeValue}px`,
@@ -975,7 +983,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   openExportView(tight = false) {
-    this.exportTight.set(tight); // pass true for “no whitespace”, false for “as you see”
+    this.exportTight.set(tight);
     this.exportMode.set(true);
     document.body.classList.add('export-mode');
     this.resetBgOffset();
@@ -993,7 +1001,6 @@ export class HomeComponent implements AfterViewInit {
 
     const dpr = window.devicePixelRatio || 2;
 
-    // Export the canvas exactly as currently visible
     const cyPngDataUrl = this.cy.png({
       full: !asSeen ? true : false,
       scale: dpr,
@@ -1005,7 +1012,6 @@ export class HomeComponent implements AfterViewInit {
       this.loadImage(this.backgroundUrl()).catch(() => null),
     ]);
 
-    // If NOT tight ⇒ no crop at all (nothing gets cut).
     if (!this.exportTight()) {
       const canvas = document.createElement('canvas');
       canvas.width = cyImg.width;
@@ -1018,13 +1024,11 @@ export class HomeComponent implements AfterViewInit {
       return;
     }
 
-    // Tight crop with padding (to remove whitespace but keep breathing room)
-    const rb = this.cy.elements().renderedBoundingBox(); // px in the current viewport
-    const pad = this.exportPaddingPx(); // your configurable padding (px, in rendered space)
-    const labelGuard = 18; // extra label guard
+    const rb = this.cy.elements().renderedBoundingBox();
+    const pad = this.exportPaddingPx();
+    const labelGuard = 18;
     const totalPad = pad + labelGuard;
 
-    // Convert rendered px -> exported image px (we exported with scale = dpr)
     const cropX = Math.max((rb.x1 - totalPad) * dpr, 0);
     const cropY = Math.max((rb.y1 - totalPad) * dpr, 0);
     const cropW = Math.min(
@@ -1043,17 +1047,16 @@ export class HomeComponent implements AfterViewInit {
 
     this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
 
-    // Draw only the cropped portion of Cytoscape
     ctx.drawImage(
       cyImg,
       cropX,
-      cropY, // source x,y
+      cropY,
       cropW,
-      cropH, // source w,h
+      cropH,
       0,
-      0, // dest x,y
+      0,
       canvas.width,
-      canvas.height // dest w,h
+      canvas.height
     );
 
     this.exportDataUrl.set(canvas.toDataURL('image/png'));
@@ -1096,9 +1099,8 @@ export class HomeComponent implements AfterViewInit {
     // 1) Draw the background fully opaque
     ctx.drawImage(bgImg, dx, dy, drawW, drawH);
 
-  
-    const alpha = this.getBgAlpha(); 
-    const wash = 1 - alpha; 
+    const alpha = this.getBgAlpha();
+    const wash = 1 - alpha;
 
     if (wash > 0) {
       ctx.save();
@@ -1120,7 +1122,6 @@ export class HomeComponent implements AfterViewInit {
     });
   }
 
-  // Download as PNG
   downloadPNG() {
     const url = this.exportDataUrl();
     if (!url) return;
@@ -1130,7 +1131,6 @@ export class HomeComponent implements AfterViewInit {
     a.click();
   }
 
-  // Download as PDF (auto-rotates page, keeps aspect)
   downloadPDF() {
     const url = this.exportDataUrl();
     if (!url) return;
@@ -1186,7 +1186,7 @@ export class HomeComponent implements AfterViewInit {
     const dy = p.y - this.dragStartY;
     this.bgOffsetX.set(this.startOffsetX + Math.round(dx));
     this.bgOffsetY.set(this.startOffsetY + Math.round(dy));
-    this.scheduleExportRebuild(50); // light debounce while dragging
+    this.scheduleExportRebuild(50);
   }
 
   endBgDrag() {
@@ -1213,10 +1213,9 @@ export class HomeComponent implements AfterViewInit {
   }
 
   private getBgAlpha(): number {
-    // backgroundOpacity can be "0.6" or "60" (percent). Normalize + clamp.
     const raw = Number(this.backgroundOpacity());
     if (!isFinite(raw)) return 1;
-    const as01 = raw > 1 ? raw / 100 : raw; // treat >1 as percent
+    const as01 = raw > 1 ? raw / 100 : raw;
     return Math.max(0, Math.min(1, as01));
   }
 }

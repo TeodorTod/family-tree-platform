@@ -28,20 +28,21 @@ model User {
 }
 
 model FamilyMember {
-  id            String    @id @default(uuid())
-  userId        String
-  firstName     String
-  middleName    String?
-  lastName      String
-  gender        String?
-  dob           DateTime
-  dod           DateTime?
-  isAlive       Boolean   @default(true)
-  photoUrl      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  role          String
-  relationLabel String?
+  id             String    @id @default(uuid())
+  userId         String
+  firstName      String
+  middleName     String?
+  lastName       String
+  gender         String?
+  dob            DateTime
+  dod            DateTime?
+  isAlive        Boolean   @default(true)
+  photoUrl       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  role           String
+  relationLabel  String?
+  translatedRole String?
 
   /// back‐relation to MemberProfile (one-to-one)
   profile MemberProfile? @relation("ProfileToMember")

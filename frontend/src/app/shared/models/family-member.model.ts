@@ -12,6 +12,7 @@ export interface FamilyMember {
   photoUrl?: string;
   relationLabel?: string;
   role: 'owner' | 'mother' | 'father' | string;
+  translatedRole?: string | null; 
 
   // Optional future relations
   parentOf?: Relationship[];
