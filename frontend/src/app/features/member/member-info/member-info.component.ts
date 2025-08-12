@@ -47,7 +47,6 @@ export class MemberInfoComponent implements OnInit {
 
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
       if (!member) {
-        // prefill generic suggestion for custom roles
         if (!this.hasConstant(this.role)) {
           this.form.patchValue({
             translatedRole: this.defaultGenericForRole(),
@@ -78,38 +77,41 @@ export class MemberInfoComponent implements OnInit {
     });
   }
 
-  private isMaternalRole(role: string): boolean {
-    // maternal_* prefix OR any segment equals "mother"
-    const parts = role.split('_');
-    return role.includes('maternal_') || parts.includes('mother');
-  }
+  private inferLineage(role: string): 'maternal' | 'paternal' | 'unknown' {
+    const parts = role.toLowerCase().split('_');
 
-  private isPaternalRole(role: string): boolean {
-    // paternal_* prefix OR any segment equals "father"
-    const parts = role.split('_');
-    return role.includes('paternal_') || parts.includes('father');
-  }
+    // 1) Ако първият сегмент е paternal/maternal → това решава еднозначно
+    if (parts[0] === 'paternal') return 'paternal';
+    if (parts[0] === 'maternal') return 'maternal';
 
-  // Use these in your fallbacks:
+    // 2) Иначе сравняваме първото срещане на father/mother
+    const iFather = parts.indexOf('father');
+    const iMother = parts.indexOf('mother');
+
+    if (iFather === -1 && iMother === -1) return 'unknown';
+    if (iFather !== -1 && iMother === -1) return 'paternal';
+    if (iMother !== -1 && iFather === -1) return 'maternal';
+
+    return iFather < iMother ? 'paternal' : 'maternal';
+  }
 
   private defaultGenericForRole(): string {
-    if (this.isMaternalRole(this.role)) {
+    const side = this.inferLineage(this.role);
+    if (side === 'maternal') {
       return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
     }
-    if (this.isPaternalRole(this.role)) {
+    if (side === 'paternal') {
       return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
     }
     return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
   }
 
   getTranslatedRoleLabel(): string {
-    // if custom: use editable value or generic
     if (!this.hasConstant(this.role)) {
       const v = this.form?.get('translatedRole')?.value;
       return v || this.defaultGenericForRole();
     }
 
-    // known roles: try longest-prefix match in CONSTANTS
     const parts = this.role.split('_');
     for (let len = parts.length; len > 0; len--) {
       const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
@@ -117,14 +119,7 @@ export class MemberInfoComponent implements OnInit {
       if (constantKey) return this.translate.instant(constantKey);
     }
 
-    // fallback by side
-    if (this.isMaternalRole(this.role)) {
-      return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
-    }
-    if (this.isPaternalRole(this.role)) {
-      return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
-    }
-    return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
+    return this.defaultGenericForRole();
   }
 
   private convertDatesToObjects(obj: any): any {

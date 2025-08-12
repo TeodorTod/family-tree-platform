@@ -9,7 +9,8 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
+import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-maternal-grandparents',
@@ -105,52 +106,77 @@ export class MaternalGrandparentsComponent implements OnInit {
   }
 
   private saveAndNavigate(route: string) {
-    const members = [
-      {
-        role: Roles.MATERNAL_GRANDMOTHER,
-        form: this.grandmotherForm,
-        photoUrl: this.grandmotherPhotoUrl(),
-        exists: this.grandmotherExists,
-      },
-      {
-        role: Roles.MATERNAL_GRANDFATHER,
-        form: this.grandfatherForm,
-        photoUrl: this.grandfatherPhotoUrl(),
-        exists: this.grandfatherExists,
-      },
-    ];
+  const members = [
+    {
+      role: Roles.MATERNAL_GRANDMOTHER,
+      form: this.grandmotherForm,
+      photoUrl: this.grandmotherPhotoUrl(),
+      exists: this.grandmotherExists,
+    },
+    {
+      role: Roles.MATERNAL_GRANDFATHER,
+      form: this.grandfatherForm,
+      photoUrl: this.grandfatherPhotoUrl(),
+      exists: this.grandfatherExists,
+    },
+  ];
 
-    const saveRequests = members
-      .filter(({ form }) => form.valid)
-      .map(({ role, form, photoUrl, exists }) => {
-        const raw = form.value;
+  const saveRequests = members
+    .filter(({ form }) => form.valid)
+    .map(({ role, form, photoUrl, exists }) => {
+      const raw = form.value;
 
-        const data: FamilyMember = {
-          firstName: raw.firstName ?? '',
-          middleName: raw.middleName ?? '',
-          lastName: raw.lastName ?? '',
-          gender: raw.gender ?? '',
-          dob: raw.dob!,
-          dod: raw.isAlive ? undefined : raw.dod || undefined,
-          isAlive: raw.isAlive ?? true,
-          photoUrl: photoUrl ?? '',
-          role: role,
-        };
+      const data: FamilyMember = {
+        firstName: raw.firstName ?? '',
+        middleName: raw.middleName ?? '',
+        lastName: raw.lastName ?? '',
+        gender: raw.gender ?? '',
+        dob: raw.dob!,
+        dod: raw.isAlive ? undefined : raw.dod || undefined,
+        isAlive: raw.isAlive ?? true,
+        photoUrl: photoUrl ?? '',
+        role: role,
+      };
 
-        const save$ = exists
-          ? this.familyService.updateMemberByRole(role, data)
-          : this.familyService.createMemberByRole(role, data);
+      return (exists
+        ? this.familyService.updateMemberByRole(role, data)
+        : this.familyService.createMemberByRole(role, data)
+      ).pipe(takeUntilDestroyed(this.destroyRef));
+    });
 
-        return save$.pipe(takeUntilDestroyed(this.destroyRef));
-      });
+  if (saveRequests.length === 0) {
+    this.router.navigate([route]);
+    return;
+  }
 
-    if (saveRequests.length === 0) {
-      this.router.navigate([route]);
-      return;
-    }
-
-    forkJoin(saveRequests).subscribe(() => {
+  forkJoin(saveRequests)
+    .pipe(
+      // fetch both after save to ensure we have IDs
+      switchMap(() =>
+        forkJoin([
+          this.familyService.getFamilyMemberByRole(
+            Roles.MATERNAL_GRANDMOTHER
+          ),
+          this.familyService.getFamilyMemberByRole(
+            Roles.MATERNAL_GRANDFATHER
+          ),
+        ])
+      ),
+      // link them if both exist
+      switchMap(([gm, gf]) => {
+        if (gm?.id && gf?.id) {
+          return this.familyService.setPartner(
+            gm.id,
+            gf.id,
+            PartnerStatus.UNKNOWN
+          );
+        }
+        return of(null);
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    )
+    .subscribe(() => {
       this.router.navigate([route]);
     });
-  }
+}
 }

@@ -9,6 +9,8 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
+import { switchMap, forkJoin, of } from 'rxjs';
+import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-mother',
@@ -69,7 +71,7 @@ export class MotherComponent implements OnInit {
 
   private saveAndNavigate(route: string) {
     if (this.form.invalid) {
-      this.router.navigate([route]); 
+      this.router.navigate([route]);
       return;
     }
 
@@ -90,10 +92,32 @@ export class MotherComponent implements OnInit {
       ? this.familyService.updateMemberByRole(Roles.MOTHER, mother)
       : this.familyService.createMemberByRole(Roles.MOTHER, mother);
 
-    save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.familyState.mother.set(mother);
-      this.router.navigate([route]);
-    });
+    save$
+      .pipe(
+        // After saving mother, fetch both mother & father (ensures we have IDs even after update)
+        switchMap(() =>
+          forkJoin([
+            this.familyService.getFamilyMemberByRole(Roles.MOTHER),
+            this.familyService.getFamilyMemberByRole(Roles.FATHER),
+          ])
+        ),
+        // If both present, set partner link (idempotent; overwrites/keeps one row only)
+        switchMap(([savedMother, savedFather]) => {
+          if (savedMother?.id && savedFather?.id) {
+            return this.familyService.setPartner(
+              savedMother.id,
+              savedFather.id,
+              PartnerStatus.UNKNOWN
+            );
+          }
+          return of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.familyState.mother.set(mother);
+        this.router.navigate([route]);
+      });
   }
 
   onPhotoClear() {

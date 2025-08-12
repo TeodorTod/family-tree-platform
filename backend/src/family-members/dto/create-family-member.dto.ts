@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsDateString, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsBoolean,
+  IsEnum,
+} from 'class-validator';
+import { PartnerStatus } from 'generated/prisma';
 
 export class CreateFamilyMemberDto {
   @IsString()
@@ -39,4 +46,12 @@ export class CreateFamilyMemberDto {
   @IsOptional()
   @IsString()
   translatedRole?: string;
+
+  @IsOptional()
+  @IsString()
+  partnerId?: string;
+
+  @IsOptional()
+  @IsEnum(PartnerStatus)
+  partnerStatus?: PartnerStatus;
 }

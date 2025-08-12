@@ -14,6 +14,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PartnerStatus {
+  MARRIED       
+  DIVORCED      
+  SEPARATED     
+  WIDOWED      
+  ENGAGED      
+  PARTNERS      
+  FRIENDS       
+  ANNULLED      
+  UNKNOWN      
+  OTHER         
+}
+
 model User {
   id          String    @id @default(uuid())
   email       String    @unique
@@ -43,6 +56,11 @@ model FamilyMember {
   role           String
   relationLabel  String?
   translatedRole String?
+
+  partnerId      String?
+  partner        FamilyMember? @relation("MemberPartner", fields: [partnerId], references: [id])
+  partnerOf      FamilyMember[] @relation("MemberPartner") 
+  partnerStatus  PartnerStatus?
 
   /// back‐relation to MemberProfile (one-to-one)
   profile MemberProfile? @relation("ProfileToMember")

@@ -11,7 +11,7 @@ import { FamilyService } from '../../core/services/family.service';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import { environment } from '../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable, switchMap, tap } from 'rxjs';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
@@ -22,6 +22,7 @@ import { BackgroundPickerDialogComponent } from './components/background-picker-
 import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
 import { TreeTableComponent } from './components/tree-table/tree-table.component';
 import jsPDF from 'jspdf';
+import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-home',
@@ -70,13 +71,26 @@ export class HomeComponent implements AfterViewInit {
     'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
+    // 1) read query param
     const viewMode = this.route.snapshot.queryParamMap.get('view');
-    if (viewMode === 'table') {
-      this.showTableView.set(true);
+
+    // 2) read saved preference
+    const savedPref = localStorage.getItem('familyViewMode'); // 'table' | 'chart' | null
+
+    // 3) detect mobile
+    const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
+
+    // 4) decide
+    if (viewMode === 'table' || viewMode === 'chart') {
+      this.showTableView.set(viewMode === 'table');
+    } else if (savedPref === 'table' || savedPref === 'chart') {
+      this.showTableView.set(savedPref === 'table');
     } else {
-      this.showTableView.set(false);
+      // default: on mobile show table, on desktop show chart
+      this.showTableView.set(isSmallScreen);
     }
 
+    // backgrounds init (unchanged)
     const savedBg = localStorage.getItem('selectedBackground');
     if (savedBg && this.backgroundImages.includes(savedBg)) {
       this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
@@ -84,11 +98,15 @@ export class HomeComponent implements AfterViewInit {
       this.backgroundIndex.set(0);
     }
 
+    // load members once; render graph only if we’re in chart view
     this.familyService.getMyFamily().subscribe((members) => {
       this.members = members;
-      this.renderGraph(members);
-      this.toggleEdgeVisibility();
-      this.updateCircleSize();
+
+      if (!this.showTableView()) {
+        this.renderGraph(members);
+        this.toggleEdgeVisibility();
+        this.updateCircleSize();
+      }
     });
 
     const savedSize = localStorage.getItem('familyCircleSize');
@@ -766,59 +784,74 @@ export class HomeComponent implements AfterViewInit {
     const base = this.selectedMember();
     if (!base) return;
 
-    // 1) Build a composite role like "owner_brother" or "mother_son"
     const newRole = `${base.role}_${event.relation}`;
 
-    // 2) Stamp that into your new member object
     const newMember: FamilyMember = {
       ...event.member,
       role: newRole,
     } as FamilyMember;
 
-    // 3) Create via the role-specific endpoint
     (
       this.familyService.createMemberByRole(
         newRole,
         newMember
       ) as Observable<FamilyMember>
-    ).subscribe((created) => {
-      // 4) Determine the relationship type for the edge
-      let relationshipType = '';
-      switch (event.relation) {
-        case 'mother':
-        case 'father':
-          relationshipType = 'parent';
-          break;
-        case 'son':
-        case 'daughter':
-          relationshipType = 'parent';
-          break;
-        case 'brother':
-        case 'sister':
-          relationshipType = 'sibling';
-          break;
-        case 'partner':
-          relationshipType = 'partner';
-          break;
-      }
+    )
+      .pipe(
+        switchMap((created) => {
+          const createdMember = created;
 
-      // 5) Link them in the graph
-      this.familyService
-        .createRelationship({
-          fromMemberId: base.id!,
-          toMemberId: created.id!,
-          type: relationshipType,
+          let relationshipType = '';
+          switch (event.relation) {
+            case 'mother':
+            case 'father':
+            case 'son':
+            case 'daughter':
+              relationshipType = 'parent';
+              break;
+            case 'brother':
+            case 'sister':
+              relationshipType = 'sibling';
+              break;
+            case 'partner':
+              relationshipType = 'partner';
+              break;
+          }
+
+          const edge$ = this.familyService.createRelationship({
+            fromMemberId: base.id!,
+            toMemberId: createdMember.id!,
+            type: relationshipType,
+          });
+
+          if (event.relation === 'partner') {
+            return edge$.pipe(
+              switchMap(() =>
+                this.familyService.setPartner(
+                  base.id!,
+                  createdMember.id!,
+                  PartnerStatus.UNKNOWN
+                )
+              )
+            );
+          }
+
+          return edge$;
         })
-        .subscribe(() => {
-          // 6) Close dialog and refresh
+      )
+      .subscribe({
+        next: () => {
           this.showAddDialog.set(false);
           this.selectedMember.set(null);
           this.familyService.getMyFamily().subscribe((members) => {
             this.members = members;
             this.renderGraph(members);
           });
-        });
-    });
+        },
+        error: (err) => {
+          console.error('Failed to add relative:', err);
+        },
+      });
   }
 
   openAddDialog(role: string | undefined | null) {
@@ -895,6 +928,8 @@ export class HomeComponent implements AfterViewInit {
     const isTable = !this.showTableView();
     this.showTableView.set(isTable);
 
+    localStorage.setItem('familyViewMode', isTable ? 'table' : 'chart');
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { view: isTable ? 'table' : 'chart' },
@@ -903,7 +938,11 @@ export class HomeComponent implements AfterViewInit {
 
     if (!isTable) {
       setTimeout(() => {
-        this.cy?.resize().fit();
+        if (!this.cy) {
+          this.renderGraph(this.members);
+        } else {
+          this.cy?.resize().fit();
+        }
         this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
       }, 0);
     }

@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { GetFamilyPagedDto } from './dto/get-family-page.dto';
+import { SetPartnerDto } from './dto/set-partner.dto';
 
 @Controller('family-members')
 @UseGuards(JwtAuthGuard)
@@ -46,6 +47,21 @@ export class FamilyMembersController {
     };
     console.log('Received query params:', query, 'Transformed DTO:', dto);
     return this.familyService.getPagedFamilyMembers(req.user.sub, dto);
+  }
+
+  @Post('set-partner')
+  setPartner(@Body() dto: SetPartnerDto, @Req() req: any) {
+    return this.familyService.setPartner(
+      req.user.sub,
+      dto.memberId,
+      dto.partnerId,
+      dto.status,
+    );
+  }
+
+  @Post('clear-partner')
+  clearPartner(@Body('memberId') memberId: string, @Req() req: any) {
+    return this.familyService.clearPartner(req.user.sub, memberId);
   }
 
   @Get(':role')

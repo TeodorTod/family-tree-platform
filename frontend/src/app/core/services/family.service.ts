@@ -9,6 +9,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -101,16 +102,34 @@ export class FamilyService {
     sortField: string,
     sortOrder: string
   ) {
-   return this.http.get<{ data: FamilyMember[]; total: number }>(
-  `${this.api}/family-members/my-tree-paged`,
-  {
-    params: {
-      page,
-      size,
-      sortField,
-      sortOrder,
-    },
+    return this.http.get<{ data: FamilyMember[]; total: number }>(
+      `${this.api}/family-members/my-tree-paged`,
+      {
+        params: {
+          page,
+          size,
+          sortField,
+          sortOrder,
+        },
+      }
+    );
   }
-);
+
+  setPartner(
+    memberId: string,
+    partnerId: string,
+    status: PartnerStatus = PartnerStatus.UNKNOWN
+  ) {
+    return this.http.post(`${this.api}/family-members/set-partner`, {
+      memberId,
+      partnerId,
+      status,
+    });
+  }
+
+  clearPartner(memberId: string) {
+    return this.http.post(`${this.api}/family-members/clear-partner`, {
+      memberId,
+    });
   }
 }

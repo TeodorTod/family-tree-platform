@@ -9,6 +9,8 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
+import { switchMap, forkJoin, of } from 'rxjs';
+import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-father',
@@ -70,31 +72,51 @@ export class FatherComponent implements OnInit {
   }
 
   private saveAndNavigate(route: string) {
-    if (this.form.invalid) {
-      this.router.navigate([route]);
-      return;
-    }
+  if (this.form.invalid) {
+    this.router.navigate([route]);
+    return;
+  }
 
-    const raw = this.form.value;
-    const father: FamilyMember = {
-      firstName: raw.firstName ?? '',
-      middleName: raw.middleName ?? '',
-      lastName: raw.lastName ?? '',
-      gender: raw.gender ?? '',
-      dob: raw.dob!,
-      dod: raw.isAlive ? undefined : raw.dod || undefined,
-      isAlive: raw.isAlive ?? true,
-      photoUrl: this.photoUrl() ?? '',
-      role: Roles.FATHER,
-    };
+  const raw = this.form.value;
+  const father: FamilyMember = {
+    firstName: raw.firstName ?? '',
+    middleName: raw.middleName ?? '',
+    lastName: raw.lastName ?? '',
+    gender: raw.gender ?? '',
+    dob: raw.dob!,
+    dod: raw.isAlive ? undefined : raw.dod || undefined,
+    isAlive: raw.isAlive ?? true,
+    photoUrl: this.photoUrl() ?? '',
+    role: Roles.FATHER,
+  };
 
-    const save$ = this.hasExistingRecord
-      ? this.familyService.updateMemberByRole(Roles.FATHER, father)
-      : this.familyService.createMemberByRole(Roles.FATHER, father);
+  const save$ = this.hasExistingRecord
+    ? this.familyService.updateMemberByRole(Roles.FATHER, father)
+    : this.familyService.createMemberByRole(Roles.FATHER, father);
 
-    save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+  save$
+    .pipe(
+      switchMap(() =>
+        forkJoin([
+          this.familyService.getFamilyMemberByRole(Roles.FATHER),
+          this.familyService.getFamilyMemberByRole(Roles.MOTHER),
+        ])
+      ),
+      switchMap(([savedFather, savedMother]) => {
+        if (savedFather?.id && savedMother?.id) {
+          return this.familyService.setPartner(
+            savedFather.id,
+            savedMother.id,
+            PartnerStatus.UNKNOWN
+          );
+        }
+        return of(null);
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    )
+    .subscribe(() => {
       this.familyState.father.set(father);
       this.router.navigate([route]);
     });
-  }
+}
 }

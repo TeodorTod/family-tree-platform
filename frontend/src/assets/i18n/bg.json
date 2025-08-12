@@ -57,7 +57,9 @@
     "CHANGE_NODE_SIZE": "Размер на иконите",
     "FOR_PRINT": "Печат / Експорт",
     "IMAGE_GENERATION": "Генериране на изображение…",
-    "CUSTOM_RELATION_LABEL": "Име на връзката"
+    "CUSTOM_RELATION_LABEL": "Име на връзката",
+    "NAMES": "Имена",
+    "ACTIONS": "Действия"
 
   },
 
@@ -90,19 +92,19 @@
     "OWNER_DAUGHTER": "Дъщеря",
     "OWNER_BROTHER": "Брат",
     "OWNER_SISTER": "Сестра",
-    "OWNER_PARTNER": "Партньор/ка",
+    "OWNER_PARTNER": "Партньор/Съпруг, Съпруга/",
 
     "MOTHER_SON": "Син",
     "MOTHER_DAUGHTER": "Дъщеря",
     "MOTHER_BROTHER": "Брат",
     "MOTHER_SISTER": "Леля (по майчина линия)",
-    "MOTHER_PARTNER": "Партньор/ка",
+    "MOTHER_PARTNER": "Партньор/Съпруг, Съпруга/",
 
     "FATHER_SON": "Син",
     "FATHER_DAUGHTER": "Дъщеря",
     "FATHER_BROTHER": "Чичо",
     "FATHER_SISTER": "Леля (по бащина линия)",
-    "FATHER_PARTNER": "Партньор/ка",
+    "FATHER_PARTNER": "Партньор/Съпруг, Съпруга/",
 
     "MATERNAL_GRANDMOTHER_SISTER": "Леля (сестра на баба по майчина линия)",
     "MATERNAL_GRANDMOTHER_BROTHER": "Вуйчо (брат на баба по майчина линия)",
@@ -139,5 +141,18 @@
     "ACHIEVEMENTS": "Постижения",
     "FAVORITES": "Любими",
     "PERSONAL_INFO": "Лична информация"
-  }
+  },
+
+  "PARTNER_STATUS": {
+  "MARRIED": "Женен/Омъжена",
+  "DIVORCED": "Разведен/Разведена",
+  "SEPARATED": "Разделени",
+  "WIDOWED": "Овдовял/Овдовяла",
+  "ENGAGED": "Сгодени",
+  "PARTNERS": "Партньори",
+  "FRIENDS": "Приятели",
+  "ANNULLED": "Анулирания",
+  "UNKNOWN": "Неизвестен",
+  "OTHER": "Други"
+}
 }

@@ -8,6 +8,7 @@ import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
 import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { GetFamilyPagedDto } from './dto/get-family-page.dto';
+import { PartnerStatus } from 'src/shared/enums/partner-status.enum';
 
 @Injectable()
 export class FamilyMembersService {
@@ -28,6 +29,8 @@ export class FamilyMembersService {
         role: dto.role.toLowerCase(),
         relationLabel: dto.relationLabel ?? undefined,
         translatedRole: dto.translatedRole ?? undefined,
+        partnerId: dto.partnerId ?? undefined,
+        partnerStatus: dto.partnerStatus ?? undefined,
       },
     });
   }
@@ -58,6 +61,8 @@ export class FamilyMembersService {
         userId,
         role: role.toLowerCase(),
         translatedRole: dto.translatedRole ?? existing.translatedRole,
+        partnerId: dto.partnerId ?? null,
+        partnerStatus: dto.partnerStatus ?? null,
       },
     });
   }
@@ -117,5 +122,60 @@ export class FamilyMembersService {
       console.error('getPagedFamilyMembers error:', error);
       throw new BadRequestException('Failed to fetch paged family members');
     }
+  }
+
+  async setPartner(
+    userId: string,
+    memberId: string,
+    partnerId: string,
+    status: PartnerStatus,
+  ) {
+    const [a, b] = await this.prisma.$transaction([
+      this.prisma.familyMember.findFirst({ where: { id: memberId, userId } }),
+      this.prisma.familyMember.findFirst({ where: { id: partnerId, userId } }),
+    ]);
+    if (!a || !b)
+      throw new NotFoundException('Member or partner not found for this user');
+
+    // clear old reciprocal links (if any)
+    await this.prisma.$transaction(async (tx) => {
+      // clear any third-party links pointing at each
+      await tx.familyMember.updateMany({
+        where: { partnerId: { in: [memberId, partnerId] } },
+        data: { partnerId: null, partnerStatus: null },
+      });
+
+      // set both directions
+      await tx.familyMember.update({
+        where: { id: memberId },
+        data: { partnerId, partnerStatus: status },
+      });
+      await tx.familyMember.update({
+        where: { id: partnerId },
+        data: { partnerId: memberId, partnerStatus: status },
+      });
+    });
+
+    return { ok: true };
+  }
+
+  async clearPartner(userId: string, memberId: string) {
+    const m = await this.prisma.familyMember.findFirst({
+      where: { id: memberId, userId },
+    });
+    if (!m) throw new NotFoundException();
+    if (!m.partnerId) return { ok: true };
+
+    await this.prisma.$transaction([
+      this.prisma.familyMember.update({
+        where: { id: memberId },
+        data: { partnerId: null, partnerStatus: null },
+      }),
+      this.prisma.familyMember.update({
+        where: { id: m.partnerId },
+        data: { partnerId: null, partnerStatus: null },
+      }),
+    ]);
+    return { ok: true };
   }
 }

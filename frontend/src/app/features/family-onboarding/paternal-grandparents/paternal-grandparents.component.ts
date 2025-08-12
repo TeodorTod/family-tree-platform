@@ -9,7 +9,8 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
+import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-paternal-grandparents',
@@ -138,11 +139,11 @@ export class PaternalGrandparentsComponent implements OnInit {
           role: role,
         };
 
-        const save$ = exists
-          ? this.familyService.updateMemberByRole(role, data)
-          : this.familyService.createMemberByRole(role, data);
-
-        return save$.pipe(takeUntilDestroyed(this.destroyRef));
+        return (
+          exists
+            ? this.familyService.updateMemberByRole(role, data)
+            : this.familyService.createMemberByRole(role, data)
+        ).pipe(takeUntilDestroyed(this.destroyRef));
       });
 
     if (saveRequests.length === 0) {
@@ -150,8 +151,32 @@ export class PaternalGrandparentsComponent implements OnInit {
       return;
     }
 
-    forkJoin(saveRequests).subscribe(() => {
-      this.router.navigate([route]);
-    });
+    forkJoin(saveRequests)
+      .pipe(
+        switchMap(() =>
+          forkJoin([
+            this.familyService.getFamilyMemberByRole(
+              Roles.PATERNAL_GRANDMOTHER
+            ),
+            this.familyService.getFamilyMemberByRole(
+              Roles.PATERNAL_GRANDFATHER
+            ),
+          ])
+        ),
+        switchMap(([gm, gf]) => {
+          if (gm?.id && gf?.id) {
+            return this.familyService.setPartner(
+              gm.id,
+              gf.id,
+              PartnerStatus.UNKNOWN
+            );
+          }
+          return of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.router.navigate([route]);
+      });
   }
 }
