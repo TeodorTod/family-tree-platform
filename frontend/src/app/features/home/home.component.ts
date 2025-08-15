@@ -451,6 +451,8 @@ export class HomeComponent implements AfterViewInit {
     const nodeSize = this.circleSize();
     // increase this to add more horizontal breathing room
     const sideBuffer = nodeSize + 5;
+    const ownerPos = posMap.get(Roles.OWNER)!;
+    this.resolveOverlapsXOnly(posMap, nodeSize, W, ownerPos.x);
 
     posMap.forEach((pos, role) => {
       if (role === Roles.OWNER) return;
@@ -954,6 +956,87 @@ export class HomeComponent implements AfterViewInit {
     });
   }
 
+  private resolveOverlapsXOnly(
+    posMap: Map<string, { x: number; y: number }>,
+    nodeSize: number,
+    W: number,
+    ownerX: number
+  ) {
+    const sideBuffer = nodeSize + 5;
+    const minDist = nodeSize + 10; // min x distance between two nodes on (nearly) same row
+    const maxIters = 20;
+
+    // ensure father-side left, mother-side right
+    posMap.forEach((p, role) => {
+      if (role === Roles.OWNER) return;
+      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
+        p.x = Math.max(p.x, ownerX + sideBuffer);
+      } else if (role.startsWith('paternal_') || role === Roles.FATHER) {
+        p.x = Math.min(p.x, ownerX - sideBuffer);
+      }
+      // clamp to screen safe area
+      p.x = Math.max(W * 0.05, Math.min(W * 0.95, p.x));
+    });
+
+    // iterative separate until stable (or maxIters)
+    for (let iter = 0; iter < maxIters; iter++) {
+      let moved = false;
+      const entries = Array.from(posMap.entries());
+
+      for (let i = 0; i < entries.length; i++) {
+        for (let j = i + 1; j < entries.length; j++) {
+          const [ri, pi] = entries[i];
+          const [rj, pj] = entries[j];
+
+          // only consider collisions within same horizontal band
+          if (Math.abs(pi.y - pj.y) >= nodeSize) continue;
+
+          const dx = pj.x - pi.x;
+          const absDx = Math.abs(dx);
+
+          if (absDx < minDist) {
+            const push = (minDist - absDx) / 2;
+
+            // direction: push away on X
+            if (dx > 0) {
+              pi.x -= push;
+              pj.x += push;
+            } else if (dx < 0) {
+              pi.x += push;
+              pj.x -= push;
+            } else {
+              // perfectly overlapping in x: split arbitrarily
+              pi.x -= push;
+              pj.x += push;
+            }
+
+            // enforce sides after push
+            if (ri.startsWith('maternal_') || ri === Roles.MOTHER) {
+              pi.x = Math.max(pi.x, ownerX + sideBuffer);
+            } else if (ri.startsWith('paternal_') || ri === Roles.FATHER) {
+              pi.x = Math.min(pi.x, ownerX - sideBuffer);
+            }
+            if (rj.startsWith('maternal_') || rj === Roles.MOTHER) {
+              pj.x = Math.max(pj.x, ownerX + sideBuffer);
+            } else if (rj.startsWith('paternal_') || rj === Roles.FATHER) {
+              pj.x = Math.min(pj.x, ownerX - sideBuffer);
+            }
+
+            // clamp to viewport
+            pi.x = Math.max(W * 0.05, Math.min(W * 0.95, pi.x));
+            pj.x = Math.max(W * 0.05, Math.min(W * 0.95, pj.x));
+
+            posMap.set(ri, pi);
+            posMap.set(rj, pj);
+            moved = true;
+          }
+        }
+      }
+
+      if (!moved) break;
+    }
+  }
+
   updateCircleSize() {
     this.circleSize.set(this.circleSizeValue);
     localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
@@ -965,8 +1048,8 @@ export class HomeComponent implements AfterViewInit {
         width: `${this.circleSizeValue}px`,
         height: `${this.circleSizeValue}px`,
         'font-size': `${Math.max(
-          10,
-          Math.min(18, this.circleSizeValue * 0.15)
+          8,
+          Math.min(16, this.circleSizeValue * 0.15)
         )}px`,
         'text-max-width': `${this.circleSizeValue * 1.2}px`,
       });
