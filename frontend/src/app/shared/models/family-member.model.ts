@@ -6,13 +6,15 @@ export interface FamilyMember {
   middleName?: string;
   lastName: string;
   gender?: string;
-  dob: string | Date;
+  dob?: string | Date | null;
+  birthYear?: number | null;
+  birthNote?: string | null;
   dod?: string | Date;
   isAlive: boolean;
   photoUrl?: string;
   relationLabel?: string;
   role: 'owner' | 'mother' | 'father' | string;
-  translatedRole?: string | null; 
+  translatedRole?: string | null;
 
   // Optional future relations
   parentOf?: Relationship[];

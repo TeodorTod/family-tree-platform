@@ -30,7 +30,7 @@
     "FIRST_NAME": "Име",
     "MIDDLE_NAME": "Презиме",
     "LAST_NAME": "Фамилия",
-    "DATE_OF_BIRTH": "Дата на раждане",
+    "DATE_OF_BIRTH": "Точна дата на раждане",
     "DATE_OF_DEATH": "Дата на смърт",
     "PHOTO_LABEL": "Снимка",
     "GENDER": "Пол",
@@ -59,8 +59,10 @@
     "IMAGE_GENERATION": "Генериране на изображение…",
     "CUSTOM_RELATION_LABEL": "Име на връзката",
     "NAMES": "Имена",
-    "ACTIONS": "Действия"
-
+    "ACTIONS": "Действия",
+    "DOB_MODE": "Рождена дата",
+    "DOB_YEAR_ONLY": "Само година на раждане",
+    "DOB_NOTE_LABEL": "Свободен текст за рождената дата"
   },
 
   "ADD": {
@@ -144,15 +146,15 @@
   },
 
   "PARTNER_STATUS": {
-  "MARRIED": "Женен/Омъжена",
-  "DIVORCED": "Разведен/Разведена",
-  "SEPARATED": "Разделени",
-  "WIDOWED": "Овдовял/Овдовяла",
-  "ENGAGED": "Сгодени",
-  "PARTNERS": "Партньори",
-  "FRIENDS": "Приятели",
-  "ANNULLED": "Анулирания",
-  "UNKNOWN": "Неизвестен",
-  "OTHER": "Други"
-}
+    "MARRIED": "Женен/Омъжена",
+    "DIVORCED": "Разведен/Разведена",
+    "SEPARATED": "Разделени",
+    "WIDOWED": "Овдовял/Овдовяла",
+    "ENGAGED": "Сгодени",
+    "PARTNERS": "Партньори",
+    "FRIENDS": "Приятели",
+    "ANNULLED": "Анулирания",
+    "UNKNOWN": "Неизвестен",
+    "OTHER": "Други"
+  }
 }

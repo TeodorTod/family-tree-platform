@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { switchMap, forkJoin, of } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-mother',
@@ -24,6 +25,7 @@ export class MotherComponent implements OnInit {
   private router = inject(Router);
   private familyState = inject(FamilyStateService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   photoUrl = signal<string | null>(null);
   hasExistingRecord = false;
@@ -31,25 +33,57 @@ export class MotherComponent implements OnInit {
 
   form = this.familyService.createFamilyMemberForm();
 
+  // labels for the DOB mode dropdown
+  dobModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  ];
+
   ngOnInit(): void {
     this.familyService
       .getFamilyMemberByRole(Roles.MOTHER)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((mother) => {
-        if (mother) {
-          this.hasExistingRecord = true;
-
-          const patchData = {
-            ...mother,
-            dob: mother.dob ? new Date(mother.dob) : null,
-            dod: mother.dod ? new Date(mother.dod) : null,
-          };
-
-          this.form.patchValue(patchData);
-          this.photoUrl.set(mother.photoUrl || null);
-          this.familyState.mother.set(mother);
+        if (!mother) {
+          this.form.get('dobMode')?.setValue('exact', { emitEvent: false });
+          return;
         }
+
+        this.hasExistingRecord = true;
+
+        // choose mode based on stored data
+        const dobMode: 'exact' | 'year' | 'note' =
+          mother.dob ? 'exact' :
+          mother.birthYear ? 'year' :
+          mother.birthNote ? 'note' : 'exact';
+
+        // Patch ONLY the controls that exist in the form
+        this.form.patchValue({
+          firstName: mother.firstName ?? null,
+          middleName: mother.middleName ?? null,
+          lastName: mother.lastName ?? null,
+          gender: mother.gender ?? null,
+
+          dobMode,
+          dob: mother.dob ? new Date(mother.dob) : null,
+          birthYear: mother.birthYear ?? null,
+          birthNote: mother.birthNote ?? null,
+
+          dod: mother.dod ? new Date(mother.dod) : null,
+          isAlive: (mother.isAlive ?? true) as boolean,
+          translatedRole: mother.translatedRole ?? null,
+        });
+
+        this.photoUrl.set(mother.photoUrl || null);
+        this.familyState.mother.set(mother);
       });
+  }
+
+  // year picker ⇒ keep only the year
+  onDobYearPicked(d: Date) {
+    if (!d) return;
+    this.form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   onPhotoUpload(event: any) {
@@ -57,10 +91,13 @@ export class MotherComponent implements OnInit {
     this.familyService
       .uploadPhoto(file)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((res) => {
-        this.photoUrl.set(res.url);
-      });
+      .subscribe((res) => this.photoUrl.set(res.url));
   }
+
+  onPhotoClear() {
+    this.photoUrl.set(null);
+  }
+
   next() {
     this.saveAndNavigate(CONSTANTS.ROUTES.ONBOARDING.MATERNAL_GRANDPARENTS);
   }
@@ -76,12 +113,20 @@ export class MotherComponent implements OnInit {
     }
 
     const raw = this.form.value;
+    const dobPayload = this.familyService.buildDobPayload(this.form); // { dob | birthYear | birthNote }
+
     const mother: FamilyMember = {
       firstName: raw.firstName ?? '',
       middleName: raw.middleName ?? '',
       lastName: raw.lastName ?? '',
       gender: raw.gender ?? '',
-      dob: raw.dob!,
+
+      // send Date|null to match your model; buildDobPayload returns ISO string
+      dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
+      birthYear: dobPayload.birthYear ?? null,
+      
+      birthNote: dobPayload.birthNote ?? null,
+
       dod: raw.isAlive ? undefined : raw.dod || undefined,
       isAlive: raw.isAlive ?? true,
       photoUrl: this.photoUrl() ?? '',
@@ -94,14 +139,12 @@ export class MotherComponent implements OnInit {
 
     save$
       .pipe(
-        // After saving mother, fetch both mother & father (ensures we have IDs even after update)
         switchMap(() =>
           forkJoin([
             this.familyService.getFamilyMemberByRole(Roles.MOTHER),
             this.familyService.getFamilyMemberByRole(Roles.FATHER),
           ])
         ),
-        // If both present, set partner link (idempotent; overwrites/keeps one row only)
         switchMap(([savedMother, savedFather]) => {
           if (savedMother?.id && savedFather?.id) {
             return this.familyService.setPartner(
@@ -118,9 +161,5 @@ export class MotherComponent implements OnInit {
         this.familyState.mother.set(mother);
         this.router.navigate([route]);
       });
-  }
-
-  onPhotoClear() {
-    this.photoUrl.set(null);
   }
 }

@@ -24,12 +24,11 @@
       </th>
 
       <th pSortableColumn="dob">
-        {{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}
+        {{ CONSTANTS.INFO_DOB_MODE | translate }}
         <p-sortIcon field="dob" />
       </th>
 
       <th>{{ CONSTANTS.INFO_ACTIONS | translate }}</th>
-
     </tr>
   </ng-template>
 
@@ -46,11 +45,8 @@
         {{ getRoleDisplay(m) }}
       </td>
 
-      <td
-        [pTooltip]="(m.dob | date : 'yyyy-MM-dd') ?? ''"
-        tooltipPosition="top"
-      >
-        {{ m.dob | date : "yyyy-MM-dd" }}
+      <td [pTooltip]="birthTooltip(m)" tooltipPosition="top">
+        {{ birthDisplay(m) }}
       </td>
 
       <td>

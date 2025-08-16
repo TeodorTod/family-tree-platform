@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { switchMap, forkJoin, of } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-father',
@@ -21,15 +22,25 @@ import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 export class FatherComponent implements OnInit {
   CONSTANTS = CONSTANTS;
   Roles = Roles;
+
   private familyService = inject(FamilyService);
   private familyState = inject(FamilyStateService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   apiUrl = environment.apiUrl;
   photoUrl = signal<string | null>(null);
   hasExistingRecord = false;
+
   form = this.familyService.createFamilyMemberForm();
+
+  
+  dobModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' },
+  ];
 
   ngOnInit(): void {
     this.familyService
@@ -38,15 +49,35 @@ export class FatherComponent implements OnInit {
       .subscribe((father) => {
         if (father) {
           this.hasExistingRecord = true;
+
+       
+          const dobMode =
+            father.dob ? 'exact' :
+            father.birthYear ? 'year' :
+            father.birthNote ? 'note' : 'exact';
+
           this.form.patchValue({
             ...father,
+            dobMode,
             dob: father.dob ? new Date(father.dob) : null,
+            birthYear: father.birthYear ?? null,
+            birthNote: father.birthNote ?? null,
             dod: father.dod ? new Date(father.dod) : null,
           });
+
           this.photoUrl.set(father.photoUrl || null);
           this.familyState.father.set(father);
+        } else {
+         
+          this.form.get('dobMode')?.setValue('exact', { emitEvent: false });
         }
       });
+  }
+
+
+  onDobYearPicked(d: Date) {
+    if (!d) return;
+    this.form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   onPhotoUpload(event: any) {
@@ -72,51 +103,59 @@ export class FatherComponent implements OnInit {
   }
 
   private saveAndNavigate(route: string) {
-  if (this.form.invalid) {
-    this.router.navigate([route]);
-    return;
-  }
-
-  const raw = this.form.value;
-  const father: FamilyMember = {
-    firstName: raw.firstName ?? '',
-    middleName: raw.middleName ?? '',
-    lastName: raw.lastName ?? '',
-    gender: raw.gender ?? '',
-    dob: raw.dob!,
-    dod: raw.isAlive ? undefined : raw.dod || undefined,
-    isAlive: raw.isAlive ?? true,
-    photoUrl: this.photoUrl() ?? '',
-    role: Roles.FATHER,
-  };
-
-  const save$ = this.hasExistingRecord
-    ? this.familyService.updateMemberByRole(Roles.FATHER, father)
-    : this.familyService.createMemberByRole(Roles.FATHER, father);
-
-  save$
-    .pipe(
-      switchMap(() =>
-        forkJoin([
-          this.familyService.getFamilyMemberByRole(Roles.FATHER),
-          this.familyService.getFamilyMemberByRole(Roles.MOTHER),
-        ])
-      ),
-      switchMap(([savedFather, savedMother]) => {
-        if (savedFather?.id && savedMother?.id) {
-          return this.familyService.setPartner(
-            savedFather.id,
-            savedMother.id,
-            PartnerStatus.UNKNOWN
-          );
-        }
-        return of(null);
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    )
-    .subscribe(() => {
-      this.familyState.father.set(father);
+    if (this.form.invalid) {
       this.router.navigate([route]);
-    });
-}
+      return;
+    }
+
+    const raw = this.form.value;
+
+    
+    const dobPayload = this.familyService.buildDobPayload(this.form);
+
+    const father: FamilyMember = {
+      firstName: raw.firstName ?? '',
+      middleName: raw.middleName ?? '',
+      lastName: raw.lastName ?? '',
+      gender: raw.gender ?? '',
+
+      dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
+      birthYear: dobPayload.birthYear ?? null,
+      birthNote: dobPayload.birthNote ?? null,
+
+      dod: raw.isAlive ? undefined : raw.dod || undefined,
+      isAlive: raw.isAlive ?? true,
+      photoUrl: this.photoUrl() ?? '',
+      role: Roles.FATHER,
+    };
+
+    const save$ = this.hasExistingRecord
+      ? this.familyService.updateMemberByRole(Roles.FATHER, father)
+      : this.familyService.createMemberByRole(Roles.FATHER, father);
+
+    save$
+      .pipe(
+        switchMap(() =>
+          forkJoin([
+            this.familyService.getFamilyMemberByRole(Roles.FATHER),
+            this.familyService.getFamilyMemberByRole(Roles.MOTHER),
+          ])
+        ),
+        switchMap(([savedFather, savedMother]) => {
+          if (savedFather?.id && savedMother?.id) {
+            return this.familyService.setPartner(
+              savedFather.id,
+              savedMother.id,
+              PartnerStatus.UNKNOWN
+            );
+          }
+          return of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.familyState.father.set(father);
+        this.router.navigate([route]);
+      });
+  }
 }

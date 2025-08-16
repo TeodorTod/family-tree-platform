@@ -41,9 +41,25 @@ export class MemberInfoComponent implements OnInit {
   role!: string;
   CONSTANTS = CONSTANTS;
 
+  // add options for DOB mode
+  dobModeOptions = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      value: 'exact' as const,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      value: 'year' as const,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      value: 'note' as const,
+    },
+  ];
+
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
-    this.form = this.familyService.createFamilyMemberForm();
+    this.form = this.familyService.createFamilyMemberForm(); // includes dobMode, dob, birthYear, birthNote
 
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
       if (!member) {
@@ -56,8 +72,19 @@ export class MemberInfoComponent implements OnInit {
       }
 
       const converted = this.convertDatesToObjects(member);
+
+      // decide DOB mode and hydrate dob for year-mode so the year picker shows it
+      let dobMode: 'exact' | 'year' | 'note' = 'exact';
+      if (!converted.dob && converted.birthYear) {
+        converted.dob = new Date(converted.birthYear, 0, 1);
+        dobMode = 'year';
+      } else if (converted.birthNote) {
+        dobMode = 'note';
+      }
+
       this.form.patchValue({
         ...converted,
+        dobMode,
         translatedRole:
           member.translatedRole ??
           (this.hasConstant(this.role) ? null : this.defaultGenericForRole()),
@@ -66,8 +93,44 @@ export class MemberInfoComponent implements OnInit {
   }
 
   save() {
-    const data = { ...this.form.value, role: this.role };
-    this.familyService.saveMemberByRole(this.role, data).subscribe();
+    if (this.form.invalid) return;
+
+    const v = this.form.value;
+
+    // Inline DOB payload (no helper):
+    let dob: string | null = null;
+    let birthYear: number | null = null;
+    let birthNote: string | null = null;
+
+    if (v.dobMode === 'exact' && v.dob) {
+      dob = new Date(v.dob).toISOString();
+    } else if (v.dobMode === 'year' && v.dob) {
+      birthYear = new Date(v.dob).getFullYear();
+    } else if (v.dobMode === 'note' && v.birthNote) {
+      birthNote = v.birthNote;
+    }
+
+    const data: any = {
+      role: this.role,
+      firstName: v.firstName ?? '',
+      middleName: v.middleName ?? null,
+      lastName: v.lastName ?? '',
+      gender: v.gender ?? null,
+      isAlive: v.isAlive ?? true,
+      translatedRole: v.translatedRole ?? null,
+
+      // DOB payload
+      dob,
+      birthYear,
+      birthNote,
+
+      // DOD only if not alive
+      dod: v.isAlive ? null : v.dod ? new Date(v.dod).toISOString() : null,
+    };
+
+    this.familyService
+      .saveMemberByRole(this.role, data)
+      .subscribe(() => this.cancel());
   }
 
   cancel(): void {
@@ -79,30 +142,22 @@ export class MemberInfoComponent implements OnInit {
 
   private inferLineage(role: string): 'maternal' | 'paternal' | 'unknown' {
     const parts = role.toLowerCase().split('_');
-
-    // 1) Ако първият сегмент е paternal/maternal → това решава еднозначно
     if (parts[0] === 'paternal') return 'paternal';
     if (parts[0] === 'maternal') return 'maternal';
-
-    // 2) Иначе сравняваме първото срещане на father/mother
     const iFather = parts.indexOf('father');
     const iMother = parts.indexOf('mother');
-
     if (iFather === -1 && iMother === -1) return 'unknown';
     if (iFather !== -1 && iMother === -1) return 'paternal';
     if (iMother !== -1 && iFather === -1) return 'maternal';
-
     return iFather < iMother ? 'paternal' : 'maternal';
   }
 
   private defaultGenericForRole(): string {
     const side = this.inferLineage(this.role);
-    if (side === 'maternal') {
+    if (side === 'maternal')
       return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
-    }
-    if (side === 'paternal') {
+    if (side === 'paternal')
       return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
-    }
     return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
   }
 
@@ -111,14 +166,12 @@ export class MemberInfoComponent implements OnInit {
       const v = this.form?.get('translatedRole')?.value;
       return v || this.defaultGenericForRole();
     }
-
     const parts = this.role.split('_');
     for (let len = parts.length; len > 0; len--) {
       const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
       const constantKey = (CONSTANTS as any)[key] as string | undefined;
       if (constantKey) return this.translate.instant(constantKey);
     }
-
     return this.defaultGenericForRole();
   }
 

@@ -19,27 +19,94 @@ export class FamilyService {
   private fb = inject(FormBuilder);
   private api = environment.apiUrl;
 
-  createFamilyMemberForm(): FormGroup<{
-    firstName: FormControl<string | null>;
-    middleName: FormControl<string | null>;
-    lastName: FormControl<string | null>;
-    gender: FormControl<string | null>;
-    dob: FormControl<Date | null>;
-    dod: FormControl<Date | null>;
-    isAlive: FormControl<boolean | null>;
-    translatedRole: FormControl<string | null>;
-  }> {
-    return this.fb.group({
-      firstName: new FormControl<string | null>(null, Validators.required),
-      middleName: new FormControl<string | null>(null),
-      lastName: new FormControl<string | null>(null, Validators.required),
-      gender: new FormControl<string | null>(null),
-      dob: new FormControl<Date | null>(null, Validators.required),
-      dod: new FormControl<Date | null>(null),
-      isAlive: new FormControl<boolean | null>(true, Validators.required),
-      translatedRole: new FormControl<string | null>(null),
-    });
+createFamilyMemberForm(): FormGroup<{
+  firstName: FormControl<string | null>;
+  middleName: FormControl<string | null>;
+  lastName: FormControl<string | null>;
+  gender: FormControl<string | null>;
+  dobMode: FormControl<'exact' | 'year' | 'note'>;
+  dob: FormControl<Date | null>;
+  birthYear: FormControl<number | null>;
+  birthNote: FormControl<string | null>;
+  dod: FormControl<Date | null>;
+  isAlive: FormControl<boolean | null>;
+  translatedRole: FormControl<string | null>;
+}> {
+  const fg = this.fb.group({
+    firstName: new FormControl<string | null>(null, Validators.required),
+    middleName: new FormControl<string | null>(null),
+    lastName: new FormControl<string | null>(null, Validators.required),
+    gender: new FormControl<string | null>(null),
+
+    dobMode: new FormControl<'exact' | 'year' | 'note'>('exact', { nonNullable: true }),
+    dob: new FormControl<Date | null>(null),
+    birthYear: new FormControl<number | null>(null),   // numeric only (derived)
+    birthNote: new FormControl<string | null>(null),
+
+    dod: new FormControl<Date | null>(null),
+    isAlive: new FormControl<boolean | null>(true, Validators.required),
+    translatedRole: new FormControl<string | null>(null),
+  });
+
+  // switch validators per mode (use only `dob` for exact and year)
+  fg.get('dobMode')!.valueChanges.subscribe((mode) => {
+    const dob = fg.get('dob')!;
+    const by  = fg.get('birthYear')!;
+    const bn  = fg.get('birthNote')!;
+
+    dob.clearValidators();
+    by.clearValidators();
+    bn.clearValidators();
+
+    if (mode === 'exact') {
+      dob.setValidators([]);                  // optional exact date
+      by.setValue(null, { emitEvent: false }); // clear year
+      bn.setValue(null, { emitEvent: false });
+    } else if (mode === 'year') {
+      dob.setValidators([Validators.required]); // pick a year (as Date Jan 1)
+      by.setValue(null, { emitEvent: false });  // numeric gets derived below
+      bn.setValue(null, { emitEvent: false });
+    } else { // note
+      bn.setValidators([Validators.maxLength(200)]);
+      dob.setValue(null, { emitEvent: false });
+      by.setValue(null, { emitEvent: false });
+    }
+
+    dob.updateValueAndValidity({ emitEvent: false });
+    by.updateValueAndValidity({ emitEvent: false });
+    bn.updateValueAndValidity({ emitEvent: false });
+  });
+
+  // when in "year" mode, keep birthYear = dob.getFullYear()
+  fg.get('dob')!.valueChanges.subscribe((d: Date | null) => {
+    if (fg.get('dobMode')!.value === 'year') {
+      fg.get('birthYear')!.setValue(d ? d.getFullYear() : null, { emitEvent: false });
+    }
+  });
+
+  return fg;
+}
+
+buildDobPayload(form: FormGroup<any>): {
+  dob?: string | null;
+  birthYear?: number | null;
+  birthNote?: string | null;
+} {
+  const mode = form.get('dobMode')!.value as 'exact'|'year'|'note';
+  const dob: Date | null = form.value.dob;
+
+  if (mode === 'exact' && dob) {
+    return { dob: new Date(dob).toISOString(), birthYear: null, birthNote: null };
   }
+  if (mode === 'year' && dob) {
+    return { dob: null, birthYear: dob.getFullYear(), birthNote: null };
+  }
+  if (mode === 'note' && form.value.birthNote) {
+    return { dob: null, birthYear: null, birthNote: form.value.birthNote };
+  }
+  return { dob: null, birthYear: null, birthNote: null };
+}
+
 
   getMyFamily(): Observable<FamilyMember[]> {
     return this.http.get<FamilyMember[]>(`${this.api}/family-members/my-tree`);

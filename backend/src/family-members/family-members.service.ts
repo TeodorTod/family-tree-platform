@@ -15,6 +15,7 @@ export class FamilyMembersService {
   constructor(private prisma: PrismaService) {}
 
   async createFamilyMember(userId: string, dto: CreateFamilyMemberDto) {
+    const dobPayload = this.normalizeDobPayload(dto);
     return this.prisma.familyMember.create({
       data: {
         userId,
@@ -22,7 +23,7 @@ export class FamilyMembersService {
         middleName: dto.middleName,
         lastName: dto.lastName,
         gender: dto.gender ?? undefined,
-        dob: new Date(dto.dob),
+        ...dobPayload,
         dod: dto.dod ? new Date(dto.dod) : undefined,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
@@ -54,12 +55,27 @@ export class FamilyMembersService {
     });
     if (!existing) throw new NotFoundException(`No member with role ${role}`);
 
+    const dobPayload =
+      dto.dob !== undefined ||
+      dto.birthYear !== undefined ||
+      dto.birthNote !== undefined
+        ? this.normalizeDobPayload(dto)
+        : {};
+
     return this.prisma.familyMember.update({
       where: { id: existing.id },
       data: {
-        ...dto,
         userId,
         role: role.toLowerCase(),
+        firstName: dto.firstName,
+        middleName: dto.middleName,
+        lastName: dto.lastName,
+        gender: dto.gender,
+        ...dobPayload,
+        dod: dto.dod ? new Date(dto.dod) : dto.dod === null ? null : undefined,
+        isAlive: dto.isAlive,
+        photoUrl: dto.photoUrl,
+        relationLabel: dto.relationLabel ?? existing.relationLabel,
         translatedRole: dto.translatedRole ?? existing.translatedRole,
         partnerId: dto.partnerId ?? null,
         partnerStatus: dto.partnerStatus ?? null,
@@ -75,7 +91,6 @@ export class FamilyMembersService {
   }
 
   async createRelationship(dto: CreateRelationshipDto) {
-    // Optional: verify both members exist & belong to the user
     return this.prisma.relationship.create({
       data: {
         fromMemberId: dto.fromMemberId,
@@ -86,8 +101,6 @@ export class FamilyMembersService {
   }
 
   async getPagedFamilyMembers(userId: string, dto: GetFamilyPagedDto) {
-    console.log('getPagedFamilyMembers input:', { userId, dto });
-
     const validSortFields = ['firstName', 'lastName', 'dob', 'role'];
     if (!validSortFields.includes(dto.sortField)) {
       throw new BadRequestException(
@@ -113,10 +126,6 @@ export class FamilyMembersService {
         }),
       ]);
 
-      console.log('getPagedFamilyMembers result:', {
-        total,
-        dataLength: data.length,
-      });
       return { data, total };
     } catch (error) {
       console.error('getPagedFamilyMembers error:', error);
@@ -137,15 +146,12 @@ export class FamilyMembersService {
     if (!a || !b)
       throw new NotFoundException('Member or partner not found for this user');
 
-    // clear old reciprocal links (if any)
     await this.prisma.$transaction(async (tx) => {
-      // clear any third-party links pointing at each
       await tx.familyMember.updateMany({
         where: { partnerId: { in: [memberId, partnerId] } },
         data: { partnerId: null, partnerStatus: null },
       });
 
-      // set both directions
       await tx.familyMember.update({
         where: { id: memberId },
         data: { partnerId, partnerStatus: status },
@@ -177,5 +183,36 @@ export class FamilyMembersService {
       }),
     ]);
     return { ok: true };
+  }
+
+  private normalizeDobPayload(
+    dto: CreateFamilyMemberDto | UpdateFamilyMemberDto,
+  ) {
+    if (dto.dob) {
+      return {
+        dob: new Date(dto.dob),
+        birthYear: null,
+        birthNote: null,
+      };
+    }
+    if (typeof dto.birthYear === 'number') {
+      return {
+        dob: null,
+        birthYear: dto.birthYear,
+        birthNote: null,
+      };
+    }
+    if (dto.birthNote && dto.birthNote.trim().length) {
+      return {
+        dob: null,
+        birthYear: null,
+        birthNote: dto.birthNote.trim(),
+      };
+    }
+    return {
+      dob: null,
+      birthYear: null,
+      birthNote: null,
+    };
   }
 }

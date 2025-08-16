@@ -21,26 +21,65 @@
       <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
     </div>
 
+    <!-- DOB Mode -->
+    <span class="p-float-label w-full mb-3">
+      <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
+      <p-dropdown
+        inputId="dobMode"
+        formControlName="dobMode"
+        [options]="dobModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
+    <!-- Exact date -->
+    @if (form.value.dobMode === 'exact') {
     <div class="floating-field" [class.active]="form.get('dob')?.value">
       <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
       <p-datepicker
         formControlName="dob"
-        placeholder=" "
         dateFormat="yy-mm-dd"
         [showIcon]="true"
         [iconDisplay]="'input'"
         [style]="{ width: '100%' }"
       ></p-datepicker>
     </div>
+    }
 
-<div class="d-flex align-items-center gap-2 mb-3">
-  <p-checkbox
-    binary="true"
-    formControlName="isAlive"
-    inputId="isAlive"
-  ></p-checkbox>
-  <label for="isAlive" class="mb-0">{{ CONSTANTS.INFO_IS_ALIVE | translate }}</label>
-</div>
+    <!-- Year only — same control, year view + 'yy' format -->
+    @if (form.value.dobMode === 'year') {
+    <div class="floating-field" [class.active]="form.get('dob')?.value">
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- Note -->
+    @if (form.value.dobMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="birthNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
+    }
+
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <p-checkbox
+        binary="true"
+        formControlName="isAlive"
+        inputId="isAlive"
+      ></p-checkbox>
+      <label for="isAlive" class="mb-0">{{
+        CONSTANTS.INFO_IS_ALIVE | translate
+      }}</label>
+    </div>
 
     @if (!form.value.isAlive) {
     <div class="floating-field" [class.active]="form.get('dod')?.value">

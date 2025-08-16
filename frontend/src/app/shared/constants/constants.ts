@@ -80,6 +80,9 @@ export class CONSTANTS {
   static readonly INFO_RELATION_LABEL = 'INFO.RELATION_LABEL';
   static readonly INFO_NAMES = 'INFO.NAMES';
   static readonly INFO_ACTIONS = 'INFO.ACTIONS';
+  static readonly INFO_DOB_MODE = 'INFO.DOB_MODE';
+  static readonly INFO_DOB_YEAR_ONLY = 'INFO.DOB_YEAR_ONLY';
+  static readonly INFO_DOB_NOTE_LABEL = 'INFO.DOB_NOTE_LABEL';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

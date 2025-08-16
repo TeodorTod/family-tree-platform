@@ -47,7 +47,9 @@ model FamilyMember {
   middleName     String?
   lastName       String
   gender         String?
-  dob            DateTime
+  dob            DateTime?
+  birthYear      Int?
+  birthNote      String?  
   dod            DateTime?
   isAlive        Boolean   @default(true)
   photoUrl       String?

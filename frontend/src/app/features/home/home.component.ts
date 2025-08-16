@@ -98,7 +98,9 @@ export class HomeComponent implements AfterViewInit {
       this.backgroundIndex.set(0);
     }
 
-    // load members once; render graph only if we’re in chart view
+    this.setInitialCircleSizeByWidth();
+    requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
+
     this.familyService.getMyFamily().subscribe((members) => {
       this.members = members;
 
@@ -108,12 +110,16 @@ export class HomeComponent implements AfterViewInit {
         this.updateCircleSize();
       }
     });
+  }
 
-    const savedSize = localStorage.getItem('familyCircleSize');
-    if (savedSize) {
-      this.circleSizeValue = parseInt(savedSize, 10);
-      this.circleSize.set(this.circleSizeValue);
-    }
+  private setInitialCircleSizeByWidth(): void {
+    const w = Math.max(
+      window.innerWidth || 0,
+      this.cyRef?.nativeElement?.clientWidth || 0
+    );
+    this.circleSizeValue = w <= 1024 ? 30 : 70;
+    this.circleSize.set(this.circleSizeValue);
+    localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
   }
 
   zoomIn(): void {
@@ -502,19 +508,23 @@ export class HomeComponent implements AfterViewInit {
 
     // 8a) Nodes
     members.forEach((m) => {
-      const { x, y } = posMap.get(m.role)!;
+      const pos = posMap.get(m.role);
+      if (!pos) return; // guard just in case
+
+      const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ');
+      const yr = this.birthLabel(m);
+      const label = yr ? `${fullName}\n${yr}` : fullName;
+
       elements.push({
         data: {
           id: m.role,
-          label: `${m.firstName} ${m.lastName}\n${new Date(
-            m.dob
-          ).getFullYear()}`,
-          gender: m.gender?.toLowerCase(),
+          label,
+          gender: m.gender?.toLowerCase() ?? undefined,
           photo: m.photoUrl
             ? `${environment.apiUrl}${m.photoUrl}`
             : defaultPhoto,
         },
-        position: { x, y },
+        position: { x: pos.x, y: pos.y },
       });
     });
 
@@ -708,7 +718,7 @@ export class HomeComponent implements AfterViewInit {
             'text-max-width': '80px',
             'text-valign': 'bottom',
             'text-halign': 'center',
-            'font-size': isMobile ? '13px' : '14px',
+            'font-size': isMobile ? '11px' : '14px',
             'font-family': 'Inter, system-ui, sans-serif',
             'background-image': 'data(photo)',
             'background-fit': 'cover',
@@ -777,6 +787,20 @@ export class HomeComponent implements AfterViewInit {
     if (!this.showConnections()) {
       this.toggleEdgeVisibility();
     }
+  }
+
+  private birthLabel(m: FamilyMember): string {
+    // prefer exact DOB year if present
+    if (m.dob) {
+      const d = typeof m.dob === 'string' ? new Date(m.dob) : m.dob;
+      const y =
+        d instanceof Date && !isNaN(d.getTime()) ? d.getFullYear() : NaN;
+      if (Number.isFinite(y)) return String(y);
+    }
+    // else use year-only or note
+    if (m.birthYear != null) return String(m.birthYear);
+    if (m.birthNote) return m.birthNote;
+    return '';
   }
 
   handleAddRelative(event: {

@@ -4,6 +4,10 @@ import {
   IsDateString,
   IsBoolean,
   IsEnum,
+  MaxLength,
+  IsInt,
+  Max,
+  Min,
 } from 'class-validator';
 import { PartnerStatus } from 'generated/prisma';
 
@@ -23,11 +27,23 @@ export class CreateFamilyMemberDto {
   gender?: string | null;
 
   @IsDateString()
+  @IsOptional()
   dob: string;
 
   @IsOptional()
   @IsDateString()
   dod?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1000)
+  @Max(2100)
+  birthYear?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  birthNote?: string;
 
   @IsBoolean()
   isAlive: boolean;

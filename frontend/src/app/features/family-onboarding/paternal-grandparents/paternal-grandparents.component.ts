@@ -11,6 +11,7 @@ import { environment } from '../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-paternal-grandparents',
@@ -26,6 +27,7 @@ export class PaternalGrandparentsComponent implements OnInit {
   private familyState = inject(FamilyStateService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   apiUrl = environment.apiUrl;
 
@@ -37,6 +39,21 @@ export class PaternalGrandparentsComponent implements OnInit {
 
   grandmotherExists = false;
   grandfatherExists = false;
+
+  dobModeOptions = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      value: 'exact',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      value: 'year',
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      value: 'note',
+    },
+  ];
 
   ngOnInit(): void {
     this.loadMember(
@@ -63,21 +80,56 @@ export class PaternalGrandparentsComponent implements OnInit {
       .getFamilyMemberByRole(role)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((member) => {
-        if (member) {
-          this[existenceFlag] = true;
-          form.patchValue({
-            ...member,
-            dob: member.dob ? new Date(member.dob) : null,
-            dod: member.dod ? new Date(member.dod) : null,
-          });
-          this.familyState[
-            role === Roles.PATERNAL_GRANDMOTHER
-              ? 'paternalGrandmother'
-              : 'paternalGrandfather'
-          ].set(member);
-          photoSignal.set(member.photoUrl || null);
+        if (!member) {
+          // default mode
+          form.get('dobMode')?.setValue('exact', { emitEvent: false });
+          return;
         }
+
+        this[existenceFlag] = true;
+
+        const dobMode: 'exact' | 'year' | 'note' = member.dob
+          ? 'exact'
+          : member.birthYear
+          ? 'year'
+          : member.birthNote
+          ? 'note'
+          : 'exact';
+
+        // Patch ONLY known form controls (avoid spreading member)
+        form.patchValue({
+          firstName: member.firstName ?? null,
+          middleName: member.middleName ?? null,
+          lastName: member.lastName ?? null,
+          gender: member.gender ?? null,
+
+          dobMode,
+          dob: member.dob ? new Date(member.dob) : null,
+          birthYear: member.birthYear ?? null,
+          birthNote: member.birthNote ?? null,
+
+          dod: member.dod ? new Date(member.dod) : null,
+          isAlive: (member.isAlive ?? true) as boolean,
+          translatedRole: member.translatedRole ?? null,
+        });
+
+        // save to state and UI photo
+        this.familyState[
+          role === Roles.PATERNAL_GRANDMOTHER
+            ? 'paternalGrandmother'
+            : 'paternalGrandfather'
+        ].set(member);
+        photoSignal.set(member.photoUrl || null);
       });
+  }
+
+  // When user picks a year from the year-view calendar, store just the year
+  onDobYearPicked(
+    form: ReturnType<FamilyService['createFamilyMemberForm']>,
+    d: Date
+  ) {
+    if (!d) return;
+    form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   uploadPhoto(event: any, role: Roles) {
@@ -126,13 +178,19 @@ export class PaternalGrandparentsComponent implements OnInit {
       .filter(({ form }) => form.valid)
       .map(({ role, form, photoUrl, exists }) => {
         const raw = form.value;
+        const dobPayload = this.familyService.buildDobPayload(form); // { dob | birthYear | birthNote }
 
         const data: FamilyMember = {
           firstName: raw.firstName ?? '',
           middleName: raw.middleName ?? '',
           lastName: raw.lastName ?? '',
           gender: raw.gender ?? '',
-          dob: raw.dob!,
+
+          // NEW: send one of the 3 DOB variants (optional)
+          dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
+          birthYear: dobPayload.birthYear ?? null,
+          birthNote: dobPayload.birthNote ?? null,
+
           dod: raw.isAlive ? undefined : raw.dod || undefined,
           isAlive: raw.isAlive ?? true,
           photoUrl: photoUrl ?? '',

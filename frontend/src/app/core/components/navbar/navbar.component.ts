@@ -33,6 +33,7 @@ export class NavbarComponent {
     this.auth.logout();
     this.router.navigate(['/auth/login']);
     this.mobileMenuVisible = false;
+    localStorage.clear();
   }
 
   navigate(path: string): void {

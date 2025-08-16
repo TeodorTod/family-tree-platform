@@ -45,7 +45,6 @@ export class FamilyMembersController {
       sortField: query.sortField || 'dob',
       sortOrder: query.sortOrder || 'asc',
     };
-    console.log('Received query params:', query, 'Transformed DTO:', dto);
     return this.familyService.getPagedFamilyMembers(req.user.sub, dto);
   }
 
