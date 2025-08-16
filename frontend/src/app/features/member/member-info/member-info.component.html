@@ -76,6 +76,7 @@
       </div>
       }
 
+      <!-- Alive toggle stays the same -->
       <div class="d-flex align-items-center gap-2 mb-3">
         <p-checkbox
           binary="true"
@@ -87,8 +88,25 @@
         </label>
       </div>
 
-      @if(form.get('isAlive')?.value === false) {
-      <div class="floating-field" [class.active]="form.get('dod')?.value">
+      <!-- DOD tri-mode (only if not alive) -->
+      @if (form.get('isAlive')?.value === false) {
+
+      <!-- DOD Mode -->
+      <span class="p-float-label w-full mb-3">
+        <label for="dodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+        <p-dropdown
+          inputId="dodMode"
+          formControlName="dodMode"
+          [options]="dodModeOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+        ></p-dropdown>
+      </span>
+
+      <!-- Exact -->
+      @if (form.value.dodMode === 'exact') {
+      <div class="floating-field mt-3" [class.active]="form.get('dod')?.value">
         <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
         <p-datepicker
           formControlName="dod"
@@ -99,6 +117,32 @@
         </p-datepicker>
       </div>
       }
+
+      <!-- Year only -->
+      @if (form.value.dodMode === 'year') {
+      <div
+        class="floating-field mt-3"
+        [class.active]="form.get('deathYearDate')?.value"
+      >
+        <label>{{ CONSTANTS.INFO_DOD_YEAR_ONLY | translate }}</label>
+        <p-datepicker
+          formControlName="deathYearDate"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+        >
+        </p-datepicker>
+      </div>
+      }
+
+      <!-- Note -->
+      @if (form.value.dodMode === 'note') {
+      <div class="floating-field mt-3">
+        <input pInputText formControlName="deathNote" placeholder=" " />
+        <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
+      </div>
+      } }
     </p-tabPanel>
 
     <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">

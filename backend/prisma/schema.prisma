@@ -51,6 +51,8 @@ model FamilyMember {
   birthYear      Int?
   birthNote      String?  
   dod            DateTime?
+  deathYear      Int?
+  deathNote      String?
   isAlive        Boolean   @default(true)
   photoUrl       String?
   createdAt      DateTime  @default(now())

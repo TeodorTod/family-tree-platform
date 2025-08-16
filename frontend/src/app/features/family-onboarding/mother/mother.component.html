@@ -69,7 +69,7 @@
       <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
     </div>
     }
-
+    <!-- Alive? -->
     <div class="d-flex align-items-center gap-2 mb-3">
       <p-checkbox
         binary="true"
@@ -81,12 +81,26 @@
       }}</label>
     </div>
 
+    <!-- DOD block only if not alive -->
     @if (!form.value.isAlive) {
+    <!-- DOD Mode -->
+    <label>{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+    <span class="p-float-label w-full mb-3">
+      <p-dropdown
+        inputId="dodMode"
+        formControlName="dodMode"
+        [options]="dodModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
+
+    <!-- DOD: exact -->
+    @if (form.value.dodMode === 'exact') {
     <div class="floating-field" [class.active]="form.get('dod')?.value">
-      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
       <p-datepicker
         formControlName="dod"
-        placeholder=" "
         dateFormat="yy-mm-dd"
         [showIcon]="true"
         [iconDisplay]="'input'"
@@ -94,6 +108,32 @@
       ></p-datepicker>
     </div>
     }
+
+    <!-- DOD: year -->
+    @if (form.value.dodMode === 'year') {
+    <div
+      class="floating-field"
+      [class.active]="form.get('deathYearDate')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="deathYearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- DOD: note -->
+    @if (form.value.dodMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="deathNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
+    </div>
+    } }
 
     <div class="floating-field file-label" [class.active]="photoUrl()">
       <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>

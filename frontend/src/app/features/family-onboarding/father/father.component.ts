@@ -35,11 +35,17 @@ export class FatherComponent implements OnInit {
 
   form = this.familyService.createFamilyMemberForm();
 
-  
+  // Modes
   dobModeOptions = [
-    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' },
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  ];
+
+  dodModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
   ];
 
   ngOnInit(): void {
@@ -47,37 +53,55 @@ export class FatherComponent implements OnInit {
       .getFamilyMemberByRole(Roles.FATHER)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((father) => {
-        if (father) {
-          this.hasExistingRecord = true;
+        if (!father) {
+          this.form.patchValue(
+            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            { emitEvent: false }
+          );
+          return;
+        }
 
-       
-          const dobMode =
-            father.dob ? 'exact' :
-            father.birthYear ? 'year' :
-            father.birthNote ? 'note' : 'exact';
+        this.hasExistingRecord = true;
 
-          this.form.patchValue({
-            ...father,
-            dobMode,
+        // infer modes from stored data
+        const dobMode: 'exact' | 'year' | 'note' =
+          father.dob ? 'exact' : father.birthYear ? 'year' : father.birthNote ? 'note' : 'exact';
+
+        const dodMode: 'exact' | 'year' | 'note' =
+          father.isAlive
+            ? 'exact'
+            : father.dod ? 'exact' : father.deathYear ? 'year' : father.deathNote ? 'note' : 'exact';
+
+        // set modes first so validators don't wipe subsequent values
+        this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
+
+        // patch values
+        this.form.patchValue(
+          {
+            firstName: father.firstName ?? null,
+            middleName: father.middleName ?? null,
+            lastName: father.lastName ?? null,
+            gender: father.gender ?? null,
+
+            // birth
             dob: father.dob ? new Date(father.dob) : null,
             birthYear: father.birthYear ?? null,
             birthNote: father.birthNote ?? null,
+
+            // death
+            isAlive: father.isAlive ?? true,
             dod: father.dod ? new Date(father.dod) : null,
-          });
+            deathYear: (father as any).deathYear ?? null,
+            deathNote: (father as any).deathNote ?? null,
 
-          this.photoUrl.set(father.photoUrl || null);
-          this.familyState.father.set(father);
-        } else {
-         
-          this.form.get('dobMode')?.setValue('exact', { emitEvent: false });
-        }
+            translatedRole: father.translatedRole ?? null,
+          },
+          { emitEvent: false }
+        );
+
+        this.photoUrl.set(father.photoUrl || null);
+        this.familyState.father.set(father);
       });
-  }
-
-
-  onDobYearPicked(d: Date) {
-    if (!d) return;
-    this.form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   onPhotoUpload(event: any) {
@@ -85,9 +109,7 @@ export class FatherComponent implements OnInit {
     this.familyService
       .uploadPhoto(file)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((res) => {
-        this.photoUrl.set(res.url);
-      });
+      .subscribe((res) => this.photoUrl.set(res.url));
   }
 
   onPhotoClear() {
@@ -108,30 +130,27 @@ export class FatherComponent implements OnInit {
       return;
     }
 
+    const dobPayload = this.familyService.buildDobPayload(this.form);
+    const dodPayload = this.familyService.buildDodPayload(this.form);
+
     const raw = this.form.value;
 
-    
-    const dobPayload = this.familyService.buildDobPayload(this.form);
-
-    const father: FamilyMember = {
+    const payload: any = {
       firstName: raw.firstName ?? '',
-      middleName: raw.middleName ?? '',
+      middleName: raw.middleName ?? null,
       lastName: raw.lastName ?? '',
-      gender: raw.gender ?? '',
-
-      dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
-      birthYear: dobPayload.birthYear ?? null,
-      birthNote: dobPayload.birthNote ?? null,
-
-      dod: raw.isAlive ? undefined : raw.dod || undefined,
+      gender: raw.gender ?? null,
       isAlive: raw.isAlive ?? true,
       photoUrl: this.photoUrl() ?? '',
       role: Roles.FATHER,
+      translatedRole: raw.translatedRole ?? null,
+      ...dobPayload,
+      ...dodPayload,
     };
 
     const save$ = this.hasExistingRecord
-      ? this.familyService.updateMemberByRole(Roles.FATHER, father)
-      : this.familyService.createMemberByRole(Roles.FATHER, father);
+      ? this.familyService.updateMemberByRole(Roles.FATHER, payload)
+      : this.familyService.createMemberByRole(Roles.FATHER, payload);
 
     save$
       .pipe(
@@ -154,7 +173,7 @@ export class FatherComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
-        this.familyState.father.set(father);
+        this.familyState.father.set(payload);
         this.router.navigate([route]);
       });
   }

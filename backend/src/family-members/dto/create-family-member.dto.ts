@@ -45,6 +45,17 @@ export class CreateFamilyMemberDto {
   @MaxLength(200)
   birthNote?: string;
 
+  @IsOptional()
+  @IsInt()
+  @Min(1000)
+  @Max(2100)
+  deathYear?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  deathNote?: string;
+
   @IsBoolean()
   isAlive: boolean;
 

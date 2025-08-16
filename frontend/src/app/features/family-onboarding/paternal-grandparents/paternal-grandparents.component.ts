@@ -40,19 +40,16 @@ export class PaternalGrandparentsComponent implements OnInit {
   grandmotherExists = false;
   grandfatherExists = false;
 
+  // DOB / DOD mode dropdowns
   dobModeOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
-      value: 'exact',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
-      value: 'year',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
-      value: 'note',
-    },
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  ];
+  dodModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
   ];
 
   ngOnInit(): void {
@@ -81,55 +78,64 @@ export class PaternalGrandparentsComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((member) => {
         if (!member) {
-          // default mode
-          form.get('dobMode')?.setValue('exact', { emitEvent: false });
+          form.patchValue(
+            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            { emitEvent: false }
+          );
           return;
         }
 
         this[existenceFlag] = true;
 
-        const dobMode: 'exact' | 'year' | 'note' = member.dob
-          ? 'exact'
-          : member.birthYear
-          ? 'year'
-          : member.birthNote
-          ? 'note'
-          : 'exact';
+        // infer modes
+        const dobMode: 'exact' | 'year' | 'note' =
+          member.dob ? 'exact' :
+          member.birthYear ? 'year' :
+          member.birthNote ? 'note' : 'exact';
 
-        // Patch ONLY known form controls (avoid spreading member)
-        form.patchValue({
-          firstName: member.firstName ?? null,
-          middleName: member.middleName ?? null,
-          lastName: member.lastName ?? null,
-          gender: member.gender ?? null,
+        const deathYear = (member as any).deathYear ?? null;
+        const deathNote = (member as any).deathNote ?? null;
 
-          dobMode,
-          dob: member.dob ? new Date(member.dob) : null,
-          birthYear: member.birthYear ?? null,
-          birthNote: member.birthNote ?? null,
+        const dodMode: 'exact' | 'year' | 'note' =
+          member.isAlive
+            ? 'exact'
+            : member.dod ? 'exact' : deathYear ? 'year' : deathNote ? 'note' : 'exact';
 
-          dod: member.dod ? new Date(member.dod) : null,
-          isAlive: (member.isAlive ?? true) as boolean,
-          translatedRole: member.translatedRole ?? null,
-        });
+        // set modes first
+        form.patchValue({ dobMode, dodMode }, { emitEvent: false });
 
-        // save to state and UI photo
+        // patch the rest (convert strings/numbers to Date objects where needed)
+        form.patchValue(
+          {
+            firstName: member.firstName ?? null,
+            middleName: member.middleName ?? null,
+            lastName: member.lastName ?? null,
+            gender: member.gender ?? null,
+
+            // birth
+            dob: member.dob ? new Date(member.dob) : null,
+            birthYear: member.birthYear ?? null,
+            birthYearDate: member.birthYear ? new Date(member.birthYear, 0, 1) : null,
+            birthNote: member.birthNote ?? null,
+
+            // death
+            isAlive: member.isAlive ?? true,
+            dod: member.dod ? new Date(member.dod) : null,
+            deathYear: deathYear,
+            deathYearDate: deathYear ? new Date(deathYear, 0, 1) : null,
+            deathNote: deathNote,
+
+            translatedRole: member.translatedRole ?? null,
+          },
+          { emitEvent: false }
+        );
+
         this.familyState[
-          role === Roles.PATERNAL_GRANDMOTHER
-            ? 'paternalGrandmother'
-            : 'paternalGrandfather'
+          role === Roles.PATERNAL_GRANDMOTHER ? 'paternalGrandmother' : 'paternalGrandfather'
         ].set(member);
+
         photoSignal.set(member.photoUrl || null);
       });
-  }
-
-  // When user picks a year from the year-view calendar, store just the year
-  onDobYearPicked(
-    form: ReturnType<FamilyService['createFamilyMemberForm']>,
-    d: Date
-  ) {
-    if (!d) return;
-    form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   uploadPhoto(event: any, role: Roles) {
@@ -178,29 +184,29 @@ export class PaternalGrandparentsComponent implements OnInit {
       .filter(({ form }) => form.valid)
       .map(({ role, form, photoUrl, exists }) => {
         const raw = form.value;
-        const dobPayload = this.familyService.buildDobPayload(form); // { dob | birthYear | birthNote }
+        const dobPayload = this.familyService.buildDobPayload(form);
+        const dodPayload = this.familyService.buildDodPayload(form);
 
-        const data: FamilyMember = {
+        const payload: Partial<FamilyMember> & {
+          deathYear?: number | null;
+          deathNote?: string | null;
+        } = {
           firstName: raw.firstName ?? '',
-          middleName: raw.middleName ?? '',
+          middleName: raw.middleName ?? null,
           lastName: raw.lastName ?? '',
-          gender: raw.gender ?? '',
-
-          // NEW: send one of the 3 DOB variants (optional)
-          dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
-          birthYear: dobPayload.birthYear ?? null,
-          birthNote: dobPayload.birthNote ?? null,
-
-          dod: raw.isAlive ? undefined : raw.dod || undefined,
+          gender: raw.gender ?? null,
           isAlive: raw.isAlive ?? true,
           photoUrl: photoUrl ?? '',
-          role: role,
+          role,
+          translatedRole: raw.translatedRole ?? null,
+          ...dobPayload,
+          ...dodPayload,
         };
 
         return (
           exists
-            ? this.familyService.updateMemberByRole(role, data)
-            : this.familyService.createMemberByRole(role, data)
+            ? this.familyService.updateMemberByRole(role, payload)
+            : this.familyService.createMemberByRole(role, payload as FamilyMember)
         ).pipe(takeUntilDestroyed(this.destroyRef));
       });
 
@@ -213,28 +219,18 @@ export class PaternalGrandparentsComponent implements OnInit {
       .pipe(
         switchMap(() =>
           forkJoin([
-            this.familyService.getFamilyMemberByRole(
-              Roles.PATERNAL_GRANDMOTHER
-            ),
-            this.familyService.getFamilyMemberByRole(
-              Roles.PATERNAL_GRANDFATHER
-            ),
+            this.familyService.getFamilyMemberByRole(Roles.PATERNAL_GRANDMOTHER),
+            this.familyService.getFamilyMemberByRole(Roles.PATERNAL_GRANDFATHER),
           ])
         ),
         switchMap(([gm, gf]) => {
           if (gm?.id && gf?.id) {
-            return this.familyService.setPartner(
-              gm.id,
-              gf.id,
-              PartnerStatus.UNKNOWN
-            );
+            return this.familyService.setPartner(gm.id, gf.id, PartnerStatus.UNKNOWN);
           }
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => {
-        this.router.navigate([route]);
-      });
+      .subscribe(() => this.router.navigate([route]));
   }
 }

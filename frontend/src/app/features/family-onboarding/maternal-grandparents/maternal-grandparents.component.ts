@@ -40,20 +40,17 @@ export class MaternalGrandparentsComponent implements OnInit {
   grandmotherExists = false;
   grandfatherExists = false;
 
-  // Pre-translated dropdown labels
+  // Mode dropdowns (reused by both forms)
   dobModeOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
-      value: 'exact',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
-      value: 'year',
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
-      value: 'note',
-    },
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  ];
+
+  dodModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
   ];
 
   ngOnInit(): void {
@@ -81,44 +78,66 @@ export class MaternalGrandparentsComponent implements OnInit {
       .getFamilyMemberByRole(role)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((member) => {
-        if (member) {
-          this[existenceFlag] = true;
+        if (!member) {
+          form.patchValue(
+            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            { emitEvent: false }
+          );
+          return;
+        }
 
-          const dobMode = member.dob
+        this[existenceFlag] = true;
+
+        // infer modes
+        const dobMode: 'exact' | 'year' | 'note' =
+          member.dob ? 'exact' :
+          member.birthYear ? 'year' :
+          member.birthNote ? 'note' : 'exact';
+
+        const deathYear = (member as any).deathYear ?? null;
+        const deathNote = (member as any).deathNote ?? null;
+
+        const dodMode: 'exact' | 'year' | 'note' =
+          member.isAlive
             ? 'exact'
-            : member.birthYear
-            ? 'year'
-            : member.birthNote
-            ? 'note'
-            : 'exact';
+            : member.dod ? 'exact' : deathYear ? 'year' : deathNote ? 'note' : 'exact';
 
-          form.patchValue({
-            ...member,
-            dobMode,
+        // set modes first
+        form.patchValue({ dobMode, dodMode }, { emitEvent: false });
+
+        // patch rest
+        form.patchValue(
+          {
+            firstName: member.firstName ?? null,
+            middleName: member.middleName ?? null,
+            lastName: member.lastName ?? null,
+            gender: member.gender ?? null,
+
+            // birth
             dob: member.dob ? new Date(member.dob) : null,
             birthYear: member.birthYear ?? null,
+            birthYearDate: member.birthYear ? new Date(member.birthYear, 0, 1) : null,
             birthNote: member.birthNote ?? null,
+
+            // death
+            isAlive: member.isAlive ?? true,
             dod: member.dod ? new Date(member.dod) : null,
-          });
+            deathYear: deathYear,
+            deathYearDate: deathYear ? new Date(deathYear, 0, 1) : null,
+            deathNote: deathNote,
 
-          this.familyState[
-            role === Roles.MATERNAL_GRANDMOTHER
-              ? 'maternalGrandmother'
-              : 'maternalGrandfather'
-          ].set(member);
-          photoSignal.set(member.photoUrl || null);
-        } else {
-          // default
-          form.get('dobMode')?.setValue('exact', { emitEvent: false });
-        }
+            translatedRole: member.translatedRole ?? null,
+          },
+          { emitEvent: false }
+        );
+
+        // state + photo
+        this.familyState[
+          role === Roles.MATERNAL_GRANDMOTHER ? 'maternalGrandmother' : 'maternalGrandfather'
+        ].set(member);
+
+        photoSignal.set(member.photoUrl || null);
       });
-  }
-
-  // handle year-pick for the two forms
-  onDobYearPicked(d: Date, who: 'grandmother' | 'grandfather') {
-    const form =
-      who === 'grandmother' ? this.grandmotherForm : this.grandfatherForm;
-    form.get('birthYear')?.setValue(d ? d.getFullYear() : null);
   }
 
   uploadPhoto(event: any, role: Roles) {
@@ -168,28 +187,25 @@ export class MaternalGrandparentsComponent implements OnInit {
       .map(({ role, form, photoUrl, exists }) => {
         const raw = form.value;
         const dobPayload = this.familyService.buildDobPayload(form);
+        const dodPayload = this.familyService.buildDodPayload(form);
 
-        const data: FamilyMember = {
+        const payload: any = {
           firstName: raw.firstName ?? '',
-          middleName: raw.middleName ?? '',
+          middleName: raw.middleName ?? null,
           lastName: raw.lastName ?? '',
-          gender: raw.gender ?? '',
-
-          // DOB variants
-          dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
-          birthYear: dobPayload.birthYear ?? null,
-          birthNote: dobPayload.birthNote ?? null,
-
-          dod: raw.isAlive ? undefined : raw.dod || undefined,
+          gender: raw.gender ?? null,
           isAlive: raw.isAlive ?? true,
           photoUrl: photoUrl ?? '',
-          role: role,
+          role,
+          translatedRole: raw.translatedRole ?? null,
+          ...dobPayload,
+          ...dodPayload,
         };
 
         return (
           exists
-            ? this.familyService.updateMemberByRole(role, data)
-            : this.familyService.createMemberByRole(role, data)
+            ? this.familyService.updateMemberByRole(role, payload)
+            : this.familyService.createMemberByRole(role, payload)
         ).pipe(takeUntilDestroyed(this.destroyRef));
       });
 
@@ -203,29 +219,19 @@ export class MaternalGrandparentsComponent implements OnInit {
         // fetch both after save to ensure we have IDs
         switchMap(() =>
           forkJoin([
-            this.familyService.getFamilyMemberByRole(
-              Roles.MATERNAL_GRANDMOTHER
-            ),
-            this.familyService.getFamilyMemberByRole(
-              Roles.MATERNAL_GRANDFATHER
-            ),
+            this.familyService.getFamilyMemberByRole(Roles.MATERNAL_GRANDMOTHER),
+            this.familyService.getFamilyMemberByRole(Roles.MATERNAL_GRANDFATHER),
           ])
         ),
         // link them if both exist
         switchMap(([gm, gf]) => {
           if (gm?.id && gf?.id) {
-            return this.familyService.setPartner(
-              gm.id,
-              gf.id,
-              PartnerStatus.UNKNOWN
-            );
+            return this.familyService.setPartner(gm.id, gf.id, PartnerStatus.UNKNOWN);
           }
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => {
-        this.router.navigate([route]);
-      });
+      .subscribe(() => this.router.navigate([route]));
   }
 }

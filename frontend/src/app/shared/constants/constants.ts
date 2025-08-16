@@ -83,6 +83,9 @@ export class CONSTANTS {
   static readonly INFO_DOB_MODE = 'INFO.DOB_MODE';
   static readonly INFO_DOB_YEAR_ONLY = 'INFO.DOB_YEAR_ONLY';
   static readonly INFO_DOB_NOTE_LABEL = 'INFO.DOB_NOTE_LABEL';
+  static readonly INFO_DOD_MODE = 'INFO.DOD_MODE';
+  static readonly INFO_DOD_YEAR_ONLY = 'INFO.DOD_YEAR_ONLY';
+  static readonly INFO_DOD_NOTE_LABEL = 'INFO.DOD_NOTE_LABEL';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

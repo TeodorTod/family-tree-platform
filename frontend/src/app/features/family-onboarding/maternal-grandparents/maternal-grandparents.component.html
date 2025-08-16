@@ -31,9 +31,9 @@
 
     <!-- DOB Mode -->
     <span class="p-float-label w-full mb-3">
-      <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
+      <label for="gmDobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
       <p-dropdown
-        inputId="dobMode"
+        inputId="gmDobMode"
         formControlName="dobMode"
         [options]="dobModeOptions"
         optionLabel="label"
@@ -41,7 +41,8 @@
         class="w-full"
       ></p-dropdown>
     </span>
-    <!-- Exact date -->
+
+    <!-- DOB: exact -->
     @if (grandmotherForm.value.dobMode === 'exact') {
     <div
       class="floating-field"
@@ -58,7 +59,7 @@
     </div>
     }
 
-    <!-- Year only — same control, year view + 'yy' format -->
+    <!-- DOB: year -->
     @if (grandmotherForm.value.dobMode === 'year') {
     <div
       class="floating-field"
@@ -76,7 +77,7 @@
     </div>
     }
 
-    <!-- Note -->
+    <!-- DOB: note -->
     @if (grandmotherForm.value.dobMode === 'note') {
     <div class="floating-field">
       <input pInputText formControlName="birthNote" placeholder=" " />
@@ -84,6 +85,7 @@
     </div>
     }
 
+    <!-- Alive? -->
     <div class="d-flex align-items-center gap-2 mb-3">
       <p-checkbox
         binary="true"
@@ -95,12 +97,27 @@
       }}</label>
     </div>
 
+    <!-- DOD tri-mode (only if not alive) -->
     @if (!grandmotherForm.value.isAlive) {
+
+    <span class="p-float-label w-full mb-3">
+      <label for="gmDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+      <p-dropdown
+        inputId="gmDodMode"
+        formControlName="dodMode"
+        [options]="dodModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
+
+    <!-- DOD: exact -->
+    @if (grandmotherForm.value.dodMode === 'exact') {
     <div
       class="floating-field"
       [class.active]="grandmotherForm.get('dod')?.value"
     >
-      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
       <p-datepicker
         formControlName="dod"
         dateFormat="yy-mm-dd"
@@ -111,6 +128,33 @@
     </div>
     }
 
+    <!-- DOD: year -->
+    @if (grandmotherForm.value.dodMode === 'year') {
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('deathYearDate')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="deathYearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- DOD: note -->
+    @if (grandmotherForm.value.dodMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="deathNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
+    } }
+
+    <!-- Photo -->
     <div
       class="floating-field file-label"
       [class.active]="grandmotherPhotoUrl()"
@@ -174,9 +218,9 @@
 
     <!-- DOB Mode -->
     <span class="p-float-label w-full mb-3">
-      <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
+      <label for="gfDobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
       <p-dropdown
-        inputId="dobMode"
+        inputId="gfDobMode"
         formControlName="dobMode"
         [options]="dobModeOptions"
         optionLabel="label"
@@ -184,7 +228,8 @@
         class="w-full"
       ></p-dropdown>
     </span>
-    <!-- Exact date -->
+
+    <!-- DOB: exact -->
     @if (grandfatherForm.value.dobMode === 'exact') {
     <div
       class="floating-field"
@@ -201,7 +246,7 @@
     </div>
     }
 
-    <!-- Year only — same control, year view + 'yy' format -->
+    <!-- DOB: year -->
     @if (grandfatherForm.value.dobMode === 'year') {
     <div
       class="floating-field"
@@ -219,7 +264,7 @@
     </div>
     }
 
-    <!-- Note -->
+    <!-- DOB: note -->
     @if (grandfatherForm.value.dobMode === 'note') {
     <div class="floating-field">
       <input pInputText formControlName="birthNote" placeholder=" " />
@@ -227,6 +272,7 @@
     </div>
     }
 
+    <!-- Alive? -->
     <div class="d-flex align-items-center gap-2 mb-3">
       <p-checkbox
         binary="true"
@@ -238,12 +284,27 @@
       }}</label>
     </div>
 
+    <!-- DOD tri-mode (only if not alive) -->
     @if (!grandfatherForm.value.isAlive) {
+
+    <span class="p-float-label w-full mb-3">
+      <label for="gfDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+      <p-dropdown
+        inputId="gfDodMode"
+        formControlName="dodMode"
+        [options]="dodModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
+
+    <!-- DOD: exact -->
+    @if (grandfatherForm.value.dodMode === 'exact') {
     <div
       class="floating-field"
       [class.active]="grandfatherForm.get('dod')?.value"
     >
-      <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
       <p-datepicker
         formControlName="dod"
         dateFormat="yy-mm-dd"
@@ -254,6 +315,33 @@
     </div>
     }
 
+    <!-- DOD: year -->
+    @if (grandfatherForm.value.dodMode === 'year') {
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('deathYearDate')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOD_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="deathYearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- DOD: note -->
+    @if (grandfatherForm.value.dodMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="deathNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
+    </div>
+    } }
+
+    <!-- Photo -->
     <div
       class="floating-field file-label"
       [class.active]="grandfatherPhotoUrl()"

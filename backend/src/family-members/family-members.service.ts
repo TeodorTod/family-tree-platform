@@ -16,6 +16,8 @@ export class FamilyMembersService {
 
   async createFamilyMember(userId: string, dto: CreateFamilyMemberDto) {
     const dobPayload = this.normalizeDobPayload(dto);
+    const dodPayload = this.normalizeDodPayload(dto);
+
     return this.prisma.familyMember.create({
       data: {
         userId,
@@ -24,7 +26,7 @@ export class FamilyMembersService {
         lastName: dto.lastName,
         gender: dto.gender ?? undefined,
         ...dobPayload,
-        dod: dto.dod ? new Date(dto.dod) : undefined,
+        ...dodPayload,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
         role: dto.role.toLowerCase(),
@@ -55,34 +57,46 @@ export class FamilyMembersService {
     });
     if (!existing) throw new NotFoundException(`No member with role ${role}`);
 
-    const dobPayload =
+    const dobTouched =
       dto.dob !== undefined ||
       dto.birthYear !== undefined ||
-      dto.birthNote !== undefined
-        ? this.normalizeDobPayload(dto)
-        : {};
+      dto.birthNote !== undefined;
+
+    const dobPayload = dobTouched ? this.normalizeDobPayload(dto) : {};
+
+    const dodPayload = this.normalizeDodPayload(dto, true);
 
     return this.prisma.familyMember.update({
       where: { id: existing.id },
       data: {
         userId,
         role: role.toLowerCase(),
-        firstName: dto.firstName,
-        middleName: dto.middleName,
-        lastName: dto.lastName,
-        gender: dto.gender,
+        firstName: dto.firstName ?? existing.firstName,
+        middleName: dto.middleName ?? existing.middleName,
+        lastName: dto.lastName ?? existing.lastName,
+        gender: dto.gender ?? existing.gender,
+
         ...dobPayload,
-        dod: dto.dod ? new Date(dto.dod) : dto.dod === null ? null : undefined,
-        isAlive: dto.isAlive,
-        photoUrl: dto.photoUrl,
+        ...dodPayload,
+
+        isAlive:
+          dto.isAlive !== undefined && dto.isAlive !== null
+            ? dto.isAlive
+            : existing.isAlive,
+
+        photoUrl: dto.photoUrl ?? existing.photoUrl,
         relationLabel: dto.relationLabel ?? existing.relationLabel,
         translatedRole: dto.translatedRole ?? existing.translatedRole,
-        partnerId: dto.partnerId ?? null,
-        partnerStatus: dto.partnerStatus ?? null,
+
+        partnerId:
+          dto.partnerId === null ? null : (dto.partnerId ?? existing.partnerId),
+        partnerStatus:
+          dto.partnerStatus === null
+            ? null
+            : (dto.partnerStatus ?? existing.partnerStatus),
       },
     });
   }
-
   async getAllFamilyMembers(userId: string) {
     return this.prisma.familyMember.findMany({
       where: { userId },
@@ -214,5 +228,51 @@ export class FamilyMembersService {
       birthYear: null,
       birthNote: null,
     };
+  }
+
+  private normalizeDodPayload(
+    dto: CreateFamilyMemberDto | UpdateFamilyMemberDto,
+    forUpdate = false,
+  ):
+    | {
+        dod?: Date | null;
+        deathYear?: number | null;
+        deathNote?: string | null;
+      }
+    | {} {
+    const touchedOnUpdate =
+      forUpdate &&
+      !['dod', 'deathYear', 'deathNote', 'isAlive'].some(
+        (k) => (dto as any)[k] !== undefined,
+      );
+
+    if (touchedOnUpdate) return {};
+
+    if (dto.isAlive === true) {
+      return { dod: null, deathYear: null, deathNote: null };
+    }
+
+    if (dto.dod) {
+      return { dod: new Date(dto.dod), deathYear: null, deathNote: null };
+    }
+
+    if (typeof dto.deathYear === 'number') {
+      return { dod: null, deathYear: dto.deathYear, deathNote: null };
+    }
+
+    if (dto.deathNote && dto.deathNote.trim().length) {
+      return { dod: null, deathYear: null, deathNote: dto.deathNote.trim() };
+    }
+
+    if (
+      dto.dod === null ||
+      dto.deathYear === null ||
+      dto.deathNote === null ||
+      dto.isAlive === false
+    ) {
+      return { dod: null, deathYear: null, deathNote: null };
+    }
+
+    return {};
   }
 }

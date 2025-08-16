@@ -41,7 +41,7 @@ export class MemberInfoComponent implements OnInit {
   role!: string;
   CONSTANTS = CONSTANTS;
 
-  // add options for DOB mode
+  // DOB mode options
   dobModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
@@ -57,23 +57,47 @@ export class MemberInfoComponent implements OnInit {
     },
   ];
 
+  // DOD mode options
+  dodModeOptions = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
+      value: 'exact' as const,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY
+      ),
+      value: 'year' as const,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL
+      ),
+      value: 'note' as const,
+    },
+  ];
+
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
-    this.form = this.familyService.createFamilyMemberForm(); // includes dobMode, dob, birthYear, birthNote
+    this.form = this.familyService.createFamilyMemberForm(); // has dobMode/dodMode etc.
 
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
       if (!member) {
+        this.form.patchValue(
+          { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+          { emitEvent: false }
+        );
         if (!this.hasConstant(this.role)) {
-          this.form.patchValue({
-            translatedRole: this.defaultGenericForRole(),
-          });
+          this.form.patchValue(
+            { translatedRole: this.defaultGenericForRole() },
+            { emitEvent: false }
+          );
         }
         return;
       }
 
       const converted = this.convertDatesToObjects(member);
 
-      // decide DOB mode and hydrate dob for year-mode so the year picker shows it
       let dobMode: 'exact' | 'year' | 'note' = 'exact';
       if (!converted.dob && converted.birthYear) {
         converted.dob = new Date(converted.birthYear, 0, 1);
@@ -82,33 +106,53 @@ export class MemberInfoComponent implements OnInit {
         dobMode = 'note';
       }
 
-      this.form.patchValue({
-        ...converted,
-        dobMode,
-        translatedRole:
-          member.translatedRole ??
-          (this.hasConstant(this.role) ? null : this.defaultGenericForRole()),
-      });
+      // infer DOD mode
+      let dodMode: 'exact' | 'year' | 'note' = 'exact';
+      if (converted.isAlive === false) {
+        if (converted.dod) dodMode = 'exact';
+        else if ((converted as any).deathYear) dodMode = 'year';
+        else if ((converted as any).deathNote) dodMode = 'note';
+      }
+
+      this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
+
+      this.form.patchValue(
+        {
+          // basic
+          firstName: converted.firstName ?? null,
+          middleName: converted.middleName ?? null,
+          lastName: converted.lastName ?? null,
+          gender: converted.gender ?? null,
+          translatedRole:
+            member.translatedRole ??
+            (this.hasConstant(this.role) ? null : this.defaultGenericForRole()),
+
+          // birth
+          dob: converted.dob ?? null,
+          birthYear: converted.birthYear ?? null,
+          birthNote: converted.birthNote ?? null,
+
+          // death
+          isAlive: converted.isAlive ?? true,
+          dod: converted.dod ?? null,
+          deathYear: (converted as any).deathYear ?? null,
+          deathYearDate: (converted as any).deathYear
+            ? new Date((converted as any).deathYear, 0, 1)
+            : null,
+          deathNote: (converted as any).deathNote ?? null,
+        },
+        { emitEvent: false }
+      );
     });
   }
 
   save() {
     if (this.form.invalid) return;
 
+    const dobPayload = this.familyService.buildDobPayload(this.form);
+    const dodPayload = this.familyService.buildDodPayload(this.form);
+
     const v = this.form.value;
-
-    // Inline DOB payload (no helper):
-    let dob: string | null = null;
-    let birthYear: number | null = null;
-    let birthNote: string | null = null;
-
-    if (v.dobMode === 'exact' && v.dob) {
-      dob = new Date(v.dob).toISOString();
-    } else if (v.dobMode === 'year' && v.dob) {
-      birthYear = new Date(v.dob).getFullYear();
-    } else if (v.dobMode === 'note' && v.birthNote) {
-      birthNote = v.birthNote;
-    }
 
     const data: any = {
       role: this.role,
@@ -118,14 +162,8 @@ export class MemberInfoComponent implements OnInit {
       gender: v.gender ?? null,
       isAlive: v.isAlive ?? true,
       translatedRole: v.translatedRole ?? null,
-
-      // DOB payload
-      dob,
-      birthYear,
-      birthNote,
-
-      // DOD only if not alive
-      dod: v.isAlive ? null : v.dod ? new Date(v.dod).toISOString() : null,
+      ...dobPayload,
+      ...dodPayload,
     };
 
     this.familyService

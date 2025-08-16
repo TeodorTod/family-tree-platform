@@ -3,16 +3,18 @@ import { Relationship } from './relationship.model';
 export interface FamilyMember {
   id?: string;
   firstName: string;
-  middleName?: string;
+  middleName?: string | null;
   lastName: string;
-  gender?: string;
+  gender?: string | null;
   dob?: string | Date | null;
   birthYear?: number | null;
   birthNote?: string | null;
-  dod?: string | Date;
+  dod?: string | Date | null;
+  deathYear?: number | null;
+  deathNote?: string | null;
   isAlive: boolean;
-  photoUrl?: string;
-  relationLabel?: string;
+  photoUrl?: string | null;
+  relationLabel?: string | null;
   role: 'owner' | 'mother' | 'father' | string;
   translatedRole?: string | null;
 

@@ -4,7 +4,6 @@ import { FamilyStateService } from '../../../core/services/family-state.service'
 import { FamilyService } from '../../../core/services/family.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
-import { FamilyMember } from '../../../shared/models/family-member.model';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
@@ -33,11 +32,17 @@ export class MotherComponent implements OnInit {
 
   form = this.familyService.createFamilyMemberForm();
 
-  // labels for the DOB mode dropdown
+  // Dropdown options
   dobModeOptions = [
     { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
     { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
     { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  ];
+
+  dodModeOptions = [
+    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
+    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
   ];
 
   ngOnInit(): void {
@@ -46,44 +51,57 @@ export class MotherComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((mother) => {
         if (!mother) {
-          this.form.get('dobMode')?.setValue('exact', { emitEvent: false });
+          // defaults
+          this.form.patchValue(
+            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            { emitEvent: false }
+          );
           return;
         }
 
         this.hasExistingRecord = true;
 
-        // choose mode based on stored data
+        // infer modes
         const dobMode: 'exact' | 'year' | 'note' =
-          mother.dob ? 'exact' :
-          mother.birthYear ? 'year' :
-          mother.birthNote ? 'note' : 'exact';
+          mother.dob ? 'exact' : mother.birthYear ? 'year' : mother.birthNote ? 'note' : 'exact';
 
-        // Patch ONLY the controls that exist in the form
-        this.form.patchValue({
-          firstName: mother.firstName ?? null,
-          middleName: mother.middleName ?? null,
-          lastName: mother.lastName ?? null,
-          gender: mother.gender ?? null,
+        const dodMode: 'exact' | 'year' | 'note' =
+          mother.isAlive
+            ? 'exact'
+            : mother.dod ? 'exact' : mother.deathYear ? 'year' : mother.deathNote ? 'note' : 'exact';
 
-          dobMode,
-          dob: mother.dob ? new Date(mother.dob) : null,
-          birthYear: mother.birthYear ?? null,
-          birthNote: mother.birthNote ?? null,
+        // set modes first (to avoid validators clearing other values)
+        this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
 
-          dod: mother.dod ? new Date(mother.dod) : null,
-          isAlive: (mother.isAlive ?? true) as boolean,
-          translatedRole: mother.translatedRole ?? null,
-        });
+        // patch everything else
+        this.form.patchValue(
+          {
+            firstName: mother.firstName ?? null,
+            middleName: mother.middleName ?? null,
+            lastName: mother.lastName ?? null,
+            gender: mother.gender ?? null,
+
+            // birth
+            dob: mother.dob ? new Date(mother.dob) : null,
+            birthYear: mother.birthYear ?? null,
+            birthYearDate: mother.birthYear ? new Date(mother.birthYear, 0, 1) : null,
+            birthNote: mother.birthNote ?? null,
+
+            // death
+            isAlive: mother.isAlive ?? true,
+            dod: mother.dod ? new Date(mother.dod) : null,
+            deathYear: mother.deathYear ?? null,
+            deathYearDate: mother.deathYear ? new Date(mother.deathYear, 0, 1) : null,
+            deathNote: mother.deathNote ?? null,
+
+            translatedRole: mother.translatedRole ?? null,
+          },
+          { emitEvent: false }
+        );
 
         this.photoUrl.set(mother.photoUrl || null);
         this.familyState.mother.set(mother);
       });
-  }
-
-  // year picker ⇒ keep only the year
-  onDobYearPicked(d: Date) {
-    if (!d) return;
-    this.form.get('birthYear')?.setValue(d.getFullYear());
   }
 
   onPhotoUpload(event: any) {
@@ -112,30 +130,27 @@ export class MotherComponent implements OnInit {
       return;
     }
 
+    const dobPayload = this.familyService.buildDobPayload(this.form);
+    const dodPayload = this.familyService.buildDodPayload(this.form);
+
     const raw = this.form.value;
-    const dobPayload = this.familyService.buildDobPayload(this.form); // { dob | birthYear | birthNote }
 
-    const mother: FamilyMember = {
+    const payload: any = {
       firstName: raw.firstName ?? '',
-      middleName: raw.middleName ?? '',
+      middleName: raw.middleName ?? null,
       lastName: raw.lastName ?? '',
-      gender: raw.gender ?? '',
-
-      // send Date|null to match your model; buildDobPayload returns ISO string
-      dob: dobPayload.dob ? new Date(dobPayload.dob) : null,
-      birthYear: dobPayload.birthYear ?? null,
-      
-      birthNote: dobPayload.birthNote ?? null,
-
-      dod: raw.isAlive ? undefined : raw.dod || undefined,
+      gender: raw.gender ?? null,
       isAlive: raw.isAlive ?? true,
       photoUrl: this.photoUrl() ?? '',
       role: Roles.MOTHER,
+      ...dobPayload,
+      ...dodPayload,
+      translatedRole: raw.translatedRole ?? null,
     };
 
     const save$ = this.hasExistingRecord
-      ? this.familyService.updateMemberByRole(Roles.MOTHER, mother)
-      : this.familyService.createMemberByRole(Roles.MOTHER, mother);
+      ? this.familyService.updateMemberByRole(Roles.MOTHER, payload)
+      : this.familyService.createMemberByRole(Roles.MOTHER, payload);
 
     save$
       .pipe(
@@ -158,7 +173,7 @@ export class MotherComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
-        this.familyState.mother.set(mother);
+        this.familyState.mother.set(payload);
         this.router.navigate([route]);
       });
   }
