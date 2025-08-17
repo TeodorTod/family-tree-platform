@@ -2,7 +2,9 @@
   {{ CONSTANTS.INFO_PATERNAL_GRANDPARENTS | translate }}
 </h1>
 
-<div class="d-flex justify-center w-full gap-5 mathernal-grandparents-container">
+<div
+  class="d-flex justify-center w-full gap-5 mathernal-grandparents-container"
+>
   <!-- GRANDMOTHER -->
   <form
     [formGroup]="grandmotherForm"
@@ -42,118 +44,153 @@
 
     <!-- DOB: exact -->
     @if (grandmotherForm.value.dobMode === 'exact') {
-      <div class="floating-field" [class.active]="grandmotherForm.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          dateFormat="yy-mm-dd"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          [style]="{ width: '100%' }"
-        ></p-datepicker>
-      </div>
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
     <!-- DOB: year -->
     @if (grandmotherForm.value.dobMode === 'year') {
-      <div class="floating-field" [class.active]="grandmotherForm.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          [view]="'year'"
-          [dateFormat]="'yy'"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          [style]="{ width: '100%' }"
-        ></p-datepicker>
-      </div>
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
     <!-- DOB: note -->
     @if (grandmotherForm.value.dobMode === 'note') {
-      <div class="floating-field">
-        <input pInputText formControlName="birthNote" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-      </div>
+    <div class="floating-field">
+      <input pInputText formControlName="birthNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
     }
 
     <!-- Alive? -->
     <div class="d-flex align-items-center gap-2 mb-3">
-      <p-checkbox binary="true" formControlName="isAlive" inputId="grandmotherAlive"></p-checkbox>
-      <label for="grandmotherAlive" class="mb-0">{{ CONSTANTS.INFO_IS_ALIVE | translate }}</label>
+      <p-checkbox
+        binary="true"
+        formControlName="isAlive"
+        inputId="grandmotherAlive"
+      ></p-checkbox>
+      <label for="grandmotherAlive" class="mb-0">{{
+        CONSTANTS.INFO_IS_ALIVE | translate
+      }}</label>
     </div>
 
     <!-- DOD tri-mode (only if not alive) -->
     @if (!grandmotherForm.value.isAlive) {
-      <span class="p-float-label w-full mb-3">
-        <label for="gmDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
-        <p-dropdown
-          inputId="gmDodMode"
-          formControlName="dodMode"
-          [options]="dodModeOptions"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full"
-        ></p-dropdown>
-      </span>
+    <span class="p-float-label w-full mb-3">
+      <label for="gmDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+      <p-dropdown
+        inputId="gmDodMode"
+        formControlName="dodMode"
+        [options]="dodModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
 
-      <!-- DOD: exact -->
-      @if (grandmotherForm.value.dodMode === 'exact') {
-        <div class="floating-field" [class.active]="grandmotherForm.get('dod')?.value">
-          <p-datepicker
-            formControlName="dod"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            [iconDisplay]="'input'"
-            [style]="{ width: '100%' }"
-          ></p-datepicker>
-        </div>
-      }
-
-      <!-- DOD: year -->
-      @if (grandmotherForm.value.dodMode === 'year') {
-        <div class="floating-field" [class.active]="grandmotherForm.get('deathYearDate')?.value">
-          <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-          <p-datepicker
-            formControlName="deathYearDate"
-            [view]="'year'"
-            [dateFormat]="'yy'"
-            [showIcon]="true"
-            [iconDisplay]="'input'"
-            [style]="{ width: '100%' }"
-          ></p-datepicker>
-        </div>
-      }
-
-      <!-- DOD: note -->
-      @if (grandmotherForm.value.dodMode === 'note') {
-        <div class="floating-field">
-          <input pInputText formControlName="deathNote" placeholder=" " />
-          <label>{{  CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-        </div>
-      }
+    <!-- DOD: exact -->
+    @if (grandmotherForm.value.dodMode === 'exact') {
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('dod')?.value"
+    >
+      <p-datepicker
+        formControlName="dod"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+         appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
+    <!-- DOD: year -->
+    @if (grandmotherForm.value.dodMode === 'year') {
+    <div
+      class="floating-field"
+      [class.active]="grandmotherForm.get('deathYearDate')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="deathYearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+         appendTo="body"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- DOD: note -->
+    @if (grandmotherForm.value.dodMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="deathNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
+    } }
+
     <!-- Photo -->
-    <div class="floating-field file-label" [class.active]="grandmotherPhotoUrl()">
+    <div
+      class="floating-field file-label"
+      [class.active]="grandmotherPhotoUrl()"
+    >
       <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
 
       @if (grandmotherPhotoUrl()) {
-        <div class="photo-preview-container">
-          <img [src]="apiUrl + grandmotherPhotoUrl()" alt="Uploaded" class="uploaded-photo-preview" />
-          <button type="button" class="photo-remove-button" (click)="clearPhoto(Roles.PATERNAL_GRANDMOTHER)" aria-label="Remove photo">✖</button>
-        </div>
-      } @else {
-        <p-fileUpload
-          name="photo"
-          customUpload
-          [auto]="true"
-          [showUploadButton]="false"
-          [showCancelButton]="false"
-          (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDMOTHER)"
-          chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
-          class="w-full"
+      <div class="photo-preview-container">
+        <img
+          [src]="apiUrl + grandmotherPhotoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
         />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="clearPhoto(Roles.PATERNAL_GRANDMOTHER)"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+      } @else {
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDMOTHER)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
       }
     </div>
   </form>
@@ -197,118 +234,153 @@
 
     <!-- DOB: exact -->
     @if (grandfatherForm.value.dobMode === 'exact') {
-      <div class="floating-field" [class.active]="grandfatherForm.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          dateFormat="yy-mm-dd"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          [style]="{ width: '100%' }"
-        ></p-datepicker>
-      </div>
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
     <!-- DOB: year -->
     @if (grandfatherForm.value.dobMode === 'year') {
-      <div class="floating-field" [class.active]="grandfatherForm.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          [view]="'year'"
-          [dateFormat]="'yy'"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          [style]="{ width: '100%' }"
-        ></p-datepicker>
-      </div>
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('dob')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="dob"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
     <!-- DOB: note -->
     @if (grandfatherForm.value.dobMode === 'note') {
-      <div class="floating-field">
-        <input pInputText formControlName="birthNote" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-      </div>
+    <div class="floating-field">
+      <input pInputText formControlName="birthNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
     }
 
     <!-- Alive? -->
     <div class="d-flex align-items-center gap-2 mb-3">
-      <p-checkbox binary="true" formControlName="isAlive" inputId="grandfatherAlive"></p-checkbox>
-      <label for="grandfatherAlive" class="mb-0">{{ CONSTANTS.INFO_IS_ALIVE | translate }}</label>
+      <p-checkbox
+        binary="true"
+        formControlName="isAlive"
+        inputId="grandfatherAlive"
+      ></p-checkbox>
+      <label for="grandfatherAlive" class="mb-0">{{
+        CONSTANTS.INFO_IS_ALIVE | translate
+      }}</label>
     </div>
 
     <!-- DOD tri-mode (only if not alive) -->
     @if (!grandfatherForm.value.isAlive) {
-      <span class="p-float-label w-full mb-3">
-        <label for="gfDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
-        <p-dropdown
-          inputId="gfDodMode"
-          formControlName="dodMode"
-          [options]="dodModeOptions"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full"
-        ></p-dropdown>
-      </span>
+    <span class="p-float-label w-full mb-3">
+      <label for="gfDodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+      <p-dropdown
+        inputId="gfDodMode"
+        formControlName="dodMode"
+        [options]="dodModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      ></p-dropdown>
+    </span>
 
-      <!-- DOD: exact -->
-      @if (grandfatherForm.value.dodMode === 'exact') {
-        <div class="floating-field" [class.active]="grandfatherForm.get('dod')?.value">
-          <p-datepicker
-            formControlName="dod"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            [iconDisplay]="'input'"
-            [style]="{ width: '100%' }"
-          ></p-datepicker>
-        </div>
-      }
-
-      <!-- DOD: year -->
-      @if (grandfatherForm.value.dodMode === 'year') {
-        <div class="floating-field" [class.active]="grandfatherForm.get('deathYearDate')?.value">
-          <label>{{CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-          <p-datepicker
-            formControlName="deathYearDate"
-            [view]="'year'"
-            [dateFormat]="'yy'"
-            [showIcon]="true"
-            [iconDisplay]="'input'"
-            [style]="{ width: '100%' }"
-          ></p-datepicker>
-        </div>
-      }
-
-      <!-- DOD: note -->
-      @if (grandfatherForm.value.dodMode === 'note') {
-        <div class="floating-field">
-          <input pInputText formControlName="deathNote" placeholder=" " />
-          <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-        </div>
-      }
+    <!-- DOD: exact -->
+    @if (grandfatherForm.value.dodMode === 'exact') {
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('dod')?.value"
+    >
+      <p-datepicker
+        formControlName="dod"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
     }
 
+    <!-- DOD: year -->
+    @if (grandfatherForm.value.dodMode === 'year') {
+    <div
+      class="floating-field"
+      [class.active]="grandfatherForm.get('deathYearDate')?.value"
+    >
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="deathYearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+    </div>
+    }
+
+    <!-- DOD: note -->
+    @if (grandfatherForm.value.dodMode === 'note') {
+    <div class="floating-field">
+      <input pInputText formControlName="deathNote" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
+    } }
+
     <!-- Photo -->
-    <div class="floating-field file-label" [class.active]="grandfatherPhotoUrl()">
+    <div
+      class="floating-field file-label"
+      [class.active]="grandfatherPhotoUrl()"
+    >
       <label>{{ CONSTANTS.INFO_PHOTO_LABEL | translate }}</label>
 
       @if (grandfatherPhotoUrl()) {
-        <div class="photo-preview-container">
-          <img [src]="apiUrl + grandfatherPhotoUrl()" alt="Uploaded" class="uploaded-photo-preview" />
-          <button type="button" class="photo-remove-button" (click)="clearPhoto(Roles.PATERNAL_GRANDFATHER)" aria-label="Remove photo">✖</button>
-        </div>
-      } @else {
-        <p-fileUpload
-          name="photo"
-          customUpload
-          [auto]="true"
-          [showUploadButton]="false"
-          [showCancelButton]="false"
-          (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDFATHER)"
-          chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
-          class="w-full"
+      <div class="photo-preview-container">
+        <img
+          [src]="apiUrl + grandfatherPhotoUrl()"
+          alt="Uploaded"
+          class="uploaded-photo-preview"
         />
+        <button
+          type="button"
+          class="photo-remove-button"
+          (click)="clearPhoto(Roles.PATERNAL_GRANDFATHER)"
+          aria-label="Remove photo"
+        >
+          ✖
+        </button>
+      </div>
+      } @else {
+      <p-fileUpload
+        name="photo"
+        customUpload
+        [auto]="true"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (uploadHandler)="uploadPhoto($event, Roles.PATERNAL_GRANDFATHER)"
+        chooseLabel="{{ CONSTANTS.ADD_PHOTO | translate }}"
+        class="w-full"
+      />
       }
     </div>
   </form>

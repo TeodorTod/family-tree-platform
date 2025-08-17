@@ -57,7 +57,7 @@ export class HomeComponent implements AfterViewInit {
   showPhotoPickerDialog = signal(false);
   showBackgroundDialog = signal(false);
   showTableView = signal(false);
-  circleSizeValue = 70;
+  circleSizeValue = 60;
   circleSize = signal(this.circleSizeValue);
   exportMode = signal(false);
   exportDataUrl = signal<string | null>(null);
@@ -117,7 +117,7 @@ export class HomeComponent implements AfterViewInit {
       window.innerWidth || 0,
       this.cyRef?.nativeElement?.clientWidth || 0
     );
-    this.circleSizeValue = w <= 1024 ? 30 : 70;
+    this.circleSizeValue = w <= 1024 ? 30 : 60;
     this.circleSize.set(this.circleSizeValue);
     localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
   }

@@ -274,9 +274,12 @@
 
 <!-- Table View -->
 <div class="table-container" [class.full-screen]="showTableView()">
+  @if(showTableView()) {
   <app-tree-table
-    *ngIf="showTableView()"
+    
     (addRelative)="openAddDialog($event.role)"
     (editMember)="handleEditFromTable($event)"
   ></app-tree-table>
+  }
+
 </div>

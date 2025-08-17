@@ -166,9 +166,12 @@ export class MemberInfoComponent implements OnInit {
       ...dodPayload,
     };
 
-    this.familyService
-      .saveMemberByRole(this.role, data)
-      .subscribe(() => this.cancel());
+    this.familyService.saveMemberByRole(this.role, data).subscribe({
+      next: (saved) => {
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+      },
+    });
   }
 
   cancel(): void {

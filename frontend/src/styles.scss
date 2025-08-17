@@ -8,7 +8,7 @@
   --highlight-bg: #fdf6e3;
   --surface-ground: #f9f9f9;
   --surface-card: #ffffff;
-    --navbar-h: 64px;    
+  --navbar-h: 64px;
   --footer-h: 56px;
 }
 
@@ -37,7 +37,7 @@ body {
 
 .main-content {
   flex: 1;
- overflow: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -341,8 +341,14 @@ body {
   }
 }
 
+.mathernal-grandparents-container {
+  align-items: flex-start;
+}
+
 .initial-forms {
   max-width: 500px;
+  justify-content: flex-start !important;
+  align-self: flex-start;
 
   @media (max-width: 768px) {
     max-width: 360px;
