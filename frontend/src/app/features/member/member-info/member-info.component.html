@@ -75,6 +75,7 @@
       }
 
       <!-- Alive toggle stays the same -->
+      @if(role !== 'owner') {
       <div class="d-flex align-items-center gap-2 mb-3">
         <p-checkbox
           binary="true"
@@ -132,7 +133,7 @@
           [showIcon]="true"
           [iconDisplay]="'input'"
           panelStyleClass="calendar-up"
-           appendTo="body"
+          appendTo="body"
         >
         </p-datepicker>
       </div>
@@ -144,7 +145,7 @@
         <input pInputText formControlName="deathNote" placeholder=" " />
         <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
       </div>
-      } }
+      } } }
     </p-tabPanel>
 
     <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">

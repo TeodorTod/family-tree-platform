@@ -79,9 +79,10 @@ export class MemberInfoComponent implements OnInit {
 
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
-    this.form = this.familyService.createFamilyMemberForm(); // has dobMode/dodMode etc.
+    this.form = this.familyService.createFamilyMemberForm(); 
 
     this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
+      
       if (!member) {
         this.form.patchValue(
           { dobMode: 'exact', dodMode: 'exact', isAlive: true },

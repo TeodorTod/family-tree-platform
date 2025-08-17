@@ -117,13 +117,21 @@ export class HomeComponent implements AfterViewInit {
   }
 
   private setInitialCircleSizeByWidth(): void {
-    const w = Math.max(
-      window.innerWidth || 0,
-      this.cyRef?.nativeElement?.clientWidth || 0
-    );
-    this.circleSizeValue = w <= 1024 ? 30 : 60;
-    this.circleSize.set(this.circleSizeValue);
-    localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
+    setTimeout(() => {
+      const w = Math.max(
+        window.innerWidth || 0,
+        this.cyRef?.nativeElement?.clientWidth || 0
+      );
+      const next = w <= 1024 ? 30 : 60;
+
+      if (next === this.circleSizeValue) return;
+
+      this.circleSizeValue = next;
+      this.circleSize.set(next);
+      localStorage.setItem('familyCircleSize', String(next));
+
+      if (this.cy) this.updateCircleSize();
+    }, 0);
   }
 
   zoomIn(): void {
@@ -515,7 +523,7 @@ export class HomeComponent implements AfterViewInit {
       const pos = posMap.get(m.role);
       if (!pos) return; // guard just in case
 
-     const label = this.computeNodeLabel(m);
+      const label = this.computeNodeLabel(m);
 
       elements.push({
         data: {
