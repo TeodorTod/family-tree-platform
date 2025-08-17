@@ -65,6 +65,7 @@ export class HomeComponent implements AfterViewInit {
   exportPaddingPx = signal(64);
   bgOffsetX = signal(0);
   bgOffsetY = signal(0);
+  showBirthInfo = signal<boolean>(true);
   private exportRebuildTimer: any = null;
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
@@ -89,6 +90,9 @@ export class HomeComponent implements AfterViewInit {
       // default: on mobile show table, on desktop show chart
       this.showTableView.set(isSmallScreen);
     }
+
+    const savedBirth = localStorage.getItem('showBirthInfo');
+    if (savedBirth !== null) this.showBirthInfo.set(savedBirth === '1');
 
     // backgrounds init (unchanged)
     const savedBg = localStorage.getItem('selectedBackground');
@@ -511,9 +515,7 @@ export class HomeComponent implements AfterViewInit {
       const pos = posMap.get(m.role);
       if (!pos) return; // guard just in case
 
-      const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ');
-      const yr = this.birthLabel(m);
-      const label = yr ? `${fullName}\n${yr}` : fullName;
+     const label = this.computeNodeLabel(m);
 
       elements.push({
         data: {
@@ -1363,5 +1365,30 @@ export class HomeComponent implements AfterViewInit {
     if (!isFinite(raw)) return 1;
     const as01 = raw > 1 ? raw / 100 : raw;
     return Math.max(0, Math.min(1, as01));
+  }
+
+  private computeNodeLabel(m: FamilyMember): string {
+    const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ');
+    if (!this.showBirthInfo()) return fullName;
+
+    const yr = this.birthLabel(m);
+    return yr ? `${fullName}\n${yr}` : fullName;
+  }
+
+  private refreshNodeLabels() {
+    if (!this.cy) return;
+    this.cy.nodes().forEach((node) => {
+      const role = node.id();
+      const m = this.members.find((mm) => mm.role === role);
+      if (m) node.data('label', this.computeNodeLabel(m));
+    });
+    this.cy.style().update();
+  }
+
+  toggleBirthInfo() {
+    const next = !this.showBirthInfo();
+    this.showBirthInfo.set(next);
+    localStorage.setItem('showBirthInfo', next ? '1' : '0');
+    this.refreshNodeLabels();
   }
 }

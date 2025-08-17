@@ -83,21 +83,33 @@
   ></button>
 
   <!-- Toggle Links -->
-<button
-  pButton
-  type="button"
-  [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
-  class="p-button-rounded p-button-sm"
-  (click)="toggleConnections()"
-  pTooltip="{{
-    showConnections()
-      ? (CONSTANTS.INFO_HIDE_LINKS | translate)
-      : (CONSTANTS.INFO_SHOW_LINKS | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+  <button
+    pButton
+    type="button"
+    [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
+    class="p-button-rounded p-button-sm"
+    (click)="toggleConnections()"
+    pTooltip="{{
+      showConnections()
+        ? (CONSTANTS.INFO_HIDE_LINKS | translate)
+        : (CONSTANTS.INFO_SHOW_LINKS | translate)
+    }}"
+    tooltipPosition="left"
+  ></button>
 
-
+  <button
+    pButton
+    icon="pi pi-calendar"
+    class="p-button-rounded p-button-sm"
+    [class.p-button-outlined]="!showBirthInfo()"
+    (click)="toggleBirthInfo()"
+    pTooltip="{{
+      showBirthInfo()
+        ? (CONSTANTS.INFO_HIDE_BIRTH_DATE | translate)
+        : (CONSTANTS.INFO_SHOW_BIRTH_DATE | translate)
+    }}"
+    tooltipPosition="left"
+  ></button>
 
   @if (!showTableView()) {
   <div
@@ -276,10 +288,8 @@
 <div class="table-container" [class.full-screen]="showTableView()">
   @if(showTableView()) {
   <app-tree-table
-    
     (addRelative)="openAddDialog($event.role)"
     (editMember)="handleEditFromTable($event)"
   ></app-tree-table>
   }
-
 </div>

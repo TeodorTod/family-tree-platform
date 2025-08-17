@@ -86,6 +86,8 @@ export class CONSTANTS {
   static readonly INFO_DOD_MODE = 'INFO.DOD_MODE';
   static readonly INFO_DOD_YEAR_ONLY = 'INFO.DOD_YEAR_ONLY';
   static readonly INFO_DOD_NOTE_LABEL = 'INFO.DOD_NOTE_LABEL';
+  static readonly INFO_HIDE_BIRTH_DATE = 'INFO.HIDE_BIRTH_DATE';
+  static readonly INFO_SHOW_BIRTH_DATE = 'INFO.SHOW_BIRTH_DATE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
