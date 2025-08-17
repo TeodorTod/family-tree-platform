@@ -113,7 +113,6 @@ export class AddRelativeDialogComponent implements OnInit {
         !(isDeepOrLateral && (opt.value === 'mother' || opt.value === 'father'))
     );
 
-   
     this.genderOptions = [
       {
         label: this.translate.instant(CONSTANTS.GENDER_MALE),

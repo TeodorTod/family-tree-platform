@@ -18,7 +18,7 @@ export class FamilyMembersService {
     const dobPayload = this.normalizeDobPayload(dto);
     const dodPayload = this.normalizeDodPayload(dto);
 
-    return this.prisma.familyMember.create({
+    const created = await this.prisma.familyMember.create({
       data: {
         userId,
         firstName: dto.firstName,
@@ -36,6 +36,10 @@ export class FamilyMembersService {
         partnerStatus: dto.partnerStatus ?? undefined,
       },
     });
+
+    await this.autoPairIfCounterpartExists(userId, created);
+
+    return created;
   }
 
   async getFamilyMemberByRole(userId: string, role: string) {
@@ -161,11 +165,27 @@ export class FamilyMembersService {
       throw new NotFoundException('Member or partner not found for this user');
 
     await this.prisma.$transaction(async (tx) => {
+      // 1) Изчисти всички стари партньорства към тези двама
       await tx.familyMember.updateMany({
         where: { partnerId: { in: [memberId, partnerId] } },
         data: { partnerId: null, partnerStatus: null },
       });
 
+      await tx.relationship.deleteMany({
+        where: {
+          type: 'partner',
+          OR: [
+            { fromMemberId: memberId, toMemberId: partnerId },
+            { fromMemberId: partnerId, toMemberId: memberId },
+            { fromMemberId: memberId },
+            { toMemberId: memberId },
+            { fromMemberId: partnerId },
+            { toMemberId: partnerId },
+          ],
+        },
+      });
+
+      // 2) Сложи двупосочно партньорство
       await tx.familyMember.update({
         where: { id: memberId },
         data: { partnerId, partnerStatus: status },
@@ -174,6 +194,27 @@ export class FamilyMembersService {
         where: { id: partnerId },
         data: { partnerId: memberId, partnerStatus: status },
       });
+
+      // 3) Relationship (единичен ред, без значение посоката)
+      const exists = await tx.relationship.findFirst({
+        where: {
+          type: 'partner',
+          OR: [
+            { fromMemberId: memberId, toMemberId: partnerId },
+            { fromMemberId: partnerId, toMemberId: memberId },
+          ],
+        },
+      });
+
+      if (!exists) {
+        await tx.relationship.create({
+          data: {
+            fromMemberId: memberId,
+            toMemberId: partnerId,
+            type: 'partner',
+          },
+        });
+      }
     });
 
     return { ok: true };
@@ -274,5 +315,52 @@ export class FamilyMembersService {
     }
 
     return {};
+  }
+
+  private async autoPairIfCounterpartExists(
+    userId: string,
+    created: { id: string; role: string },
+  ) {
+    const role = created.role;
+
+    // 1) Core: mother ↔ father
+    if (role === 'mother' || role === 'father') {
+      const counterpartRole = role === 'mother' ? 'father' : 'mother';
+      const other = await this.prisma.familyMember.findFirst({
+        where: { userId, role: counterpartRole },
+      });
+      if (other) {
+        await this.setPartner(
+          userId,
+          created.id,
+          other.id,
+          PartnerStatus.UNKNOWN,
+        );
+      }
+      return;
+    }
+
+    // 2) Динамични: …_mother ↔ …_father
+    const idx = role.lastIndexOf('_');
+    if (idx === -1) return; // няма суфикс → не е динамична роля
+
+    const suffix = role.slice(idx + 1);
+    if (suffix !== 'mother' && suffix !== 'father') return;
+
+    const base = role.slice(0, idx);
+    const counterpartRole = `${base}_${suffix === 'mother' ? 'father' : 'mother'}`;
+
+    const other = await this.prisma.familyMember.findFirst({
+      where: { userId, role: counterpartRole },
+    });
+
+    if (other) {
+      await this.setPartner(
+        userId,
+        created.id,
+        other.id,
+        PartnerStatus.UNKNOWN,
+      );
+    }
   }
 }

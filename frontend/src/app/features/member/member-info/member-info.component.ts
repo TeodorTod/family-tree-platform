@@ -1,4 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+  DestroyRef,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { FamilyService } from '../../../core/services/family.service';
@@ -6,6 +13,7 @@ import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-i
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
+
 import { MemberAchievementsComponent } from '../components/member-achievements/member-achievements.component';
 import { MemberBioComponent } from '../components/member-bio/member-bio.component';
 import { MemberCareerComponent } from '../components/member-career/member-career.component';
@@ -13,6 +21,10 @@ import { MemberFavoritesComponent } from '../components/member-favorites/member-
 import { MemberPersonalInfoComponent } from '../components/member-personal-info/member-personal-info.component';
 import { MemberRelationsComponent } from '../components/member-relations/member-relations.component';
 import { MemberMediaGalleryComponent } from '../components/member-media-gallery/member-media-gallery.component';
+
+import { MemberProfileService } from '../../../core/services/member-profile.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MemberProfile } from '../../../shared/models/member-profile.model';
 
 @Component({
   selector: 'app-member-info',
@@ -35,11 +47,17 @@ export class MemberInfoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private familyService = inject(FamilyService);
-  public translate = inject(TranslateService);
+  private profileService = inject(MemberProfileService);
+  private translate = inject(TranslateService);
+  private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
   role!: string;
   CONSTANTS = CONSTANTS;
+
+  activeIndex = signal(0);
+
+  profileDraft: MemberProfile = {};
 
   // DOB mode options
   dobModeOptions = [
@@ -77,102 +95,170 @@ export class MemberInfoComponent implements OnInit {
     },
   ];
 
+  // ViewChild hooks (optional): if your child tabs expose getters, you can read them here
+  @ViewChild(MemberBioComponent) bioTab?: MemberBioComponent;
+  @ViewChild(MemberCareerComponent) careerTab?: MemberCareerComponent;
+  @ViewChild(MemberAchievementsComponent)
+  achievementsTab?: MemberAchievementsComponent;
+  @ViewChild(MemberFavoritesComponent) favoritesTab?: MemberFavoritesComponent;
+  @ViewChild(MemberPersonalInfoComponent)
+  personalInfoTab?: MemberPersonalInfoComponent;
+
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
-    this.form = this.familyService.createFamilyMemberForm(); 
+    this.form = this.familyService.createFamilyMemberForm();
 
-    this.familyService.getFamilyMemberByRole(this.role).subscribe((member) => {
-      
-      if (!member) {
-        this.form.patchValue(
-          { dobMode: 'exact', dodMode: 'exact', isAlive: true },
-          { emitEvent: false }
-        );
-        if (!this.hasConstant(this.role)) {
+    // Load FamilyMember (tab 0)
+    this.familyService
+      .getFamilyMemberByRole(this.role)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((member) => {
+        if (!member) {
           this.form.patchValue(
-            { translatedRole: this.defaultGenericForRole() },
+            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
             { emitEvent: false }
           );
+          if (!this.hasConstant(this.role)) {
+            this.form.patchValue(
+              { translatedRole: this.defaultGenericForRole() },
+              { emitEvent: false }
+            );
+          }
+          return;
         }
-        return;
-      }
 
-      const converted = this.convertDatesToObjects(member);
+        const converted = this.convertDatesToObjects(member);
 
-      let dobMode: 'exact' | 'year' | 'note' = 'exact';
-      if (!converted.dob && converted.birthYear) {
-        converted.dob = new Date(converted.birthYear, 0, 1);
-        dobMode = 'year';
-      } else if (converted.birthNote) {
-        dobMode = 'note';
-      }
+        let dobMode: 'exact' | 'year' | 'note' = 'exact';
+        if (!converted.dob && converted.birthYear) {
+          converted.dob = new Date(converted.birthYear, 0, 1);
+          dobMode = 'year';
+        } else if (converted.birthNote) {
+          dobMode = 'note';
+        }
 
-      // infer DOD mode
-      let dodMode: 'exact' | 'year' | 'note' = 'exact';
-      if (converted.isAlive === false) {
-        if (converted.dod) dodMode = 'exact';
-        else if ((converted as any).deathYear) dodMode = 'year';
-        else if ((converted as any).deathNote) dodMode = 'note';
-      }
+        let dodMode: 'exact' | 'year' | 'note' = 'exact';
+        if (converted.isAlive === false) {
+          if (converted.dod) dodMode = 'exact';
+          else if ((converted as any).deathYear) dodMode = 'year';
+          else if ((converted as any).deathNote) dodMode = 'note';
+        }
 
-      this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
+        this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
 
-      this.form.patchValue(
-        {
-          // basic
-          firstName: converted.firstName ?? null,
-          middleName: converted.middleName ?? null,
-          lastName: converted.lastName ?? null,
-          gender: converted.gender ?? null,
-          translatedRole:
-            member.translatedRole ??
-            (this.hasConstant(this.role) ? null : this.defaultGenericForRole()),
+        this.form.patchValue(
+          {
+            firstName: converted.firstName ?? null,
+            middleName: converted.middleName ?? null,
+            lastName: converted.lastName ?? null,
+            gender: converted.gender ?? null,
+            translatedRole:
+              member.translatedRole ??
+              (this.hasConstant(this.role)
+                ? null
+                : this.defaultGenericForRole()),
 
-          // birth
-          dob: converted.dob ?? null,
-          birthYear: converted.birthYear ?? null,
-          birthNote: converted.birthNote ?? null,
+            dob: converted.dob ?? null,
+            birthYear: converted.birthYear ?? null,
+            birthNote: converted.birthNote ?? null,
 
-          // death
-          isAlive: converted.isAlive ?? true,
-          dod: converted.dod ?? null,
-          deathYear: (converted as any).deathYear ?? null,
-          deathYearDate: (converted as any).deathYear
-            ? new Date((converted as any).deathYear, 0, 1)
-            : null,
-          deathNote: (converted as any).deathNote ?? null,
-        },
-        { emitEvent: false }
-      );
-    });
+            isAlive: converted.isAlive ?? true,
+            dod: converted.dod ?? null,
+            deathYear: (converted as any).deathYear ?? null,
+            deathYearDate: (converted as any).deathYear
+              ? new Date((converted as any).deathYear, 0, 1)
+              : null,
+            deathNote: (converted as any).deathNote ?? null,
+          },
+          { emitEvent: false }
+        );
+      });
+
+    // Load MemberProfile (for all other tabs)
+    this.profileService
+      .getProfileByRole(this.role)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((profile) => {
+        if (profile) {
+          this.profileDraft = { ...profile };
+          // Optionally pass data down to tabs via @Input() bindings in template
+        } else {
+          this.profileDraft = {};
+        }
+      });
+  }
+
+  onTabIndexChange(index: number) {
+    this.activeIndex.set(index);
   }
 
   save() {
-    if (this.form.invalid) return;
+    const current = this.activeIndex();
+    if (current === 0) {
+      // Save FamilyMember
+      if (this.form.invalid) return;
 
-    const dobPayload = this.familyService.buildDobPayload(this.form);
-    const dodPayload = this.familyService.buildDodPayload(this.form);
+      const dobPayload = this.familyService.buildDobPayload(this.form);
+      const dodPayload = this.familyService.buildDodPayload(this.form);
+      const v = this.form.value;
 
-    const v = this.form.value;
+      const data: any = {
+        role: this.role,
+        firstName: v.firstName ?? '',
+        middleName: v.middleName ?? null,
+        lastName: v.lastName ?? '',
+        gender: v.gender ?? null,
+        isAlive: v.isAlive ?? true,
+        translatedRole: v.translatedRole ?? null,
+        ...dobPayload,
+        ...dodPayload,
+      };
 
-    const data: any = {
-      role: this.role,
-      firstName: v.firstName ?? '',
-      middleName: v.middleName ?? null,
-      lastName: v.lastName ?? '',
-      gender: v.gender ?? null,
-      isAlive: v.isAlive ?? true,
-      translatedRole: v.translatedRole ?? null,
-      ...dobPayload,
-      ...dodPayload,
-    };
+      this.familyService
+        .saveMemberByRole(this.role, data)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
+        });
+      return;
+    }
 
-    this.familyService.saveMemberByRole(this.role, data).subscribe({
-      next: (saved) => {
-        this.form.markAsPristine();
-        this.form.markAsUntouched();
-      },
-    });
+    // Save MemberProfile for any other tab
+    const profilePayload = this.buildProfilePayload();
+    this.profileService
+      .saveProfileByRole(this.role, profilePayload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((saved) => {
+        this.profileDraft = { ...saved };
+      });
+  }
+
+  // Collect values from child tabs (adjust to your child APIs)
+  private buildProfilePayload(): MemberProfile {
+    const draft: MemberProfile = { ...this.profileDraft };
+
+    // If your child components expose getters like getValue(), use them; otherwise
+    // keep using the draft (which you can update via @Output() from each child).
+    if (this.bioTab && (this.bioTab as any).getValue) {
+      draft.bio = (this.bioTab as any).getValue();
+    }
+    if (this.careerTab && (this.careerTab as any).getValue) {
+      const career = (this.careerTab as any).getValue(); // e.g. { work: [...], education: [...] }
+      draft.work = career?.work ?? draft.work ?? null;
+      draft.education = career?.education ?? draft.education ?? null;
+    }
+    if (this.achievementsTab && (this.achievementsTab as any).getValue) {
+      draft.achievements = (this.achievementsTab as any).getValue();
+    }
+    if (this.favoritesTab && (this.favoritesTab as any).getValue) {
+      draft.favorites = (this.favoritesTab as any).getValue();
+    }
+    if (this.personalInfoTab && (this.personalInfoTab as any).getValue) {
+      draft.personalInfo = (this.personalInfoTab as any).getValue();
+    }
+
+    return draft;
   }
 
   cancel(): void {

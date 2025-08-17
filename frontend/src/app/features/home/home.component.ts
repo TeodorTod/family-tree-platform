@@ -665,6 +665,7 @@ export class HomeComponent implements AfterViewInit {
           });
         }
       });
+      
     // NEW: 8e) “Raw” parentOf + childOf relationships
     // ─────────────────────────────────────────────
     members.forEach((m) => {

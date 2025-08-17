@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { FamilyMembersModule } from './family-members/family-members.module';
 import { MediaModule } from './media/media.module';
+import { MemberProfilesModule } from './member-profile/member-profiles.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { MediaModule } from './media/media.module';
     AuthModule,
     UsersModule,
     FamilyMembersModule,
-    MediaModule
+    MediaModule,
+    MemberProfilesModule
   ],
   controllers: [AppController],
   providers: [AppService],
