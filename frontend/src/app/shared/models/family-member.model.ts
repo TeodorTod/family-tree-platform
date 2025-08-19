@@ -1,3 +1,4 @@
+import { PartnerStatus } from '../enums/partner-status.enum';
 import { Relationship } from './relationship.model';
 
 export interface FamilyMember {
@@ -22,4 +23,7 @@ export interface FamilyMember {
   parentOf?: Relationship[];
   childOf?: Relationship[];
   relationships?: Relationship[];
+
+    partnerId?: string | null;
+  partnerStatus?: PartnerStatus | null;
 }

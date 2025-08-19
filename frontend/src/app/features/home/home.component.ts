@@ -124,7 +124,7 @@ export class HomeComponent implements AfterViewInit {
       );
       const next = w <= 1024 ? 30 : 60;
 
-      if (next === this.circleSizeValue) return;
+      if (this.circleSizeValue === next) return;
 
       this.circleSizeValue = next;
       this.circleSize.set(next);
@@ -179,22 +179,31 @@ export class HomeComponent implements AfterViewInit {
     const H = container.clientHeight;
     const isMobile = W < 1400;
 
+    const nodeSize = this.circleSize();
+    const minSpacing = nodeSize + 10;
+    const partnerSpacing = minSpacing;
+    const shiftH = isMobile ? W * 0.1 : 100;
+
     // ───────────────────────────────────────────────────────────────
     // 1) Fixed generations
     // ───────────────────────────────────────────────────────────────
-    const maternalGP = members.filter(
-      (m) =>
-        m.role === Roles.MATERNAL_GRANDMOTHER ||
-        m.role === Roles.MATERNAL_GRANDFATHER
-    );
-    const paternalGP = members.filter(
-      (m) =>
-        m.role === Roles.PATERNAL_GRANDMOTHER ||
-        m.role === Roles.PATERNAL_GRANDFATHER
-    );
-    const parents = members.filter(
-      (m) => m.role === Roles.MOTHER || m.role === Roles.FATHER
-    );
+    let maternalGP = members
+      .filter(
+        (m) =>
+          m.role === Roles.MATERNAL_GRANDMOTHER ||
+          m.role === Roles.MATERNAL_GRANDFATHER
+      )
+      .sort((a, b) => a.role.localeCompare(b.role)); // Sort for consistent positioning: grandfather first
+    let paternalGP = members
+      .filter(
+        (m) =>
+          m.role === Roles.PATERNAL_GRANDMOTHER ||
+          m.role === Roles.PATERNAL_GRANDFATHER
+      )
+      .sort((a, b) => a.role.localeCompare(b.role)); // Sort for consistent positioning: grandfather first
+    let parents = members
+      .filter((m) => m.role === Roles.MOTHER || m.role === Roles.FATHER)
+      .sort((a, b) => a.role.localeCompare(b.role)); // Sort: father first
     const ownerArr = members.filter((m) => m.role === Roles.OWNER);
 
     // ───────────────────────────────────────────────────────────────
@@ -218,10 +227,10 @@ export class HomeComponent implements AfterViewInit {
     const spreadMobile = (arr: any[], y: number) => {
       const maxWidth = W * 0.95;
       const maxSpacing = 150;
-      const minSpacing = 80;
+      const minSpacingLocal = 80;
       const spacing = Math.min(
         maxSpacing,
-        Math.max(minSpacing, maxWidth / (arr.length + 0.5))
+        Math.max(minSpacingLocal, maxWidth / (arr.length + 0.5))
       );
       const totalWidth = (arr.length - 1) * spacing;
       const startX = W / 2 - totalWidth / 2;
@@ -249,22 +258,44 @@ export class HomeComponent implements AfterViewInit {
     }));
 
     // ───────────────────────────────────────────────────────────────
-    // 5) Grandparents around parents
+    // 5) Grandparents around parents (keep them as a tight pair)
     // ───────────────────────────────────────────────────────────────
-    const gpOffset = isMobile
-      ? W * 0.08
-      : Math.min(60, Math.abs(fatherX - motherX) / 2);
 
-    const grandMatPos = maternalGP.map((g, i) => ({
-      role: g.role,
-      x: motherX + (i === 0 ? -gpOffset : gpOffset),
-      y: tierYs.grandparents,
-    }));
-    const grandPatPos = paternalGP.map((g, i) => ({
-      role: g.role,
-      x: fatherX + (i === 0 ? -gpOffset : gpOffset),
-      y: tierYs.grandparents,
-    }));
+    // visual gap between grandfather & grandmother
+    const gpMin = Math.max(nodeSize * 1.4, 100);
+    const gpMax = Math.max(nodeSize * 2.2, 180);
+    const gpGap = isMobile
+      ? Math.max(W * 0.12, gpMin)
+      : Math.min(gpMax, Math.max(gpMin, Math.abs(fatherX - motherX) * 0.45));
+
+    const makeGpPair = (parentX: number, arr: FamilyMember[]) => {
+      // make sure we place GRANDFATHER to the left, GRANDMOTHER to the right
+      const gf = arr.find(
+        (a) =>
+          a.role === Roles.MATERNAL_GRANDFATHER ||
+          a.role === Roles.PATERNAL_GRANDFATHER
+      );
+      const gm = arr.find(
+        (a) =>
+          a.role === Roles.MATERNAL_GRANDMOTHER ||
+          a.role === Roles.PATERNAL_GRANDMOTHER
+      );
+      const y = tierYs.grandparents;
+      const out: { role: string; x: number; y: number }[] = [];
+
+      if (gf && gm) {
+        out.push({ role: gf.role, x: parentX - gpGap / 2, y });
+        out.push({ role: gm.role, x: parentX + gpGap / 2, y });
+      } else if (gf) {
+        out.push({ role: gf.role, x: parentX, y });
+      } else if (gm) {
+        out.push({ role: gm.role, x: parentX, y });
+      }
+      return out;
+    };
+
+    const grandMatPos = makeGpPair(motherX, maternalGP);
+    const grandPatPos = makeGpPair(fatherX, paternalGP);
 
     // ───────────────────────────────────────────────────────────────
     // 6) Build initial posMap for all fixed roles
@@ -317,7 +348,6 @@ export class HomeComponent implements AfterViewInit {
 
         // ── now place every child of this baseRole exactly as you did before ──
 
-        const shiftH = isMobile ? W * 0.1 : 100;
         const shiftVUp = tierYs.parents - tierYs.owner;
         const shiftVDown = tierYs.owner - tierYs.parents;
 
@@ -336,32 +366,41 @@ export class HomeComponent implements AfterViewInit {
           basePos.x > centerX;
 
         // (a) dynamic parents (_mother/_father)
-        const dynParents = group.filter((m) =>
-          /_(mother|father)$/.test(m.role)
-        );
-        dynParents.forEach((m, i) => {
-          const offsetX = shiftH * (i + 1);
-          let x = m.role.endsWith('_mother')
-            ? basePos.x - offsetX
-            : basePos.x + offsetX;
-
+        let dynParents = group.filter((m) => /_(mother|father)$/.test(m.role));
+        if (dynParents.length > 0) {
           let y: number;
           if (basePos.y === tierYs.owner) y = tierYs.parents;
           else if (basePos.y === tierYs.parents) y = tierYs.grandparents;
           else y = basePos.y - shiftVDown;
 
-          // SIDE ENFORCEMENT: Keep father's family on left, mother's family on right
-          if (isFatherSide) {
-            x = Math.min(x, centerX - 20); // Keep on left side with small buffer
-          } else if (isMotherSide) {
-            x = Math.max(x, centerX + 20); // Keep on right side with small buffer
+          const halfSpace = partnerSpacing / 2;
+
+          const fatherM = dynParents.find((m) => m.role.endsWith('_father'));
+          if (fatherM) {
+            let x = basePos.x - halfSpace;
+            // SIDE ENFORCEMENT
+            if (isFatherSide) {
+              x = Math.min(x, centerX - 20);
+            } else if (isMotherSide) {
+              x = Math.max(x, centerX + 20);
+            }
+            x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+            posMap.set(fatherM.role, { x, y });
           }
 
-          // Keep within screen bounds
-          x = Math.max(W * 0.05, Math.min(W * 0.95, x));
-
-          posMap.set(m.role, { x, y });
-        });
+          const motherM = dynParents.find((m) => m.role.endsWith('_mother'));
+          if (motherM) {
+            let x = basePos.x + halfSpace;
+            // SIDE ENFORCEMENT
+            if (isFatherSide) {
+              x = Math.min(x, centerX - 20);
+            } else if (isMotherSide) {
+              x = Math.max(x, centerX + 20);
+            }
+            x = Math.max(W * 0.05, Math.min(W * 0.95, x));
+            posMap.set(motherM.role, { x, y });
+          }
+        }
 
         // (b) siblings (_brother/_sister)
         const sibs = group.filter((m) => /_(brother|sister)$/.test(m.role));
@@ -466,7 +505,6 @@ export class HomeComponent implements AfterViewInit {
     // 8a⁺) Clamp every maternal node to the right of Owner, paternal to left
     // ───────────────────────────────────────────────────────────────
     const ownerX = posMap.get(Roles.OWNER)!.x;
-    const nodeSize = this.circleSize();
     // increase this to add more horizontal breathing room
     const sideBuffer = nodeSize + 5;
     const ownerPos = posMap.get(Roles.OWNER)!;
@@ -485,10 +523,26 @@ export class HomeComponent implements AfterViewInit {
       }
     });
 
+    const partnerGap = Math.max(this.circleSize(), 60);
+    const pairs = this.collectPartnerPairs(members);
+    this.lastPairs = pairs;
+
+    const mateOf = this.enforcePartnerAdjacency(posMap, pairs, partnerGap);
+    this.lastMateOf = mateOf;
+
+    this.resolveOverlapsXOnly(
+      posMap,
+      this.circleSize(),
+      W,
+      ownerX,
+      mateOf,
+      partnerGap
+    );
+
     // ───────────────────────────────────────────────────────────────
     // 8a⁺¹) Tiny horizontal collision-avoidance
     // ───────────────────────────────────────────────────────────────
-    const minDist = nodeSize + 10; // no two circles closer than this in X
+    const fixedRoles = new Set(fixedKeys);
     const entries = Array.from(posMap.entries());
 
     for (let i = 0; i < entries.length; i++) {
@@ -501,15 +555,37 @@ export class HomeComponent implements AfterViewInit {
           const dx = pb.x - pa.x;
           const absDx = Math.abs(dx);
 
-          if (absDx < minDist) {
-            const shift = (minDist - absDx) / 2;
-            // push them apart
-            if (dx > 0) {
-              pa.x -= shift;
-              pb.x += shift;
+          if (absDx < minSpacing) {
+            const shift = (minSpacing - absDx) / 2;
+            const isAFixed = fixedRoles.has(ra as Roles);
+            const isBFixed = fixedRoles.has(rb as Roles);
+
+            if (isAFixed && isBFixed) {
+              // Both fixed: do not move
+              continue;
+            } else if (isAFixed) {
+              // Move only B away from A
+              if (dx > 0) {
+                pb.x += shift * 2;
+              } else {
+                pb.x -= shift * 2;
+              }
+            } else if (isBFixed) {
+              // Move only A away from B
+              if (dx > 0) {
+                pa.x -= shift * 2;
+              } else {
+                pa.x += shift * 2;
+              }
             } else {
-              pa.x += shift;
-              pb.x -= shift;
+              // Both dynamic: push both
+              if (dx > 0) {
+                pa.x -= shift;
+                pb.x += shift;
+              } else {
+                pa.x += shift;
+                pb.x -= shift;
+              }
             }
             posMap.set(ra, pa);
             posMap.set(rb, pb);
@@ -665,7 +741,7 @@ export class HomeComponent implements AfterViewInit {
           });
         }
       });
-      
+
     // NEW: 8e) “Raw” parentOf + childOf relationships
     // ─────────────────────────────────────────────
     members.forEach((m) => {
@@ -989,87 +1065,6 @@ export class HomeComponent implements AfterViewInit {
     this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role], {
       queryParams: { view: 'table' },
     });
-  }
-
-  private resolveOverlapsXOnly(
-    posMap: Map<string, { x: number; y: number }>,
-    nodeSize: number,
-    W: number,
-    ownerX: number
-  ) {
-    const sideBuffer = nodeSize + 5;
-    const minDist = nodeSize + 10; // min x distance between two nodes on (nearly) same row
-    const maxIters = 20;
-
-    // ensure father-side left, mother-side right
-    posMap.forEach((p, role) => {
-      if (role === Roles.OWNER) return;
-      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
-        p.x = Math.max(p.x, ownerX + sideBuffer);
-      } else if (role.startsWith('paternal_') || role === Roles.FATHER) {
-        p.x = Math.min(p.x, ownerX - sideBuffer);
-      }
-      // clamp to screen safe area
-      p.x = Math.max(W * 0.05, Math.min(W * 0.95, p.x));
-    });
-
-    // iterative separate until stable (or maxIters)
-    for (let iter = 0; iter < maxIters; iter++) {
-      let moved = false;
-      const entries = Array.from(posMap.entries());
-
-      for (let i = 0; i < entries.length; i++) {
-        for (let j = i + 1; j < entries.length; j++) {
-          const [ri, pi] = entries[i];
-          const [rj, pj] = entries[j];
-
-          // only consider collisions within same horizontal band
-          if (Math.abs(pi.y - pj.y) >= nodeSize) continue;
-
-          const dx = pj.x - pi.x;
-          const absDx = Math.abs(dx);
-
-          if (absDx < minDist) {
-            const push = (minDist - absDx) / 2;
-
-            // direction: push away on X
-            if (dx > 0) {
-              pi.x -= push;
-              pj.x += push;
-            } else if (dx < 0) {
-              pi.x += push;
-              pj.x -= push;
-            } else {
-              // perfectly overlapping in x: split arbitrarily
-              pi.x -= push;
-              pj.x += push;
-            }
-
-            // enforce sides after push
-            if (ri.startsWith('maternal_') || ri === Roles.MOTHER) {
-              pi.x = Math.max(pi.x, ownerX + sideBuffer);
-            } else if (ri.startsWith('paternal_') || ri === Roles.FATHER) {
-              pi.x = Math.min(pi.x, ownerX - sideBuffer);
-            }
-            if (rj.startsWith('maternal_') || rj === Roles.MOTHER) {
-              pj.x = Math.max(pj.x, ownerX + sideBuffer);
-            } else if (rj.startsWith('paternal_') || rj === Roles.FATHER) {
-              pj.x = Math.min(pj.x, ownerX - sideBuffer);
-            }
-
-            // clamp to viewport
-            pi.x = Math.max(W * 0.05, Math.min(W * 0.95, pi.x));
-            pj.x = Math.max(W * 0.05, Math.min(W * 0.95, pj.x));
-
-            posMap.set(ri, pi);
-            posMap.set(rj, pj);
-            moved = true;
-          }
-        }
-      }
-
-      if (!moved) break;
-    }
   }
 
   updateCircleSize() {
@@ -1399,5 +1394,185 @@ export class HomeComponent implements AfterViewInit {
     this.showBirthInfo.set(next);
     localStorage.setItem('showBirthInfo', next ? '1' : '0');
     this.refreshNodeLabels();
+  }
+
+  // Put these inside HomeComponent (as private methods/fields)
+
+  private lastPairs: [string, string][] = [];
+  private lastMateOf = new Map<string, string>();
+
+  /** 1) Find all partner pairs (by naming + DB partnerId) */
+  private collectPartnerPairs(members: FamilyMember[]): [string, string][] {
+    const pairs: [string, string][] = [];
+
+    // core pairs
+    const core: [Roles, Roles][] = [
+      [Roles.MOTHER, Roles.FATHER],
+      [Roles.MATERNAL_GRANDMOTHER, Roles.MATERNAL_GRANDFATHER],
+      [Roles.PATERNAL_GRANDMOTHER, Roles.PATERNAL_GRANDFATHER],
+    ];
+    core.forEach(([a, b]) => {
+      if (
+        members.some((m) => m.role === a) &&
+        members.some((m) => m.role === b)
+      ) {
+        pairs.push([a, b]);
+      }
+    });
+
+    const byBase: Record<string, FamilyMember[]> = {};
+    members.forEach((m) => {
+      const idx = m.role.lastIndexOf('_');
+      if (idx < 0) return;
+      const base = m.role.slice(0, idx);
+      (byBase[base] = byBase[base] || []).push(m);
+    });
+    Object.entries(byBase).forEach(([base, arr]) => {
+      const f = arr.find((x) => x.role === `${base}_father`);
+      const m = arr.find((x) => x.role === `${base}_mother`);
+      if (f && m) pairs.push([f.role, m.role]);
+    });
+
+    const byId = new Map(members.map((m) => [m.id!, m]));
+    const seen = new Set<string>();
+    members.forEach((a) => {
+      if (!a.partnerId) return;
+      const b = byId.get(a.partnerId);
+      if (!b) return;
+      const key = [a.role, b.role].sort().join('::');
+      if (seen.has(key)) return;
+      seen.add(key);
+      pairs.push([a.role, b.role]);
+    });
+
+    const uniq = new Map<string, [string, string]>();
+    pairs.forEach(([a, b]) => uniq.set([a, b].sort().join('::'), [a, b]));
+    return Array.from(uniq.values());
+  }
+
+  private enforcePartnerAdjacency(
+    posMap: Map<string, { x: number; y: number }>,
+    pairs: [string, string][],
+    gap: number
+  ): Map<string, string> {
+    const mateOf = new Map<string, string>();
+    pairs.forEach(([a, b]) => {
+      const pa = posMap.get(a);
+      const pb = posMap.get(b);
+      if (!pa || !pb) return;
+
+      const y = (pa.y + pb.y) / 2;
+      const mid = (pa.x + pb.x) / 2;
+      const half = gap / 2;
+
+      pa.x = mid - half;
+      pa.y = y;
+      pb.x = mid + half;
+      pb.y = y;
+
+      posMap.set(a, pa);
+      posMap.set(b, pb);
+
+      mateOf.set(a, b);
+      mateOf.set(b, a);
+    });
+    return mateOf;
+  }
+
+  private resolveOverlapsXOnly(
+    posMap: Map<string, { x: number; y: number }>,
+    nodeSize: number,
+    W: number,
+    ownerX: number,
+    mateOf?: Map<string, string>,
+    pairGap?: number
+  ) {
+    const sideBuffer = nodeSize + 5;
+    const minDist = nodeSize + 10;
+    const maxIters = 20;
+    const fixedRoles = new Set<string>([
+      Roles.OWNER,
+      Roles.MOTHER,
+      Roles.FATHER,
+      Roles.MATERNAL_GRANDMOTHER,
+      Roles.MATERNAL_GRANDFATHER,
+      Roles.PATERNAL_GRANDMOTHER,
+      Roles.PATERNAL_GRANDFATHER,
+    ]);
+
+    const move = (role: string, dx: number) => {
+      const p = posMap.get(role);
+      if (!p) return;
+      p.x += dx;
+      posMap.set(role, p);
+
+      const mate = mateOf?.get(role);
+      if (mate) {
+        const mp = posMap.get(mate);
+        if (mp && Math.abs(mp.y - p.y) < nodeSize) {
+          mp.x += dx;
+          posMap.set(mate, mp);
+        }
+      }
+    };
+
+    posMap.forEach((p, role) => {
+      if (role === Roles.OWNER) return;
+      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
+        p.x = Math.max(p.x, ownerX + sideBuffer);
+      } else if (role.startsWith('paternal_') || role === Roles.FATHER) {
+        p.x = Math.min(p.x, ownerX - sideBuffer);
+      }
+      p.x = Math.max(W * 0.05, Math.min(W * 0.95, p.x));
+    });
+
+    for (let iter = 0; iter < maxIters; iter++) {
+      let moved = false;
+      const entries = Array.from(posMap.entries());
+
+      for (let i = 0; i < entries.length; i++) {
+        for (let j = i + 1; j < entries.length; j++) {
+          const [ri, pi] = entries[i];
+          const [rj, pj] = entries[j];
+          if (Math.abs(pi.y - pj.y) >= nodeSize) continue;
+
+          const dx = pj.x - pi.x;
+          const absDx = Math.abs(dx);
+          if (absDx >= minDist) continue;
+
+          const push = (minDist - absDx) / 2;
+          const iFixed = fixedRoles.has(ri);
+          const jFixed = fixedRoles.has(rj);
+
+          if (iFixed && jFixed) continue;
+          else if (iFixed) move(rj, dx > 0 ? +push * 2 : -push * 2);
+          else if (jFixed) move(ri, dx > 0 ? -push * 2 : +push * 2);
+          else {
+            move(ri, dx > 0 ? -push : +push);
+            move(rj, dx > 0 ? +push : -push);
+          }
+
+          if (mateOf && pairGap) {
+            [ri, rj].forEach((r) => {
+              const mate = mateOf.get(r);
+              if (!mate) return;
+              const pr = posMap.get(r)!;
+              const pm = posMap.get(mate)!;
+              if (Math.abs(pr.y - pm.y) < nodeSize) {
+                const mid = (pr.x + pm.x) / 2;
+                pr.x = mid - pairGap / 2;
+                pm.x = mid + pairGap / 2;
+                posMap.set(r, pr);
+                posMap.set(mate, pm);
+              }
+            });
+          }
+
+          moved = true;
+        }
+      }
+
+      if (!moved) break;
+    }
   }
 }
