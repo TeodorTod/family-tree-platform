@@ -67,6 +67,11 @@ export class HomeComponent implements AfterViewInit {
   bgOffsetY = signal(0);
   showBirthInfo = signal<boolean>(true);
   private exportRebuildTimer: any = null;
+  private distanceBoostX = 1.6;
+  private distanceBoostY = 1.0;
+  private lastPairs: [string, string][] = [];
+  private lastMateOf = new Map<string, string>();
+
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
@@ -593,6 +598,17 @@ export class HomeComponent implements AfterViewInit {
         }
       }
     }
+
+    const owner = posMap.get(Roles.OWNER);
+    const anchorX = owner?.x ?? W / 2;
+    const anchorY = owner?.y ?? tierYs.owner;
+    this.boostPosMap(
+      posMap,
+      anchorX,
+      anchorY,
+      this.distanceBoostX,
+      this.distanceBoostY
+    );
 
     // 8a) Nodes
     members.forEach((m) => {
@@ -1396,12 +1412,7 @@ export class HomeComponent implements AfterViewInit {
     this.refreshNodeLabels();
   }
 
-  // Put these inside HomeComponent (as private methods/fields)
 
-  private lastPairs: [string, string][] = [];
-  private lastMateOf = new Map<string, string>();
-
-  /** 1) Find all partner pairs (by naming + DB partnerId) */
   private collectPartnerPairs(members: FamilyMember[]): [string, string][] {
     const pairs: [string, string][] = [];
 
@@ -1574,5 +1585,19 @@ export class HomeComponent implements AfterViewInit {
 
       if (!moved) break;
     }
+  }
+
+  private boostPosMap(
+    posMap: Map<string, { x: number; y: number }>,
+    anchorX: number,
+    anchorY: number,
+    sx: number,
+    sy: number
+  ) {
+    posMap.forEach((p, key) => {
+      p.x = anchorX + (p.x - anchorX) * sx;
+      p.y = anchorY + (p.y - anchorY) * sy;
+      posMap.set(key, p);
+    });
   }
 }
