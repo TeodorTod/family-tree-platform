@@ -8,6 +8,7 @@ import {
   Param,
   Put,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { FamilyMembersService } from './family-members.service';
 import { CreateFamilyMemberDto } from './dto/create-family-member.dto';
@@ -88,4 +89,13 @@ export class FamilyMembersController {
     const userId = req.user.sub;
     return this.familyService.updateFamilyMemberByRole(userId, role, dto);
   }
+
+  @Delete(':role')
+async deleteByRole(
+  @Req() req: any,
+  @Param('role') role: string,
+) {
+  const userId = req.user.id; 
+  return this.familyService.deleteByRole(userId, role);
+}
 }

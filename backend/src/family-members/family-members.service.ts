@@ -363,4 +363,39 @@ export class FamilyMembersService {
       );
     }
   }
+
+  async deleteByRole(userId: string, role: string) {
+    const existing = await this.prisma.familyMember.findFirst({
+      where: { userId, role: role.toLowerCase() },
+      select: { id: true, role: true },
+    });
+    if (!existing) throw new NotFoundException(`No member with role ${role}`);
+
+    if (existing.role === 'owner') {
+      throw new BadRequestException('Owner cannot be deleted.');
+    }
+
+    const memberId = existing.id;
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.familyMember.updateMany({
+        where: { partnerId: memberId },
+        data: { partnerId: null, partnerStatus: null },
+      });
+
+      await tx.relationship.deleteMany({
+        where: {
+          OR: [{ fromMemberId: memberId }, { toMemberId: memberId }],
+        },
+      });
+
+      await tx.memberProfile.deleteMany({ where: { memberId } });
+
+      await tx.media.deleteMany({ where: { memberId } });
+
+      await tx.familyMember.delete({ where: { id: memberId } });
+    });
+
+    return { ok: true };
+  }
 }

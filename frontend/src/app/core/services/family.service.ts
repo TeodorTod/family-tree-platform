@@ -254,6 +254,12 @@ export class FamilyService {
     });
   }
 
+  deleteMemberByRole(role: string) {
+    return this.http.delete<{ ok: boolean }>(
+      `${this.api}/family-members/${role}`
+    );
+  }
+
   uploadPhoto(file: File) {
     const formData = new FormData();
     formData.append('file', file);

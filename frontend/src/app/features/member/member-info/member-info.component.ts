@@ -25,6 +25,7 @@ import { MemberMediaGalleryComponent } from '../components/member-media-gallery/
 import { MemberProfileService } from '../../../core/services/member-profile.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-member-info',
@@ -50,16 +51,14 @@ export class MemberInfoComponent implements OnInit {
   private profileService = inject(MemberProfileService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
+  private confirm = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   form!: FormGroup;
   role!: string;
   CONSTANTS = CONSTANTS;
-
   activeIndex = signal(0);
-
   profileDraft: MemberProfile = {};
-
-  // DOB mode options
   dobModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
@@ -319,5 +318,48 @@ export class MemberInfoComponent implements OnInit {
   hasConstant(role: string): boolean {
     const key = 'RELATION_' + role.toUpperCase();
     return !!(CONSTANTS as any)[key];
+  }
+
+  confirmDelete() {
+    if (this.role === 'owner') return;
+
+    this.confirm.confirm({
+      header: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_TITLE),
+      message: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_MESSAGE),
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: this.translate.instant(CONSTANTS.INFO_DELETE),
+      rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary',
+
+      defaultFocus: 'reject',
+      accept: () => this.deleteMember(),
+    });
+  }
+
+  private deleteMember() {
+    this.familyService
+      .deleteMemberByRole(this.role)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
+            detail: this.translate.instant(
+              CONSTANTS.INFO_DELETE_MEMBER_MESSAGE
+            ),
+          });
+          this.router.navigate(['/'], { queryParams: { view: 'chart' } });
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to delete',
+          });
+          console.error(err);
+        },
+      });
   }
 }

@@ -27,6 +27,7 @@ import {
 } from './shared/utils/translations.utils';
 import MyPreset from '../theme/mypreset';
 import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,6 +40,7 @@ export const appConfig: ApplicationConfig = {
         preset: MyPreset,
       },
     }),
+
     provideHttpClient(withInterceptorsFromDi()),
     ...(TranslateModule.forRoot({
       defaultLanguage: 'bg',
@@ -52,6 +54,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() =>
       appInitializerFactory(inject(TranslateService))()
     ),
+    ConfirmationService,
+    MessageService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

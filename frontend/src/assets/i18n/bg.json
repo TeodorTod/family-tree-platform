@@ -67,7 +67,13 @@
     "DOD_YEAR_ONLY": "Само година на смърт",
     "DOD_NOTE_LABEL": "Свободен текст за датата на смъртта",
     "HIDE_BIRTH_DATE": "Скрий датата на раждане",
-    "SHOW_BIRTH_DATE": "Покажи датата на раждане"
+    "SHOW_BIRTH_DATE": "Покажи датата на раждане",
+    "DELETE_MEMBER": "Изтрий член",
+    "CONFIRM_DELETE_TITLE": "Потвърди изтриването",
+    "CONFIRM_DELETE_MESSAGE": "Сигурен ли си, че искаш да изтриеш този член от семейството?",
+    "DELETE": "Изтрий",
+    "SUCCESS": "Успешно",
+    "DELETE_MEMBER_MESSAGE": "Членът е успешно изтрит."
   },
 
   "ADD": {

@@ -191,6 +191,14 @@
     ></button>
     <button
       pButton
+      type="button"
+      class="p-button-danger"
+      [disabled]="role === 'owner'"
+      label="{{ CONSTANTS.INFO_DELETE_MEMBER | translate }}"
+      (click)="confirmDelete()"
+    ></button>
+    <button
+      pButton
       type="submit"
       label="{{ CONSTANTS.INFO_SAVE | translate }}"
     ></button>
