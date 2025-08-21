@@ -534,6 +534,22 @@ export class HomeComponent implements AfterViewInit {
 
     const mateOf = this.enforcePartnerAdjacency(posMap, pairs, partnerGap);
     this.lastMateOf = mateOf;
+    this.packRowsBySide(
+      posMap,
+      posMap.get(Roles.OWNER)!.x,
+      W,
+      this.circleSize(),
+      partnerGap
+    );
+
+    {
+      const ownerX = posMap.get(Roles.OWNER)!.x;
+      const sideBuffer = this.circleSize() + 5;
+      const pf = posMap.get(Roles.FATHER);
+      if (pf) posMap.set(Roles.FATHER, { x: ownerX - sideBuffer, y: pf.y });
+      const pm = posMap.get(Roles.MOTHER);
+      if (pm) posMap.set(Roles.MOTHER, { x: ownerX + sideBuffer, y: pm.y });
+    }
 
     this.resolveOverlapsXOnly(
       posMap,
@@ -1412,15 +1428,14 @@ export class HomeComponent implements AfterViewInit {
     this.refreshNodeLabels();
   }
 
-
   private collectPartnerPairs(members: FamilyMember[]): [string, string][] {
     const pairs: [string, string][] = [];
 
     // core pairs
     const core: [Roles, Roles][] = [
-      [Roles.MOTHER, Roles.FATHER],
-      [Roles.MATERNAL_GRANDMOTHER, Roles.MATERNAL_GRANDFATHER],
-      [Roles.PATERNAL_GRANDMOTHER, Roles.PATERNAL_GRANDFATHER],
+      [Roles.FATHER, Roles.MOTHER],
+      [Roles.PATERNAL_GRANDFATHER, Roles.PATERNAL_GRANDMOTHER],
+      [Roles.MATERNAL_GRANDFATHER, Roles.MATERNAL_GRANDMOTHER],
     ];
     core.forEach(([a, b]) => {
       if (
@@ -1467,26 +1482,90 @@ export class HomeComponent implements AfterViewInit {
     gap: number
   ): Map<string, string> {
     const mateOf = new Map<string, string>();
+    const baseOf = (r: string) => {
+      const i = r.lastIndexOf('_');
+      return i >= 0 ? r.slice(0, i) : null;
+    };
+
     pairs.forEach(([a, b]) => {
       const pa = posMap.get(a);
       const pb = posMap.get(b);
       if (!pa || !pb) return;
 
-      const y = (pa.y + pb.y) / 2;
-      const mid = (pa.x + pb.x) / 2;
+      const aF = /_father$/.test(a),
+        aM = /_mother$/.test(a);
+      const bF = /_father$/.test(b),
+        bM = /_mother$/.test(b);
+      const sameBase = baseOf(a) === baseOf(b);
+      const isGeneratedParents = sameBase && ((aF && bM) || (aM && bF));
+
+      // NEW: child + partner (e.g. owner_son + owner_son_partner)
+      const isChildPartnerPair =
+        (/_partner$/.test(a) && baseOf(a) === b) ||
+        (/_partner$/.test(b) && baseOf(b) === a);
+
       const half = gap / 2;
+      let y = (pa.y + pb.y) / 2;
 
-      pa.x = mid - half;
-      pa.y = y;
-      pb.x = mid + half;
-      pb.y = y;
+      if (isGeneratedParents) {
+        // ... (unchanged)
+        const baseRole = baseOf(a)!;
+        let mid = posMap.get(baseRole)?.x ?? (pa.x + pb.x) / 2;
 
-      posMap.set(a, pa);
-      posMap.set(b, pb);
+        const fatherRole = aF ? a : b;
+        const motherRole = aM ? a : b;
+        const pf = posMap.get(fatherRole)!;
+        const pm = posMap.get(motherRole)!;
+        pf.x = mid - half;
+        pf.y = y;
+        pm.x = mid + half;
+        pm.y = y;
+        posMap.set(fatherRole, pf);
+        posMap.set(motherRole, pm);
+      } else if (isChildPartnerPair) {
+        // Anchor at child's X and push partner outward (away from child's parent)
+        const childRole = /_partner$/.test(a) ? b : a;
+        const partnerRole = /_partner$/.test(a) ? a : b;
+
+        const childPos = posMap.get(childRole)!;
+        const parentRole = baseOf(childRole)!; // immediate parent of the child
+        const parentPos = posMap.get(parentRole);
+
+        const mid = childPos.x;
+        const childOnLeft = parentPos
+          ? parentPos.x < childPos.x
+          : childPos.x <= posMap.get(partnerRole)!.x;
+
+        const c = posMap.get(childRole)!;
+        const p = posMap.get(partnerRole)!;
+        c.x = childOnLeft ? mid - half : mid + half;
+        c.y = y;
+        p.x = childOnLeft ? mid + half : mid - half;
+        p.y = y;
+
+        posMap.set(childRole, c);
+        posMap.set(partnerRole, p);
+      } else {
+        // ... (unchanged non-generated pair)
+        const aIsLeft = pa.x <= pb.x;
+        const leftRole = aIsLeft ? a : b;
+        const rightRole = aIsLeft ? b : a;
+        const mid = (pa.x + pb.x) / 2;
+
+        const pl = posMap.get(leftRole)!;
+        const pr = posMap.get(rightRole)!;
+        pl.x = mid - half;
+        pl.y = y;
+        pr.x = mid + half;
+        pr.y = y;
+        posMap.set(leftRole, pl);
+        posMap.set(rightRole, pr);
+      }
 
       mateOf.set(a, b);
       mateOf.set(b, a);
     });
+
     return mateOf;
   }
 
@@ -1511,17 +1590,30 @@ export class HomeComponent implements AfterViewInit {
       Roles.PATERNAL_GRANDFATHER,
     ]);
 
+    const clampBySide = (role: string, p: { x: number; y: number }) => {
+      if (role === Roles.OWNER) return p;
+      if (role.startsWith('maternal_') || role === Roles.MOTHER) {
+        p.x = Math.max(p.x, ownerX + sideBuffer);
+      } else if (role.startsWith('paternal_') || role === Roles.FATHER) {
+        p.x = Math.min(p.x, ownerX - sideBuffer);
+      }
+      p.x = Math.max(W * 0.05, Math.min(W * 0.95, p.x));
+      return p;
+    };
+
     const move = (role: string, dx: number) => {
-      const p = posMap.get(role);
+      let p = posMap.get(role);
       if (!p) return;
       p.x += dx;
+      p = clampBySide(role, p); // ← keep correct side
       posMap.set(role, p);
 
       const mate = mateOf?.get(role);
       if (mate) {
-        const mp = posMap.get(mate);
+        let mp = posMap.get(mate);
         if (mp && Math.abs(mp.y - p.y) < nodeSize) {
           mp.x += dx;
+          mp = clampBySide(mate, mp); // ← keep mate on correct side too
           posMap.set(mate, mp);
         }
       }
@@ -1564,19 +1656,37 @@ export class HomeComponent implements AfterViewInit {
           }
 
           if (mateOf && pairGap) {
-            [ri, rj].forEach((r) => {
+            const recenterPair = (r: string) => {
               const mate = mateOf.get(r);
               if (!mate) return;
-              const pr = posMap.get(r)!;
-              const pm = posMap.get(mate)!;
-              if (Math.abs(pr.y - pm.y) < nodeSize) {
-                const mid = (pr.x + pm.x) / 2;
-                pr.x = mid - pairGap / 2;
-                pm.x = mid + pairGap / 2;
-                posMap.set(r, pr);
-                posMap.set(mate, pm);
-              }
-            });
+
+              let pr = posMap.get(r)!;
+              let pm = posMap.get(mate)!;
+              if (Math.abs(pr.y - pm.y) >= nodeSize) return;
+
+              const mid = (pr.x + pm.x) / 2;
+
+              // preserve who is already left vs right
+              const rIsLeft = pr.x <= pm.x;
+              const leftRole = rIsLeft ? r : mate;
+              const rightRole = rIsLeft ? mate : r;
+
+              let pl = posMap.get(leftRole)!;
+              let prr = posMap.get(rightRole)!;
+
+              pl.x = mid - pairGap / 2;
+              prr.x = mid + pairGap / 2;
+
+              // keep each on its correct side of the owner
+              pl = clampBySide(leftRole, pl);
+              prr = clampBySide(rightRole, prr);
+
+              posMap.set(leftRole, pl);
+              posMap.set(rightRole, prr);
+            };
+
+            recenterPair(ri);
+            recenterPair(rj);
           }
 
           moved = true;
@@ -1598,6 +1708,160 @@ export class HomeComponent implements AfterViewInit {
       p.x = anchorX + (p.x - anchorX) * sx;
       p.y = anchorY + (p.y - anchorY) * sy;
       posMap.set(key, p);
+    });
+  }
+
+  /** Pack each horizontal row so items don't overlap while keeping
+   *  parent-pairs centered above their child and everyone on the correct side.
+   */
+  private packRowsBySide(
+    posMap: Map<string, { x: number; y: number }>,
+    ownerX: number,
+    W: number,
+    nodeSize: number,
+    pairGap: number
+  ) {
+    const epsY = nodeSize * 0.6; // same-row tolerance
+    const minGap = nodeSize + 10; // minimal horizontal space between items
+    const leftBound = W * 0.05;
+    const rightBound = W * 0.95;
+    const sideBuffer = nodeSize + 5;
+
+    type Block = {
+      roles: string[]; // one node OR two nodes (a parent pair)
+      y: number; // row y (same for both roles if pair)
+      center: number; // desired center (child x for pairs; node x for singles)
+      width: number; // nodeSize or pairGap
+    };
+
+    // 1) collect rows (roughly equal y)
+    const rows: { y: number; roles: string[] }[] = [];
+    posMap.forEach((p, role) => {
+      let row = rows.find((r) => Math.abs(r.y - p.y) <= epsY);
+      if (!row) rows.push((row = { y: p.y, roles: [] }));
+      row.roles.push(role);
+    });
+
+    // 2) for every row, split by side and build "blocks" (single or pair)
+    const buildBlocks = (roles: string[]): Block[] => {
+      const used = new Set<string>();
+      const blocks: Block[] = [];
+      for (const r of roles) {
+        if (used.has(r)) continue;
+        const p = posMap.get(r)!;
+        const mate = this.lastMateOf.get(r);
+        if (
+          mate &&
+          roles.includes(mate) &&
+          Math.abs(posMap.get(mate)!.y - p.y) <= epsY
+        ) {
+          if (used.has(mate)) continue;
+          used.add(r);
+          used.add(mate);
+
+          // order as currently left/right
+          const leftRole = posMap.get(r)!.x <= posMap.get(mate)!.x ? r : mate;
+          const rightRole = leftRole === r ? mate : r;
+
+          // center = child's x if generated parents; else current midpoint
+          const base = r.slice(0, r.lastIndexOf('_'));
+          const child = posMap.get(base);
+          const center = child
+            ? child.x
+            : (posMap.get(leftRole)!.x + posMap.get(rightRole)!.x) / 2;
+
+          blocks.push({
+            roles: [leftRole, rightRole],
+            y: p.y,
+            center,
+            width: pairGap,
+          });
+        } else {
+          used.add(r);
+          blocks.push({
+            roles: [r],
+            y: p.y,
+            center: p.x,
+            width: nodeSize,
+          });
+        }
+      }
+      return blocks;
+    };
+
+    // Greedy, order-preserving "push" to remove overlaps within [minX,maxX]
+    const packSide = (blocks: Block[], minX: number, maxX: number) => {
+      if (blocks.length === 0) return;
+
+      // sort by desired center (keeps parents over their child order)
+      blocks.sort((a, b) => a.center - b.center);
+
+      // left-to-right pass: push right so no overlaps
+      let c = Math.max(minX + blocks[0].width / 2, blocks[0].center);
+      const centers = new Array<number>(blocks.length);
+      centers[0] = c;
+      for (let i = 1; i < blocks.length; i++) {
+        const need =
+          centers[i - 1] + (blocks[i - 1].width + blocks[i].width) / 2 + minGap;
+        centers[i] = Math.max(need, blocks[i].center);
+      }
+
+      // right-to-left pass: clamp to maxX without breaking order
+      centers[blocks.length - 1] = Math.min(
+        centers[blocks.length - 1],
+        maxX - blocks[blocks.length - 1].width / 2
+      );
+      for (let i = blocks.length - 2; i >= 0; i--) {
+        const allow =
+          centers[i + 1] - (blocks[i + 1].width + blocks[i].width) / 2 - minGap;
+        centers[i] = Math.min(centers[i], allow);
+      }
+
+      // apply centers back to nodes
+      blocks.forEach((b, i) => {
+        const cx = Math.max(
+          minX + b.width / 2,
+          Math.min(maxX - b.width / 2, centers[i])
+        );
+        if (b.roles.length === 2) {
+          // parent pair
+          const lx = cx - b.width / 2;
+          const rx = cx + b.width / 2;
+          const [l, r] = b.roles;
+          const pl = posMap.get(l)!;
+          const pr = posMap.get(r)!;
+          pl.x = lx;
+          pr.x = rx;
+          posMap.set(l, pl);
+          posMap.set(r, pr);
+        } else {
+          const r = b.roles[0];
+          const p = posMap.get(r)!;
+          p.x = cx;
+          posMap.set(r, p);
+        }
+      });
+    };
+
+    rows.forEach((row) => {
+      const leftRoles = row.roles.filter(
+        (r) => r !== Roles.OWNER && posMap.get(r)!.x < ownerX
+      );
+      const rightRoles = row.roles.filter(
+        (r) => r !== Roles.OWNER && posMap.get(r)!.x >= ownerX
+      );
+
+      const leftBlocks = buildBlocks(leftRoles);
+      const rightBlocks = buildBlocks(rightRoles);
+
+      // keep everyone on their side of the owner
+      const leftMin = leftBound;
+      const leftMax = ownerX - sideBuffer;
+      const rightMin = ownerX + sideBuffer;
+      const rightMax = rightBound;
+
+      packSide(leftBlocks, leftMin, leftMax);
+      packSide(rightBlocks, rightMin, rightMax);
     });
   }
 }
