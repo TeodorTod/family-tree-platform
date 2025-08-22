@@ -185,6 +185,17 @@ export class MemberInfoComponent implements OnInit {
           this.profileDraft = {};
         }
       });
+    this.ensureTranslatedRoleDefault();
+  }
+
+  get displayRoleLabel(): string {
+    if (!this.hasConstant(this.role)) {
+      const typed = (this.form?.get('translatedRole')?.value ?? '')
+        .toString()
+        .trim();
+      return typed || this.defaultGenericForRole(); //
+    }
+    return this.getTranslatedRoleLabel();
   }
 
   onTabIndexChange(index: number) {
@@ -361,5 +372,14 @@ export class MemberInfoComponent implements OnInit {
           console.error(err);
         },
       });
+  }
+
+  private ensureTranslatedRoleDefault() {
+    if (this.hasConstant(this.role)) return;
+    const ctrl = this.form.get('translatedRole');
+    const current = (ctrl?.value ?? '').toString().trim();
+    if (!current) {
+      ctrl?.setValue(this.defaultGenericForRole(), { emitEvent: false });
+    }
   }
 }

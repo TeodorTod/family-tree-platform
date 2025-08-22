@@ -94,6 +94,9 @@ export class CONSTANTS {
   static readonly INFO_DELETE = 'INFO.DELETE';
   static readonly INFO_SUCCESS = 'INFO.SUCCESS';
   static readonly INFO_DELETE_MEMBER_MESSAGE = 'INFO.DELETE_MEMBER_MESSAGE';
+  static readonly INFO_BASIC_INFO = 'INFO.BASIC_INFO';
+  static readonly INFO_BIRTH_INFO = 'INFO.BIRTH_INFO';
+  static readonly INFO_DEATH_INFO = 'INFO.DEATH_INFO';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

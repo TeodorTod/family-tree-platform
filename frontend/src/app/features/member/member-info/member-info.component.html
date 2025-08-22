@@ -1,206 +1,303 @@
-<form [formGroup]="form" (ngSubmit)="save()" class="d-flex flex-column gap-3">
-  @if (!hasConstant(role)) {
-  <div class="floating-field mt-3">
-    <input pInputText formControlName="translatedRole" placeholder=" " />
-    <label>{{ CONSTANTS.RELATION_TYPE | translate }}</label>
+<div class="member-info-container">
+  <!-- Enhanced Header -->
+  <div class="member-header">
+    <h2 class="member-title" aria-live="polite">
+      {{ displayRoleLabel }}
+    </h2>
   </div>
-  } @else {
-  <h2 class="member-title d-flex align-self-center">
-    {{ getTranslatedRoleLabel() }}
-  </h2>
+
+  <!-- Relation Input Section -->
+  @if (!hasConstant(role)) {
+  <div class="relation-section" [formGroup]="form">
+    <!-- 👈 add this -->
+    <div class="relation-input-container">
+      <div
+        class="floating-field"
+        [class.active]="form.get('translatedRole')?.value"
+      >
+        <input pInputText formControlName="translatedRole" placeholder=" " />
+        <label>{{ CONSTANTS.RELATION_TYPE | translate }}</label>
+      </div>
+    </div>
+  </div>
   }
 
-  <p-tabView
-    [scrollable]="true"
-    [activeIndex]="activeIndex()"
-    (activeIndexChange)="onTabIndexChange($event)"
-  >
-    <p-tabPanel [header]="CONSTANTS.TAB_GENERAL_INFO | translate">
-      <div class="floating-field">
-        <input pInputText formControlName="firstName" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
-      </div>
-
-      <div class="floating-field">
-        <input pInputText formControlName="middleName" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
-      </div>
-
-      <div class="floating-field">
-        <input pInputText formControlName="lastName" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
-      </div>
-
-      <!-- DOB Mode -->
-      <span class="p-float-label w-full mb-3">
-        <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
-        <p-dropdown
-          inputId="dobMode"
-          formControlName="dobMode"
-          [options]="dobModeOptions"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full"
-        ></p-dropdown>
-      </span>
-      <!-- Exact date -->
-      @if (form.value.dobMode === 'exact') {
-      <div class="floating-field mt-3" [class.active]="form.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          dateFormat="yy-mm-dd"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-        ></p-datepicker>
-      </div>
-      }
-
-      <!-- Year only — same control, year view + 'yy' format -->
-      @if (form.value.dobMode === 'year') {
-      <div class="floating-field mt-3" [class.active]="form.get('dob')?.value">
-        <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-        <p-datepicker
-          formControlName="dob"
-          [view]="'year'"
-          [dateFormat]="'yy'"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-        ></p-datepicker>
-      </div>
-      }
-
-      <!-- Note -->
-      @if (form.value.dobMode === 'note') {
-      <div class="floating-field mt-3">
-        <input pInputText formControlName="birthNote" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-      </div>
-      }
-
-      <!-- Alive toggle stays the same -->
-      @if(role !== 'owner') {
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <p-checkbox
-          binary="true"
-          formControlName="isAlive"
-          inputId="isAliveCheckbox"
-        ></p-checkbox>
-        <label for="isAliveCheckbox" class="mb-0">
-          {{ CONSTANTS.INFO_IS_ALIVE | translate }}
-        </label>
-      </div>
-
-      <!-- DOD tri-mode (only if not alive) -->
-      @if (form.get('isAlive')?.value === false) {
-
-      <!-- DOD Mode -->
-      <span class="p-float-label w-full mb-3">
-        <label for="dodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
-        <p-dropdown
-          inputId="dodMode"
-          formControlName="dodMode"
-          [options]="dodModeOptions"
-          optionLabel="label"
-          optionValue="value"
-          class="w-full"
-        ></p-dropdown>
-      </span>
-
-      <!-- Exact -->
-      @if (form.value.dodMode === 'exact') {
-      <div class="floating-field mt-3" [class.active]="form.get('dod')?.value">
-        <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
-        <p-datepicker
-          formControlName="dod"
-          dateFormat="yy-mm-dd"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          panelStyleClass="calendar-up"
-          appendTo="body"
+  <!-- Form Content -->
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-content-wrapper">
+      <div class="enhanced-tabs">
+        <p-tabView
+          [scrollable]="true"
+          [activeIndex]="activeIndex()"
+          (activeIndexChange)="onTabIndexChange($event)"
         >
-        </p-datepicker>
+          <p-tabPanel [header]="CONSTANTS.TAB_GENERAL_INFO | translate">
+            <div class="form-grid">
+              <!-- Basic Information Group -->
+              <div class="field-group">
+                <div class="field-group-title">
+                  <i class="pi pi-user"></i>
+                  {{ CONSTANTS.INFO_BASIC_INFO | translate }}
+                </div>
+
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('firstName')?.value"
+                >
+                  <input
+                    pInputText
+                    formControlName="firstName"
+                    placeholder=" "
+                  />
+                  <label>{{ CONSTANTS.INFO_FIRST_NAME | translate }}</label>
+                </div>
+
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('middleName')?.value"
+                >
+                  <input
+                    pInputText
+                    formControlName="middleName"
+                    placeholder=" "
+                  />
+                  <label>{{ CONSTANTS.INFO_MIDDLE_NAME | translate }}</label>
+                </div>
+
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('lastName')?.value"
+                >
+                  <input
+                    pInputText
+                    formControlName="lastName"
+                    placeholder=" "
+                  />
+                  <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
+                </div>
+              </div>
+
+              <!-- Birth Information Group -->
+              <div class="field-group">
+                <div class="field-group-title">
+                  <i class="pi pi-calendar"></i>
+                  {{ CONSTANTS.INFO_BIRTH_INFO | translate }}
+                </div>
+
+                <!-- DOB Mode -->
+                <div class="floating-field active">
+                  <p-dropdown
+                    formControlName="dobMode"
+                    [options]="dobModeOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="w-full"
+                  ></p-dropdown>
+                  <label>{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
+                </div>
+
+                <!-- Exact date -->
+                @if (form.value.dobMode === 'exact') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('dob')?.value"
+                >
+                  <p-datepicker
+                    formControlName="dob"
+                    dateFormat="yy-mm-dd"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                  ></p-datepicker>
+                  <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+                </div>
+                }
+
+                <!-- Year only -->
+                @if (form.value.dobMode === 'year') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('dob')?.value"
+                >
+                  <p-datepicker
+                    formControlName="dob"
+                    [view]="'year'"
+                    [dateFormat]="'yy'"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                  ></p-datepicker>
+                  <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+                </div>
+                }
+
+                <!-- Note -->
+                @if (form.value.dobMode === 'note') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('birthNote')?.value"
+                >
+                  <input
+                    pInputText
+                    formControlName="birthNote"
+                    placeholder=" "
+                  />
+                  <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+                </div>
+                }
+
+                <!-- Alive status -->
+                @if(role !== 'owner') {
+                <div class="checkbox-container">
+                  <p-checkbox
+                    binary="true"
+                    formControlName="isAlive"
+                    inputId="isAliveCheckbox"
+                  ></p-checkbox>
+                  <label for="isAliveCheckbox">
+                    {{ CONSTANTS.INFO_IS_ALIVE | translate }}
+                  </label>
+                </div>
+                }
+
+                <!-- Death Information (if not alive) -->
+                @if (form.get('isAlive')?.value === false) {
+                <div class="field-group">
+                  <div class="field-group-title">
+                    <i class="pi pi-times-circle"></i>
+                    {{ CONSTANTS.INFO_DEATH_INFO | translate }}
+                  </div>
+
+                  <!-- DOD Mode -->
+                  <div class="floating-field active">
+                    <p-dropdown
+                      formControlName="dodMode"
+                      [options]="dodModeOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      class="w-full"
+                    ></p-dropdown>
+                    <label>{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+                  </div>
+
+                  <!-- Exact death date -->
+                  @if (form.value.dodMode === 'exact') {
+                  <div
+                    class="floating-field"
+                    [class.active]="form.get('dod')?.value"
+                  >
+                    <p-datepicker
+                      formControlName="dod"
+                      dateFormat="yy-mm-dd"
+                      [showIcon]="true"
+                      [iconDisplay]="'input'"
+                      panelStyleClass="calendar-up"
+                      appendTo="body"
+                    ></p-datepicker>
+                    <label>{{
+                      CONSTANTS.INFO_DATE_OF_DEATH | translate
+                    }}</label>
+                  </div>
+                  }
+
+                  <!-- Year only death -->
+                  @if (form.value.dodMode === 'year') {
+                  <div
+                    class="floating-field"
+                    [class.active]="form.get('deathYearDate')?.value"
+                  >
+                    <p-datepicker
+                      formControlName="deathYearDate"
+                      [view]="'year'"
+                      [dateFormat]="'yy'"
+                      [showIcon]="true"
+                      [iconDisplay]="'input'"
+                      panelStyleClass="calendar-up"
+                      appendTo="body"
+                    ></p-datepicker>
+                    <label>{{
+                      CONSTANTS.INFO_DOD_YEAR_ONLY | translate
+                    }}</label>
+                  </div>
+                  }
+
+                  <!-- Death note -->
+                  @if (form.value.dodMode === 'note') {
+                  <div
+                    class="floating-field"
+                    [class.active]="form.get('deathNote')?.value"
+                  >
+                    <input
+                      pInputText
+                      formControlName="deathNote"
+                      placeholder=" "
+                    />
+                    <label>{{
+                      CONSTANTS.INFO_DOD_NOTE_LABEL | translate
+                    }}</label>
+                  </div>
+                  }
+                </div>
+                }
+              </div>
+            </div>
+          </p-tabPanel>
+
+          <!-- Other tabs remain the same -->
+          <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">
+            <app-member-relations [memberRole]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
+            <app-member-bio [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_MEDIA | translate">
+            <app-member-media-gallery [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_CAREER | translate">
+            <app-member-career [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_ACHIEVEMENTS | translate">
+            <app-member-achievements [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_FAVORITES | translate">
+            <app-member-favorites [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_PERSONAL_INFO | translate">
+            <app-member-personal-info [role]="role" />
+          </p-tabPanel>
+        </p-tabView>
       </div>
-      }
+    </div>
 
-      <!-- Year only -->
-      @if (form.value.dodMode === 'year') {
-      <div
-        class="floating-field mt-3"
-        [class.active]="form.get('deathYearDate')?.value"
-      >
-        <label>{{ CONSTANTS.INFO_DOD_YEAR_ONLY | translate }}</label>
-        <p-datepicker
-          formControlName="deathYearDate"
-          [view]="'year'"
-          [dateFormat]="'yy'"
-          [showIcon]="true"
-          [iconDisplay]="'input'"
-          panelStyleClass="calendar-up"
-          appendTo="body"
-        >
-        </p-datepicker>
-      </div>
-      }
-
-      <!-- Note -->
-      @if (form.value.dodMode === 'note') {
-      <div class="floating-field mt-3">
-        <input pInputText formControlName="deathNote" placeholder=" " />
-        <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
-      </div>
-      } } }
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">
-      <app-member-relations [memberRole]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
-      <app-member-bio [role]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_MEDIA | translate">
-      <app-member-media-gallery [role]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_CAREER | translate">
-      <app-member-career [role]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_ACHIEVEMENTS | translate">
-      <app-member-achievements [role]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_FAVORITES | translate">
-      <app-member-favorites [role]="role" />
-    </p-tabPanel>
-
-    <p-tabPanel [header]="CONSTANTS.TAB_PERSONAL_INFO | translate">
-      <app-member-personal-info [role]="role" />
-    </p-tabPanel>
-  </p-tabView>
-
-  <div class="d-flex justify-content-end mt-4 gap-2">
-    <button
-      pButton
-      type="button"
-      label="{{ CONSTANTS.INFO_BACK | translate }}"
-      class="p-button-secondary"
-      (click)="cancel()"
-    ></button>
-    <button
-      pButton
-      type="button"
-      class="p-button-danger"
-      [disabled]="role === 'owner'"
-      label="{{ CONSTANTS.INFO_DELETE_MEMBER | translate }}"
-      (click)="confirmDelete()"
-    ></button>
-    <button
-      pButton
-      type="submit"
-      label="{{ CONSTANTS.INFO_SAVE | translate }}"
-    ></button>
-  </div>
-</form>
+    <!-- Enhanced Action Buttons -->
+    <div class="action-buttons">
+      <button
+        pButton
+        type="button"
+        label="{{ CONSTANTS.INFO_BACK | translate }}"
+        class="p-button-secondary"
+        (click)="cancel()"
+        icon="pi pi-arrow-left"
+      ></button>
+      <button
+        pButton
+        type="button"
+        class="p-button-danger"
+        [disabled]="role === 'owner'"
+        label="{{ CONSTANTS.INFO_DELETE_MEMBER | translate }}"
+        (click)="confirmDelete()"
+        icon="pi pi-trash"
+      ></button>
+      <button
+        pButton
+        type="submit"
+        label="{{ CONSTANTS.INFO_SAVE | translate }}"
+        icon="pi pi-save"
+      ></button>
+    </div>
+  </form>
+</div>

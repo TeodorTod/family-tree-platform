@@ -1,0 +1,391 @@
+// member-info.component.scss
+:host {
+  display: block;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--surface-ground) 0%, #f3f4f6 100%);
+  min-height: calc(100vh - var(--navbar-h, 64px) - var(--footer-h, 56px));
+}
+
+.member-info-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.member-header {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-color-hover) 100%
+  );
+  color: var(--primary-color-text);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/assets/images/tree-of-life-tile.svg") 0 0 / 96px 96px
+      repeat;
+  }
+
+  .member-title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.relation-section {
+  padding: 2rem;
+  background: var(--highlight-bg);
+  border-bottom: 1px solid var(--border-color, #e1e5e9);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
+  .relation-input-container {
+    max-width: 400px;
+    margin: 0 auto;
+
+    @media (max-width: 480px) {
+      max-width: 100%;
+    }
+  }
+}
+
+.form-content-wrapper {
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+.floating-field {
+  position: relative;
+  margin-bottom: 1.5rem;
+
+  label {
+    position: absolute;
+    left: 0.875rem;
+    top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary, #6b7280);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: var(--surface-card);
+    padding: 0 0.25rem;
+    z-index: 1;
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    padding: 1rem 0.875rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+    }
+  }
+
+  input:focus + label,
+  input:not(:placeholder-shown) + label,
+  &.active label {
+    top: -0.5rem;
+    left: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  ::ng-deep .p-calendar {
+    width: 100%;
+
+    .p-inputtext {
+      width: 100%;
+      padding: 1rem 0.875rem !important;
+      font-size: 1rem;
+      border: 2px solid var(--border-color, #e1e5e9);
+      border-radius: var(--radius-md, 0.5rem);
+      background: var(--surface-card);
+      transition: all 0.2s ease;
+      color: var(--text-color);
+
+      &:focus {
+        border-color: var(--primary-color) !important;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+      }
+    }
+
+    .p-datepicker-trigger {
+      right: 0.875rem;
+    }
+
+    .p-calendar-w-btn {
+      .p-inputtext {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      .p-datepicker-trigger {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: none;
+      }
+    }
+  }
+
+  ::ng-deep .p-dropdown {
+    width: 100%;
+
+    .p-dropdown-label {
+      padding: 1rem 0.875rem !important;
+      font-size: 1rem;
+    }
+
+    .p-inputwrapper {
+      border: 2px solid var(--border-color, #e1e5e9);
+      border-radius: var(--radius-md, 0.5rem);
+      background: var(--surface-card);
+      transition: all 0.2s ease;
+
+      &:focus-within,
+      &.p-inputwrapper-focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+      }
+    }
+
+    .p-dropdown-trigger {
+      right: 0.875rem;
+    }
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.field-group {
+  background: rgba(45, 76, 47, 0.02);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1.5rem;
+  border: 1px solid rgba(45, 76, 47, 0.1);
+
+  .field-group-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(45, 76, 47, 0.03);
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(45, 76, 47, 0.1);
+
+  .p-checkbox {
+    .p-checkbox-box {
+      border: 2px solid var(--border-color, #e1e5e9);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &.p-highlight {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+    }
+  }
+
+  label {
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+  }
+}
+
+.enhanced-tabs {
+  ::ng-deep {
+    .p-tabview {
+      .p-tabview-nav {
+        border-bottom: 2px solid var(--border-color, #e1e5e9);
+        background: transparent;
+        overflow-x: auto;
+
+        .p-tabview-nav-content {
+          min-width: max-content;
+        }
+
+        li {
+          .p-tabview-nav-link {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: var(--text-color-secondary, #6b7280);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            background: transparent;
+            border-radius: 0;
+
+            &:hover {
+              color: var(--primary-color);
+              background: rgba(45, 76, 47, 0.05);
+            }
+
+            .p-tabview-title {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            }
+          }
+
+          &.p-highlight {
+            .p-tabview-nav-link {
+              color: var(--primary-color);
+              border-bottom-color: var(--primary-color);
+              background: rgba(45, 76, 47, 0.05);
+            }
+          }
+        }
+      }
+
+      .p-tabview-panels {
+        padding: 0;
+        background: transparent;
+
+        .p-tabview-panel {
+          padding: 2rem 0;
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--surface-ground);
+  border-top: 1px solid var(--border-color, #e1e5e9);
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+    padding: 1.5rem;
+  }
+
+  .p-button {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    &.p-button-secondary {
+      background: transparent;
+      color: var(--text-color-secondary, #6b7280);
+      border-color: var(--border-color, #e1e5e9);
+
+      &:hover {
+        background: var(--surface-ground);
+        color: var(--text-color);
+        border-color: var(--text-color-secondary, #6b7280);
+      }
+    }
+
+    &.p-button-danger {
+      background: #dc2626;
+      border-color: #dc2626;
+
+      &:hover {
+        background: #b91c1c;
+        border-color: #b91c1c;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  :host {
+    padding: 0.5rem;
+  }
+
+  .floating-field {
+    input,
+    .p-dropdown,
+    .p-calendar {
+      padding: 0.875rem;
+    }
+  }
+}
+
+:host {
+  --border-color: #e1e5e9;
+  --text-color-secondary: #6b7280;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
