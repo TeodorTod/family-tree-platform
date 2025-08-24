@@ -28,6 +28,7 @@ import {
 import MyPreset from '../theme/mypreset';
 import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -54,6 +55,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() =>
       appInitializerFactory(inject(TranslateService))()
     ),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     ConfirmationService,
     MessageService,
     {
