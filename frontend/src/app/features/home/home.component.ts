@@ -5,13 +5,14 @@ import {
   ViewChild,
   inject,
   signal,
+  OnDestroy,
 } from '@angular/core';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import { environment } from '../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
-import { forkJoin, Observable, switchMap, tap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
@@ -38,7 +39,7 @@ import { PartnerStatus } from '../../shared/enums/partner-status.enum';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, OnDestroy {
   CONSTANTS = CONSTANTS;
   @ViewChild('cy', { static: true }) cyRef!: ElementRef<HTMLElement>;
   hoveredNode = signal<{ id: string; x: number; y: number } | null>(null);
@@ -101,17 +102,49 @@ export class HomeComponent implements AfterViewInit {
       this.backgroundIndex.set(0);
     }
 
-    // 3) Initial sizing (run twice to catch container sizing after render)
-    this.setInitialCircleSizeByWidth();
-    requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
+    // Ensure overlay is in sync
+    this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
+
+    // Optionally respect saved circle size (if present), else compute responsive default
+    const savedSizeRaw = localStorage.getItem('familyCircleSize');
+    if (savedSizeRaw && !Number.isNaN(+savedSizeRaw)) {
+      this.circleSizeValue = Math.max(40, Math.min(120, +savedSizeRaw));
+      this.circleSize.set(this.circleSizeValue);
+    } else {
+      // 3) Initial sizing (run twice to catch container sizing after render)
+      this.setInitialCircleSizeByWidth();
+      requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
+    }
 
     // 4) Load family + render
-    this.familyService.getMyFamily().subscribe((members) => {
-      this.members = members;
+    const isTableNow = this.showTableView();
+    // ask for a slim payload if we’re rendering the chart (nodes + light edges)
+    const requestOpts = isTableNow
+      ? undefined
+      : {
+          fields: [
+            'id',
+            'role',
+            'firstName',
+            'lastName',
+            'gender',
+            'dob',
+            'birthYear',
+            'birthNote',
+            'photoUrl',
+            'partnerId',
+            'partnerStatus',
+          ] as (keyof FamilyMember)[],
+          with: ['parentOf', 'childOf'] as const,
+        };
 
+    this.familyService.getMyFamily(requestOpts as any).subscribe((members) => {
+      this.members = members as FamilyMember[];
+
+      // Warn if duplicate roles (can collapse nodes)
       const seen = new Map<string, number>();
       const dups: string[] = [];
-      for (const m of members) {
+      for (const m of this.members) {
         const count = (seen.get(m.role) ?? 0) + 1;
         seen.set(m.role, count);
         if (count === 2) dups.push(m.role);
@@ -124,9 +157,9 @@ export class HomeComponent implements AfterViewInit {
       }
 
       if (!this.showTableView()) {
-        this.renderGraph(members);
+        this.renderGraph(this.members);
         this.toggleEdgeVisibility();
-        this.updateCircleSize();
+        this.updateCircleSize(); // sync node sizes with current slider/saved value
       }
     });
   }
@@ -908,8 +941,8 @@ export class HomeComponent implements AfterViewInit {
           this.showAddDialog.set(false);
           this.selectedMember.set(null);
           this.familyService.getMyFamily().subscribe((members) => {
-            this.members = members;
-            this.renderGraph(members);
+            this.members = members as any;
+            this.renderGraph(members as FamilyMember[]);
           });
         },
         error: (err) => {
@@ -1762,5 +1795,13 @@ export class HomeComponent implements AfterViewInit {
       packSide(leftBlocks, leftMin, leftMax);
       packSide(rightBlocks, rightMin, rightMax);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.exportRebuildTimer) clearTimeout(this.exportRebuildTimer);
+    if (this.cy) {
+      this.cy.destroy();
+      this.cy = undefined;
+    }
   }
 }

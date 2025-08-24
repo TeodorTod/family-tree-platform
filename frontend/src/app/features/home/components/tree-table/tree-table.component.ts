@@ -25,6 +25,7 @@ export class TreeTableComponent {
   @Input() members: FamilyMember[] = [];
   totalRecords: number = 0;
   loading = false;
+  private inflight = false;
 
   rows: number = 10;
   first: number = 0;
@@ -51,7 +52,6 @@ export class TreeTableComponent {
   }
 
   private translateRole(role: string): string {
-    // try longest-known constant key first (RELATION_OWNER_SON, etc.)
     const parts = (role || '').split('_');
     for (let len = parts.length; len > 0; len--) {
       const key = 'RELATION_' + parts.slice(0, len).join('_').toUpperCase();
@@ -69,7 +69,6 @@ export class TreeTableComponent {
       return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
     }
 
-    // last resort
     return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
   }
 
@@ -82,10 +81,12 @@ export class TreeTableComponent {
     const parts = (role || '').split('_');
     return role.startsWith('paternal_') || parts.includes('father');
   }
-  // --- end of new code ---
 
   loadMembers(event: TableLazyLoadEvent) {
+    if (this.inflight) return;
+    this.inflight = true;
     this.loading = true;
+
     const rows = event.rows ?? this.rows;
     const first = event.first ?? 0;
     const page = Math.floor(first / rows) || 0;
@@ -100,14 +101,27 @@ export class TreeTableComponent {
     this.sortField = sortField;
     this.sortOrder = event.sortOrder ?? 1;
 
+    // Slim payload for table: no edges, just columns you show
+    const fields: (keyof FamilyMember)[] = [
+      'id',
+      'role',
+      'firstName',
+      'lastName',
+      'gender',
+      'dob',
+      'birthYear',
+      'birthNote',
+      'translatedRole',
+    ];
+
     this.familyService
-      .getMyFamilyPaged(page, size, sortField, sortOrder)
-      .pipe(debounceTime(300))
+      .getMyFamilyPaged(page, size, sortField, sortOrder, { fields })
       .subscribe({
         next: (res) => {
-          this.members = res.data;
+          this.members = res.data as FamilyMember[];
           this.totalRecords = res.total;
           this.loading = false;
+          this.inflight = false;
         },
         error: (err) => {
           const errorMessage = err.error?.message
@@ -121,6 +135,7 @@ export class TreeTableComponent {
             detail: errorMessage,
           });
           this.loading = false;
+          this.inflight = false;
         },
       });
   }

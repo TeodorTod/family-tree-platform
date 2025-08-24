@@ -24,6 +24,6 @@ export interface FamilyMember {
   childOf?: Relationship[];
   relationships?: Relationship[];
 
-    partnerId?: string | null;
+  partnerId?: string | null;
   partnerStatus?: PartnerStatus | null;
 }

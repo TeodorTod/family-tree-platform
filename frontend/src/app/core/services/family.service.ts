@@ -216,8 +216,18 @@ export class FamilyService {
     return { dod: null, deathYear: null, deathNote: null };
   }
 
-  getMyFamily(): Observable<FamilyMember[]> {
-    return this.http.get<FamilyMember[]>(`${this.api}/family-members/my-tree`);
+  getMyFamily(opts?: {
+    fields?: (keyof FamilyMember)[];
+    with?: ('parentOf' | 'childOf' | 'media' | 'profile')[];
+  }) {
+    const params: Record<string, string> = {};
+    if (opts?.fields?.length) params['fields'] = opts.fields.join(',');
+    if (opts?.with?.length) params['with'] = opts.with.join(',');
+
+    return this.http.get<Partial<FamilyMember>[]>(
+      `${this.api}/family-members/my-tree`,
+      { params }
+    );
   }
 
   createFamilyMember(data: FamilyMember) {
@@ -281,18 +291,24 @@ export class FamilyService {
     page: number,
     size: number,
     sortField: string,
-    sortOrder: string
+    sortOrder: string,
+    opts?: {
+      fields?: (keyof FamilyMember)[];
+      with?: ('parentOf' | 'childOf' | 'media' | 'profile')[];
+    }
   ) {
-    return this.http.get<{ data: FamilyMember[]; total: number }>(
+    const params: Record<string, string> = {
+      page: String(page),
+      size: String(size),
+      sortField,
+      sortOrder,
+    };
+    if (opts?.fields?.length) params['fields'] = opts.fields.join(',');
+    if (opts?.with?.length) params['with'] = opts.with.join(',');
+
+    return this.http.get<{ data: Partial<FamilyMember>[]; total: number }>(
       `${this.api}/family-members/my-tree-paged`,
-      {
-        params: {
-          page,
-          size,
-          sortField,
-          sortOrder,
-        },
-      }
+      { params }
     );
   }
 

@@ -9,10 +9,95 @@ import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { GetFamilyPagedDto } from './dto/get-family-page.dto';
 import { PartnerStatus } from 'src/shared/enums/partner-status.enum';
+import { GetMyTreeQuery } from './dto/get-my-tree.query';
+import { Prisma } from 'generated/prisma';
+
+const ALLOWED_FIELDS = new Set([
+  'id',
+  'role',
+  'firstName',
+  'middleName',
+  'lastName',
+  'gender',
+  'dob',
+  'birthYear',
+  'birthNote',
+  'dod',
+  'deathYear',
+  'deathNote',
+  'isAlive',
+  'photoUrl',
+  'relationLabel',
+  'translatedRole',
+  'partnerId',
+  'partnerStatus',
+  'createdAt',
+  'updatedAt',
+]);
+
+const DEFAULT_FIELDS = [
+  'id',
+  'role',
+  'firstName',
+  'lastName',
+  'gender',
+  'dob',
+  'birthYear',
+  'birthNote',
+  'isAlive',
+  'photoUrl',
+  'partnerId',
+  'partnerStatus',
+];
+
+const ALLOWED_WITH = new Set(['parentOf', 'childOf', 'media', 'profile']);
 
 @Injectable()
 export class FamilyMembersService {
   constructor(private prisma: PrismaService) {}
+
+  buildMemberSelect(q?: GetMyTreeQuery): Prisma.FamilyMemberSelect {
+    const select: Prisma.FamilyMemberSelect = {};
+
+    const fields = (q?.fields?.length ? q.fields : DEFAULT_FIELDS).filter((f) =>
+      ALLOWED_FIELDS.has(f),
+    );
+
+    for (const f of new Set(['id', 'role', ...fields])) {
+      (select as any)[f] = true;
+    }
+
+    const withs = (q?.with ?? []).filter((w) => ALLOWED_WITH.has(w));
+    for (const w of withs) {
+      if (w === 'parentOf') {
+        select.parentOf = { select: { toMemberId: true, type: true } };
+      }
+      if (w === 'childOf') {
+        select.childOf = { select: { fromMemberId: true, type: true } };
+      }
+      if (w === 'media') {
+        select.media = {
+          select: { id: true, url: true, type: true, caption: true },
+        };
+      }
+      if (w === 'profile') {
+        select.profile = {
+          select: {
+            bio: true,
+            coverMediaUrl: true,
+            achievements: true,
+            facts: true,
+            favorites: true,
+            education: true,
+            work: true,
+            personalInfo: true,
+          },
+        };
+      }
+    }
+
+    return select;
+  }
 
   async createFamilyMember(userId: string, dto: CreateFamilyMemberDto) {
     const dobPayload = this.normalizeDobPayload(dto);
@@ -101,9 +186,12 @@ export class FamilyMembersService {
       },
     });
   }
-  async getAllFamilyMembers(userId: string) {
+
+  async getAllFamilyMembers(userId: string, q?: GetMyTreeQuery) {
+    const select = this.buildMemberSelect(q);
     return this.prisma.familyMember.findMany({
       where: { userId },
+      select,
       orderBy: { dob: 'asc' },
     });
   }
@@ -127,9 +215,11 @@ export class FamilyMembersService {
     }
 
     const skip = dto.page * dto.size;
-    const orderBy = {
+    const orderBy: Prisma.FamilyMemberOrderByWithRelationInput = {
       [dto.sortField]: dto.sortOrder,
     };
+
+    const select = this.buildMemberSelect(dto);
 
     try {
       const [data, total] = await this.prisma.$transaction([
@@ -138,10 +228,9 @@ export class FamilyMembersService {
           skip,
           take: dto.size,
           orderBy,
+          select,
         }),
-        this.prisma.familyMember.count({
-          where: { userId },
-        }),
+        this.prisma.familyMember.count({ where: { userId } }),
       ]);
 
       return { data, total };

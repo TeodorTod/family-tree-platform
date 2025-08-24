@@ -17,6 +17,7 @@ import { UpdateFamilyMemberDto } from './dto/update-family-member.dto';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { GetFamilyPagedDto } from './dto/get-family-page.dto';
 import { SetPartnerDto } from './dto/set-partner.dto';
+import { GetMyTreeQuery } from './dto/get-my-tree.query';
 
 @Controller('family-members')
 @UseGuards(JwtAuthGuard)
@@ -24,8 +25,8 @@ export class FamilyMembersController {
   constructor(private familyService: FamilyMembersService) {}
 
   @Get('my-tree')
-  getMyTree(@Req() req: any) {
-    return this.familyService.getAllFamilyMembers(req.user?.sub);
+  getMyTree(@Req() req: any, @Query() q: GetMyTreeQuery) {
+    return this.familyService.getAllFamilyMembers(req.user?.sub, q);
   }
 
   @Post()
@@ -39,14 +40,8 @@ export class FamilyMembersController {
   }
 
   @Get('my-tree-paged')
-  getPagedTree(@Req() req: any, @Query() query: any) {
-    const dto: GetFamilyPagedDto = {
-      page: parseInt(query.page, 10) || 0,
-      size: parseInt(query.size, 10) || 10,
-      sortField: query.sortField || 'dob',
-      sortOrder: query.sortOrder || 'asc',
-    };
-    return this.familyService.getPagedFamilyMembers(req.user.sub, dto);
+  getPagedTree(@Req() req: any, @Query() query: GetFamilyPagedDto) {
+    return this.familyService.getPagedFamilyMembers(req.user.sub, query);
   }
 
   @Post('set-partner')
@@ -91,11 +86,8 @@ export class FamilyMembersController {
   }
 
   @Delete(':role')
-async deleteByRole(
-  @Req() req: any,
-  @Param('role') role: string,
-) {
-  const userId = req.user.id; 
-  return this.familyService.deleteByRole(userId, role);
-}
+  async deleteByRole(@Req() req: any, @Param('role') role: string) {
+    const userId = req.user.id;
+    return this.familyService.deleteByRole(userId, role);
+  }
 }
