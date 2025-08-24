@@ -97,6 +97,12 @@ export class CONSTANTS {
   static readonly INFO_BASIC_INFO = 'INFO.BASIC_INFO';
   static readonly INFO_BIRTH_INFO = 'INFO.BIRTH_INFO';
   static readonly INFO_DEATH_INFO = 'INFO.DEATH_INFO';
+  static readonly INFO_SAVED = 'INFO.SAVED';
+  static readonly INFO_SAVE_FAILED = 'INFO.SAVE_FAILED';
+  static readonly INFO_PARTNER_INFO = 'INFO.PARTNER_INFO';
+  static readonly INFO_PARTNER_FIRST_NAME = 'INFO.PARTNER_FIRST_NAME';
+  static readonly INFO_PARTNER_LAST_NAME = 'INFO.PARTNER_LAST_NAME';
+  static readonly INFO_PARTNER_STATUS = 'INFO.PARTNER_STATUS';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 

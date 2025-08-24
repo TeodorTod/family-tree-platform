@@ -76,7 +76,13 @@
     "DELETE_MEMBER_MESSAGE": "Членът е успешно изтрит.",
     "BASIC_INFO": "Основна информация",
     "BIRTH_INFO": "Информация за раждането",
-    "DEATH_INFO": "Информация за смъртта"
+    "DEATH_INFO": "Информация за смъртта",
+    "SAVED": "Записано",
+    "SAVE_FAILED": "Неуспешен запис",
+    "PARTNER_INFO": "Информация за партньора",
+    "PARTNER_FIRST_NAME": "Име на партньора",
+    "PARTNER_LAST_NAME": "Фамилия на партньора",
+    "PARTNER_STATUS": "Статус на връзката"
   },
 
   "ADD": {

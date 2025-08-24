@@ -487,4 +487,16 @@ export class FamilyMembersService {
 
     return { ok: true };
   }
+
+  async getFamilyMemberById(userId: string, id: string, q?: GetMyTreeQuery) {
+    const select = this.buildMemberSelect(q);
+    const member = await this.prisma.familyMember.findFirst({
+      where: { id, userId },
+      select,
+    });
+    if (!member) {
+      throw new NotFoundException('Member not found for this user');
+    }
+    return member;
+  }
 }

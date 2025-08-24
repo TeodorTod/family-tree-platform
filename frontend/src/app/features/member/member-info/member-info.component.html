@@ -9,7 +9,6 @@
   <!-- Relation Input Section -->
   @if (!hasConstant(role)) {
   <div class="relation-section" [formGroup]="form">
-    <!-- 👈 add this -->
     <div class="relation-input-container">
       <div
         class="floating-field"
@@ -76,6 +75,57 @@
                   <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
                 </div>
               </div>
+              <div class="field-group" *ngIf="loadedMember?.partnerId">
+                <div class="field-group-title">
+                  <i class="pi pi-heart"></i>
+                  {{ CONSTANTS.INFO_PARTNER_INFO | translate }}
+                </div>
+
+                <!-- Partner first name (read-only) -->
+                <div class="floating-field active">
+                  <input
+                    pInputText
+                    [value]="partnerMember?.firstName || ''"
+                    placeholder=" "
+                    disabled
+                  />
+                  <label>{{
+                    CONSTANTS.INFO_PARTNER_FIRST_NAME | translate
+                  }}</label>
+                </div>
+
+                <!-- Partner last name (read-only) -->
+                <div class="floating-field active">
+                  <input
+                    pInputText
+                    [value]="partnerMember?.lastName || ''"
+                    placeholder=" "
+                    disabled
+                  />
+                  <label>{{
+                    CONSTANTS.INFO_PARTNER_LAST_NAME | translate
+                  }}</label>
+                </div>
+
+                <!-- Partner status selector -->
+                <div class="floating-field active">
+                  <p-dropdown
+                    formControlName="partnerStatus"
+                    [options]="partnerStatusOptions"
+                    optionValue="value"
+                    class="w-full"
+                  >
+                    <ng-template pTemplate="selectedItem" let-opt>
+                      {{ opt?.i18nKey | translate }}
+                    </ng-template>
+
+                    <ng-template pTemplate="item" let-opt>
+                      {{ opt.i18nKey | translate }}
+                    </ng-template>
+                  </p-dropdown>
+                  <label>{{ CONSTANTS.INFO_PARTNER_STATUS | translate }}</label>
+                </div>
+              </div>
 
               <!-- Birth Information Group -->
               <div class="field-group">
@@ -107,6 +157,7 @@
                     dateFormat="yy-mm-dd"
                     [showIcon]="true"
                     [iconDisplay]="'input'"
+                    [style]="{ width: '100%' }"
                   ></p-datepicker>
                   <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
                 </div>
@@ -124,6 +175,7 @@
                     [dateFormat]="'yy'"
                     [showIcon]="true"
                     [iconDisplay]="'input'"
+                    [style]="{ width: '100%' }"
                   ></p-datepicker>
                   <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
                 </div>
@@ -156,87 +208,80 @@
                     {{ CONSTANTS.INFO_IS_ALIVE | translate }}
                   </label>
                 </div>
-                }
+                } @if (form.get('isAlive')?.value === false) {
 
                 <!-- Death Information (if not alive) -->
-                @if (form.get('isAlive')?.value === false) {
-                <div class="field-group">
-                  <div class="field-group-title">
-                    <i class="pi pi-times-circle"></i>
-                    {{ CONSTANTS.INFO_DEATH_INFO | translate }}
-                  </div>
 
-                  <!-- DOD Mode -->
-                  <div class="floating-field active">
-                    <p-dropdown
-                      formControlName="dodMode"
-                      [options]="dodModeOptions"
-                      optionLabel="label"
-                      optionValue="value"
-                      class="w-full"
-                    ></p-dropdown>
-                    <label>{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
-                  </div>
+                <div class="field-group-title">
+                  <i class="pi pi-times-circle"></i>
+                  {{ CONSTANTS.INFO_DEATH_INFO | translate }}
+                </div>
 
-                  <!-- Exact death date -->
-                  @if (form.value.dodMode === 'exact') {
-                  <div
-                    class="floating-field"
-                    [class.active]="form.get('dod')?.value"
-                  >
-                    <p-datepicker
-                      formControlName="dod"
-                      dateFormat="yy-mm-dd"
-                      [showIcon]="true"
-                      [iconDisplay]="'input'"
-                      panelStyleClass="calendar-up"
-                      appendTo="body"
-                    ></p-datepicker>
-                    <label>{{
-                      CONSTANTS.INFO_DATE_OF_DEATH | translate
-                    }}</label>
-                  </div>
-                  }
+                <!-- DOD Mode -->
+                <div class="floating-field active">
+                  <p-dropdown
+                    formControlName="dodMode"
+                    [options]="dodModeOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="w-full"
+                  ></p-dropdown>
+                  <label>{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+                </div>
 
-                  <!-- Year only death -->
-                  @if (form.value.dodMode === 'year') {
-                  <div
-                    class="floating-field"
-                    [class.active]="form.get('deathYearDate')?.value"
-                  >
-                    <p-datepicker
-                      formControlName="deathYearDate"
-                      [view]="'year'"
-                      [dateFormat]="'yy'"
-                      [showIcon]="true"
-                      [iconDisplay]="'input'"
-                      panelStyleClass="calendar-up"
-                      appendTo="body"
-                    ></p-datepicker>
-                    <label>{{
-                      CONSTANTS.INFO_DOD_YEAR_ONLY | translate
-                    }}</label>
-                  </div>
-                  }
-
-                  <!-- Death note -->
-                  @if (form.value.dodMode === 'note') {
-                  <div
-                    class="floating-field"
-                    [class.active]="form.get('deathNote')?.value"
-                  >
-                    <input
-                      pInputText
-                      formControlName="deathNote"
-                      placeholder=" "
-                    />
-                    <label>{{
-                      CONSTANTS.INFO_DOD_NOTE_LABEL | translate
-                    }}</label>
-                  </div>
-                  }
+                <!-- Exact death date -->
+                @if (form.value.dodMode === 'exact') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('dod')?.value"
+                >
+                  <p-datepicker
+                    formControlName="dod"
+                    dateFormat="yy-mm-dd"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                    panelStyleClass="calendar-up"
+                    appendTo="body"
+                    [style]="{ width: '100%' }"
+                  ></p-datepicker>
+                  <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
                 </div>
                 }
+
+                <!-- Year only death -->
+                @if (form.value.dodMode === 'year') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('deathYearDate')?.value"
+                >
+                  <p-datepicker
+                    formControlName="deathYearDate"
+                    [view]="'year'"
+                    [dateFormat]="'yy'"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                    panelStyleClass="calendar-up"
+                    appendTo="body"
+                    [style]="{ width: '100%' }"
+                  ></p-datepicker>
+                  <label>{{ CONSTANTS.INFO_DOD_YEAR_ONLY | translate }}</label>
+                </div>
+                }
+
+                <!-- Death note -->
+                @if (form.value.dodMode === 'note') {
+                <div
+                  class="floating-field"
+                  [class.active]="form.get('deathNote')?.value"
+                >
+                  <input
+                    pInputText
+                    formControlName="deathNote"
+                    placeholder=" "
+                  />
+                  <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
+                </div>
+                } }
               </div>
             </div>
           </p-tabPanel>

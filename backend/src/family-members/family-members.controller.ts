@@ -44,6 +44,15 @@ export class FamilyMembersController {
     return this.familyService.getPagedFamilyMembers(req.user.sub, query);
   }
 
+  @Get('by-id/:id')
+  getById(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Query() q: GetMyTreeQuery,
+  ) {
+    return this.familyService.getFamilyMemberById(req.user.sub, id, q);
+  }
+
   @Post('set-partner')
   setPartner(@Body() dto: SetPartnerDto, @Req() req: any) {
     return this.familyService.setPartner(

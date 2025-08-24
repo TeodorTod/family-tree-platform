@@ -26,6 +26,7 @@ import { MemberProfileService } from '../../../core/services/member-profile.serv
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 
 @Component({
   selector: 'app-member-info',
@@ -53,6 +54,19 @@ export class MemberInfoComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private confirm = inject(ConfirmationService);
   private messageService = inject(MessageService);
+
+  private readonly statusKeyByEnum: Record<PartnerStatus, string> = {
+    [PartnerStatus.MARRIED]: CONSTANTS.PARTNER_STATUS_MARRIED,
+    [PartnerStatus.DIVORCED]: CONSTANTS.PARTNER_STATUS_DIVORCED,
+    [PartnerStatus.SEPARATED]: CONSTANTS.PARTNER_STATUS_SEPARATED,
+    [PartnerStatus.WIDOWED]: CONSTANTS.PARTNER_STATUS_WIDOWED,
+    [PartnerStatus.ENGAGED]: CONSTANTS.PARTNER_STATUS_ENGAGED,
+    [PartnerStatus.PARTNERS]: CONSTANTS.PARTNER_STATUS_PARTNERS,
+    [PartnerStatus.FRIENDS]: CONSTANTS.PARTNER_STATUS_FRIENDS,
+    [PartnerStatus.ANNULLED]: CONSTANTS.PARTNER_STATUS_ANNULLED,
+    [PartnerStatus.UNKNOWN]: CONSTANTS.PARTNER_STATUS_UNKNOWN,
+    [PartnerStatus.OTHER]: CONSTANTS.PARTNER_STATUS_OTHER,
+  };
 
   form!: FormGroup;
   role!: string;
@@ -94,6 +108,16 @@ export class MemberInfoComponent implements OnInit {
     },
   ];
 
+  loadedMember?: any;
+  partnerMember: { firstName?: string; lastName?: string } | null = null;
+  originalPartnerStatus: PartnerStatus | null = null;
+
+  partnerStatusOptions: Array<{ value: PartnerStatus; i18nKey: string }> =
+    Object.values(PartnerStatus).map((v) => ({
+      value: v as PartnerStatus,
+      i18nKey: this.statusKeyByEnum[v as PartnerStatus],
+    }));
+
   // ViewChild hooks (optional): if your child tabs expose getters, you can read them here
   @ViewChild(MemberBioComponent) bioTab?: MemberBioComponent;
   @ViewChild(MemberCareerComponent) careerTab?: MemberCareerComponent;
@@ -107,11 +131,14 @@ export class MemberInfoComponent implements OnInit {
     this.role = this.route.snapshot.paramMap.get('role')!;
     this.form = this.familyService.createFamilyMemberForm();
 
-    // Load FamilyMember (tab 0)
+    // Load FamilyMember for this role
     this.familyService
       .getFamilyMemberByRole(this.role)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((member) => {
+        this.loadedMember = member ?? undefined;
+
+        // Defaults when there's no record yet
         if (!member) {
           this.form.patchValue(
             { dobMode: 'exact', dodMode: 'exact', isAlive: true },
@@ -123,11 +150,15 @@ export class MemberInfoComponent implements OnInit {
               { emitEvent: false }
             );
           }
+          this.partnerMember = null;
+          this.originalPartnerStatus = null;
           return;
         }
 
+        // Convert ISO strings → Date objects for controls
         const converted = this.convertDatesToObjects(member);
 
+        // DOB/DOD modes
         let dobMode: 'exact' | 'year' | 'note' = 'exact';
         if (!converted.dob && converted.birthYear) {
           converted.dob = new Date(converted.birthYear, 0, 1);
@@ -143,24 +174,33 @@ export class MemberInfoComponent implements OnInit {
           else if ((converted as any).deathNote) dodMode = 'note';
         }
 
-        this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
+        // Keep original partner status (to detect changes on save)
+        this.originalPartnerStatus = (member.partnerStatus ??
+          null) as PartnerStatus | null;
 
+        // Patch form
         this.form.patchValue(
           {
+            dobMode,
+            dodMode,
+
             firstName: converted.firstName ?? null,
             middleName: converted.middleName ?? null,
             lastName: converted.lastName ?? null,
             gender: converted.gender ?? null,
+
             translatedRole:
               member.translatedRole ??
               (this.hasConstant(this.role)
                 ? null
                 : this.defaultGenericForRole()),
 
+            // birth
             dob: converted.dob ?? null,
             birthYear: converted.birthYear ?? null,
             birthNote: converted.birthNote ?? null,
 
+            // life/death
             isAlive: converted.isAlive ?? true,
             dod: converted.dod ?? null,
             deathYear: (converted as any).deathYear ?? null,
@@ -168,23 +208,38 @@ export class MemberInfoComponent implements OnInit {
               ? new Date((converted as any).deathYear, 0, 1)
               : null,
             deathNote: (converted as any).deathNote ?? null,
+
+            // partner
+            partnerStatus: this.originalPartnerStatus,
           },
           { emitEvent: false }
         );
+
+        // 👉 Fetch ONLY the partner by id (no getMyFamily)
+        if (member.partnerId) {
+          this.familyService
+            .getFamilyMemberById(member.partnerId, {
+              fields: ['firstName', 'lastName'] as any,
+            })
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((p: any) => {
+              this.partnerMember = p
+                ? { firstName: p.firstName, lastName: p.lastName }
+                : null;
+            });
+        } else {
+          this.partnerMember = null;
+        }
       });
 
-    // Load MemberProfile (for all other tabs)
+    // Load MemberProfile (other tabs)
     this.profileService
       .getProfileByRole(this.role)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((profile) => {
-        if (profile) {
-          this.profileDraft = { ...profile };
-          // Optionally pass data down to tabs via @Input() bindings in template
-        } else {
-          this.profileDraft = {};
-        }
+        this.profileDraft = profile ? { ...profile } : {};
       });
+
     this.ensureTranslatedRoleDefault();
   }
 
@@ -204,15 +259,16 @@ export class MemberInfoComponent implements OnInit {
 
   save() {
     const current = this.activeIndex();
+
+    // Tab 0 — save FamilyMember fields (and partner status if changed)
     if (current === 0) {
-      // Save FamilyMember
       if (this.form.invalid) return;
 
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const dodPayload = this.familyService.buildDodPayload(this.form);
       const v = this.form.value;
 
-      const data: any = {
+      const basePayload: any = {
         role: this.role,
         firstName: v.firstName ?? '',
         middleName: v.middleName ?? null,
@@ -225,22 +281,99 @@ export class MemberInfoComponent implements OnInit {
       };
 
       this.familyService
-        .saveMemberByRole(this.role, data)
+        .saveMemberByRole(this.role, basePayload)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
+        .subscribe({
+          next: () => {
+            // If partnerStatus changed and partner exists → update via setPartner
+            const newStatus = (this.form.get('partnerStatus')?.value ??
+              null) as PartnerStatus | null;
+            const memberId = this.loadedMember?.id;
+            const partnerId = this.loadedMember?.partnerId;
+
+            const statusChanged =
+              !!newStatus &&
+              newStatus !== this.originalPartnerStatus &&
+              !!memberId &&
+              !!partnerId;
+
+            if (statusChanged) {
+              this.familyService
+                .setPartner(memberId!, partnerId!, newStatus!)
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe({
+                  next: () => {
+                    this.originalPartnerStatus = newStatus!;
+                    this.form.markAsPristine();
+                    this.form.markAsUntouched();
+                    this.messageService.add({
+                      severity: 'success',
+                      summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
+                      detail: this.translate.instant(
+                        CONSTANTS.INFO_SAVED ?? 'Записано'
+                      ),
+                    });
+                  },
+                  error: () => {
+                    this.messageService.add({
+                      severity: 'error',
+                      summary: 'Error',
+                      detail: this.translate.instant(
+                        CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
+                      ),
+                    });
+                  },
+                });
+            } else {
+              // No partner status change
+              this.form.markAsPristine();
+              this.form.markAsUntouched();
+              this.messageService.add({
+                severity: 'success',
+                summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
+                detail: this.translate.instant(
+                  CONSTANTS.INFO_SAVED ?? 'Записано'
+                ),
+              });
+            }
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: this.translate.instant(
+                CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
+              ),
+            });
+          },
         });
+
       return;
     }
 
-    // Save MemberProfile for any other tab
+    // Other tabs — save MemberProfile
     const profilePayload = this.buildProfilePayload();
     this.profileService
       .saveProfileByRole(this.role, profilePayload)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((saved) => {
-        this.profileDraft = { ...saved };
+      .subscribe({
+        next: (saved) => {
+          this.profileDraft = { ...saved };
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
+            detail: this.translate.instant(CONSTANTS.INFO_SAVED ?? 'Записано'),
+          });
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: this.translate.instant(
+              CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
+            ),
+          });
+        },
       });
   }
 

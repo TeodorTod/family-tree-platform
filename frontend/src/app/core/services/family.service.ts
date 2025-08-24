@@ -40,6 +40,7 @@ export class FamilyService {
 
     isAlive: FormControl<boolean | null>;
     translatedRole: FormControl<string | null>;
+    partnerStatus: FormControl<PartnerStatus | null>;
   }> {
     const fg = this.fb.group({
       firstName: new FormControl<string | null>(null, Validators.required),
@@ -67,6 +68,7 @@ export class FamilyService {
 
       isAlive: new FormControl<boolean | null>(true, Validators.required),
       translatedRole: new FormControl<string | null>(null),
+      partnerStatus: new FormControl<PartnerStatus | null>(null),
     });
 
     fg.get('dobMode')!.valueChanges.subscribe((mode) => {
@@ -226,6 +228,23 @@ export class FamilyService {
 
     return this.http.get<Partial<FamilyMember>[]>(
       `${this.api}/family-members/my-tree`,
+      { params }
+    );
+  }
+
+  getFamilyMemberById(
+    id: string,
+    opts?: {
+      fields?: (keyof FamilyMember)[];
+      with?: ('parentOf' | 'childOf' | 'media' | 'profile')[];
+    }
+  ) {
+    const params: Record<string, string> = {};
+    if (opts?.fields?.length) params['fields'] = opts.fields.join(',');
+    if (opts?.with?.length) params['with'] = opts.with.join(',');
+
+    return this.http.get<Partial<FamilyMember>>(
+      `${this.api}/family-members/by-id/${id}`,
       { params }
     );
   }
