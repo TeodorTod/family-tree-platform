@@ -272,6 +272,12 @@ body {
   cursor: pointer;
 }
 
+.maternal-parents-buttons {
+ padding-top: 20px;
+  justify-content: center !important;
+
+}
+
 .floating-field {
   position: relative;
   margin-bottom: 1.5rem;
@@ -349,6 +355,12 @@ body {
   max-width: 500px;
   justify-content: flex-start !important;
   align-self: flex-start;
+  background: var(--surface-card);
+  border: 1px solid rgba(45, 76, 47, 0.1);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-top: .5rem;
 
   @media (max-width: 768px) {
     max-width: 360px;
@@ -375,6 +387,12 @@ body {
     align-items: center;
   }
 
+  .granparents {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
   .maternal-parents-buttons {
     padding-bottom: 20px;
     padding-left: 50px;
@@ -382,4 +400,3 @@ body {
     align-items: center;
   }
 }
-

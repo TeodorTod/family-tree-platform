@@ -31,7 +31,10 @@
           (activeIndexChange)="onTabIndexChange($event)"
         >
           <p-tabPanel [header]="CONSTANTS.TAB_GENERAL_INFO | translate">
-            <div class="form-grid" [class.has-death]="form.get('isAlive')?.value === false">
+            <div
+              class="form-grid"
+              [class.has-death]="form.get('isAlive')?.value === false"
+            >
               <!-- Basic Information Group -->
               <div class="field-group">
                 <div class="field-group-title">
@@ -210,9 +213,10 @@
                 </div>
                 }
               </div>
+
               @if (form.get('isAlive')?.value === false) {
               <!-- Death Information (if not alive) -->
-               <div class="field-group death-group">
+              <div class="field-group death-group">
                 <div class="field-group-title">
                   <i class="pi pi-times-circle"></i>
                   {{ CONSTANTS.INFO_DEATH_INFO | translate }}
