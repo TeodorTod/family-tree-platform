@@ -116,6 +116,7 @@ model MemberProfile {
   favorites    Json? // e.g. { books: [...], movies: [...], places: [...] }
   education    Json? // e.g. [ { school: "...", degree: "...", from: "...", to: "..." }, … ]
   work         Json? // e.g. [ { company: "...", title: "...", from: "...", to: "..." }, … ]
+  stories      Json? // e.g. [ { date: "...", text: "..." }, … ]
   personalInfo Json? // e.g. { email: "...", phone: "...", website: "..." }
 
   createdAt DateTime  @default(now())

@@ -221,7 +221,7 @@ export class CONSTANTS {
   static readonly RELATION_TYPE = 'RELATION.TYPE';
 
   static readonly TAB_GENERAL_INFO = 'TAB.GENERAL_INFO';
-  static readonly TAB_RELATIONS = 'TAB.RELATIONS';
+  static readonly TAB_STORIES = 'TAB.STORIES';
   static readonly TAB_BIOGRAPHY = 'TAB.BIOGRAPHY';
   static readonly TAB_MEDIA = 'TAB.MEDIA';
   static readonly TAB_CAREER = 'TAB.CAREER';

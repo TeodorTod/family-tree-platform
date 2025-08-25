@@ -293,9 +293,6 @@
           </p-tabPanel>
 
           <!-- Other tabs remain the same -->
-          <p-tabPanel [header]="CONSTANTS.TAB_RELATIONS | translate">
-            <app-member-relations [memberRole]="role" />
-          </p-tabPanel>
 
           <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
             <app-member-bio [role]="role" />
@@ -307,6 +304,10 @@
 
           <p-tabPanel [header]="CONSTANTS.TAB_CAREER | translate">
             <app-member-career [role]="role" />
+          </p-tabPanel>
+
+          <p-tabPanel [header]="CONSTANTS.TAB_STORIES | translate">
+            <app-member-stories />
           </p-tabPanel>
 
           <p-tabPanel [header]="CONSTANTS.TAB_ACHIEVEMENTS | translate">

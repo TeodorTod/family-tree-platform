@@ -273,9 +273,8 @@ body {
 }
 
 .maternal-parents-buttons {
- padding-top: 20px;
+  padding-top: 20px;
   justify-content: center !important;
-
 }
 
 .floating-field {
@@ -360,7 +359,7 @@ body {
   border-radius: var(--radius-lg, 0.75rem);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
   padding: 1.5rem;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 
   @media (max-width: 768px) {
     max-width: 360px;

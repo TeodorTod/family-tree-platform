@@ -19,9 +19,8 @@ import { MemberBioComponent } from '../components/member-bio/member-bio.componen
 import { MemberCareerComponent } from '../components/member-career/member-career.component';
 import { MemberFavoritesComponent } from '../components/member-favorites/member-favorites.component';
 import { MemberPersonalInfoComponent } from '../components/member-personal-info/member-personal-info.component';
-import { MemberRelationsComponent } from '../components/member-relations/member-relations.component';
+import { MemberStoriesComponent } from '../components/member-stories/member-stories.component';
 import { MemberMediaGalleryComponent } from '../components/member-media-gallery/member-media-gallery.component';
-
 import { MemberProfileService } from '../../../core/services/member-profile.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
@@ -39,7 +38,7 @@ import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
     MemberAchievementsComponent,
     MemberFavoritesComponent,
     MemberPersonalInfoComponent,
-    MemberRelationsComponent,
+    MemberStoriesComponent,
     MemberMediaGalleryComponent,
   ],
   templateUrl: './member-info.component.html',
@@ -126,6 +125,7 @@ export class MemberInfoComponent implements OnInit {
   @ViewChild(MemberFavoritesComponent) favoritesTab?: MemberFavoritesComponent;
   @ViewChild(MemberPersonalInfoComponent)
   personalInfoTab?: MemberPersonalInfoComponent;
+  @ViewChild(MemberStoriesComponent) storiesTab?: MemberStoriesComponent;
 
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
