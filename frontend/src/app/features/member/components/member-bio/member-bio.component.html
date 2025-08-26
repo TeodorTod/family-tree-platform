@@ -1,1 +1,132 @@
-<p>member-bio works!</p>
+<div class="bio-card-wrap">
+  <p-card>
+    <div class="header">
+      <h3>Main Bio</h3>
+      <span class="sub">Rich text, links, images</span>
+    </div>
+
+    <div [formGroup]="form">
+      <p-editor
+        formControlName="bioHtml"
+        [style]="{ height: '300px' }"
+        (onInit)="onMainEditorInit($event)"
+      ></p-editor>
+    </div>
+  </p-card>
+</div>
+
+<p-card class="notes-card">
+  <div class="header">
+    <h3>Additional Notes</h3>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Add note"
+      (click)="openAddNote()"
+    ></button>
+  </div>
+
+  @if (notes().length > 0) {
+  <div class="notes-list">
+    @for (n of notes(); track n.id; let i = $index; let first = $first; let last
+    = $last) {
+    <div class="note-item">
+      <div class="note-head">
+        <strong>{{ n.title || "Untitled" }}</strong>
+        <span class="meta">{{ n.updatedAt | date : "medium" }}</span>
+      </div>
+
+      <div class="note-preview" [innerHTML]="n.contentHtml"></div>
+
+      <div class="note-actions">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-arrow-up"
+          class="p-button-text"
+          (click)="moveNote(i, -1)"
+          [disabled]="first"
+        ></button>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-arrow-down"
+          class="p-button-text"
+          (click)="moveNote(i, 1)"
+          [disabled]="last"
+        ></button>
+
+        <span class="flex-spacer"></span>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-pencil"
+          label="Edit"
+          class="p-button-text"
+          (click)="openEditNote(i)"
+        ></button>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          label="Delete"
+          class="p-button-text p-button-danger"
+          (click)="deleteNote(i)"
+        ></button>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <p class="empty">No notes yet.</p>
+  }
+</p-card>
+
+<p-dialog
+  [header]="editingNoteIndex === null ? 'Add Note' : 'Edit Note'"
+  [visible]="noteDialogVisible()"
+  (visibleChange)="noteDialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '800px', maxWidth: '95vw' }"
+>
+  <div class="p-fluid">
+    <div class="p-field">
+      <label>Title</label>
+      <input
+        pInputText
+        [ngModel]="noteTitle()"
+        (ngModelChange)="noteTitle.set($event)"
+      />
+    </div>
+    <div class="p-field">
+      <div class="note-editor">
+        <p-editor
+          [style]="{ height: '260px' }"
+          [ngModel]="noteHtml()"
+          (ngModelChange)="setNoteHtml($event)"
+          (onInit)="onNoteEditorInit($event)"
+        ></p-editor>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        class="p-button-secondary"
+        (click)="noteDialogVisible.set(false)"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Save"
+        icon="pi pi-check"
+        (click)="saveNoteFromDialog()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

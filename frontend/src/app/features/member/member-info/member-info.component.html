@@ -78,7 +78,9 @@
                   <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
                 </div>
               </div>
-              <div class="field-group" *ngIf="loadedMember?.partnerId">
+
+              @if(loadedMember?.partnerId) {
+              <div class="field-group">
                 <div class="field-group-title">
                   <i class="pi pi-heart"></i>
                   {{ CONSTANTS.INFO_PARTNER_INFO | translate }}
@@ -129,6 +131,7 @@
                   <label>{{ CONSTANTS.INFO_PARTNER_STATUS | translate }}</label>
                 </div>
               </div>
+              }
 
               <!-- Birth Information Group -->
               <div class="field-group">
@@ -295,7 +298,11 @@
           <!-- Other tabs remain the same -->
 
           <p-tabPanel [header]="CONSTANTS.TAB_BIOGRAPHY | translate">
-            <app-member-bio [role]="role" />
+            <app-member-bio
+              [role]="role"
+              [memberId]="(member$ | async)?.id ?? null"
+              [profile]="(profile$ | async) ?? null"
+            ></app-member-bio>
           </p-tabPanel>
 
           <p-tabPanel [header]="CONSTANTS.TAB_MEDIA | translate">

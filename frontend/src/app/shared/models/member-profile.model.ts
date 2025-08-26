@@ -1,3 +1,5 @@
+import { MemberNote } from "./member-note.model";
+
 export interface MemberProfile {
   id?: string;
   memberId?: string;
@@ -11,6 +13,8 @@ export interface MemberProfile {
   education?: any | null;
   work?: any | null;
   personalInfo?: any | null;
+  stories?: MemberNote[] | null; 
+  notes?: MemberNote[];
 
   createdAt?: string;
   updatedAt?: string;

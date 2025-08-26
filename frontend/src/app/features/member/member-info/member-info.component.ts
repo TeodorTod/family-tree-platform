@@ -26,6 +26,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
+import { Observable, shareReplay, tap } from 'rxjs';
 
 @Component({
   selector: 'app-member-info',
@@ -53,6 +54,9 @@ export class MemberInfoComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private confirm = inject(ConfirmationService);
   private messageService = inject(MessageService);
+
+  member$!: Observable<any>;
+  profile$!: Observable<MemberProfile | null>;
 
   private readonly statusKeyByEnum: Record<PartnerStatus, string> = {
     [PartnerStatus.MARRIED]: CONSTANTS.PARTNER_STATUS_MARRIED,
@@ -87,7 +91,6 @@ export class MemberInfoComponent implements OnInit {
     },
   ];
 
-  // DOD mode options
   dodModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
@@ -131,14 +134,10 @@ export class MemberInfoComponent implements OnInit {
     this.role = this.route.snapshot.paramMap.get('role')!;
     this.form = this.familyService.createFamilyMemberForm();
 
-    // Load FamilyMember for this role
-    this.familyService
-      .getFamilyMemberByRole(this.role)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((member) => {
+    this.member$ = this.familyService.getFamilyMemberByRole(this.role).pipe(
+      tap((member) => {
         this.loadedMember = member ?? undefined;
 
-        // Defaults when there's no record yet
         if (!member) {
           this.form.patchValue(
             { dobMode: 'exact', dodMode: 'exact', isAlive: true },
@@ -155,10 +154,8 @@ export class MemberInfoComponent implements OnInit {
           return;
         }
 
-        // Convert ISO strings → Date objects for controls
         const converted = this.convertDatesToObjects(member);
 
-        // DOB/DOD modes
         let dobMode: 'exact' | 'year' | 'note' = 'exact';
         if (!converted.dob && converted.birthYear) {
           converted.dob = new Date(converted.birthYear, 0, 1);
@@ -174,16 +171,13 @@ export class MemberInfoComponent implements OnInit {
           else if ((converted as any).deathNote) dodMode = 'note';
         }
 
-        // Keep original partner status (to detect changes on save)
         this.originalPartnerStatus = (member.partnerStatus ??
           null) as PartnerStatus | null;
 
-        // Patch form
         this.form.patchValue(
           {
             dobMode,
             dodMode,
-
             firstName: converted.firstName ?? null,
             middleName: converted.middleName ?? null,
             lastName: converted.lastName ?? null,
@@ -214,31 +208,36 @@ export class MemberInfoComponent implements OnInit {
           },
           { emitEvent: false }
         );
-
-        // 👉 Fetch ONLY the partner by id (no getMyFamily)
         if (member.partnerId) {
           this.familyService
-            .getFamilyMemberById(member.partnerId, {
-              fields: ['firstName', 'lastName'] as any,
-            })
+            .getFamilyMemberById(member.partnerId)
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe((p: any) => {
-              this.partnerMember = p
-                ? { firstName: p.firstName, lastName: p.lastName }
-                : null;
+            .subscribe({
+              next: (partner) => {
+                this.partnerMember = partner
+                  ? {
+                      firstName: partner.firstName,
+                      lastName: partner.lastName,
+                    }
+                  : null;
+              },
+              error: () => {
+                this.partnerMember = null;
+              },
             });
         } else {
           this.partnerMember = null;
         }
-      });
+      }),
+      shareReplay(1)
+    );
 
-    // Load MemberProfile (other tabs)
-    this.profileService
-      .getProfileByRole(this.role)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((profile) => {
+    this.profile$ = this.profileService.getProfileByRole(this.role).pipe(
+      tap((profile) => {
         this.profileDraft = profile ? { ...profile } : {};
-      });
+      }),
+      shareReplay(1)
+    );
 
     this.ensureTranslatedRoleDefault();
   }
@@ -260,7 +259,6 @@ export class MemberInfoComponent implements OnInit {
   save() {
     const current = this.activeIndex();
 
-    // Tab 0 — save FamilyMember fields (and partner status if changed)
     if (current === 0) {
       if (this.form.invalid) return;
 
@@ -285,7 +283,6 @@ export class MemberInfoComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            // If partnerStatus changed and partner exists → update via setPartner
             const newStatus = (this.form.get('partnerStatus')?.value ??
               null) as PartnerStatus | null;
             const memberId = this.loadedMember?.id;
@@ -351,8 +348,9 @@ export class MemberInfoComponent implements OnInit {
       return;
     }
 
-    // Other tabs — save MemberProfile
-    const profilePayload = this.buildProfilePayload();
+  
+    const profilePayload = this.buildProfilePayload(); 
+
     this.profileService
       .saveProfileByRole(this.role, profilePayload)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -377,33 +375,35 @@ export class MemberInfoComponent implements OnInit {
       });
   }
 
-  // Collect values from child tabs (adjust to your child APIs)
-  private buildProfilePayload(): MemberProfile {
-    const draft: MemberProfile = { ...this.profileDraft };
+  private buildProfilePayload(): any {
+    const draft: any = {}; // start clean
 
-    // If your child components expose getters like getValue(), use them; otherwise
-    // keep using the draft (which you can update via @Output() from each child).
     if (this.bioTab && (this.bioTab as any).getValue) {
-      draft.bio = (this.bioTab as any).getValue();
+      const val = (this.bioTab as any).getValue(); // { bio, notes }
+      draft.bio = val?.bio ?? null;
+      draft.notes = Array.isArray(val?.notes) ? val.notes : []; // 👈 use notes, not stories
     }
+
     if (this.careerTab && (this.careerTab as any).getValue) {
-      const career = (this.careerTab as any).getValue(); // e.g. { work: [...], education: [...] }
-      draft.work = career?.work ?? draft.work ?? null;
-      draft.education = career?.education ?? draft.education ?? null;
+      const career = (this.careerTab as any).getValue();
+      draft.work = career?.work ?? null;
+      draft.education = career?.education ?? null;
     }
+
     if (this.achievementsTab && (this.achievementsTab as any).getValue) {
       draft.achievements = (this.achievementsTab as any).getValue();
     }
+
     if (this.favoritesTab && (this.favoritesTab as any).getValue) {
       draft.favorites = (this.favoritesTab as any).getValue();
     }
+
     if (this.personalInfoTab && (this.personalInfoTab as any).getValue) {
       draft.personalInfo = (this.personalInfoTab as any).getValue();
     }
 
     return draft;
   }
-
   cancel(): void {
     const previousView = this.route.snapshot.queryParamMap.get('view');
     this.router.navigate(['/'], {

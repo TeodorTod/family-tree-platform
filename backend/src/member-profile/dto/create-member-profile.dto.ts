@@ -1,35 +1,31 @@
-import { IsOptional, IsString, IsUrl, IsObject } from 'class-validator';
+import { IsOptional, IsString, IsUrl, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class MemberNoteDto {
+  @IsOptional() @IsString() id?: string;
+  @IsOptional() @IsString() title?: string;
+  @IsOptional() @IsString() contentHtml?: string;
+  @IsOptional() @IsString() createdAt?: string;
+  @IsOptional() @IsString() updatedAt?: string;
+}
 
 export class CreateMemberProfileDto {
-  @IsOptional()
-  @IsString()
-  bio?: string;
+  @IsOptional() @IsString() bio?: string;
+  @IsOptional() @IsUrl()    coverMediaUrl?: string;
+
+
+  @IsOptional() achievements?: any;
+  @IsOptional() facts?: any;
+  @IsOptional() favorites?: any;
+  @IsOptional() education?: any;
+  @IsOptional() work?: any;
+  @IsOptional() personalInfo?: any;
+  @IsOptional() stories?: any; 
+
 
   @IsOptional()
-  @IsUrl()
-  coverMediaUrl?: string;
-
-  @IsOptional()
-  @IsObject()
-  achievements?: any;
-
-  @IsOptional()
-  @IsObject()
-  facts?: any;
-
-  @IsOptional()
-  @IsObject()
-  favorites?: any;
-
-  @IsOptional()
-  @IsObject()
-  education?: any;
-
-  @IsOptional()
-  @IsObject()
-  work?: any;
-
-  @IsOptional()
-  @IsObject()
-  personalInfo?: any;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MemberNoteDto)
+  notes?: MemberNoteDto[];
 }

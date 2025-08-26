@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  .sub {
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.notes-card {
+  margin-top: 1rem;
+}
+
+.notes-list {
+  display: grid;
+  gap: 1rem;
+}
+.note-item {
+  border: 1px solid var(--surface-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  .note-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .note-preview {
+    max-height: 140px;
+    overflow: auto;
+    background: var(--surface-ground);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+  .note-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .flex-spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+:host .bio-card-wrap {
+  margin-bottom: 40px;
+}
+
+.note-editor {
+  margin-top: 30px;
+}

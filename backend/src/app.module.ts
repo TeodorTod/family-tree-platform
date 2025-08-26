@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FamilyMembersModule } from './family-members/family-members.module';
 import { MediaModule } from './media/media.module';
 import { MemberProfilesModule } from './member-profile/member-profiles.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -17,7 +19,11 @@ import { MemberProfilesModule } from './member-profile/member-profiles.module';
     UsersModule,
     FamilyMembersModule,
     MediaModule,
-    MemberProfilesModule
+    MemberProfilesModule,
+       ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'), 
+      serveRoot: '/',                        
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -25,6 +25,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { EditorModule } from 'primeng/editor';
 
 
 export const SHARED_PRIMENG_IMPORTS = [
@@ -54,7 +55,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   ToastModule,
   ConfirmDialog,
   Toast,
-  ProgressSpinnerModule
+  ProgressSpinnerModule,
+  EditorModule
 ];
 // This file contains the shared PrimeNG imports used across the application.
 // It exports an array of PrimeNG modules that can be imported in other modules.

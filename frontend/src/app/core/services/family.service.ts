@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import {
   FormBuilder,
@@ -18,6 +18,7 @@ export class FamilyService {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private api = environment.apiUrl;
+  private memberByRoleCache = new Map<string, Observable<any>>();
 
   createFamilyMemberForm(): FormGroup<{
     firstName: FormControl<string | null>;
@@ -257,8 +258,15 @@ export class FamilyService {
     return this.http.post(`${this.api}/family-members/upsert`, data);
   }
 
-  getFamilyMemberByRole(role: string): Observable<FamilyMember> {
-    return this.http.get<FamilyMember>(`${this.api}/family-members/${role}`);
+  getFamilyMemberByRole(role: string) {
+    const key = role.toLowerCase();
+    if (!this.memberByRoleCache.has(key)) {
+      const obs = this.http
+        .get<any>(`${this.api}/family-members/${role}`)
+        .pipe(shareReplay(1));
+      this.memberByRoleCache.set(key, obs);
+    }
+    return this.memberByRoleCache.get(key)!;
   }
 
   createMemberByRole(role: string, data: FamilyMember) {
@@ -269,18 +277,10 @@ export class FamilyService {
     return this.http.put(`${this.api}/family-members/${role}`, data);
   }
 
-  saveMemberByRole(role: string, data: FamilyMember): Observable<any> {
-    return new Observable((observer) => {
-      this.updateMemberByRole(role, data).subscribe({
-        next: (res) => observer.next(res),
-        error: () => {
-          this.createMemberByRole(role, data).subscribe({
-            next: (res) => observer.next(res),
-            error: (err) => observer.error(err),
-          });
-        },
-      });
-    });
+  saveMemberByRole(role: string, payload: any) {
+    return this.http
+      .put<any>(`${this.api}/family-members/${role}`, payload)
+      .pipe(tap(() => this.memberByRoleCache.delete(role.toLowerCase())));
   }
 
   deleteMemberByRole(role: string) {

@@ -1,17 +1,44 @@
-import { Controller, UseGuards, Get, Post, Put, Param, Body, Req } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  Req,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MemberProfilesService } from './member-profiles.service';
 import { CreateMemberProfileDto } from './dto/create-member-profile.dto';
 import { UpdateMemberProfileDto } from './dto/update-member-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MediaService } from 'src/media/media.service';
+import { memoryStorage } from 'multer';
 
 @Controller('member-profiles')
 @UseGuards(JwtAuthGuard)
 export class MemberProfilesController {
-  constructor(private service: MemberProfilesService) {}
+  constructor(
+    private service: MemberProfilesService,
+    private media: MediaService,
+  ) {}
 
   @Get(':role')
   getByRole(@Param('role') role: string, @Req() req: any) {
     return this.service.getByRole(req.user.sub, role);
+  }
+
+  @Post(':memberId/upload')
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  async upload(
+    @Param('memberId') memberId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const { url } = await this.media.saveMemberFile(memberId, file);
+    return { url };
   }
 
   @Post(':role')

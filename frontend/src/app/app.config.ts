@@ -13,7 +13,6 @@ import {
   provideHttpClient,
   HttpBackend,
   withInterceptorsFromDi,
-  withInterceptors,
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import {
