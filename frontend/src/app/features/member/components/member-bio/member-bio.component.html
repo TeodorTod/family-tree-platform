@@ -1,8 +1,8 @@
 <div class="bio-card-wrap">
   <p-card>
     <div class="header">
-      <h3>Main Bio</h3>
-      <span class="sub">Rich text, links, images</span>
+      <h3>{{ CONSTANTS.BIO_MAIN_BIO | translate }}</h3>
+      <span class="sub">{{ CONSTANTS.BIO_ADDITIONAL_INFO | translate }}</span>
     </div>
 
     <div [formGroup]="form">
@@ -17,12 +17,12 @@
 
 <p-card class="notes-card">
   <div class="header">
-    <h3>Additional Notes</h3>
+    <h3>{{ CONSTANTS.BIO_ADDITIONAL_NOTES | translate }}</h3>
     <button
       pButton
       type="button"
       icon="pi pi-plus"
-      label="Add note"
+      label="{{ CONSTANTS.BIO_ADD_NOTE | translate }}"
       (click)="openAddNote()"
     ></button>
   </div>
@@ -64,7 +64,7 @@
           pButton
           type="button"
           icon="pi pi-pencil"
-          label="Edit"
+          label="{{ CONSTANTS.BIO_EDIT_NOTE | translate }}"
           class="p-button-text"
           (click)="openEditNote(i)"
         ></button>
@@ -73,7 +73,7 @@
           pButton
           type="button"
           icon="pi pi-trash"
-          label="Delete"
+          label="{{ CONSTANTS.BIO_DELETE_NOTE | translate }}"
           class="p-button-text p-button-danger"
           (click)="deleteNote(i)"
         ></button>
@@ -87,7 +87,12 @@
 </p-card>
 
 <p-dialog
-  [header]="editingNoteIndex === null ? 'Add Note' : 'Edit Note'"
+  [header]="
+    (editingNoteIndex === null
+      ? CONSTANTS.BIO_ADD_NOTE
+      : CONSTANTS.BIO_EDIT_NOTE
+    ) | translate
+  "
   [visible]="noteDialogVisible()"
   (visibleChange)="noteDialogVisible.set($event)"
   [modal]="true"
@@ -95,7 +100,9 @@
 >
   <div class="p-fluid">
     <div class="p-field">
-      <label>Title</label>
+      <label class="title-field">{{
+        CONSTANTS.BIO_NOTE_TITLE | translate
+      }}</label>
       <input
         pInputText
         [ngModel]="noteTitle()"
@@ -116,14 +123,14 @@
       <button
         pButton
         type="button"
-        label="Cancel"
+        label="{{ CONSTANTS.INFO_CANCEL | translate }}"
         class="p-button-secondary"
         (click)="noteDialogVisible.set(false)"
       ></button>
       <button
         pButton
         type="button"
-        label="Save"
+        label="{{ CONSTANTS.INFO_SAVE | translate }}"
         icon="pi pi-check"
         (click)="saveNoteFromDialog()"
       ></button>

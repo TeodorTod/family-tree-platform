@@ -348,8 +348,7 @@ export class MemberInfoComponent implements OnInit {
       return;
     }
 
-  
-    const profilePayload = this.buildProfilePayload(); 
+    const profilePayload = this.buildProfilePayload();
 
     this.profileService
       .saveProfileByRole(this.role, profilePayload)

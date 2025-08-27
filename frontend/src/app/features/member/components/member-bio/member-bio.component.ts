@@ -4,14 +4,11 @@ import {
   OnInit,
   inject,
   signal,
-  DestroyRef,
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { MemberProfileService } from '../../../../core/services/member-profile.service';
-import { FamilyService } from '../../../../core/services/family.service';
 import { MediaService } from '../../../../core/services/media.service';
 import { v4 as uuid } from 'uuid';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
@@ -19,6 +16,8 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primen
 import { MemberNote } from '../../../../shared/models/member-note.model';
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
 import { firstValueFrom } from 'rxjs';
+import { CONSTANTS } from '../../../../shared/constants/constants';
+import { TranslateService } from '@ngx-translate/core';
 
 type QuillInstance = any;
 
@@ -33,13 +32,12 @@ export class MemberBioComponent implements OnInit, OnChanges {
   @Input() memberId: string | null = null;
   @Input() profile: MemberProfile | null = null;
 
-  private profileApi = inject(MemberProfileService);
-  private familyApi = inject(FamilyService);
   private mediaApi = inject(MediaService);
   private fb = inject(FormBuilder);
   private confirm = inject(ConfirmationService);
-  private destroyRef = inject(DestroyRef);
+  private translateService = inject(TranslateService);
 
+  CONSTANTS = CONSTANTS;
   form!: FormGroup;
   notes = signal<MemberNote[]>([]);
 
@@ -140,17 +138,24 @@ export class MemberBioComponent implements OnInit, OnChanges {
     this.noteDialogVisible.set(false);
   }
 
-  deleteNote(idx: number) {
-    this.confirm.confirm({
-      header: 'Delete note?',
-      message: 'This action cannot be undone.',
-      icon: 'pi pi-exclamation-triangle',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => {
-        this.notes.update((arr) => arr.filter((_, i) => i !== idx));
-      },
-    });
-  }
+deleteNote(idx: number) {
+  this.confirm.confirm({
+    header: this.translateService.instant(CONSTANTS.BIO_DELETE_NOTE),
+    message: this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE) + '?',
+    icon: 'pi pi-exclamation-triangle',
+
+    acceptLabel: this.translateService.instant(CONSTANTS.INFO_DELETE), 
+    rejectLabel: this.translateService.instant(CONSTANTS.INFO_CANCEL), 
+
+    acceptButtonStyleClass: 'p-button-danger',
+    rejectButtonStyleClass: 'p-button-secondary',
+    defaultFocus: 'reject',
+
+    accept: () => {
+      this.notes.update(arr => arr.filter((_, i) => i !== idx));
+    },
+  });
+}
 
   moveNote(idx: number, dir: -1 | 1) {
     const arr = [...this.notes()];

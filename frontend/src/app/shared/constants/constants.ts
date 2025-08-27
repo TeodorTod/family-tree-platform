@@ -239,4 +239,14 @@ export class CONSTANTS {
   static readonly PARTNER_STATUS_ANNULLED = 'PARTNER_STATUS.ANNULLED';
   static readonly PARTNER_STATUS_UNKNOWN = 'PARTNER_STATUS.UNKNOWN';
   static readonly PARTNER_STATUS_OTHER = 'PARTNER_STATUS.OTHER';
+
+  static readonly BIO_MAIN_BIO = 'BIO.MAIN_BIO';
+  static readonly BIO_NOTES = 'BIO.NOTES';
+  static readonly BIO_ADD_NOTE = 'BIO.ADD_NOTE';
+  static readonly BIO_ADDITIONAL_NOTES = 'BIO.ADDITIONAL_NOTES';
+  static readonly BIO_ADDITIONAL_INFO = 'BIO.ADDITIONAL_INFO';
+  static readonly BIO_EDIT_NOTE = 'BIO.EDIT_NOTE';
+  static readonly BIO_DELETE_NOTE = 'BIO.DELETE_NOTE';
+  static readonly BIO_NOTE_TITLE = 'BIO.NOTE_TITLE';
+  static readonly BIO_ACTION_NOT_UNDONE = 'BIO.ACTION_NOT_UNDONE';
 }
