@@ -254,4 +254,5 @@ export class CONSTANTS {
   static readonly BIO_NOTE_TITLE = 'BIO.NOTE_TITLE';
   static readonly BIO_ACTION_NOT_UNDONE = 'BIO.ACTION_NOT_UNDONE';
   static readonly BIO_COMMON_NOTE_TITLE = 'BIO.COMMON_NOTE_TITLE';
+  static readonly BIO_NO_NOTES = 'BIO.NO_NOTES';
 }

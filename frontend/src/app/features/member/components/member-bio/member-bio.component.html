@@ -33,7 +33,9 @@
     = $last) {
     <div class="note-item">
       <div class="note-head">
-        <strong>{{ n.title || (CONSTANTS.BIO_COMMON_NOTE_TITLE | translate) }}</strong>
+        <strong>{{
+          n.title || (CONSTANTS.BIO_COMMON_NOTE_TITLE | translate)
+        }}</strong>
         <span class="meta">{{ n.updatedAt | date : "medium" }}</span>
       </div>
 
@@ -68,7 +70,7 @@
     }
   </div>
   } @else {
-  <p class="empty">No notes yet.</p>
+  <p class="empty">{{ CONSTANTS.BIO_NO_NOTES | translate }}</p>
   }
 </p-card>
 

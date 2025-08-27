@@ -192,6 +192,7 @@
     "DELETE_NOTE": "Изтрий бележка",
     "NOTE_TITLE": "Заглавие",
     "ACTION_NOT_UNDONE": "Това действие не може да бъде отменено.",
-    "COMMON_NOTE_TITLE": "Бележка"
+    "COMMON_NOTE_TITLE": "Бележка",
+    "NO_NOTES": "Все още няма бележки."
   }
 }
