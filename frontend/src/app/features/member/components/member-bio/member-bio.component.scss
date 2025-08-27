@@ -4,12 +4,25 @@
 
 .header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+
   .sub {
     color: var(--text-color-secondary);
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+
+    .p-button {
+      width: 100%;
+    }
   }
 }
 
@@ -19,33 +32,88 @@
 
 .notes-list {
   display: grid;
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
 }
+
+@media (min-width: 768px) {
+  .notes-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
 .note-item {
   border: 1px solid var(--surface-border);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 0.75rem;
+
   .note-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
+
+    .meta {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 50%;
+    }
   }
+
+  @media (max-width: 600px) {
+    .note-head {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .meta {
+        max-width: 100%;
+      }
+    }
+  }
+
   .note-preview {
     max-height: 140px;
     overflow: auto;
     background: var(--surface-ground);
     padding: 0.5rem;
     border-radius: 0.5rem;
+
+    :deep(img) {
+      max-width: 100%;
+      height: auto;
+    }
   }
+
   .note-actions {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
     margin-top: 0.5rem;
+    flex-wrap: wrap;
+
+    .flex-spacer {
+      flex: 1 1 auto;
+    }
   }
-  .flex-spacer {
-    flex: 1 1 auto;
+}
+
+@media (max-width: 600px) {
+  .note-actions .p-button .p-button-label {
+    display: none;
+  }
+  .note-actions .p-button {
+    padding: 0.45rem 0.55rem;
+    min-width: 2.25rem;
+  }
+
+  .note-actions .flex-spacer {
+    display: none;
   }
 }
 
@@ -57,13 +125,52 @@
 }
 
 :host .bio-card-wrap {
-  margin-bottom: 40px;
+  margin-bottom: 1.25rem;
 }
 
 .note-editor {
-  margin-top: 30px;
+  margin-top: 1rem;
 }
 
 .title-field {
   padding-right: 10px;
+}
+
+@media (max-width: 768px) {
+  :host ::ng-deep .note-actions .p-button .p-button-label {
+    display: none !important; /* hide long BG label */
+  }
+  :host ::ng-deep .note-actions .p-button {
+    padding: 0.45rem 0.55rem !important; /* icon buttons feel nicer */
+    min-width: 2.25rem;
+  }
+
+  /* Header stacks; Add button full-width (you already have this, keep if removed) */
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header .p-button {
+    width: 100%;
+  }
+
+  /* Make note blocks breathe on mobile */
+  .note-item {
+    padding: 0.6rem;
+  }
+  .note-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  .note-preview {
+    max-height: none; /* let content grow */
+    word-break: break-word;
+  }
+}
+
+/* Ensure images don’t overflow */
+.note-preview :deep(img) {
+  max-width: 100%;
+  height: auto;
 }

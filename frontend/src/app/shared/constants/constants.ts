@@ -103,6 +103,10 @@ export class CONSTANTS {
   static readonly INFO_PARTNER_FIRST_NAME = 'INFO.PARTNER_FIRST_NAME';
   static readonly INFO_PARTNER_LAST_NAME = 'INFO.PARTNER_LAST_NAME';
   static readonly INFO_PARTNER_STATUS = 'INFO.PARTNER_STATUS';
+  static readonly INFO_UNSAVED_TITLE = 'INFO.UNSAVED_TITLE';
+  static readonly INFO_UNSAVED_MESSAGE = 'INFO.UNSAVED_MESSAGE';
+  static readonly INFO_STAY = 'INFO.STAY';
+  static readonly INFO_LEAVE = 'INFO.LEAVE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -249,4 +253,5 @@ export class CONSTANTS {
   static readonly BIO_DELETE_NOTE = 'BIO.DELETE_NOTE';
   static readonly BIO_NOTE_TITLE = 'BIO.NOTE_TITLE';
   static readonly BIO_ACTION_NOT_UNDONE = 'BIO.ACTION_NOT_UNDONE';
+  static readonly BIO_COMMON_NOTE_TITLE = 'BIO.COMMON_NOTE_TITLE';
 }

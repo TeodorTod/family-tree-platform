@@ -33,31 +33,13 @@
     = $last) {
     <div class="note-item">
       <div class="note-head">
-        <strong>{{ n.title || "Untitled" }}</strong>
+        <strong>{{ n.title || (CONSTANTS.BIO_COMMON_NOTE_TITLE | translate) }}</strong>
         <span class="meta">{{ n.updatedAt | date : "medium" }}</span>
       </div>
 
       <div class="note-preview" [innerHTML]="n.contentHtml"></div>
 
       <div class="note-actions">
-        <button
-          pButton
-          type="button"
-          icon="pi pi-arrow-up"
-          class="p-button-text"
-          (click)="moveNote(i, -1)"
-          [disabled]="first"
-        ></button>
-
-        <button
-          pButton
-          type="button"
-          icon="pi pi-arrow-down"
-          class="p-button-text"
-          (click)="moveNote(i, 1)"
-          [disabled]="last"
-        ></button>
-
         <span class="flex-spacer"></span>
 
         <button
@@ -67,6 +49,8 @@
           label="{{ CONSTANTS.BIO_EDIT_NOTE | translate }}"
           class="p-button-text"
           (click)="openEditNote(i)"
+          pTooltip="{{ CONSTANTS.BIO_EDIT_NOTE | translate }}"
+          tooltipPosition="top"
         ></button>
 
         <button
@@ -76,6 +60,8 @@
           label="{{ CONSTANTS.BIO_DELETE_NOTE | translate }}"
           class="p-button-text p-button-danger"
           (click)="deleteNote(i)"
+          pTooltip="{{ CONSTANTS.BIO_DELETE_NOTE | translate }}"
+          tooltipPosition="top"
         ></button>
       </div>
     </div>

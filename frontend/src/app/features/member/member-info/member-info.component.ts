@@ -27,6 +27,9 @@ import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { Observable, shareReplay, tap } from 'rxjs';
+import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
+
+type MaybeUnsaved<T> = T & Partial<UnsavedAware>;
 
 @Component({
   selector: 'app-member-info',
@@ -121,14 +124,19 @@ export class MemberInfoComponent implements OnInit {
     }));
 
   // ViewChild hooks (optional): if your child tabs expose getters, you can read them here
-  @ViewChild(MemberBioComponent) bioTab?: MemberBioComponent;
-  @ViewChild(MemberCareerComponent) careerTab?: MemberCareerComponent;
+  @ViewChild(MemberBioComponent) bioTab?: MaybeUnsaved<MemberBioComponent>;
+  @ViewChild(MemberCareerComponent)
+  careerTab?: MaybeUnsaved<MemberCareerComponent>;
   @ViewChild(MemberAchievementsComponent)
-  achievementsTab?: MemberAchievementsComponent;
-  @ViewChild(MemberFavoritesComponent) favoritesTab?: MemberFavoritesComponent;
+  achievementsTab?: MaybeUnsaved<MemberAchievementsComponent>;
+  @ViewChild(MemberFavoritesComponent)
+  favoritesTab?: MaybeUnsaved<MemberFavoritesComponent>;
   @ViewChild(MemberPersonalInfoComponent)
-  personalInfoTab?: MemberPersonalInfoComponent;
-  @ViewChild(MemberStoriesComponent) storiesTab?: MemberStoriesComponent;
+  personalInfoTab?: MaybeUnsaved<MemberPersonalInfoComponent>;
+  @ViewChild(MemberStoriesComponent)
+  storiesTab?: MaybeUnsaved<MemberStoriesComponent>;
+  @ViewChild(MemberMediaGalleryComponent)
+  mediaGalleryTab?: MaybeUnsaved<MemberMediaGalleryComponent>;
 
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
@@ -322,7 +330,6 @@ export class MemberInfoComponent implements OnInit {
                   },
                 });
             } else {
-              // No partner status change
               this.form.markAsPristine();
               this.form.markAsUntouched();
               this.messageService.add({
@@ -356,6 +363,16 @@ export class MemberInfoComponent implements OnInit {
       .subscribe({
         next: (saved) => {
           this.profileDraft = { ...saved };
+          if (this.bioTab?.markSaved) this.bioTab.markSaved();
+          if (this.careerTab?.markSaved) this.careerTab.markSaved();
+          if (this.achievementsTab?.markSaved) this.achievementsTab.markSaved();
+          if (this.favoritesTab?.markSaved) this.favoritesTab.markSaved();
+          if (this.personalInfoTab?.markSaved) this.personalInfoTab.markSaved();
+          if (this.storiesTab?.markSaved) this.storiesTab.markSaved();
+          if (this.careerTab?.markSaved) this.careerTab.markSaved();
+          if (this.mediaGalleryTab?.markSaved) this.mediaGalleryTab.markSaved();
+          this.form.markAsPristine();
+          this.form.markAsUntouched();
           this.messageService.add({
             severity: 'success',
             summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
@@ -403,13 +420,38 @@ export class MemberInfoComponent implements OnInit {
 
     return draft;
   }
+
   cancel(): void {
+    if (this.hasAnyUnsavedChanges()) {
+      this.confirm.confirm({
+        header:
+          this.translate.instant(CONSTANTS.INFO_UNSAVED_TITLE) ||
+          'Незаписани промени',
+        message:
+          this.translate.instant(CONSTANTS.INFO_UNSAVED_MESSAGE) ||
+          'Имате незаписани промени. Наистина ли искате да излезете?',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: this.translate.instant(CONSTANTS.INFO_LEAVE) || 'Напусни',
+        rejectLabel: this.translate.instant(CONSTANTS.INFO_STAY) || 'Остани',
+        acceptButtonStyleClass: 'p-button-danger',
+        rejectButtonStyleClass: 'p-button-secondary',
+        defaultFocus: 'reject',
+        accept: () => {
+          const previousView = this.route.snapshot.queryParamMap.get('view');
+          this.router.navigate(['/'], {
+            queryParams: { view: previousView || 'chart' },
+          });
+        },
+      });
+      return;
+    }
+
+    // no unsaved changes → navigate immediately
     const previousView = this.route.snapshot.queryParamMap.get('view');
     this.router.navigate(['/'], {
       queryParams: { view: previousView || 'chart' },
     });
   }
-
   private inferLineage(role: string): 'maternal' | 'paternal' | 'unknown' {
     const parts = role.toLowerCase().split('_');
     if (parts[0] === 'paternal') return 'paternal';
@@ -513,5 +555,29 @@ export class MemberInfoComponent implements OnInit {
     if (!current) {
       ctrl?.setValue(this.defaultGenericForRole(), { emitEvent: false });
     }
+  }
+
+  private isUnsavedAware(x: unknown): x is UnsavedAware {
+    return !!x && typeof (x as any).hasUnsavedChanges === 'function';
+  }
+
+  private hasAnyUnsavedChanges(): boolean {
+    let dirty = this.form?.dirty ?? false;
+    const children = [
+      this.bioTab,
+      this.careerTab,
+      this.achievementsTab,
+      this.favoritesTab,
+      this.personalInfoTab,
+      this.storiesTab,
+    ];
+
+    for (const c of children) {
+      if (this.isUnsavedAware(c) && c.hasUnsavedChanges()) {
+        dirty = true;
+        break;
+      }
+    }
+    return dirty;
   }
 }

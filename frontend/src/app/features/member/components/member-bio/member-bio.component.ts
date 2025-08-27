@@ -18,6 +18,7 @@ import { MemberProfile } from '../../../../shared/models/member-profile.model';
 import { firstValueFrom } from 'rxjs';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
+import { UnsavedAware } from '../../../../shared/interfaces/unsaved-aware';
 
 type QuillInstance = any;
 
@@ -27,7 +28,7 @@ type QuillInstance = any;
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],
 })
-export class MemberBioComponent implements OnInit, OnChanges {
+export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
   @Input({ required: true }) role!: string;
   @Input() memberId: string | null = null;
   @Input() profile: MemberProfile | null = null;
@@ -40,6 +41,8 @@ export class MemberBioComponent implements OnInit, OnChanges {
   CONSTANTS = CONSTANTS;
   form!: FormGroup;
   notes = signal<MemberNote[]>([]);
+  private initialBioHtml = '';
+  private initialNotesJson = '[]';
 
   noteDialogVisible = signal(false);
   editingNoteIndex: number | null = null;
@@ -60,6 +63,11 @@ export class MemberBioComponent implements OnInit, OnChanges {
     }
   }
 
+  private snapshotInitial() {
+    this.initialBioHtml = (this.form.get('bioHtml')?.value ?? '') as string;
+    this.initialNotesJson = JSON.stringify(this.notes());
+  }
+
   private hydrateFromInputs() {
     const bio = this.profile?.bio ?? '';
     if (this.form && this.form.get('bioHtml')?.value !== bio) {
@@ -78,6 +86,8 @@ export class MemberBioComponent implements OnInit, OnChanges {
     } else {
       this.notes.set([]);
     }
+
+    this.snapshotInitial();
   }
 
   getValue() {
@@ -138,24 +148,25 @@ export class MemberBioComponent implements OnInit, OnChanges {
     this.noteDialogVisible.set(false);
   }
 
-deleteNote(idx: number) {
-  this.confirm.confirm({
-    header: this.translateService.instant(CONSTANTS.BIO_DELETE_NOTE),
-    message: this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE) + '?',
-    icon: 'pi pi-exclamation-triangle',
+  deleteNote(idx: number) {
+    this.confirm.confirm({
+      header: this.translateService.instant(CONSTANTS.BIO_DELETE_NOTE),
+      message:
+        this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE) + '?',
+      icon: 'pi pi-exclamation-triangle',
 
-    acceptLabel: this.translateService.instant(CONSTANTS.INFO_DELETE), 
-    rejectLabel: this.translateService.instant(CONSTANTS.INFO_CANCEL), 
+      acceptLabel: this.translateService.instant(CONSTANTS.INFO_DELETE),
+      rejectLabel: this.translateService.instant(CONSTANTS.INFO_CANCEL),
 
-    acceptButtonStyleClass: 'p-button-danger',
-    rejectButtonStyleClass: 'p-button-secondary',
-    defaultFocus: 'reject',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary',
+      defaultFocus: 'reject',
 
-    accept: () => {
-      this.notes.update(arr => arr.filter((_, i) => i !== idx));
-    },
-  });
-}
+      accept: () => {
+        this.notes.update((arr) => arr.filter((_, i) => i !== idx));
+      },
+    });
+  }
 
   moveNote(idx: number, dir: -1 | 1) {
     const arr = [...this.notes()];
@@ -188,42 +199,55 @@ deleteNote(idx: number) {
   }
 
   private async handleImageInsert(quill: QuillInstance, isNote: boolean) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
 
-  input.onchange = async () => {
-    const file = input.files?.[0];
-    if (!file) return;
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
 
-    try {
-      let imageUrl: string | null = null;
+      try {
+        let imageUrl: string | null = null;
 
-      if (this.memberId) {
-        const res = await firstValueFrom(
-          this.mediaApi.uploadForMember(this.memberId, file)
-        );
-        imageUrl = res?.url ?? null;
+        if (this.memberId) {
+          const res = await firstValueFrom(
+            this.mediaApi.uploadForMember(this.memberId, file)
+          );
+          imageUrl = res?.url ?? null;
+        }
+
+        if (!imageUrl) {
+          const buf = await file.arrayBuffer();
+          const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+          imageUrl = `data:${file.type};base64,${b64}`;
+        }
+
+        const range = quill.getSelection(true);
+        const index = range ? range.index : 0;
+        quill.insertEmbed(index, 'image', imageUrl, 'user');
+        quill.setSelection(index + 1, 0, 'silent');
+      } catch (e) {
+        console.error('Image upload/insert failed', e);
       }
+    };
 
-      if (!imageUrl) {
-        const buf = await file.arrayBuffer();
-        const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-        imageUrl = `data:${file.type};base64,${b64}`;
-      }
+    input.click();
+  }
 
-      const range = quill.getSelection(true);
-      const index = range ? range.index : 0;
-      quill.insertEmbed(index, 'image', imageUrl, 'user');
-      quill.setSelection(index + 1, 0, 'silent');
-    } catch (e) {
-      console.error('Image upload/insert failed', e);
-    }
-  };
+  public hasUnsavedChanges(): boolean {
+    const currentBio = (this.form.get('bioHtml')?.value ?? '') as string;
+    const currentNotes = JSON.stringify(this.notes());
+    return (
+      currentBio !== this.initialBioHtml ||
+      currentNotes !== this.initialNotesJson
+    );
+  }
 
-  input.click();
-}
-
+  public markSaved(): void {
+    this.snapshotInitial();
+    this.form.markAsPristine();
+  }
 
   setNoteHtml(v: string) {
     this.noteHtml.set(v);
