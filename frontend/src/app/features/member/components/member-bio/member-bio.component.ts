@@ -2,28 +2,31 @@ import {
   Component,
   Input,
   OnInit,
-  inject,
-  signal,
   OnChanges,
   SimpleChanges,
+  inject,
+  signal,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { MediaService } from '../../../../core/services/media.service';
+import { TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 import { v4 as uuid } from 'uuid';
+
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+
+import { MediaService } from '../../../../core/services/media.service';
 import { MemberNote } from '../../../../shared/models/member-note.model';
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
-import { firstValueFrom } from 'rxjs';
 import { CONSTANTS } from '../../../../shared/constants/constants';
-import { TranslateService } from '@ngx-translate/core';
 import { UnsavedAware } from '../../../../shared/interfaces/unsaved-aware';
 
 type QuillInstance = any;
 
 @Component({
   selector: 'app-member-bio',
+  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],
@@ -34,13 +37,17 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
   @Input() profile: MemberProfile | null = null;
 
   private mediaApi = inject(MediaService);
-  private fb = inject(FormBuilder);
   private confirm = inject(ConfirmationService);
   private translateService = inject(TranslateService);
 
   CONSTANTS = CONSTANTS;
-  form!: FormGroup;
+
+  form = new FormGroup({
+    bioHtml: new FormControl<string>('', { nonNullable: true }),
+  });
+
   notes = signal<MemberNote[]>([]);
+
   private initialBioHtml = '';
   private initialNotesJson = '[]';
 
@@ -53,7 +60,6 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
   private noteQuill?: QuillInstance;
 
   ngOnInit(): void {
-    this.form = this.fb.group({ bioHtml: [''] });
     this.hydrateFromInputs();
   }
 
@@ -63,15 +69,15 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     }
   }
 
-  private snapshotInitial() {
-    this.initialBioHtml = (this.form.get('bioHtml')?.value ?? '') as string;
+  private snapshotInitial(): void {
+    this.initialBioHtml = this.form.controls.bioHtml.value;
     this.initialNotesJson = JSON.stringify(this.notes());
   }
 
-  private hydrateFromInputs() {
+  private hydrateFromInputs(): void {
     const bio = this.profile?.bio ?? '';
-    if (this.form && this.form.get('bioHtml')?.value !== bio) {
-      this.form.patchValue({ bioHtml: bio }, { emitEvent: false });
+    if (this.form.controls.bioHtml.value !== bio) {
+      this.form.controls.bioHtml.setValue(bio, { emitEvent: false });
     }
 
     if (Array.isArray(this.profile?.notes)) {
@@ -92,7 +98,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
 
   getValue() {
     return {
-      bio: (this.form.value.bioHtml ?? '') as string,
+      bio: this.form.controls.bioHtml.value,
       notes: this.notes().map((n) => ({
         id: n.id,
         title: n.title,
@@ -108,7 +114,6 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     this.noteTitle.set('');
     this.noteHtml.set('');
     this.noteDialogVisible.set(true);
-    setTimeout(() => this.attachNoteImageHandler(), 0);
   }
 
   openEditNote(idx: number) {
@@ -117,7 +122,6 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     this.noteTitle.set(n.title ?? '');
     this.noteHtml.set(n.contentHtml ?? '');
     this.noteDialogVisible.set(true);
-    setTimeout(() => this.attachNoteImageHandler(), 0);
   }
 
   saveNoteFromDialog() {
@@ -154,14 +158,11 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
       message:
         this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE) + '?',
       icon: 'pi pi-exclamation-triangle',
-
       acceptLabel: this.translateService.instant(CONSTANTS.INFO_DELETE),
       rejectLabel: this.translateService.instant(CONSTANTS.INFO_CANCEL),
-
       acceptButtonStyleClass: 'p-button-danger',
       rejectButtonStyleClass: 'p-button-secondary',
       defaultFocus: 'reject',
-
       accept: () => {
         this.notes.update((arr) => arr.filter((_, i) => i !== idx));
       },
@@ -176,29 +177,34 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     this.notes.set(arr);
   }
 
-  onMainEditorInit(quill: QuillInstance) {
-    this.mainQuill = quill;
-    this.attachImageHandler(quill);
+  onMainEditorInit(ev: any) {
+    const q = this.asQuill(ev);
+    if (!q) return;
+    this.mainQuill = q;
+    this.attachImageHandler(q, false);
   }
 
-  private attachNoteImageHandler() {
-    setTimeout(() => {
-      const editors = document.querySelectorAll('.note-editor .ql-container');
-    }, 0);
+  onNoteEditorInit(ev: any) {
+    const q = this.asQuill(ev);
+    if (!q) return;
+    this.noteQuill = q;
+    this.attachImageHandler(q, true);
   }
 
-  onNoteEditorInit(quill: QuillInstance) {
-    this.noteQuill = quill;
-    this.attachImageHandler(quill, true);
+  private asQuill(ev: any): QuillInstance | null {
+    const cand = ev?.editor ?? ev?.quill ?? ev;
+    return cand && typeof cand.getModule === 'function' ? cand : null;
   }
 
   private attachImageHandler(quill: QuillInstance, isNote = false) {
+    if (!quill || typeof quill.getModule !== 'function') return;
     const toolbar = quill.getModule('toolbar');
-    if (!toolbar) return;
+    if (!toolbar?.addHandler) return;
+
     toolbar.addHandler('image', () => this.handleImageInsert(quill, isNote));
   }
 
-  private async handleImageInsert(quill: QuillInstance, isNote: boolean) {
+  private async handleImageInsert(quill: QuillInstance, _isNote: boolean) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -223,10 +229,9 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
           imageUrl = `data:${file.type};base64,${b64}`;
         }
 
-        const range = quill.getSelection(true);
-        const index = range ? range.index : 0;
-        quill.insertEmbed(index, 'image', imageUrl, 'user');
-        quill.setSelection(index + 1, 0, 'silent');
+        const range = quill.getSelection(true) ?? { index: 0 };
+        quill.insertEmbed(range.index, 'image', imageUrl, 'user');
+        quill.setSelection(range.index + 1, 0, 'silent');
       } catch (e) {
         console.error('Image upload/insert failed', e);
       }
@@ -236,7 +241,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
   }
 
   public hasUnsavedChanges(): boolean {
-    const currentBio = (this.form.get('bioHtml')?.value ?? '') as string;
+    const currentBio = this.form.controls.bioHtml.value;
     const currentNotes = JSON.stringify(this.notes());
     return (
       currentBio !== this.initialBioHtml ||

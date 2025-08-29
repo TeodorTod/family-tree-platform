@@ -107,6 +107,8 @@ export class CONSTANTS {
   static readonly INFO_UNSAVED_MESSAGE = 'INFO.UNSAVED_MESSAGE';
   static readonly INFO_STAY = 'INFO.STAY';
   static readonly INFO_LEAVE = 'INFO.LEAVE';
+  static readonly INFO_NO_CHANGES = 'INFO.NO_CHANGES';
+  static readonly INFO_CLOSE = 'INFO.CLOSE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -255,4 +257,23 @@ export class CONSTANTS {
   static readonly BIO_ACTION_NOT_UNDONE = 'BIO.ACTION_NOT_UNDONE';
   static readonly BIO_COMMON_NOTE_TITLE = 'BIO.COMMON_NOTE_TITLE';
   static readonly BIO_NO_NOTES = 'BIO.NO_NOTES';
+
+  static readonly MEDIA_TAB_IMAGES = 'MEDIA.TAB_IMAGES';
+  static readonly MEDIA_TAB_VIDEOS = 'MEDIA.TAB_VIDEOS';
+  static readonly MEDIA_CHOOSE = 'MEDIA.CHOOSE';
+  static readonly MEDIA_UPLOAD = 'MEDIA.UPLOAD';
+  static readonly MEDIA_NO_IMAGES = 'MEDIA.NO_IMAGES';
+  static readonly MEDIA_NO_VIDEOS = 'MEDIA.NO_VIDEOS';
+  static readonly MEDIA_SET_AS_COVER = 'MEDIA.SET_AS_COVER';
+  static readonly MEDIA_UPLOADED = 'MEDIA.UPLOADED';
+  static readonly MEDIA_UPLOAD_FAILED = 'MEDIA.UPLOAD_FAILED';
+  static readonly MEDIA_VIEWER = 'MEDIA.VIEWER';
+  static readonly MEDIA_APPLY_FAILED = 'MEDIA.APPLY_FAILED';
+  static readonly MEDIA_REMOVE_FROM_GALLERY = 'MEDIA.REMOVE_FROM_GALLERY';
+  static readonly MEDIA_PENDING_UPLOADS = 'MEDIA.PENDING_UPLOADS';
+  static readonly MEDIA_PENDING_DELETES = 'MEDIA.PENDING_DELETES';
+  static readonly MEDIA_APPLIED_ON_SAVE = 'MEDIA.APPLIED_ON_SAVE';
+  static readonly MEDIA_EDIT = 'MEDIA.EDIT';
+  static readonly MEDIA_DONE = 'MEDIA.DONE';
+  static readonly MEDIA_RESET_DELETES = 'MEDIA.RESET_DELETES';
 }

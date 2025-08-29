@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsUrl, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class MemberNoteDto {
@@ -11,8 +17,7 @@ export class MemberNoteDto {
 
 export class CreateMemberProfileDto {
   @IsOptional() @IsString() bio?: string;
-  @IsOptional() @IsUrl()    coverMediaUrl?: string;
-
+  @IsOptional() @IsUrl() coverMediaUrl?: string;
 
   @IsOptional() achievements?: any;
   @IsOptional() facts?: any;
@@ -20,8 +25,7 @@ export class CreateMemberProfileDto {
   @IsOptional() education?: any;
   @IsOptional() work?: any;
   @IsOptional() personalInfo?: any;
-  @IsOptional() stories?: any; 
-
+  @IsOptional() stories?: any;
 
   @IsOptional()
   @IsArray()

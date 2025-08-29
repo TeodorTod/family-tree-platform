@@ -136,22 +136,13 @@
   padding-right: 10px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 2768px) {
   :host ::ng-deep .note-actions .p-button .p-button-label {
     display: none !important; /* hide long BG label */
   }
   :host ::ng-deep .note-actions .p-button {
     padding: 0.45rem 0.55rem !important; /* icon buttons feel nicer */
     min-width: 2.25rem;
-  }
-
-  /* Header stacks; Add button full-width (you already have this, keep if removed) */
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .header .p-button {
-    width: 100%;
   }
 
   /* Make note blocks breathe on mobile */
@@ -173,4 +164,15 @@
 .note-preview :deep(img) {
   max-width: 100%;
   height: auto;
+}
+
+@media (max-width: 768px) {
+  /* Header stacks; Add button full-width (you already have this, keep if removed) */
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header .p-button {
+    width: 100%;
+  }
 }

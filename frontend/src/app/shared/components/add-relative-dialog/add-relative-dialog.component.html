@@ -12,14 +12,14 @@
     class="d-flex flex-column gap-3"
   >
     <!-- Relation -->
-    <p-dropdown
+    <p-select
       formControlName="relation"
       [options]="relationOptions"
       optionLabel="label"
       optionValue="value"
       [placeholder]="CONSTANTS.RELATION_CHOOSE_RELATION | translate"
       class="w-full"
-    ></p-dropdown>
+    ></p-select>
 
     <!-- First Name -->
     <div class="floating-field">
@@ -39,19 +39,19 @@
       <label>{{ CONSTANTS.INFO_LAST_NAME | translate }}</label>
     </div>
 
-    <!-- Date of Birth -->
     <!-- DOB Mode -->
     <span class="p-float-label w-full mb-3">
       <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
-      <p-dropdown
+      <p-select
         inputId="dobMode"
         formControlName="dobMode"
         [options]="dobModeOptions"
         optionLabel="label"
         optionValue="value"
         class="w-full"
-      ></p-dropdown>
+      ></p-select>
     </span>
+
     <!-- Exact date -->
     @if (form.value.dobMode === 'exact') {
     <div class="floating-field" [class.active]="form.get('dob')?.value">
@@ -69,7 +69,7 @@
     </div>
     }
 
-    <!-- Year only — same control, year view + 'yy' format -->
+    <!-- Year only -->
     @if (form.value.dobMode === 'year') {
     <div class="floating-field" [class.active]="form.get('dob')?.value">
       <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>

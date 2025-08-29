@@ -5,7 +5,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { TreeModule } from 'primeng/tree';
 import { TimelineModule } from 'primeng/timeline';
-import { TabViewModule } from 'primeng/tabview';
+
 import { FieldsetModule } from 'primeng/fieldset';
 import { MessageModule } from 'primeng/message';
 import { MenubarModule } from 'primeng/menubar';
@@ -16,8 +16,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { PanelModule } from 'primeng/panel';
 import { CheckboxModule } from 'primeng/checkbox';
 import { OrganizationChartModule } from 'primeng/organizationchart';
-import { DropdownModule } from 'primeng/dropdown';
-import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { SliderModule } from 'primeng/slider';
 import { TableModule } from 'primeng/table';
@@ -26,7 +24,10 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { EditorModule } from 'primeng/editor';
-
+import { GalleriaModule } from 'primeng/galleria';
+import { DividerModule } from 'primeng/divider';
+import { BlockUIModule } from 'primeng/blockui';
+import { TabsModule } from 'primeng/tabs';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -36,7 +37,6 @@ export const SHARED_PRIMENG_IMPORTS = [
   DialogModule,
   TreeModule,
   TimelineModule,
-  TabViewModule,
   FieldsetModule,
   MessageModule,
   MenubarModule,
@@ -47,7 +47,6 @@ export const SHARED_PRIMENG_IMPORTS = [
   PanelModule,
   CheckboxModule,
   OrganizationChartModule,
-  DropdownModule,
   TabsModule,
   TooltipModule,
   SliderModule,
@@ -56,7 +55,8 @@ export const SHARED_PRIMENG_IMPORTS = [
   ConfirmDialog,
   Toast,
   ProgressSpinnerModule,
-  EditorModule
+  EditorModule,
+  GalleriaModule,
+  DividerModule,
+  BlockUIModule,
 ];
-// This file contains the shared PrimeNG imports used across the application.
-// It exports an array of PrimeNG modules that can be imported in other modules.

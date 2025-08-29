@@ -29,7 +29,11 @@ import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
 
-type MaybeUnsaved<T> = T & Partial<UnsavedAware>;
+type TabRef<T, V = any> = T &
+  Partial<UnsavedAware> & {
+    getValue?: () => V;
+    markSaved?: () => void;
+  };
 
 @Component({
   selector: 'app-member-info',
@@ -58,6 +62,20 @@ export class MemberInfoComponent implements OnInit {
   private confirm = inject(ConfirmationService);
   private messageService = inject(MessageService);
 
+  @ViewChild(MemberMediaGalleryComponent)
+  mediaGallery!: MemberMediaGalleryComponent;
+
+  readonly TAB = {
+    GENERAL: 0,
+    BIO: 1,
+    MEDIA: 2,
+    CAREER: 3,
+    STORIES: 4,
+    ACHIEVEMENTS: 5,
+    FAVORITES: 6,
+    PERSONAL: 7,
+  } as const;
+
   member$!: Observable<any>;
   profile$!: Observable<MemberProfile | null>;
 
@@ -79,6 +97,7 @@ export class MemberInfoComponent implements OnInit {
   CONSTANTS = CONSTANTS;
   activeIndex = signal(0);
   profileDraft: MemberProfile = {};
+  private lastSavedMemberSnapshot: any | null = null;
   dobModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
@@ -124,19 +143,19 @@ export class MemberInfoComponent implements OnInit {
     }));
 
   // ViewChild hooks (optional): if your child tabs expose getters, you can read them here
-  @ViewChild(MemberBioComponent) bioTab?: MaybeUnsaved<MemberBioComponent>;
+  @ViewChild(MemberBioComponent) bioTab?: TabRef<MemberBioComponent>;
   @ViewChild(MemberCareerComponent)
-  careerTab?: MaybeUnsaved<MemberCareerComponent>;
+  careerTab?: TabRef<MemberCareerComponent>;
   @ViewChild(MemberAchievementsComponent)
-  achievementsTab?: MaybeUnsaved<MemberAchievementsComponent>;
+  achievementsTab?: TabRef<MemberAchievementsComponent>;
   @ViewChild(MemberFavoritesComponent)
-  favoritesTab?: MaybeUnsaved<MemberFavoritesComponent>;
+  favoritesTab?: TabRef<MemberFavoritesComponent>;
   @ViewChild(MemberPersonalInfoComponent)
-  personalInfoTab?: MaybeUnsaved<MemberPersonalInfoComponent>;
+  personalInfoTab?: TabRef<MemberPersonalInfoComponent>;
   @ViewChild(MemberStoriesComponent)
-  storiesTab?: MaybeUnsaved<MemberStoriesComponent>;
+  storiesTab?: TabRef<MemberStoriesComponent>;
   @ViewChild(MemberMediaGalleryComponent)
-  mediaGalleryTab?: MaybeUnsaved<MemberMediaGalleryComponent>;
+  mediaGalleryTab?: TabRef<MemberMediaGalleryComponent>;
 
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
@@ -145,7 +164,9 @@ export class MemberInfoComponent implements OnInit {
     this.member$ = this.familyService.getFamilyMemberByRole(this.role).pipe(
       tap((member) => {
         this.loadedMember = member ?? undefined;
-
+        this.lastSavedMemberSnapshot = this.normalizeMemberForPayload(
+          member ?? {}
+        );
         if (!member) {
           this.form.patchValue(
             { dobMode: 'exact', dodMode: 'exact', isAlive: true },
@@ -260,22 +281,69 @@ export class MemberInfoComponent implements OnInit {
     return this.getTranslatedRoleLabel();
   }
 
-  onTabIndexChange(index: number) {
-    this.activeIndex.set(index);
+  onTabIndexChange(val: number | string) {
+    const n = typeof val === 'string' ? Number(val) : val;
+    this.activeIndex.set(Number.isFinite(n) ? n : 0);
   }
 
-  save() {
+  async save(): Promise<void> {
     const current = this.activeIndex();
 
-    if (current === 0) {
+    // ============= helpers =============
+    const ok = (msgKey = this.CONSTANTS.INFO_SAVED) =>
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.instant(this.CONSTANTS.INFO_SUCCESS),
+        detail: this.translate.instant(msgKey) || 'Записано',
+      });
+
+    const nochanges = () =>
+      this.messageService.add({
+        severity: 'info',
+        detail:
+          this.translate.instant(this.CONSTANTS.INFO_NO_CHANGES) ||
+          'Няма промени',
+      });
+
+    const fail = (msgKey = this.CONSTANTS.INFO_SAVE_FAILED) =>
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: this.translate.instant(msgKey) || 'Неуспешен запис',
+      });
+
+    const sanitizeNotes = (arr: any): any[] =>
+      (Array.isArray(arr) ? arr : [])
+        .map((x) => ({
+          id: x?.id ?? '',
+          title: x?.title ?? '',
+          contentHtml: x?.contentHtml ?? '',
+        }))
+        .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+    const buildDelta = (keys: string[], next: any): Record<string, any> => {
+      const delta: Record<string, any> = {};
+      for (const k of keys) {
+        const prev = (this.profileDraft as any)?.[k];
+        const pv = k === 'notes' ? sanitizeNotes(prev) : prev ?? null;
+        const nv = k === 'notes' ? sanitizeNotes(next?.[k]) : next?.[k] ?? null;
+        if (!this.deepEqual(pv, nv)) {
+          // send the original (unsanitized) next value
+          delta[k] = next?.[k] ?? (k === 'notes' ? [] : null);
+        }
+      }
+      return delta;
+    };
+
+    // ============= GENERAL tab (member basics) =============
+    if (current === this.TAB.GENERAL) {
       if (this.form.invalid) return;
 
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const dodPayload = this.familyService.buildDodPayload(this.form);
       const v = this.form.value;
 
-      const basePayload: any = {
-        role: this.role,
+      const full: any = {
         firstName: v.firstName ?? '',
         middleName: v.middleName ?? null,
         lastName: v.lastName ?? '',
@@ -286,139 +354,260 @@ export class MemberInfoComponent implements OnInit {
         ...dodPayload,
       };
 
-      this.familyService
-        .saveMemberByRole(this.role, basePayload)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: () => {
-            const newStatus = (this.form.get('partnerStatus')?.value ??
-              null) as PartnerStatus | null;
-            const memberId = this.loadedMember?.id;
-            const partnerId = this.loadedMember?.partnerId;
+      const diff = this.pruneUnchanged(full, this.lastSavedMemberSnapshot);
 
-            const statusChanged =
-              !!newStatus &&
-              newStatus !== this.originalPartnerStatus &&
-              !!memberId &&
-              !!partnerId;
+      const newStatus = (this.form.get('partnerStatus')?.value ??
+        null) as PartnerStatus | null;
+      const memberId = this.loadedMember?.id;
+      const partnerId = this.loadedMember?.partnerId;
+      const statusChanged =
+        !!newStatus &&
+        newStatus !== this.originalPartnerStatus &&
+        !!memberId &&
+        !!partnerId;
 
-            if (statusChanged) {
-              this.familyService
-                .setPartner(memberId!, partnerId!, newStatus!)
-                .pipe(takeUntilDestroyed(this.destroyRef))
-                .subscribe({
-                  next: () => {
-                    this.originalPartnerStatus = newStatus!;
-                    this.form.markAsPristine();
-                    this.form.markAsUntouched();
-                    this.messageService.add({
-                      severity: 'success',
-                      summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
-                      detail: this.translate.instant(
-                        CONSTANTS.INFO_SAVED ?? 'Записано'
-                      ),
-                    });
-                  },
-                  error: () => {
-                    this.messageService.add({
-                      severity: 'error',
-                      summary: 'Error',
-                      detail: this.translate.instant(
-                        CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
-                      ),
-                    });
-                  },
-                });
-            } else {
-              this.form.markAsPristine();
-              this.form.markAsUntouched();
-              this.messageService.add({
-                severity: 'success',
-                summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
-                detail: this.translate.instant(
-                  CONSTANTS.INFO_SAVED ?? 'Записано'
-                ),
-              });
-            }
-          },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: this.translate.instant(
-                CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
-              ),
-            });
-          },
-        });
+      if (!statusChanged && Object.keys(diff).length === 0) return nochanges();
 
+      const finish = () => {
+        this.lastSavedMemberSnapshot = {
+          ...(this.lastSavedMemberSnapshot ?? {}),
+          ...diff,
+        };
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+        ok();
+      };
+
+      const doPartner = () =>
+        this.familyService
+          .setPartner(memberId!, partnerId!, newStatus!)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.originalPartnerStatus = newStatus!;
+              finish();
+            },
+            error: () => fail(),
+          });
+
+      if (Object.keys(diff).length > 0) {
+        this.familyService
+          .saveMemberByRole(this.role, diff)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => (statusChanged ? doPartner() : finish()),
+            error: () => fail(),
+          });
+      } else {
+        // only partner status changed
+        doPartner();
+      }
       return;
     }
 
-    const profilePayload = this.buildProfilePayload();
+    // ============= MEDIA tab =============
+    if (current === this.TAB.MEDIA) {
+      const hadPending = this.mediaGallery?.hasUnsavedChanges?.() === true;
 
-    this.profileService
-      .saveProfileByRole(this.role, profilePayload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (saved) => {
-          this.profileDraft = { ...saved };
-          if (this.bioTab?.markSaved) this.bioTab.markSaved();
-          if (this.careerTab?.markSaved) this.careerTab.markSaved();
-          if (this.achievementsTab?.markSaved) this.achievementsTab.markSaved();
-          if (this.favoritesTab?.markSaved) this.favoritesTab.markSaved();
-          if (this.personalInfoTab?.markSaved) this.personalInfoTab.markSaved();
-          if (this.storiesTab?.markSaved) this.storiesTab.markSaved();
-          if (this.careerTab?.markSaved) this.careerTab.markSaved();
-          if (this.mediaGalleryTab?.markSaved) this.mediaGalleryTab.markSaved();
-          this.form.markAsPristine();
-          this.form.markAsUntouched();
-          this.messageService.add({
-            severity: 'success',
-            summary: this.translate.instant(CONSTANTS.INFO_SUCCESS),
-            detail: this.translate.instant(CONSTANTS.INFO_SAVED ?? 'Записано'),
+      // Apply uploads + deletions together (only if the child is present)
+      if (this.mediaGallery?.flushPendingChanges) {
+        try {
+          await this.mediaGallery.flushPendingChanges();
+        } catch {
+          return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
+        }
+      } else if (hadPending) {
+        // child not mounted but parent thinks there are pending changes
+        return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
+      }
+
+      // Persist cover (only if the child exposes it)
+      const nextCover = this.mediaGallery?.getCoverUrl?.() ?? undefined;
+      if (nextCover !== undefined) {
+        const prevCover = (this.profileDraft as any)?.coverMediaUrl ?? null;
+        if (!this.deepEqual(prevCover, nextCover)) {
+          await new Promise<void>((resolve) => {
+            this.profileService
+              .saveProfileByRole(this.role, { coverMediaUrl: nextCover })
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (saved) => {
+                  this.profileDraft = {
+                    ...(this.profileDraft ?? {}),
+                    ...(saved ?? { coverMediaUrl: nextCover }),
+                  };
+                  resolve();
+                },
+                error: () => {
+                  fail();
+                  resolve();
+                },
+              });
           });
-        },
-        error: () => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: this.translate.instant(
-              CONSTANTS.INFO_SAVE_FAILED ?? 'Неуспешен запис'
-            ),
-          });
-        },
-      });
-  }
+          ok();
+        } else if (!hadPending) {
+          return nochanges();
+        } else {
+          ok();
+        }
+      } else {
+        if (hadPending) ok();
+        else nochanges();
+      }
 
-  private buildProfilePayload(): any {
-    const draft: any = {}; // start clean
-
-    if (this.bioTab && (this.bioTab as any).getValue) {
-      const val = (this.bioTab as any).getValue(); // { bio, notes }
-      draft.bio = val?.bio ?? null;
-      draft.notes = Array.isArray(val?.notes) ? val.notes : []; // 👈 use notes, not stories
+      this.mediaGallery?.markSaved?.();
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      return;
     }
 
-    if (this.careerTab && (this.careerTab as any).getValue) {
-      const career = (this.careerTab as any).getValue();
-      draft.work = career?.work ?? null;
-      draft.education = career?.education ?? null;
+    // ============= BIO tab =============
+    if (current === this.TAB.BIO && this.bioTab?.getValue) {
+      const val = this.bioTab.getValue(); // { bio, notes }
+      const delta = buildDelta(['bio', 'notes'], val);
+      if (Object.keys(delta).length === 0) return nochanges();
+
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.bioTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
     }
 
-    if (this.achievementsTab && (this.achievementsTab as any).getValue) {
-      draft.achievements = (this.achievementsTab as any).getValue();
+    // ============= CAREER tab =============
+    if (current === this.TAB.CAREER && this.careerTab?.getValue) {
+      const c = this.careerTab.getValue(); // { work, education }
+      const delta = buildDelta(['work', 'education'], c);
+      if (Object.keys(delta).length === 0) return nochanges();
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.careerTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
     }
 
-    if (this.favoritesTab && (this.favoritesTab as any).getValue) {
-      draft.favorites = (this.favoritesTab as any).getValue();
+    // ============= ACHIEVEMENTS tab =============
+    if (current === this.TAB.ACHIEVEMENTS && this.achievementsTab?.getValue) {
+      const next = this.achievementsTab.getValue();
+      const delta = buildDelta(['achievements'], { achievements: next });
+      if (Object.keys(delta).length === 0) return nochanges();
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.achievementsTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
     }
 
-    if (this.personalInfoTab && (this.personalInfoTab as any).getValue) {
-      draft.personalInfo = (this.personalInfoTab as any).getValue();
+    // ============= FAVORITES tab =============
+    if (current === this.TAB.FAVORITES && this.favoritesTab?.getValue) {
+      const next = this.favoritesTab.getValue();
+      const delta = buildDelta(['favorites'], { favorites: next });
+      if (Object.keys(delta).length === 0) return nochanges();
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.favoritesTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
     }
 
-    return draft;
+    // ============= PERSONAL tab =============
+    if (current === this.TAB.PERSONAL && this.personalInfoTab?.getValue) {
+      const next = this.personalInfoTab.getValue();
+      const delta = buildDelta(['personalInfo'], { personalInfo: next });
+      if (Object.keys(delta).length === 0) return nochanges();
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.personalInfoTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
+    }
+
+    // ============= STORIES tab (optional) =============
+    if (current === this.TAB.STORIES && this.storiesTab?.getValue) {
+      const next = this.storiesTab.getValue();
+      const delta = buildDelta(['stories'], { stories: next });
+      if (Object.keys(delta).length === 0) return nochanges();
+      this.profileService
+        .saveProfileByRole(this.role, delta)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.profileDraft = {
+              ...(this.profileDraft ?? {}),
+              ...(saved ?? delta),
+            };
+            this.storiesTab?.markSaved?.();
+            this.form.markAsPristine();
+            this.form.markAsUntouched();
+            ok();
+          },
+          error: () => fail(),
+        });
+      return;
+    }
+
+    // fallback
+    return nochanges();
   }
 
   cancel(): void {
@@ -570,8 +759,8 @@ export class MemberInfoComponent implements OnInit {
       this.favoritesTab,
       this.personalInfoTab,
       this.storiesTab,
+      this.mediaGallery,
     ];
-
     for (const c of children) {
       if (this.isUnsavedAware(c) && c.hasUnsavedChanges()) {
         dirty = true;
@@ -579,5 +768,94 @@ export class MemberInfoComponent implements OnInit {
       }
     }
     return dirty;
+  }
+
+  private deepEqual(a: any, b: any): boolean {
+    try {
+      return JSON.stringify(a) === JSON.stringify(b);
+    } catch {
+      return a === b;
+    }
+  }
+
+  // Normalize member from API into the shape we PUT
+  private normalizeMemberForPayload(m: any) {
+    return {
+      firstName: m?.firstName ?? null,
+      middleName: m?.middleName ?? null,
+      lastName: m?.lastName ?? null,
+      gender: m?.gender ?? null,
+      isAlive: m?.isAlive ?? true,
+
+      dob: m?.dob ? new Date(m.dob).toISOString() : null,
+      birthYear: m?.birthYear ?? null,
+      birthNote: m?.birthNote ?? null,
+
+      dod: m?.dod ? new Date(m.dod).toISOString() : null,
+      deathYear: m?.deathYear ?? null,
+      deathNote: m?.deathNote ?? null,
+
+      translatedRole: m?.translatedRole ?? null,
+    };
+  }
+
+  private pruneUnchanged(
+    next: Record<string, any>,
+    prev: Record<string, any> | null
+  ) {
+    if (!prev) return next;
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(next)) {
+      if (!this.deepEqual(v, (prev as any)[k])) out[k] = v;
+    }
+    return out;
+  }
+
+  private diffProfile(prev: any | null, curr: any) {
+    const out: Record<string, any> = {};
+    for (const k of Object.keys(curr)) {
+      const prevVal = prev ? (prev as any)[k] : undefined;
+      if (!this.deepEqual(prevVal, curr[k])) out[k] = curr[k];
+    }
+    return out;
+  }
+
+  private collectCurrentProfileValues(): any {
+    const curr: any = {};
+
+    if (this.bioTab && (this.bioTab as any).getValue) {
+      const val = (this.bioTab as any).getValue(); // { bio, notes }
+      curr.bio = val?.bio ?? null;
+      curr.notes = Array.isArray(val?.notes) ? val.notes : [];
+    }
+
+    if (this.careerTab && (this.careerTab as any).getValue) {
+      const career = (this.careerTab as any).getValue();
+      curr.work = career?.work ?? null;
+      curr.education = career?.education ?? null;
+    }
+
+    if (this.achievementsTab && (this.achievementsTab as any).getValue) {
+      curr.achievements = (this.achievementsTab as any).getValue();
+    }
+
+    if (this.favoritesTab && (this.favoritesTab as any).getValue) {
+      curr.favorites = (this.favoritesTab as any).getValue();
+    }
+
+    if (this.personalInfoTab && (this.personalInfoTab as any).getValue) {
+      curr.personalInfo = (this.personalInfoTab as any).getValue();
+    }
+
+    // You can add more tabs here later (stories, etc.)
+    return curr;
+  }
+
+  private pickFromProfile(src: any, keys: string[]) {
+    const out: any = {};
+    for (const k of keys) out[k] = src ? src[k] : undefined;
+    // normalize for fair comparison to avoid undefined vs [] mismatches
+    if ('notes' in out) out.notes = Array.isArray(out.notes) ? out.notes : [];
+    return out;
   }
 }

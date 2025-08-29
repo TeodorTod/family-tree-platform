@@ -56,6 +56,10 @@ body {
   align-self: center !important;
 }
 
+.justify-content-end {
+  justify-content: flex-end !important;
+}
+
 /* === Spacing Utilities === */
 .m-0 {
   margin: 0 !important;
@@ -348,6 +352,22 @@ body {
 
 .mathernal-grandparents-container {
   align-items: flex-start;
+}
+
+.p-galleria .p-galleria-next-button {
+     background-color: var(--primary-color) !important;
+}
+
+.p-galleria .p-galleria-next-button:hover {
+     background-color: var(--primary-color-hover) !important;
+}
+
+.p-galleria .p-galleria-prev-button {
+     background-color: var(--primary-color) !important;
+}
+
+.p-galleria .p-galleria-prev-button:hover {
+     background-color: var(--primary-color-hover) !important;
 }
 
 .initial-forms {

@@ -1,1 +1,267 @@
-<p>member-media-gallery works!</p>
+<div class="headerbar">
+  <div class="segmented">
+    <button
+      pButton
+      type="button"
+      class="seg-btn"
+      [ngClass]="
+        section() !== 'images' ? 'p-button-outlined p-button-secondary' : ''
+      "
+      icon="pi pi-image"
+      (click)="showImages()"
+    >
+      <span class="seg-label">{{
+        CONSTANTS.MEDIA_TAB_IMAGES | translate
+      }}</span>
+      <span class="seg-badge">{{ images().length }}</span>
+    </button>
+
+    <button
+      pButton
+      type="button"
+      class="seg-btn"
+      [ngClass]="
+        section() !== 'videos' ? 'p-button-outlined p-button-secondary' : ''
+      "
+      icon="pi pi-video"
+      (click)="showVideos()"
+    >
+      <span class="seg-label">{{
+        CONSTANTS.MEDIA_TAB_VIDEOS | translate
+      }}</span>
+      <span class="seg-badge">{{ videos().length }}</span>
+    </button>
+  </div>
+</div>
+
+@switch (section()) { @case ('images') {
+
+<div class="uploader">
+  <p-fileUpload
+    #imgUpload
+    name="files"
+    [customUpload]="true"
+    [auto]="uploadMode === 'onSave'"
+    (uploadHandler)="onUploadImages($event)"
+    (onRemove)="onRemove($event)"
+    (onClear)="onClear()"
+    accept="image/*"
+    [multiple]="true"
+    [maxFileSize]="25 * 1024 * 1024"
+    [showUploadButton]="uploadMode === 'immediate'"
+    [chooseLabel]="CONSTANTS.MEDIA_CHOOSE | translate"
+    [uploadLabel]="CONSTANTS.MEDIA_UPLOAD | translate"
+  >
+  </p-fileUpload>
+</div>
+<div class="toolbar d-flex justify-content-end align-items-center gap-2 mt-3">
+  @if (editMode() !== 'images') {
+  <button
+    pButton
+    type="button"
+    icon="pi pi-pencil"
+    [label]="CONSTANTS.MEDIA_EDIT | translate"
+    (click)="startEditImages()"
+  ></button>
+  } @else {
+  <div class="edit-controls">
+    <button
+      pButton
+      type="button"
+      class="p-button-secondary"
+      icon="pi pi-check"
+      [label]="CONSTANTS.MEDIA_DONE | translate"
+      (click)="doneEdit()"
+    ></button>
+    @if (pendingDeletesCount) {
+    <button
+      pButton
+      type="button"
+      class="p-button-text p-button-danger"
+      icon="pi pi-undo"
+      [label]="CONSTANTS.MEDIA_RESET_DELETES | translate"
+      (click)="resetStagedDeletes()"
+    ></button>
+    }
+  </div>
+  }
+</div>
+
+@if (uploadMode === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
+<div class="pending">
+  @if (pendingUploadsCount) {
+  <span
+    >{{ pendingUploadsCount }}
+    {{ CONSTANTS.MEDIA_PENDING_UPLOADS | translate }}</span
+  >
+  } @if (pendingUploadsCount && pendingDeletesCount) { <span> · </span> } @if
+  (pendingDeletesCount) {
+  <span
+    >{{ pendingDeletesCount }}
+    {{ CONSTANTS.MEDIA_PENDING_DELETES | translate }}</span
+  >
+  }
+  <span> — {{ CONSTANTS.MEDIA_APPLIED_ON_SAVE | translate }}</span>
+</div>
+}
+
+<p-divider></p-divider>
+
+@if (editMode() === 'images') { @if (images().length) {
+<div class="edit-grid">
+  @for (img of images(); track img.url) {
+  <div class="edit-thumb">
+    <img [src]="streamUrl(img)" />
+    <button
+      pButton
+      type="button"
+      class="delete-btn p-button-danger p-button-rounded p-button-sm"
+      icon="pi pi-trash"
+      pTooltip="{{ CONSTANTS.MEDIA_REMOVE_FROM_GALLERY | translate }}"
+      tooltipPosition="top"
+      (click)="removeImage(img)"
+    ></button>
+  </div>
+  }
+</div>
+} @else {
+<p class="empty">{{ CONSTANTS.MEDIA_NO_IMAGES | translate }}</p>
+} } @else { @if (images().length) {
+<p-galleria
+  class="media-galleria thumbs-wrap"
+  [value]="images()"
+  [activeIndex]="activeIndex"
+  (activeIndexChange)="activeIndex = $event"
+  [showThumbnails]="true"
+  [showItemNavigators]="true"
+  [showThumbnailNavigators]="false"
+  [numVisible]="images().length"
+  [thumbnailsPosition]="'bottom'"
+  [circular]="true"
+  style="width: 100%; display: block"
+>
+  <ng-template pTemplate="item" let-item>
+    <img [src]="streamUrl(item)" class="gallery-image" />
+  </ng-template>
+  <ng-template pTemplate="thumbnail" let-item>
+    <img [src]="streamUrl(item)" />
+  </ng-template>
+</p-galleria>
+} @else {
+<p class="empty">{{ CONSTANTS.MEDIA_NO_IMAGES | translate }}</p>
+} } } @case ('videos') {
+<!-- ==== VIDEOS AREA (unchanged content) ==== -->
+
+<div class="uploader">
+  <p-fileUpload
+    name="files"
+    [customUpload]="true"
+    (uploadHandler)="onUploadVideos($event)"
+    (onRemove)="onRemove($event)"
+    (onClear)="onClear()"
+    accept="video/*,.mkv"
+    [multiple]="true"
+    [maxFileSize]="2 * 1024 * 1024 * 1024"
+    [auto]="uploadMode === 'onSave'"
+    [showUploadButton]="uploadMode === 'immediate'"
+    [chooseLabel]="CONSTANTS.MEDIA_CHOOSE | translate"
+    [uploadLabel]="CONSTANTS.MEDIA_UPLOAD | translate"
+  >
+  </p-fileUpload>
+</div>
+
+<div class="toolbar d-flex justify-content-end align-items-center gap-2 mt-3">
+  @if (editMode() !== 'videos') {
+  <button
+    pButton
+    type="button"
+    icon="pi pi-pencil"
+    [label]="CONSTANTS.MEDIA_EDIT | translate"
+    (click)="startEditVideos()"
+  ></button>
+  } @else {
+  <div class="edit-controls">
+    <button
+      pButton
+      type="button"
+      class="p-button-secondary"
+      icon="pi pi-check"
+      [label]="CONSTANTS.MEDIA_DONE | translate"
+      (click)="doneEdit()"
+    ></button>
+    @if (pendingDeletesCount) {
+    <button
+      pButton
+      type="button"
+      class="p-button-text p-button-danger"
+      icon="pi pi-undo"
+      [label]="CONSTANTS.MEDIA_RESET_DELETES | translate"
+      (click)="resetStagedDeletes()"
+    ></button>
+    }
+  </div>
+  }
+</div>
+
+@if (uploadMode === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
+<div class="pending">
+  @if (pendingUploadsCount) {
+  <span
+    >{{ pendingUploadsCount }}
+    {{ CONSTANTS.MEDIA_PENDING_UPLOADS | translate }}</span
+  >
+  } @if (pendingUploadsCount && pendingDeletesCount) { <span> · </span> } @if
+  (pendingDeletesCount) {
+  <span
+    >{{ pendingDeletesCount }}
+    {{ CONSTANTS.MEDIA_PENDING_DELETES | translate }}</span
+  >
+  }
+  <span> — {{ CONSTANTS.MEDIA_APPLIED_ON_SAVE | translate }}</span>
+</div>
+}
+
+<p-divider></p-divider>
+
+@if (editMode() === 'videos') { @if (videos().length) {
+<div class="edit-grid">
+  @for (v of videos(); track v.url) {
+  <div class="edit-thumb">
+    <video
+      [src]="streamUrl(v)"
+      [poster]="posterUrl(v)"
+      controls
+      preload="metadata"
+      class="video-player"
+    ></video>
+    <button
+      pButton
+      type="button"
+      class="delete-btn p-button-danger p-button-rounded p-button-sm"
+      icon="pi pi-trash"
+      pTooltip="{{ CONSTANTS.MEDIA_REMOVE_FROM_GALLERY | translate }}"
+      tooltipPosition="top"
+      (click)="removeVideo(v)"
+    ></button>
+  </div>
+  }
+</div>
+} @else {
+<p class="empty">{{ CONSTANTS.MEDIA_NO_VIDEOS | translate }}</p>
+} } @else { @if (videos().length > 0) {
+<div class="video-grid">
+  @for (v of videos(); track v.url) {
+  <div class="video-card">
+    <video
+      [src]="streamUrl(v)"
+      controls
+      preload="metadata"
+      class="video-player"
+    ></video>
+    <div class="caption" *ngIf="v.caption">{{ v.caption }}</div>
+  </div>
+  }
+</div>
+} @else {
+<p class="empty">{{ CONSTANTS.MEDIA_NO_VIDEOS | translate }}</p>
+} } } }

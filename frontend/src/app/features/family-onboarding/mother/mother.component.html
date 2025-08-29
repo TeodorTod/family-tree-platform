@@ -24,14 +24,15 @@
     <!-- DOB Mode -->
     <span class="p-float-label w-full mb-3">
       <label for="dobMode">{{ CONSTANTS.INFO_DOB_MODE | translate }}</label>
-      <p-dropdown
+      <p-select
         inputId="dobMode"
         formControlName="dobMode"
         [options]="dobModeOptions"
         optionLabel="label"
         optionValue="value"
         class="w-full"
-      ></p-dropdown>
+      >
+      </p-select>
     </span>
     <!-- Exact date -->
     @if (form.value.dobMode === 'exact') {
@@ -86,14 +87,15 @@
     <!-- DOD Mode -->
     <label>{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
     <span class="p-float-label w-full mb-3">
-      <p-dropdown
+      <p-select
         inputId="dodMode"
         formControlName="dodMode"
         [options]="dodModeOptions"
         optionLabel="label"
         optionValue="value"
         class="w-full"
-      ></p-dropdown>
+      >
+      </p-select>
     </span>
 
     <!-- DOD: exact -->

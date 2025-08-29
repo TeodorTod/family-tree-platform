@@ -24,7 +24,6 @@ export class TreeTableComponent {
 
   @Input() members: FamilyMember[] = [];
   totalRecords: number = 0;
-  loading = false;
   private inflight = false;
 
   rows: number = 10;
@@ -85,7 +84,6 @@ export class TreeTableComponent {
   loadMembers(event: TableLazyLoadEvent) {
     if (this.inflight) return;
     this.inflight = true;
-    this.loading = true;
 
     const rows = event.rows ?? this.rows;
     const first = event.first ?? 0;
@@ -120,7 +118,6 @@ export class TreeTableComponent {
         next: (res) => {
           this.members = res.data as FamilyMember[];
           this.totalRecords = res.total;
-          this.loading = false;
           this.inflight = false;
         },
         error: (err) => {
@@ -134,7 +131,6 @@ export class TreeTableComponent {
             summary: 'Error',
             detail: errorMessage,
           });
-          this.loading = false;
           this.inflight = false;
         },
       });

@@ -5,7 +5,6 @@
   [rows]="rows"
   [first]="first"
   [totalRecords]="totalRecords"
-  [loading]="loading"
   [rowsPerPageOptions]="[5, 10, 20, 50]"
   [sortField]="sortField"
   [sortOrder]="sortOrder"
@@ -68,19 +67,6 @@
             tooltipPosition="top"
           ></button>
         </div>
-      </td>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <!-- We now have 4 columns -->
-      <td colspan="4">
-        {{
-          loading
-            ? ("Loading..." | translate)
-            : ("No members found" | translate)
-        }}
       </td>
     </tr>
   </ng-template>
