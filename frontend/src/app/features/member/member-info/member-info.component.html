@@ -341,11 +341,13 @@
 
             <!-- BIO -->
             <p-tabpanel [value]="TAB.BIO">
+              @if (activeIndex() === TAB.BIO) {
               <app-member-bio
                 [role]="role"
                 [memberId]="(member$ | async)?.id ?? null"
                 [profile]="(profile$ | async) ?? null"
               ></app-member-bio>
+              }
             </p-tabpanel>
 
             <!-- MEDIA -->
@@ -402,7 +404,7 @@
         pButton
         type="button"
         class="p-button-danger"
-        [disabled]="role === 'owner'"
+        [disabled]="role === ROLES.OWNER"
         label="{{ CONSTANTS.INFO_DELETE_MEMBER | translate }}"
         (click)="confirmDelete()"
         icon="pi pi-trash"

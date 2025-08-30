@@ -26,7 +26,6 @@ type QuillInstance = any;
 
 @Component({
   selector: 'app-member-bio',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],

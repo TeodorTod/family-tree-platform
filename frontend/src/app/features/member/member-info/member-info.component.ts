@@ -13,7 +13,6 @@ import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-i
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
-
 import { MemberAchievementsComponent } from '../components/member-achievements/member-achievements.component';
 import { MemberBioComponent } from '../components/member-bio/member-bio.component';
 import { MemberCareerComponent } from '../components/member-career/member-career.component';
@@ -27,13 +26,12 @@ import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { Observable, shareReplay, tap } from 'rxjs';
+import { TabRef } from '../../../shared/types/tab-ref.type';
 import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
-
-type TabRef<T, V = any> = T &
-  Partial<UnsavedAware> & {
-    getValue?: () => V;
-    markSaved?: () => void;
-  };
+import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
+import { FIELDS } from '../../../shared/enums/fields.type';
+import { RelationType } from '../../../shared/enums/relations.type';
+import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-member-info',
@@ -95,40 +93,37 @@ export class MemberInfoComponent implements OnInit {
   form!: FormGroup;
   role!: string;
   CONSTANTS = CONSTANTS;
+  ROLES = Roles;
   activeIndex = signal(0);
   profileDraft: MemberProfile = {};
   private lastSavedMemberSnapshot: any | null = null;
-  dobModeOptions = [
+  dobModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
-      value: 'exact' as const,
+      value: BirthDeathDateMode.EXACT,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
-      value: 'year' as const,
+      value: BirthDeathDateMode.YEAR,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
-      value: 'note' as const,
+      value: BirthDeathDateMode.NOTE,
     },
   ];
 
-  dodModeOptions = [
+  dodModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
     {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
-      value: 'exact' as const,
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      value: BirthDeathDateMode.EXACT,
     },
     {
-      label: this.translate.instant(
-        CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY
-      ),
-      value: 'year' as const,
+      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      value: BirthDeathDateMode.YEAR,
     },
     {
-      label: this.translate.instant(
-        CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL
-      ),
-      value: 'note' as const,
+      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      value: BirthDeathDateMode.NOTE,
     },
   ];
 
@@ -169,7 +164,11 @@ export class MemberInfoComponent implements OnInit {
         );
         if (!member) {
           this.form.patchValue(
-            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            {
+              dobMode: BirthDeathDateMode.EXACT,
+              dodMode: BirthDeathDateMode.EXACT,
+              isAlive: true,
+            },
             { emitEvent: false }
           );
           if (!this.hasConstant(this.role)) {
@@ -185,19 +184,23 @@ export class MemberInfoComponent implements OnInit {
 
         const converted = this.convertDatesToObjects(member);
 
-        let dobMode: 'exact' | 'year' | 'note' = 'exact';
+        let dobMode: BirthDeathDateMode = BirthDeathDateMode.EXACT;
         if (!converted.dob && converted.birthYear) {
           converted.dob = new Date(converted.birthYear, 0, 1);
-          dobMode = 'year';
+          dobMode = BirthDeathDateMode.YEAR;
         } else if (converted.birthNote) {
-          dobMode = 'note';
+          dobMode = BirthDeathDateMode.NOTE;
         }
 
-        let dodMode: 'exact' | 'year' | 'note' = 'exact';
+        let dodMode: BirthDeathDateMode = BirthDeathDateMode.EXACT;
         if (converted.isAlive === false) {
-          if (converted.dod) dodMode = 'exact';
-          else if ((converted as any).deathYear) dodMode = 'year';
-          else if ((converted as any).deathNote) dodMode = 'note';
+          if (converted.dod) {
+            dodMode = BirthDeathDateMode.EXACT;
+          } else if ((converted as any).deathYear) {
+            dodMode = BirthDeathDateMode.YEAR;
+          } else if ((converted as any).deathNote) {
+            dodMode = BirthDeathDateMode.NOTE;
+          }
         }
 
         this.originalPartnerStatus = (member.partnerStatus ??
@@ -276,7 +279,7 @@ export class MemberInfoComponent implements OnInit {
       const typed = (this.form?.get('translatedRole')?.value ?? '')
         .toString()
         .trim();
-      return typed || this.defaultGenericForRole(); //
+      return typed || this.defaultGenericForRole();
     }
     return this.getTranslatedRoleLabel();
   }
@@ -294,22 +297,23 @@ export class MemberInfoComponent implements OnInit {
       this.messageService.add({
         severity: 'success',
         summary: this.translate.instant(this.CONSTANTS.INFO_SUCCESS),
-        detail: this.translate.instant(msgKey) || 'Записано',
+        detail: this.translate.instant(msgKey),
       });
 
     const nochanges = () =>
       this.messageService.add({
         severity: 'info',
-        detail:
-          this.translate.instant(this.CONSTANTS.INFO_NO_CHANGES) ||
-          'Няма промени',
+        summary: this.translate.instant(this.CONSTANTS.INFO_UNSUCCESSFUL),
+        detail: this.translate.instant(this.CONSTANTS.INFO_NO_CHANGES),
       });
 
     const fail = (msgKey = this.CONSTANTS.INFO_SAVE_FAILED) =>
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: this.translate.instant(msgKey) || 'Неуспешен запис',
+        detail:
+          this.translate.instant(msgKey) ||
+          this.translate.instant(CONSTANTS.INFO_SAVE_FAILED),
       });
 
     const sanitizeNotes = (arr: any): any[] =>
@@ -325,11 +329,11 @@ export class MemberInfoComponent implements OnInit {
       const delta: Record<string, any> = {};
       for (const k of keys) {
         const prev = (this.profileDraft as any)?.[k];
-        const pv = k === 'notes' ? sanitizeNotes(prev) : prev ?? null;
-        const nv = k === 'notes' ? sanitizeNotes(next?.[k]) : next?.[k] ?? null;
+        const pv = k === FIELDS.NOTES ? sanitizeNotes(prev) : prev ?? null;
+        const nv =
+          k === FIELDS.NOTES ? sanitizeNotes(next?.[k]) : next?.[k] ?? null;
         if (!this.deepEqual(pv, nv)) {
-          // send the original (unsanitized) next value
-          delta[k] = next?.[k] ?? (k === 'notes' ? [] : null);
+          delta[k] = next?.[k] ?? (k === FIELDS.NOTES ? [] : null);
         }
       }
       return delta;
@@ -409,22 +413,24 @@ export class MemberInfoComponent implements OnInit {
     if (current === this.TAB.MEDIA) {
       const hadPending = this.mediaGallery?.hasUnsavedChanges?.() === true;
 
-      // Apply uploads + deletions together (only if the child is present)
-      if (this.mediaGallery?.flushPendingChanges) {
-        try {
-          await this.mediaGallery.flushPendingChanges();
-        } catch {
+      if (hadPending) {
+        if (this.mediaGallery?.flushPendingChanges) {
+          try {
+            await this.mediaGallery.flushPendingChanges();
+          } catch {
+            return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
+          }
+        } else {
           return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
         }
-      } else if (hadPending) {
-        // child not mounted but parent thinks there are pending changes
-        return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
       }
 
       // Persist cover (only if the child exposes it)
       const nextCover = this.mediaGallery?.getCoverUrl?.() ?? undefined;
+
       if (nextCover !== undefined) {
         const prevCover = (this.profileDraft as any)?.coverMediaUrl ?? null;
+
         if (!this.deepEqual(prevCover, nextCover)) {
           await new Promise<void>((resolve) => {
             this.profileService
@@ -452,7 +458,7 @@ export class MemberInfoComponent implements OnInit {
         }
       } else {
         if (hadPending) ok();
-        else nochanges();
+        else return nochanges();
       }
 
       this.mediaGallery?.markSaved?.();
@@ -463,8 +469,8 @@ export class MemberInfoComponent implements OnInit {
 
     // ============= BIO tab =============
     if (current === this.TAB.BIO && this.bioTab?.getValue) {
-      const val = this.bioTab.getValue(); // { bio, notes }
-      const delta = buildDelta(['bio', 'notes'], val);
+      const val = this.bioTab.getValue();
+      const delta = buildDelta([FIELDS.BIO, FIELDS.NOTES], val);
       if (Object.keys(delta).length === 0) return nochanges();
 
       this.profileService
@@ -489,7 +495,7 @@ export class MemberInfoComponent implements OnInit {
     // ============= CAREER tab =============
     if (current === this.TAB.CAREER && this.careerTab?.getValue) {
       const c = this.careerTab.getValue(); // { work, education }
-      const delta = buildDelta(['work', 'education'], c);
+      const delta = buildDelta([FIELDS.WORK, FIELDS.EDUCATION], c);
       if (Object.keys(delta).length === 0) return nochanges();
       this.profileService
         .saveProfileByRole(this.role, delta)
@@ -513,7 +519,7 @@ export class MemberInfoComponent implements OnInit {
     // ============= ACHIEVEMENTS tab =============
     if (current === this.TAB.ACHIEVEMENTS && this.achievementsTab?.getValue) {
       const next = this.achievementsTab.getValue();
-      const delta = buildDelta(['achievements'], { achievements: next });
+      const delta = buildDelta([FIELDS.ACHIEVEMENTS], { achievements: next });
       if (Object.keys(delta).length === 0) return nochanges();
       this.profileService
         .saveProfileByRole(this.role, delta)
@@ -537,7 +543,7 @@ export class MemberInfoComponent implements OnInit {
     // ============= FAVORITES tab =============
     if (current === this.TAB.FAVORITES && this.favoritesTab?.getValue) {
       const next = this.favoritesTab.getValue();
-      const delta = buildDelta(['favorites'], { favorites: next });
+      const delta = buildDelta([FIELDS.FAVORITES], { favorites: next });
       if (Object.keys(delta).length === 0) return nochanges();
       this.profileService
         .saveProfileByRole(this.role, delta)
@@ -561,7 +567,7 @@ export class MemberInfoComponent implements OnInit {
     // ============= PERSONAL tab =============
     if (current === this.TAB.PERSONAL && this.personalInfoTab?.getValue) {
       const next = this.personalInfoTab.getValue();
-      const delta = buildDelta(['personalInfo'], { personalInfo: next });
+      const delta = buildDelta([FIELDS.PERSONAL_INFO], { personalInfo: next });
       if (Object.keys(delta).length === 0) return nochanges();
       this.profileService
         .saveProfileByRole(this.role, delta)
@@ -585,7 +591,7 @@ export class MemberInfoComponent implements OnInit {
     // ============= STORIES tab (optional) =============
     if (current === this.TAB.STORIES && this.storiesTab?.getValue) {
       const next = this.storiesTab.getValue();
-      const delta = buildDelta(['stories'], { stories: next });
+      const delta = buildDelta([FIELDS.STORIES], { stories: next });
       if (Object.keys(delta).length === 0) return nochanges();
       this.profileService
         .saveProfileByRole(this.role, delta)
@@ -613,15 +619,11 @@ export class MemberInfoComponent implements OnInit {
   cancel(): void {
     if (this.hasAnyUnsavedChanges()) {
       this.confirm.confirm({
-        header:
-          this.translate.instant(CONSTANTS.INFO_UNSAVED_TITLE) ||
-          'Незаписани промени',
-        message:
-          this.translate.instant(CONSTANTS.INFO_UNSAVED_MESSAGE) ||
-          'Имате незаписани промени. Наистина ли искате да излезете?',
+        header: this.translate.instant(CONSTANTS.INFO_UNSAVED_TITLE),
+        message: this.translate.instant(CONSTANTS.INFO_UNSAVED_MESSAGE),
         icon: 'pi pi-exclamation-triangle',
-        acceptLabel: this.translate.instant(CONSTANTS.INFO_LEAVE) || 'Напусни',
-        rejectLabel: this.translate.instant(CONSTANTS.INFO_STAY) || 'Остани',
+        acceptLabel: this.translate.instant(CONSTANTS.INFO_LEAVE),
+        rejectLabel: this.translate.instant(CONSTANTS.INFO_STAY),
         acceptButtonStyleClass: 'p-button-danger',
         rejectButtonStyleClass: 'p-button-secondary',
         defaultFocus: 'reject',
@@ -641,23 +643,23 @@ export class MemberInfoComponent implements OnInit {
       queryParams: { view: previousView || 'chart' },
     });
   }
-  private inferLineage(role: string): 'maternal' | 'paternal' | 'unknown' {
+  private inferLineage(role: string): RelationType {
     const parts = role.toLowerCase().split('_');
-    if (parts[0] === 'paternal') return 'paternal';
-    if (parts[0] === 'maternal') return 'maternal';
-    const iFather = parts.indexOf('father');
-    const iMother = parts.indexOf('mother');
-    if (iFather === -1 && iMother === -1) return 'unknown';
-    if (iFather !== -1 && iMother === -1) return 'paternal';
-    if (iMother !== -1 && iFather === -1) return 'maternal';
-    return iFather < iMother ? 'paternal' : 'maternal';
+    if (parts[0] === RelationType.PATERNAL) return RelationType.PATERNAL;
+    if (parts[0] === RelationType.MATERNAL) return RelationType.MATERNAL;
+    const iFather = parts.indexOf(Roles.FATHER);
+    const iMother = parts.indexOf(Roles.MOTHER);
+    if (iFather === -1 && iMother === -1) return RelationType.UNKNOWN;
+    if (iFather !== -1 && iMother === -1) return RelationType.PATERNAL;
+    if (iMother !== -1 && iFather === -1) return RelationType.MATERNAL;
+    return iFather < iMother ? RelationType.PATERNAL : RelationType.MATERNAL;
   }
 
   private defaultGenericForRole(): string {
     const side = this.inferLineage(this.role);
-    if (side === 'maternal')
+    if (side === RelationType.MATERNAL)
       return this.translate.instant(CONSTANTS.RELATION_MATERNAL_GENERIC);
-    if (side === 'paternal')
+    if (side === RelationType.PATERNAL)
       return this.translate.instant(CONSTANTS.RELATION_PATERNAL_GENERIC);
     return this.translate.instant(CONSTANTS.RELATION_UNKNOWN);
   }
@@ -695,7 +697,7 @@ export class MemberInfoComponent implements OnInit {
   }
 
   confirmDelete() {
-    if (this.role === 'owner') return;
+    if (this.role === Roles.OWNER) return;
 
     this.confirm.confirm({
       header: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_TITLE),
@@ -730,7 +732,7 @@ export class MemberInfoComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to delete',
+            detail: this.translate.instant(CONSTANTS.INFO_UNSUCCESSFUL),
           });
           console.error(err);
         },
@@ -808,54 +810,6 @@ export class MemberInfoComponent implements OnInit {
     for (const [k, v] of Object.entries(next)) {
       if (!this.deepEqual(v, (prev as any)[k])) out[k] = v;
     }
-    return out;
-  }
-
-  private diffProfile(prev: any | null, curr: any) {
-    const out: Record<string, any> = {};
-    for (const k of Object.keys(curr)) {
-      const prevVal = prev ? (prev as any)[k] : undefined;
-      if (!this.deepEqual(prevVal, curr[k])) out[k] = curr[k];
-    }
-    return out;
-  }
-
-  private collectCurrentProfileValues(): any {
-    const curr: any = {};
-
-    if (this.bioTab && (this.bioTab as any).getValue) {
-      const val = (this.bioTab as any).getValue(); // { bio, notes }
-      curr.bio = val?.bio ?? null;
-      curr.notes = Array.isArray(val?.notes) ? val.notes : [];
-    }
-
-    if (this.careerTab && (this.careerTab as any).getValue) {
-      const career = (this.careerTab as any).getValue();
-      curr.work = career?.work ?? null;
-      curr.education = career?.education ?? null;
-    }
-
-    if (this.achievementsTab && (this.achievementsTab as any).getValue) {
-      curr.achievements = (this.achievementsTab as any).getValue();
-    }
-
-    if (this.favoritesTab && (this.favoritesTab as any).getValue) {
-      curr.favorites = (this.favoritesTab as any).getValue();
-    }
-
-    if (this.personalInfoTab && (this.personalInfoTab as any).getValue) {
-      curr.personalInfo = (this.personalInfoTab as any).getValue();
-    }
-
-    // You can add more tabs here later (stories, etc.)
-    return curr;
-  }
-
-  private pickFromProfile(src: any, keys: string[]) {
-    const out: any = {};
-    for (const k of keys) out[k] = src ? src[k] : undefined;
-    // normalize for fair comparison to avoid undefined vs [] mismatches
-    if ('notes' in out) out.notes = Array.isArray(out.notes) ? out.notes : [];
     return out;
   }
 }
