@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Observable, shareReplay, tap } from 'rxjs';
+import { Observable, shareReplay, switchMap, tap } from 'rxjs';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import {
   FormBuilder,
@@ -10,6 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
+import { CONSTANTS } from '../../shared/constants/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,19 @@ export class FamilyService {
   private fb = inject(FormBuilder);
   private api = environment.apiUrl;
   private memberByRoleCache = new Map<string, Observable<any>>();
+
+  private roleKey(role: string) {
+    return (role ?? '').toLowerCase();
+  }
+  private invalidateRoleCache(role: string) {
+    this.memberByRoleCache.delete(this.roleKey(role));
+  }
+
+  private fetchByRoleDirect(role: string) {
+    return this.http.get<any>(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`
+    );
+  }
 
   createFamilyMemberForm(): FormGroup<{
     firstName: FormControl<string | null>;
@@ -228,7 +242,7 @@ export class FamilyService {
     if (opts?.with?.length) params['with'] = opts.with.join(',');
 
     return this.http.get<Partial<FamilyMember>[]>(
-      `${this.api}/family-members/my-tree`,
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/my-tree`,
       { params }
     );
   }
@@ -245,24 +259,30 @@ export class FamilyService {
     if (opts?.with?.length) params['with'] = opts.with.join(',');
 
     return this.http.get<Partial<FamilyMember>>(
-      `${this.api}/family-members/by-id/${id}`,
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/by-id/${id}`,
       { params }
     );
   }
 
   createFamilyMember(data: FamilyMember) {
-    return this.http.post(`${this.api}/family-members`, data);
+    return this.http.post(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}`,
+      data
+    );
   }
 
   upsertFamilyMember(data: FamilyMember) {
-    return this.http.post(`${this.api}/family-members/upsert`, data);
+    return this.http.post(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/upsert`,
+      data
+    );
   }
 
   getFamilyMemberByRole(role: string) {
-    const key = role.toLowerCase();
+    const key = this.roleKey(role);
     if (!this.memberByRoleCache.has(key)) {
       const obs = this.http
-        .get<any>(`${this.api}/family-members/${role}`)
+        .get<any>(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`)
         .pipe(shareReplay(1));
       this.memberByRoleCache.set(key, obs);
     }
@@ -270,23 +290,41 @@ export class FamilyService {
   }
 
   createMemberByRole(role: string, data: FamilyMember) {
-    return this.http.post(`${this.api}/family-members/${role}`, data);
+    return this.http
+      .post(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`, data)
+      .pipe(
+        tap(() => this.invalidateRoleCache(role)),
+        switchMap(() => this.fetchByRoleDirect(role))
+      );
   }
 
   updateMemberByRole(role: string, data: Partial<FamilyMember>) {
-    return this.http.put(`${this.api}/family-members/${role}`, data);
+    return this.http
+      .put(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`, data)
+      .pipe(
+        tap(() => this.invalidateRoleCache(role)),
+        switchMap(() => this.fetchByRoleDirect(role))
+      );
   }
 
   saveMemberByRole(role: string, payload: any) {
     return this.http
-      .put<any>(`${this.api}/family-members/${role}`, payload)
-      .pipe(tap(() => this.memberByRoleCache.delete(role.toLowerCase())));
+      .put<any>(
+        `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`,
+        payload
+      )
+      .pipe(
+        tap(() => this.invalidateRoleCache(role)),
+        switchMap(() => this.fetchByRoleDirect(role))
+      );
   }
 
   deleteMemberByRole(role: string) {
-    return this.http.delete<{ ok: boolean }>(
-      `${this.api}/family-members/${role}`
-    );
+    return this.http
+      .delete<{ ok: boolean }>(
+        `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`
+      )
+      .pipe(tap(() => this.invalidateRoleCache(role)));
   }
 
   uploadPhoto(file: File) {
@@ -303,7 +341,10 @@ export class FamilyService {
     toMemberId: string;
     type: string;
   }) {
-    return this.http.post(`${this.api}/family-members/relationships`, data);
+    return this.http.post(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/relationships`,
+      data
+    );
   }
 
   getMyFamilyPaged(
@@ -326,7 +367,7 @@ export class FamilyService {
     if (opts?.with?.length) params['with'] = opts.with.join(',');
 
     return this.http.get<{ data: Partial<FamilyMember>[]; total: number }>(
-      `${this.api}/family-members/my-tree-paged`,
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/my-tree-paged`,
       { params }
     );
   }
@@ -336,16 +377,20 @@ export class FamilyService {
     partnerId: string,
     status: PartnerStatus = PartnerStatus.UNKNOWN
   ) {
-    return this.http.post(`${this.api}/family-members/set-partner`, {
-      memberId,
-      partnerId,
-      status,
-    });
+    return this.http
+      .post(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/set-partner`, {
+        memberId,
+        partnerId,
+        status,
+      })
+      .pipe(tap(() => this.memberByRoleCache.clear()));
   }
 
   clearPartner(memberId: string) {
-    return this.http.post(`${this.api}/family-members/clear-partner`, {
-      memberId,
-    });
+    return this.http
+      .post(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/clear-partner`, {
+        memberId,
+      })
+      .pipe(tap(() => this.memberByRoleCache.clear()));
   }
 }

@@ -27,6 +27,7 @@ export class CONSTANTS {
     TREE: '/tree',
     MEMBER: '/member',
     AUTH_GOOGLE_LOGIN: '/auth/google',
+    FAMILY_MEMBERS: 'family-members',
     SETTINGS: {
       ACCOUNT: '/settings/account',
       SUBSCRIPTION: '/settings/subscription',

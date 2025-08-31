@@ -25,7 +25,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
-import { Observable, shareReplay, tap } from 'rxjs';
+import { Observable, of, shareReplay, tap } from 'rxjs';
 import { TabRef } from '../../../shared/types/tab-ref.type';
 import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
 import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
@@ -478,15 +478,21 @@ export class MemberInfoComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (saved) => {
-            this.profileDraft = {
+            const fresh: MemberProfile = (saved as MemberProfile) ?? {
               ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
+              ...(delta as MemberProfile),
             };
+
+            this.profileDraft = fresh;
+
+            this.pushProfileToChild(fresh);
+
             this.bioTab?.markSaved?.();
             this.form.markAsPristine();
             this.form.markAsUntouched();
             ok();
           },
+
           error: () => fail(),
         });
       return;
@@ -811,5 +817,9 @@ export class MemberInfoComponent implements OnInit {
       if (!this.deepEqual(v, (prev as any)[k])) out[k] = v;
     }
     return out;
+  }
+
+  private pushProfileToChild(next: MemberProfile | null) {
+    this.profile$ = of(next ? { ...next } : null).pipe(shareReplay(1));
   }
 }
