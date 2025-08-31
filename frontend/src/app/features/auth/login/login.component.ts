@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 import { FamilyService } from '../../../core/services/family.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-login',
@@ -50,8 +51,35 @@ export class LoginComponent implements OnInit {
             .getMyFamily()
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((family) => {
+              console.log('Family on login:', family);
+
               if (!family || family.length === 0) {
                 this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.OWNER]);
+                return;
+              }
+
+              const roles = new Set(
+                family.map((m) => String(m.role || '').toLowerCase())
+              );
+
+              if (!roles.has(Roles.MOTHER)) {
+                this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.MOTHER]);
+              } else if (
+                !roles.has(Roles.MATERNAL_GRANDMOTHER) ||
+                !roles.has(Roles.MATERNAL_GRANDFATHER)
+              ) {
+                this.router.navigate([
+                  CONSTANTS.ROUTES.ONBOARDING.MATERNAL_GRANDPARENTS,
+                ]);
+              } else if (!roles.has(Roles.FATHER)) {
+                this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.FATHER]);
+              } else if (
+                !roles.has(Roles.PATERNAL_GRANDMOTHER) ||
+                !roles.has(Roles.PATERNAL_GRANDFATHER)
+              ) {
+                this.router.navigate([
+                  CONSTANTS.ROUTES.ONBOARDING.PATERNAL_GRANDPARENTS,
+                ]);
               } else {
                 this.router.navigate([CONSTANTS.ROUTES.TREE]);
               }
