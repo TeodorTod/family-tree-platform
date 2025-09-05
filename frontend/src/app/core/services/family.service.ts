@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { CONSTANTS } from '../../shared/constants/constants';
+import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -40,14 +41,14 @@ export class FamilyService {
     lastName: FormControl<string | null>;
     gender: FormControl<string | null>;
 
-    dobMode: FormControl<'exact' | 'year' | 'note'>;
+    dobMode: FormControl<BirthDeathDateMode>;
     dob: FormControl<Date | null>;
     birthYear: FormControl<number | null>;
     birthYearDate: FormControl<Date | null>;
     birthNote: FormControl<string | null>;
 
     // death
-    dodMode: FormControl<'exact' | 'year' | 'note'>;
+    dodMode: FormControl<BirthDeathDateMode>;
     dod: FormControl<Date | null>;
     deathYear: FormControl<number | null>;
     deathYearDate: FormControl<Date | null>;
@@ -64,7 +65,7 @@ export class FamilyService {
       gender: new FormControl<string | null>(null),
 
       // birth
-      dobMode: new FormControl<'exact' | 'year' | 'note'>('exact', {
+      dobMode: new FormControl<BirthDeathDateMode>(BirthDeathDateMode.EXACT, {
         nonNullable: true,
       }),
       dob: new FormControl<Date | null>(null),
@@ -73,7 +74,7 @@ export class FamilyService {
       birthNote: new FormControl<string | null>(null),
 
       // death
-      dodMode: new FormControl<'exact' | 'year' | 'note'>('exact', {
+      dodMode: new FormControl<BirthDeathDateMode>(BirthDeathDateMode.EXACT, {
         nonNullable: true,
       }),
       dod: new FormControl<Date | null>(null),
@@ -96,11 +97,11 @@ export class FamilyService {
       by.clearValidators();
       bn.clearValidators();
 
-      if (mode === 'exact') {
+      if (mode === BirthDeathDateMode.EXACT) {
         by.setValue(null, { emitEvent: false });
         byDate.setValue(null, { emitEvent: false });
         bn.setValue(null, { emitEvent: false });
-      } else if (mode === 'year') {
+      } else if (mode === BirthDeathDateMode.YEAR) {
         by.setValidators([Validators.min(1000), Validators.max(2100)]);
         dob.setValue(null, { emitEvent: false });
         bn.setValue(null, { emitEvent: false });
@@ -133,11 +134,11 @@ export class FamilyService {
       dy.clearValidators();
       dn.clearValidators();
 
-      if (mode === 'exact') {
+      if (mode === BirthDeathDateMode.EXACT) {
         dy.setValue(null, { emitEvent: false });
         dyDate.setValue(null, { emitEvent: false });
         dn.setValue(null, { emitEvent: false });
-      } else if (mode === 'year') {
+      } else if (mode === BirthDeathDateMode.YEAR) {
         dy.setValidators([Validators.min(1000), Validators.max(2100)]);
         dod.setValue(null, { emitEvent: false });
         dn.setValue(null, { emitEvent: false });
@@ -185,20 +186,20 @@ export class FamilyService {
     birthYear?: number | null;
     birthNote?: string | null;
   } {
-    const mode = form.get('dobMode')!.value as 'exact' | 'year' | 'note';
+    const mode = form.get('dobMode')!.value as BirthDeathDateMode;
     const dob: Date | null = form.value.dob;
 
-    if (mode === 'exact' && dob) {
+    if (mode === BirthDeathDateMode.EXACT && dob) {
       return {
         dob: new Date(dob).toISOString(),
         birthYear: null,
         birthNote: null,
       };
     }
-    if (mode === 'year' && dob) {
+    if (mode === BirthDeathDateMode.YEAR && dob) {
       return { dob: null, birthYear: dob.getFullYear(), birthNote: null };
     }
-    if (mode === 'note' && form.value.birthNote) {
+    if (mode === BirthDeathDateMode.NOTE && form.value.birthNote) {
       return { dob: null, birthYear: null, birthNote: form.value.birthNote };
     }
     return { dob: null, birthYear: null, birthNote: null };
@@ -212,8 +213,8 @@ export class FamilyService {
     if (form.value.isAlive) {
       return { dod: null, deathYear: null, deathNote: null };
     }
-    const mode = form.get('dodMode')!.value as 'exact' | 'year' | 'note';
-    if (mode === 'exact' && form.value.dod) {
+    const mode = form.get('dodMode')!.value as BirthDeathDateMode;
+    if (mode === BirthDeathDateMode.EXACT && form.value.dod) {
       return {
         dod: new Date(form.value.dod).toISOString(),
         deathYear: null,

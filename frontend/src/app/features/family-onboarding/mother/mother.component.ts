@@ -11,6 +11,7 @@ import { Roles } from '../../../shared/enums/roles.enum';
 import { switchMap, forkJoin, of } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
 
 @Component({
   selector: 'app-mother',
@@ -33,16 +34,38 @@ export class MotherComponent implements OnInit {
   form = this.familyService.createFamilyMemberForm();
 
   // Dropdown options
-  dobModeOptions = [
-    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  dobModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      value: BirthDeathDateMode.EXACT,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      value: BirthDeathDateMode.YEAR,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      value: BirthDeathDateMode.NOTE,
+    },
   ];
 
-  dodModeOptions = [
-    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  dodModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
+      value: BirthDeathDateMode.EXACT,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY
+      ),
+      value: BirthDeathDateMode.YEAR,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL
+      ),
+      value: BirthDeathDateMode.NOTE,
+    },
   ];
 
   ngOnInit(): void {
@@ -51,9 +74,12 @@ export class MotherComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((mother) => {
         if (!mother) {
-          // defaults
           this.form.patchValue(
-            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            {
+              dobMode: BirthDeathDateMode.EXACT,
+              dodMode: BirthDeathDateMode.EXACT,
+              isAlive: true,
+            },
             { emitEvent: false }
           );
           return;
@@ -61,19 +87,29 @@ export class MotherComponent implements OnInit {
 
         this.hasExistingRecord = true;
 
-        // infer modes
-        const dobMode: 'exact' | 'year' | 'note' =
-          mother.dob ? 'exact' : mother.birthYear ? 'year' : mother.birthNote ? 'note' : 'exact';
+        // infer modes with enum
+        const dobMode: BirthDeathDateMode = mother.dob
+          ? BirthDeathDateMode.EXACT
+          : mother.birthYear
+          ? BirthDeathDateMode.YEAR
+          : mother.birthNote
+          ? BirthDeathDateMode.NOTE
+          : BirthDeathDateMode.EXACT;
 
-        const dodMode: 'exact' | 'year' | 'note' =
-          mother.isAlive
-            ? 'exact'
-            : mother.dod ? 'exact' : mother.deathYear ? 'year' : mother.deathNote ? 'note' : 'exact';
+        const dodMode: BirthDeathDateMode = mother.isAlive
+          ? BirthDeathDateMode.EXACT
+          : mother.dod
+          ? BirthDeathDateMode.EXACT
+          : mother.deathYear
+          ? BirthDeathDateMode.YEAR
+          : mother.deathNote
+          ? BirthDeathDateMode.NOTE
+          : BirthDeathDateMode.EXACT;
 
-        // set modes first (to avoid validators clearing other values)
+        // set modes first
         this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
 
-        // patch everything else
+        // patch the rest
         this.form.patchValue(
           {
             firstName: mother.firstName ?? null,
@@ -81,17 +117,19 @@ export class MotherComponent implements OnInit {
             lastName: mother.lastName ?? null,
             gender: mother.gender ?? null,
 
-            // birth
             dob: mother.dob ? new Date(mother.dob) : null,
             birthYear: mother.birthYear ?? null,
-            birthYearDate: mother.birthYear ? new Date(mother.birthYear, 0, 1) : null,
+            birthYearDate: mother.birthYear
+              ? new Date(mother.birthYear, 0, 1)
+              : null,
             birthNote: mother.birthNote ?? null,
 
-            // death
             isAlive: mother.isAlive ?? true,
             dod: mother.dod ? new Date(mother.dod) : null,
             deathYear: mother.deathYear ?? null,
-            deathYearDate: mother.deathYear ? new Date(mother.deathYear, 0, 1) : null,
+            deathYearDate: mother.deathYear
+              ? new Date(mother.deathYear, 0, 1)
+              : null,
             deathNote: mother.deathNote ?? null,
 
             translatedRole: mother.translatedRole ?? null,

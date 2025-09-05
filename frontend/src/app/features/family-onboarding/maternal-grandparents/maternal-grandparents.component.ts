@@ -12,6 +12,7 @@ import { Roles } from '../../../shared/enums/roles.enum';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
 
 @Component({
   selector: 'app-maternal-grandparents',
@@ -41,16 +42,38 @@ export class MaternalGrandparentsComponent implements OnInit {
   grandfatherExists = false;
 
   // Mode dropdowns (reused by both forms)
-  dobModeOptions = [
-    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH), value: 'exact' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  dobModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      value: BirthDeathDateMode.EXACT,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      value: BirthDeathDateMode.YEAR,
+    },
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      value: BirthDeathDateMode.NOTE,
+    },
   ];
 
-  dodModeOptions = [
-    { label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH), value: 'exact' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY), value: 'year' as const },
-    { label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL), value: 'note' as const },
+  dodModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [
+    {
+      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
+      value: BirthDeathDateMode.EXACT,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_YEAR_ONLY ?? CONSTANTS.INFO_DOB_YEAR_ONLY
+      ),
+      value: BirthDeathDateMode.YEAR,
+    },
+    {
+      label: this.translate.instant(
+        CONSTANTS.INFO_DOD_NOTE_LABEL ?? CONSTANTS.INFO_DOB_NOTE_LABEL
+      ),
+      value: BirthDeathDateMode.NOTE,
+    },
   ];
 
   ngOnInit(): void {
@@ -80,7 +103,11 @@ export class MaternalGrandparentsComponent implements OnInit {
       .subscribe((member) => {
         if (!member) {
           form.patchValue(
-            { dobMode: 'exact', dodMode: 'exact', isAlive: true },
+            {
+              dobMode: BirthDeathDateMode.EXACT,
+              dodMode: BirthDeathDateMode.EXACT,
+              isAlive: true,
+            },
             { emitEvent: false }
           );
           return;
@@ -88,19 +115,27 @@ export class MaternalGrandparentsComponent implements OnInit {
 
         this[existenceFlag] = true;
 
-        // infer modes
-        const dobMode: 'exact' | 'year' | 'note' =
-          member.dob ? 'exact' :
-          member.birthYear ? 'year' :
-          member.birthNote ? 'note' : 'exact';
+        // infer modes with enum
+        const dobMode: BirthDeathDateMode = member.dob
+          ? BirthDeathDateMode.EXACT
+          : member.birthYear
+          ? BirthDeathDateMode.YEAR
+          : member.birthNote
+          ? BirthDeathDateMode.NOTE
+          : BirthDeathDateMode.EXACT;
 
         const deathYear = (member as any).deathYear ?? null;
         const deathNote = (member as any).deathNote ?? null;
 
-        const dodMode: 'exact' | 'year' | 'note' =
-          member.isAlive
-            ? 'exact'
-            : member.dod ? 'exact' : deathYear ? 'year' : deathNote ? 'note' : 'exact';
+        const dodMode: BirthDeathDateMode = member.isAlive
+          ? BirthDeathDateMode.EXACT
+          : member.dod
+          ? BirthDeathDateMode.EXACT
+          : deathYear
+          ? BirthDeathDateMode.YEAR
+          : deathNote
+          ? BirthDeathDateMode.NOTE
+          : BirthDeathDateMode.EXACT;
 
         // set modes first
         form.patchValue({ dobMode, dodMode }, { emitEvent: false });
@@ -116,15 +151,17 @@ export class MaternalGrandparentsComponent implements OnInit {
             // birth
             dob: member.dob ? new Date(member.dob) : null,
             birthYear: member.birthYear ?? null,
-            birthYearDate: member.birthYear ? new Date(member.birthYear, 0, 1) : null,
+            birthYearDate: member.birthYear
+              ? new Date(member.birthYear, 0, 1)
+              : null,
             birthNote: member.birthNote ?? null,
 
             // death
             isAlive: member.isAlive ?? true,
             dod: member.dod ? new Date(member.dod) : null,
-            deathYear: deathYear,
+            deathYear,
             deathYearDate: deathYear ? new Date(deathYear, 0, 1) : null,
-            deathNote: deathNote,
+            deathNote,
 
             translatedRole: member.translatedRole ?? null,
           },
@@ -133,7 +170,9 @@ export class MaternalGrandparentsComponent implements OnInit {
 
         // state + photo
         this.familyState[
-          role === Roles.MATERNAL_GRANDMOTHER ? 'maternalGrandmother' : 'maternalGrandfather'
+          role === Roles.MATERNAL_GRANDMOTHER
+            ? 'maternalGrandmother'
+            : 'maternalGrandfather'
         ].set(member);
 
         photoSignal.set(member.photoUrl || null);
@@ -219,14 +258,22 @@ export class MaternalGrandparentsComponent implements OnInit {
         // fetch both after save to ensure we have IDs
         switchMap(() =>
           forkJoin([
-            this.familyService.getFamilyMemberByRole(Roles.MATERNAL_GRANDMOTHER),
-            this.familyService.getFamilyMemberByRole(Roles.MATERNAL_GRANDFATHER),
+            this.familyService.getFamilyMemberByRole(
+              Roles.MATERNAL_GRANDMOTHER
+            ),
+            this.familyService.getFamilyMemberByRole(
+              Roles.MATERNAL_GRANDFATHER
+            ),
           ])
         ),
         // link them if both exist
         switchMap(([gm, gf]) => {
           if (gm?.id && gf?.id) {
-            return this.familyService.setPartner(gm.id, gf.id, PartnerStatus.UNKNOWN);
+            return this.familyService.setPartner(
+              gm.id,
+              gf.id,
+              PartnerStatus.UNKNOWN
+            );
           }
           return of(null);
         }),
