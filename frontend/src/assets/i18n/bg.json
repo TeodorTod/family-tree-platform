@@ -89,7 +89,10 @@
     "STAY": "Остани",
     "LEAVE": "Напусни",
     "NO_CHANGES": "Няма направени промени",
-    "CLOSE": "Затвори"
+    "CLOSE": "Затвори",
+    "RESET": "Нулирай",
+    "UPDATE": "Актуализирай",
+    "ADD": "Добави"
   },
 
   "ADD": {
@@ -220,5 +223,33 @@
     "DONE": "Готово",
     "RESET_DELETES": "Възстанови изтривания",
     "REMOVE_FROM_GALLERY": "Премахни от галерията"
+  },
+
+  "CAREER": {
+    "COMPLETED": "Завършено",
+    "NOT_COMPLETED": "Не е завършено",
+    "TAB_EDU": "Образование",
+    "TAB_WORK": "Работа",
+    "EDU_NAME": "Учебно заведение",
+    "EDU_QUALIFICATION": "Квалификация",
+    "COMPLETION": "Завършване",
+    "START_YEAR": "Начална година",
+    "END_YEAR": "Крайна година",
+    "NOTES": "Бележки",
+    "COL_NAME": "Име",
+    "COL_QUALIFICATION": "Квалификация",
+    "COL_START": "Начало",
+    "COL_END": "Край",
+    "COL_COMPLETED": "Завършване",
+    "COL_NOTES": "Бележки",
+    "COL_ACTIONS": "Действия",
+    "EMPTY_EDU": "Няма добавено образование",
+    "WORK_EMPLOYER": "Работодател",
+    "COL_EMPLOYER": "Работодател",
+    "EMPTY_WORK": "Няма добавена работа",
+    "WORK_LIST": "Всички работни места",
+    "EDU_LIST": "Всички образования",
+    "WORK_PROFESSION": "Професия",
+    "COL_PROFESSION": "Професия"
   }
 }

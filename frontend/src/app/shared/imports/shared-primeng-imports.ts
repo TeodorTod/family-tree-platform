@@ -5,7 +5,6 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { TreeModule } from 'primeng/tree';
 import { TimelineModule } from 'primeng/timeline';
-
 import { FieldsetModule } from 'primeng/fieldset';
 import { MessageModule } from 'primeng/message';
 import { MenubarModule } from 'primeng/menubar';
@@ -28,6 +27,8 @@ import { GalleriaModule } from 'primeng/galleria';
 import { DividerModule } from 'primeng/divider';
 import { BlockUIModule } from 'primeng/blockui';
 import { TabsModule } from 'primeng/tabs';
+import { TagModule } from 'primeng/tag';
+import { SelectButton } from 'primeng/selectbutton';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -59,4 +60,6 @@ export const SHARED_PRIMENG_IMPORTS = [
   GalleriaModule,
   DividerModule,
   BlockUIModule,
+  TagModule,
+  SelectButton
 ];

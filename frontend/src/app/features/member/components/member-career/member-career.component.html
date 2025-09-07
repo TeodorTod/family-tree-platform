@@ -1,1 +1,479 @@
-<p>member-career works!</p>
+<div class="career-wrap">
+  <!-- Segmented header -->
+  <div class="segmented">
+    <button
+      pButton
+      type="button"
+      class="seg-btn"
+      [ngClass]="
+        section() !== 'education' ? 'p-button-outlined p-button-secondary' : ''
+      "
+      icon="pi pi-book"
+      (click)="showEducation()"
+    >
+      <span class="seg-label">{{ CONSTANTS.CAREER_TAB_EDU | translate }}</span>
+      <span class="seg-badge">{{ education().length }}</span>
+    </button>
+
+    <button
+      pButton
+      type="button"
+      class="seg-btn"
+      [ngClass]="
+        section() !== 'work' ? 'p-button-outlined p-button-secondary' : ''
+      "
+      icon="pi pi-briefcase"
+      (click)="showWork()"
+    >
+      <span class="seg-label">{{ CONSTANTS.CAREER_TAB_WORK | translate }}</span>
+      <span class="seg-badge">{{ work().length }}</span>
+    </button>
+  </div>
+
+  @switch (section()) { @case ('education') {
+  <div class="field-group">
+    <div class="field-group-title">
+      <i class="pi pi-book"></i> {{ CONSTANTS.CAREER_TAB_EDU | translate }}
+    </div>
+
+    <form
+      class="form-grid"
+      [formGroup]="eduForm"
+      (ngSubmit)="addOrUpdateEducation()"
+    >
+      <!-- Name -->
+      <div class="floating-field" [class.active]="eduForm.get('name')?.value">
+        <input pInputText formControlName="name" placeholder=" " />
+        <label>{{ CONSTANTS.CAREER_EDU_NAME | translate }}</label>
+      </div>
+
+      <!--Qualification -->
+
+      <div
+        class="floating-field"
+        [class.active]="eduForm.get('qualification')?.value"
+      >
+        <input pInputText formControlName="qualification" placeholder=" " />
+        <label>{{ CONSTANTS.CAREER_EDU_QUALIFICATION | translate }}</label>
+      </div>
+
+      <!-- Completed -->
+      <div class="floating-field active">
+        <p-selectButton
+          [options]="completedOptions"
+          formControlName="completed"
+          [allowEmpty]="false"
+        ></p-selectButton>
+        <label>{{ CONSTANTS.CAREER_COMPLETION | translate }}</label>
+      </div>
+
+      <!-- Start year -->
+      <div
+        class="floating-field"
+        [class.active]="eduForm.get('startYearDate')?.value"
+      >
+        <p-datepicker
+          formControlName="startYearDate"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+        <label>{{ CONSTANTS.CAREER_START_YEAR | translate }}</label>
+      </div>
+
+      <!-- End year -->
+      @if (eduForm.value.completed) {
+      <div
+        class="floating-field"
+        [class.active]="eduForm.get('endYearDate')?.value"
+      >
+        <p-datepicker
+          formControlName="endYearDate"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+        <label>{{ CONSTANTS.CAREER_END_YEAR | translate }}</label>
+      </div>
+      }
+
+      <!-- Notes -->
+      <div class="floating-field" [class.active]="eduForm.get('notes')?.value">
+        <textarea
+          pInputTextarea
+          rows="1"
+          formControlName="notes"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.CAREER_NOTES | translate }}</label>
+      </div>
+
+      <div class="actions">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          class="p-button-secondary"
+          [label]="CONSTANTS.INFO_RESET | translate"
+          (click)="resetEducationForm()"
+        ></button>
+        <button
+          pButton
+          type="submit"
+          icon="pi pi-check"
+          [label]="
+            (editingEducationId ? CONSTANTS.INFO_UPDATE : CONSTANTS.INFO_ADD)
+              | translate
+          "
+          [disabled]="eduForm.invalid"
+        ></button>
+      </div>
+    </form>
+  </div>
+
+  <div class="field-group soft">
+    <div class="field-group-title">
+      <i class="pi pi-list"></i> {{ CONSTANTS.CAREER_EDU_LIST | translate }}
+    </div>
+
+    @if (education().length) {
+    <p-table
+      [value]="education()"
+      dataKey="id"
+      [responsiveLayout]="'stack'"
+      [breakpoint]="'1050px'"
+      [paginator]="education().length > 5"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [showCurrentPageReport]="education().length > 5"
+      currentPageReportTemplate="{first}–{last} / {totalRecords}"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ CONSTANTS.CAREER_COL_NAME | translate }}</th>
+          <th>{{ CONSTANTS.CAREER_COL_QUALIFICATION | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_START | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_END | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_COMPLETED | translate }}</th>
+          <th>{{ CONSTANTS.CAREER_COL_NOTES | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_ACTIONS | translate }}</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>
+            <span
+              class="cell-trunc"
+              [pTooltip]="row.name || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="!(row.name && row.name.length)"
+            >
+              {{
+                row.name
+                  ? row.name.length > 20
+                    ? (row.name | slice : 0 : 20) + "…"
+                    : row.name
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td>
+            <span
+              class="cell-trunc"
+              [pTooltip]="row.qualification || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="
+                !(row.qualification && row.qualification.length)
+              "
+            >
+              {{
+                row.qualification
+                  ? row.qualification.length > 20
+                    ? (row.qualification | slice : 0 : 20) + "…"
+                    : row.qualification
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td class="fit">{{ row.startYear }}</td>
+          <td class="fit">{{ row.endYear ?? "—" }}</td>
+          <td class="fit">
+            <p-tag
+              [value]="
+                (row.completed
+                  ? CONSTANTS.CAREER_COMPLETED
+                  : CONSTANTS.CAREER_NOT_COMPLETED
+                ) | translate
+              "
+              [severity]="row.completed ? 'success' : 'warning'"
+            ></p-tag>
+          </td>
+          <td>
+            <span
+              class="notes-trunc"
+              [pTooltip]="row.notes || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="!(row.notes && row.notes.length)"
+            >
+              {{
+                row.notes
+                  ? row.notes.length > 20
+                    ? (row.notes | slice : 0 : 20) + "…"
+                    : row.notes
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td class="fit">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-pencil"
+              class="p-button-text"
+              (click)="editEducation(row)"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              (click)="deleteEducation(row)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    } @else {
+    <p class="empty">{{ CONSTANTS.CAREER_EMPTY_EDU | translate }}</p>
+    }
+  </div>
+  } @case ('work') {
+  <div class="field-group">
+    <div class="field-group-title">
+      <i class="pi pi-briefcase"></i>
+      {{ CONSTANTS.CAREER_TAB_WORK | translate }}
+    </div>
+
+    <form
+      class="form-grid"
+      [formGroup]="workForm"
+      (ngSubmit)="addOrUpdateWork()"
+    >
+      <!-- Employer name -->
+      <div
+        class="floating-field"
+        [class.active]="workForm.get('employerName')?.value"
+      >
+        <input pInputText formControlName="employerName" placeholder=" " />
+        <label>{{ CONSTANTS.CAREER_WORK_EMPLOYER | translate }}</label>
+      </div>
+
+      <!-- Profession -->
+      <div
+        class="floating-field"
+        [class.active]="workForm.get('profession')?.value"
+      >
+        <input pInputText formControlName="profession" placeholder=" " />
+        <label>{{ CONSTANTS.CAREER_WORK_PROFESSION | translate }}</label>
+      </div>
+
+      <!-- Completed -->
+      <div class="floating-field active">
+        <p-selectButton
+          [options]="completedOptions"
+          formControlName="completed"
+          [allowEmpty]="false"
+        ></p-selectButton>
+        <label>{{ CONSTANTS.CAREER_COMPLETION | translate }}</label>
+      </div>
+
+      <!-- Start year -->
+      <div
+        class="floating-field"
+        [class.active]="workForm.get('startYearDate')?.value"
+      >
+        <p-datepicker
+          formControlName="startYearDate"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+        <label>{{ CONSTANTS.CAREER_START_YEAR | translate }}</label>
+      </div>
+
+      <!-- End year -->
+      @if (workForm.value.completed) {
+      <div
+        class="floating-field"
+        [class.active]="workForm.get('endYearDate')?.value"
+      >
+        <p-datepicker
+          formControlName="endYearDate"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="'true'"
+          [iconDisplay]="'input'"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+        <label>{{ CONSTANTS.CAREER_END_YEAR | translate }}</label>
+      </div>
+      }
+
+      <!-- Notes -->
+      <div class="floating-field" [class.active]="workForm.get('notes')?.value">
+        <textarea
+          pInputTextarea
+          rows="1"
+          formControlName="notes"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.CAREER_NOTES | translate }}</label>
+      </div>
+
+      <div class="actions">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          class="p-button-secondary"
+          [label]="CONSTANTS.INFO_RESET | translate"
+          (click)="resetWorkForm()"
+        ></button>
+        <button
+          pButton
+          type="submit"
+          icon="pi pi-check"
+          [label]="
+            (editingWorkId ? CONSTANTS.INFO_UPDATE : CONSTANTS.INFO_ADD)
+              | translate
+          "
+          [disabled]="workForm.invalid"
+        ></button>
+      </div>
+    </form>
+  </div>
+
+  <div class="field-group soft">
+    <div class="field-group-title">
+      <i class="pi pi-list"></i> {{ CONSTANTS.CAREER_WORK_LIST | translate }}
+    </div>
+
+    @if (work().length) {
+    <p-table
+      [value]="work()"
+      dataKey="id"
+      [responsiveLayout]="'stack'"
+      [breakpoint]="'1050px'"
+      [paginator]="work().length > 5"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [showCurrentPageReport]="work().length > 5"
+      currentPageReportTemplate="{first}–{last} / {totalRecords}"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ CONSTANTS.CAREER_COL_EMPLOYER | translate }}</th>
+          <th>{{ CONSTANTS.CAREER_COL_PROFESSION | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_START | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_END | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_COMPLETED | translate }}</th>
+          <th>{{ CONSTANTS.CAREER_COL_NOTES | translate }}</th>
+          <th class="fit">{{ CONSTANTS.CAREER_COL_ACTIONS | translate }}</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>
+            <span
+              class="cell-trunc"
+              [pTooltip]="row.employerName || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="!(row.employerName && row.employerName.length)"
+            >
+              {{
+                row.employerName
+                  ? row.employerName.length > 20
+                    ? (row.employerName | slice : 0 : 20) + "…"
+                    : row.employerName
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td>
+            <span
+              class="cell-trunc"
+              [pTooltip]="row.profession || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="!(row.profession && row.profession.length)"
+            >
+              {{
+                row.profession
+                  ? row.profession.length > 20
+                    ? (row.profession | slice : 0 : 20) + "…"
+                    : row.profession
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td class="fit">{{ row.startYear }}</td>
+          <td class="fit">{{ row.endYear ?? "—" }}</td>
+          <td class="fit">
+            <p-tag
+              [value]="
+                (row.completed
+                  ? CONSTANTS.CAREER_COMPLETED
+                  : CONSTANTS.CAREER_NOT_COMPLETED
+                ) | translate
+              "
+              [severity]="row.completed ? 'success' : 'warning'"
+            ></p-tag>
+          </td>
+          <td>
+            <span
+              class="notes-trunc"
+              [pTooltip]="row.notes || ''"
+              tooltipPosition="top"
+              [tooltipDisabled]="!(row.notes && row.notes.length)"
+            >
+              {{
+                row.notes
+                  ? row.notes.length > 20
+                    ? (row.notes | slice : 0 : 20) + "…"
+                    : row.notes
+                  : "—"
+              }}
+            </span>
+          </td>
+          <td class="fit">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-pencil"
+              class="p-button-text"
+              (click)="editWork(row)"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger"
+              (click)="deleteWork(row)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    } @else {
+    <p class="empty">{{ CONSTANTS.CAREER_EMPTY_WORK | translate }}</p>
+    }
+  </div>
+  } }
+</div>

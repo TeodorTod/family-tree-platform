@@ -1,0 +1,197 @@
+:host {
+  display: block;
+}
+
+/* Segmented header (same look as gallery) */
+.segmented {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.seg-label {
+  font-weight: 600;
+}
+.seg-badge {
+  background: var(--surface-200);
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+/* Card-like groups to match member-info field-group */
+.field-group {
+  background: rgba(45, 76, 47, 0.02);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1.5rem;
+  border: 1px solid rgba(45, 76, 47, 0.1);
+  margin-bottom: 1rem;
+}
+.field-group.soft {
+  padding-top: 1rem;
+}
+.field-group-title {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grid like others */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-grid .actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+/* Floating fields – same behavior */
+.floating-field {
+  position: relative;
+  margin-bottom: 0.5rem;
+
+  label {
+    position: absolute;
+    left: 0.875rem;
+    top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary, #6b7280);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: var(--surface-card);
+    padding: 0 0.25rem;
+    z-index: 1;
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 1rem 0.875rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+  }
+  input:focus,
+  textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+  }
+  input:focus + label,
+  input:not(:placeholder-shown) + label,
+  textarea:focus + label,
+  textarea:not(:placeholder-shown) + label,
+  &.active label {
+    top: -0.5rem;
+    left: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  /* PrimeNG datepicker to match */
+  :host ::ng-deep .p-calendar {
+    width: 100%;
+  }
+  :host ::ng-deep .p-calendar .p-inputtext {
+    width: 100%;
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+  }
+  :host ::ng-deep .p-calendar .p-inputtext:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+  }
+
+  /* SelectButton to feel like inputs */
+/* make SelectButton look like an input with two pills */
+:host ::ng-deep .p-selectbutton {
+  display: flex;
+  width: 100%;
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-radius: var(--radius-md, .5rem);
+  overflow: hidden;
+  background: var(--surface-card);
+}
+
+:host ::ng-deep .p-selectbutton .p-button {
+  flex: 1 1 0;
+  border: 0;
+  border-right: 1px solid var(--border-color, #e1e5e9);
+  background: var(--surface-card);
+  color: var(--text-color);
+  box-shadow: none !important;
+  padding: .9rem 1rem;
+}
+
+:host ::ng-deep .p-selectbutton .p-button:last-child {
+  border-right: 0;
+}
+
+:host ::ng-deep .p-selectbutton .p-button:not(.p-highlight):hover {
+  background: var(--surface-ground);
+}
+
+:host ::ng-deep .p-selectbutton .p-button.p-highlight {
+  background: var(--primary-color);
+  color: var(--primary-color-text);
+}
+
+}
+
+/* Actions (align right like other pages) */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Table niceties */
+.fit {
+  white-space: nowrap;
+  width: 1%;
+}
+.notes-cell {
+  white-space: pre-wrap;
+}
+.empty {
+  color: var(--text-color-secondary);
+}
+.floating-field textarea.p-inputtextarea {
+  height: var(--control-h);
+  min-height: var(--control-h);
+  resize: vertical;      /* allow manual grow */
+}
+
+/* make the calendar input match too */
+:host ::ng-deep .p-calendar .p-inputtext {
+  height: var(--control-h);
+  line-height: normal;   /* avoid clipping on some themes */
+}

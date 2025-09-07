@@ -25,7 +25,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
-import { Observable, of, shareReplay, tap } from 'rxjs';
+import { firstValueFrom, Observable, of, shareReplay, tap } from 'rxjs';
 import { TabRef } from '../../../shared/types/tab-ref.type';
 import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
 import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
@@ -179,6 +179,23 @@ export class MemberInfoComponent implements OnInit {
           }
           this.partnerMember = null;
           this.originalPartnerStatus = null;
+
+          this.lastSavedMemberSnapshot = {
+            firstName: '',
+            middleName: null,
+            lastName: '',
+            gender: null,
+            isAlive: true,
+            translatedRole: this.hasConstant(this.role)
+              ? null
+              : this.defaultGenericForRole(),
+            dob: null,
+            birthYear: null,
+            birthNote: null,
+            dod: null,
+            deathYear: null,
+            deathNote: null,
+          };
           return;
         }
 
@@ -289,6 +306,35 @@ export class MemberInfoComponent implements OnInit {
     this.activeIndex.set(Number.isFinite(n) ? n : 0);
   }
 
+  private normalizeForComparison(input: any): any {
+    const t = Object.prototype.toString.call(input);
+    if (input == null) return null; // null/undefined -> null
+    if (t === '[object Date]') return new Date(input as Date).toISOString();
+    if (typeof input === 'string') return input.trim() === '' ? null : input;
+    if (typeof input !== 'object') return input;
+
+    if (Array.isArray(input)) {
+      return input.map((v) => this.normalizeForComparison(v));
+    }
+
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(input)) {
+      if (v === undefined) continue; // drop undefined keys
+      out[k] = this.normalizeForComparison(v);
+    }
+    return out;
+  }
+
+  private deepEqual(a: any, b: any): boolean {
+    try {
+      const na = this.normalizeForComparison(a);
+      const nb = this.normalizeForComparison(b);
+      return JSON.stringify(na) === JSON.stringify(nb);
+    } catch {
+      return a === b;
+    }
+  }
+
   async save(): Promise<void> {
     const current = this.activeIndex();
 
@@ -339,10 +385,13 @@ export class MemberInfoComponent implements OnInit {
       return delta;
     };
 
-    // ============= GENERAL tab (member basics) =============
-    if (current === this.TAB.GENERAL) {
-      if (this.form.invalid) return;
+    // ---------- GENERAL (member basics) ----------
+    let memberDiff: Record<string, any> = {};
+    let statusChanged = false;
+    let memberId: string | undefined;
+    let partnerId: string | undefined;
 
+    if (this.form.valid) {
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const dodPayload = this.familyService.buildDodPayload(this.form);
       const v = this.form.value;
@@ -358,268 +407,128 @@ export class MemberInfoComponent implements OnInit {
         ...dodPayload,
       };
 
-      const diff = this.pruneUnchanged(full, this.lastSavedMemberSnapshot);
+      memberDiff = this.pruneUnchanged(full, this.lastSavedMemberSnapshot);
 
       const newStatus = (this.form.get('partnerStatus')?.value ??
         null) as PartnerStatus | null;
-      const memberId = this.loadedMember?.id;
-      const partnerId = this.loadedMember?.partnerId;
-      const statusChanged =
+      memberId = this.loadedMember?.id;
+      partnerId = this.loadedMember?.partnerId;
+      statusChanged =
         !!newStatus &&
         newStatus !== this.originalPartnerStatus &&
         !!memberId &&
         !!partnerId;
+    }
 
-      if (!statusChanged && Object.keys(diff).length === 0) return nochanges();
+    // ---------- MEDIA (pending + cover) ----------
+    const mediaPending = this.mediaGallery?.hasUnsavedChanges?.() === true;
+    const nextCover = this.mediaGallery?.getCoverUrl?.();
+    const coverDelta: Record<string, any> = {};
+    if (nextCover !== undefined) {
+      const prevCover = (this.profileDraft as any)?.coverMediaUrl ?? null;
+      if (!this.deepEqual(prevCover, nextCover)) {
+        coverDelta['coverMediaUrl'] = nextCover;
+      }
+    }
 
-      const finish = () => {
+    // ---------- CHILD TABS deltas (save across tabs regardless of current) ----------
+    const bioVal = this.childGetValue(this.bioTab); // { bio, notes }
+    const careerVal = this.childGetValue(this.careerTab); // { education, work }
+    const achievementsVal = this.childGetValue(this.achievementsTab); // array
+    const favoritesVal = this.childGetValue(this.favoritesTab); // array
+    const personalVal = this.childGetValue(this.personalInfoTab); // object
+    const storiesVal = this.childGetValue(this.storiesTab); // array|object
+
+    const profileDelta = {
+      ...coverDelta,
+      ...(this.childHasChanges(this.bioTab) && bioVal
+        ? buildDelta([FIELDS.BIO, FIELDS.NOTES], bioVal)
+        : {}),
+      ...(this.childHasChanges(this.careerTab) && careerVal
+        ? buildDelta([FIELDS.WORK, FIELDS.EDUCATION], careerVal)
+        : {}),
+      ...(this.childHasChanges(this.achievementsTab) && achievementsVal
+        ? buildDelta([FIELDS.ACHIEVEMENTS], { achievements: achievementsVal })
+        : {}),
+      ...(this.childHasChanges(this.favoritesTab) && favoritesVal
+        ? buildDelta([FIELDS.FAVORITES], { favorites: favoritesVal })
+        : {}),
+      ...(this.childHasChanges(this.personalInfoTab) && personalVal
+        ? buildDelta([FIELDS.PERSONAL_INFO], { personalInfo: personalVal })
+        : {}),
+      ...(this.childHasChanges(this.storiesTab) && storiesVal
+        ? buildDelta([FIELDS.STORIES], { stories: storiesVal })
+        : {}),
+    };
+
+    const anythingToSave =
+      Object.keys(memberDiff).length > 0 ||
+      statusChanged ||
+      mediaPending ||
+      Object.keys(profileDelta).length > 0;
+
+    if (!anythingToSave) return nochanges();
+
+    try {
+      // 1) MEDIA pending (apply uploads/add/remove)
+      if (mediaPending) {
+        if (!this.mediaGallery?.flushPendingChanges) {
+          throw new Error('MEDIA_APPLY_FAILED');
+        }
+        await this.mediaGallery.flushPendingChanges();
+      }
+
+      // 2) MEMBER basics
+      if (Object.keys(memberDiff).length > 0) {
+        await firstValueFrom(
+          this.familyService.saveMemberByRole(this.role, memberDiff)
+        );
         this.lastSavedMemberSnapshot = {
           ...(this.lastSavedMemberSnapshot ?? {}),
-          ...diff,
+          ...memberDiff,
         };
-        this.form.markAsPristine();
-        this.form.markAsUntouched();
-        ok();
-      };
-
-      const doPartner = () =>
-        this.familyService
-          .setPartner(memberId!, partnerId!, newStatus!)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: () => {
-              this.originalPartnerStatus = newStatus!;
-              finish();
-            },
-            error: () => fail(),
-          });
-
-      if (Object.keys(diff).length > 0) {
-        this.familyService
-          .saveMemberByRole(this.role, diff)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: () => (statusChanged ? doPartner() : finish()),
-            error: () => fail(),
-          });
-      } else {
-        // only partner status changed
-        doPartner();
-      }
-      return;
-    }
-
-    // ============= MEDIA tab =============
-    if (current === this.TAB.MEDIA) {
-      const hadPending = this.mediaGallery?.hasUnsavedChanges?.() === true;
-
-      if (hadPending) {
-        if (this.mediaGallery?.flushPendingChanges) {
-          try {
-            await this.mediaGallery.flushPendingChanges();
-          } catch {
-            return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
-          }
-        } else {
-          return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
-        }
       }
 
-      // Persist cover (only if the child exposes it)
-      const nextCover = this.mediaGallery?.getCoverUrl?.() ?? undefined;
-
-      if (nextCover !== undefined) {
-        const prevCover = (this.profileDraft as any)?.coverMediaUrl ?? null;
-
-        if (!this.deepEqual(prevCover, nextCover)) {
-          await new Promise<void>((resolve) => {
-            this.profileService
-              .saveProfileByRole(this.role, { coverMediaUrl: nextCover })
-              .pipe(takeUntilDestroyed(this.destroyRef))
-              .subscribe({
-                next: (saved) => {
-                  this.profileDraft = {
-                    ...(this.profileDraft ?? {}),
-                    ...(saved ?? { coverMediaUrl: nextCover }),
-                  };
-                  resolve();
-                },
-                error: () => {
-                  fail();
-                  resolve();
-                },
-              });
-          });
-          ok();
-        } else if (!hadPending) {
-          return nochanges();
-        } else {
-          ok();
-        }
-      } else {
-        if (hadPending) ok();
-        else return nochanges();
+      // Partner status (do after member, if needed)
+      if (statusChanged) {
+        const newStatus = this.form.get('partnerStatus')!
+          .value as PartnerStatus;
+        await firstValueFrom(
+          this.familyService.setPartner(memberId!, partnerId!, newStatus)
+        );
+        this.originalPartnerStatus = newStatus;
       }
 
+      // 3) PROFILE (bio, notes, education, work, achievements, favorites, personalInfo, stories, cover)
+      if (Object.keys(profileDelta).length > 0) {
+        const saved = await firstValueFrom(
+          this.profileService.saveProfileByRole(this.role, profileDelta)
+        );
+        this.profileDraft = {
+          ...(this.profileDraft ?? {}),
+          ...(saved ?? profileDelta),
+        };
+        this.pushProfileToChild(this.profileDraft);
+      }
+
+      // Mark children as saved if present
+      this.childMarkSaved(this.bioTab);
+      this.childMarkSaved(this.careerTab);
+      this.childMarkSaved(this.achievementsTab);
+      this.childMarkSaved(this.favoritesTab);
+      this.childMarkSaved(this.personalInfoTab);
+      this.childMarkSaved(this.storiesTab);
       this.mediaGallery?.markSaved?.();
+
       this.form.markAsPristine();
       this.form.markAsUntouched();
-      return;
+      ok();
+    } catch (e) {
+      if ((e as any)?.message === 'MEDIA_APPLY_FAILED') {
+        return fail(this.CONSTANTS.MEDIA_APPLY_FAILED);
+      }
+      fail();
     }
-
-    // ============= BIO tab =============
-    if (current === this.TAB.BIO && this.bioTab?.getValue) {
-      const val = this.bioTab.getValue();
-      const delta = buildDelta([FIELDS.BIO, FIELDS.NOTES], val);
-      if (Object.keys(delta).length === 0) return nochanges();
-
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            const fresh: MemberProfile = (saved as MemberProfile) ?? {
-              ...(this.profileDraft ?? {}),
-              ...(delta as MemberProfile),
-            };
-
-            this.profileDraft = fresh;
-
-            this.pushProfileToChild(fresh);
-
-            this.bioTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // ============= CAREER tab =============
-    if (current === this.TAB.CAREER && this.careerTab?.getValue) {
-      const c = this.careerTab.getValue(); // { work, education }
-      const delta = buildDelta([FIELDS.WORK, FIELDS.EDUCATION], c);
-      if (Object.keys(delta).length === 0) return nochanges();
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            this.profileDraft = {
-              ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
-            };
-            this.careerTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // ============= ACHIEVEMENTS tab =============
-    if (current === this.TAB.ACHIEVEMENTS && this.achievementsTab?.getValue) {
-      const next = this.achievementsTab.getValue();
-      const delta = buildDelta([FIELDS.ACHIEVEMENTS], { achievements: next });
-      if (Object.keys(delta).length === 0) return nochanges();
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            this.profileDraft = {
-              ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
-            };
-            this.achievementsTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // ============= FAVORITES tab =============
-    if (current === this.TAB.FAVORITES && this.favoritesTab?.getValue) {
-      const next = this.favoritesTab.getValue();
-      const delta = buildDelta([FIELDS.FAVORITES], { favorites: next });
-      if (Object.keys(delta).length === 0) return nochanges();
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            this.profileDraft = {
-              ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
-            };
-            this.favoritesTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // ============= PERSONAL tab =============
-    if (current === this.TAB.PERSONAL && this.personalInfoTab?.getValue) {
-      const next = this.personalInfoTab.getValue();
-      const delta = buildDelta([FIELDS.PERSONAL_INFO], { personalInfo: next });
-      if (Object.keys(delta).length === 0) return nochanges();
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            this.profileDraft = {
-              ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
-            };
-            this.personalInfoTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // ============= STORIES tab (optional) =============
-    if (current === this.TAB.STORIES && this.storiesTab?.getValue) {
-      const next = this.storiesTab.getValue();
-      const delta = buildDelta([FIELDS.STORIES], { stories: next });
-      if (Object.keys(delta).length === 0) return nochanges();
-      this.profileService
-        .saveProfileByRole(this.role, delta)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: (saved) => {
-            this.profileDraft = {
-              ...(this.profileDraft ?? {}),
-              ...(saved ?? delta),
-            };
-            this.storiesTab?.markSaved?.();
-            this.form.markAsPristine();
-            this.form.markAsUntouched();
-            ok();
-          },
-          error: () => fail(),
-        });
-      return;
-    }
-
-    // fallback
-    return nochanges();
   }
 
   cancel(): void {
@@ -778,14 +687,6 @@ export class MemberInfoComponent implements OnInit {
     return dirty;
   }
 
-  private deepEqual(a: any, b: any): boolean {
-    try {
-      return JSON.stringify(a) === JSON.stringify(b);
-    } catch {
-      return a === b;
-    }
-  }
-
   // Normalize member from API into the shape we PUT
   private normalizeMemberForPayload(m: any) {
     return {
@@ -821,5 +722,16 @@ export class MemberInfoComponent implements OnInit {
 
   private pushProfileToChild(next: MemberProfile | null) {
     this.profile$ = of(next ? { ...next } : null).pipe(shareReplay(1));
+  }
+
+  private childGetValue<T>(ref?: TabRef<any>): T | undefined {
+    const fn = ref?.getValue?.bind(ref as any);
+    return fn ? (fn() as T) : undefined;
+  }
+  private childHasChanges(ref?: TabRef<any>): boolean {
+    return ref?.hasUnsavedChanges?.() === true;
+  }
+  private childMarkSaved(ref?: TabRef<any>): void {
+    ref?.markSaved?.();
   }
 }

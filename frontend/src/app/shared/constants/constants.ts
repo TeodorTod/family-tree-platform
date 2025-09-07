@@ -111,6 +111,9 @@ export class CONSTANTS {
   static readonly INFO_LEAVE = 'INFO.LEAVE';
   static readonly INFO_NO_CHANGES = 'INFO.NO_CHANGES';
   static readonly INFO_CLOSE = 'INFO.CLOSE';
+  static readonly INFO_RESET = 'INFO.RESET';
+  static readonly INFO_UPDATE = 'INFO.UPDATE';
+  static readonly INFO_ADD = 'INFO.ADD';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -278,4 +281,30 @@ export class CONSTANTS {
   static readonly MEDIA_EDIT = 'MEDIA.EDIT';
   static readonly MEDIA_DONE = 'MEDIA.DONE';
   static readonly MEDIA_RESET_DELETES = 'MEDIA.RESET_DELETES';
+
+  static readonly CAREER_COMPLETED = 'CAREER.COMPLETED';
+  static readonly CAREER_NOT_COMPLETED = 'CAREER.NOT_COMPLETED';
+  static readonly CAREER_TAB_EDU = 'CAREER.TAB_EDU';
+  static readonly CAREER_TAB_WORK = 'CAREER.TAB_WORK';
+  static readonly CAREER_EDU_NAME = 'CAREER.EDU_NAME';
+  static readonly CAREER_EDU_QUALIFICATION = 'CAREER.EDU_QUALIFICATION';
+  static readonly CAREER_COMPLETION = 'CAREER.COMPLETION';
+  static readonly CAREER_START_YEAR = 'CAREER.START_YEAR';
+  static readonly CAREER_END_YEAR = 'CAREER.END_YEAR';
+  static readonly CAREER_NOTES = 'CAREER.NOTES';
+  static readonly CAREER_COL_NAME = 'CAREER.COL_NAME';
+  static readonly CAREER_COL_QUALIFICATION = 'CAREER.COL_QUALIFICATION';
+  static readonly CAREER_COL_START = 'CAREER.COL_START';
+  static readonly CAREER_COL_END = 'CAREER.COL_END';
+  static readonly CAREER_COL_COMPLETED = 'CAREER.COL_COMPLETED';
+  static readonly CAREER_COL_NOTES = 'CAREER.COL_NOTES';
+  static readonly CAREER_COL_ACTIONS = 'CAREER.COL_ACTIONS';
+  static readonly CAREER_EMPTY_EDU = 'CAREER.EMPTY_EDU';
+  static readonly CAREER_WORK_EMPLOYER = 'CAREER.WORK_EMPLOYER';
+  static readonly CAREER_COL_EMPLOYER = 'CAREER.COL_EMPLOYER';
+  static readonly CAREER_EMPTY_WORK = 'CAREER.EMPTY_WORK';
+  static readonly CAREER_EDU_LIST = 'CAREER.EDU_LIST';
+  static readonly CAREER_WORK_LIST = 'CAREER.WORK_LIST';
+  static readonly CAREER_WORK_PROFESSION = 'CAREER.WORK_PROFESSION';
+  static readonly CAREER_COL_PROFESSION = 'CAREER.COL_PROFESSION';
 }
