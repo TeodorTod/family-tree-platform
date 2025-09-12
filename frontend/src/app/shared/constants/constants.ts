@@ -114,6 +114,7 @@ export class CONSTANTS {
   static readonly INFO_RESET = 'INFO.RESET';
   static readonly INFO_UPDATE = 'INFO.UPDATE';
   static readonly INFO_ADD = 'INFO.ADD';
+  static readonly INFO_EDIT = 'INFO.EDIT'
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -307,4 +308,14 @@ export class CONSTANTS {
   static readonly CAREER_WORK_LIST = 'CAREER.WORK_LIST';
   static readonly CAREER_WORK_PROFESSION = 'CAREER.WORK_PROFESSION';
   static readonly CAREER_COL_PROFESSION = 'CAREER.COL_PROFESSION';
+
+  static readonly STORIES_TITLE = 'STORIES.TITLE'
+  static readonly STORIES_INCLUDED_MEMBERS = 'STORIES.INCLUDED_MEMBERS'
+  static readonly STORIES_STORY = 'STORIES.STORY'
+  static readonly STORIES_UPDATE = 'STORIES.UPDATE'
+  static readonly STORIES_ADD = 'STORIES.ADD'
+  static readonly STORIES_STORIES = 'STORIES.STORIES'
+  static readonly STORIES_DELETE_STORY = 'STORIES.DELETE_STORY'
+  static readonly STORIES_DATE = 'STORIES.DATE'
+  static readonly STORIES_CREATED = 'STORIES.CREATED'
 }

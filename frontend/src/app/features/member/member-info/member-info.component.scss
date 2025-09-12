@@ -2,7 +2,6 @@
 :host {
   display: block;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--surface-ground) 0%, #f3f4f6 100%);
   min-height: calc(100vh - var(--navbar-h, 64px) - var(--footer-h, 56px));
 }
 
@@ -48,7 +47,7 @@
   }
 }
 
-.relation-section {
+floating-field.relation-section {
   padding: 2rem;
   background: var(--highlight-bg);
   border-bottom: 1px solid var(--border-color, #e1e5e9);

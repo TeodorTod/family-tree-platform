@@ -29,6 +29,11 @@ import { BlockUIModule } from 'primeng/blockui';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
 import { SelectButton } from 'primeng/selectbutton';
+import { AccordionModule } from 'primeng/accordion';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { TextareaModule } from 'primeng/textarea';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -61,5 +66,10 @@ export const SHARED_PRIMENG_IMPORTS = [
   DividerModule,
   BlockUIModule,
   TagModule,
-  SelectButton
+  SelectButton,
+  AccordionModule,
+  MultiSelectModule,
+  BadgeModule,
+  OverlayBadgeModule,
+  TextareaModule 
 ];

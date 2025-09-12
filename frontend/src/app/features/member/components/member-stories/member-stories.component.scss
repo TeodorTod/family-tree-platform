@@ -1,0 +1,416 @@
+:host {
+  display: block;
+}
+
+.story-form-card {
+  margin-bottom: 2rem !important;
+}
+
+.form-grid.story-form {
+  --gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: var(--gap);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Span helpers */
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-4 {
+  grid-column: 1 / -1;
+}
+
+.floating-field {
+  position: relative;
+
+  label {
+    position: absolute;
+    left: 0.875rem;
+    top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    background: var(--surface-card);
+    padding: 0 0.25rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 1;
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 1rem 0.875rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+    }
+  }
+
+  // Responsive textarea sizing
+  textarea {
+    min-height: 180px; // Base minimum height
+    resize: vertical;
+
+    @media (min-width: 768px) {
+      min-height: 200px;
+    }
+    @media (min-width: 1024px) {
+      min-height: 240px;
+    }
+    @media (min-width: 1440px) {
+      min-height: 280px;
+    }
+  }
+
+  &.active label,
+  input:focus + label,
+  textarea:focus + label,
+  input:not(:placeholder-shown) + label,
+  textarea:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Stories card with proper spacing */
+.stories-card {
+  padding: 8rem !important; // Consistent spacing from form
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: space-between;
+
+    h3 {
+      margin: 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+  }
+}
+
+/* Accordion header layout */
+.story-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0; // Allow text truncation
+
+    .title {
+      font-weight: 600;
+      color: var(--text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    padding-right: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      .title {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+      }
+    }
+  }
+}
+
+/* Content styling */
+.content {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(45, 76, 47, 0.02);
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(45, 76, 47, 0.1);
+
+  p {
+    margin: 0 0 0.75rem 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.meta-grid {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  padding: 1rem;
+  background: var(--surface-ground);
+  border-radius: var(--radius-md, 0.5rem);
+  margin-top: 1rem;
+
+  > div {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.muted {
+  color: var(--text-color-secondary);
+}
+
+.empty-hint {
+  color: var(--text-color-secondary);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-style: italic;
+}
+
+.edit-hint {
+  grid-column: 1 / -1;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(45, 76, 47, 0.06);
+  border: 1px solid rgba(45, 76, 47, 0.15);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* MultiSelect styling to match other components */
+:host ::ng-deep .p-multiselect {
+  width: 100%;
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-radius: var(--radius-md, 0.5rem);
+  background: var(--surface-card);
+  transition: all 0.2s ease;
+
+  &:focus-within,
+  &.p-focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+  }
+
+  .p-multiselect-label {
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+  }
+
+  .p-multiselect-trigger {
+    right: 0.875rem;
+  }
+}
+
+/* Select dropdown consistency */
+:host ::ng-deep .p-select {
+  width: 100%;
+
+  .p-select-label {
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+  }
+
+  .p-inputwrapper {
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+
+    &:focus-within,
+    &.p-inputwrapper-focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+    }
+  }
+
+  .p-select-trigger {
+    right: 0.875rem;
+  }
+}
+
+/* Datepicker consistency */
+:host ::ng-deep .p-calendar {
+  width: 100%;
+
+  .p-inputtext {
+    width: 100%;
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+
+    &:focus {
+      border-color: var(--primary-color) !important;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+    }
+  }
+}
+
+/* Accordion styling improvements */
+:host ::ng-deep .p-accordion {
+  .p-accordion-header {
+    border-radius: var(--radius-md, 0.5rem);
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+
+    .p-accordion-header-link {
+      padding: 1rem 1.25rem;
+      background: rgba(45, 76, 47, 0.02);
+      border: 1px solid rgba(45, 76, 47, 0.1);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(45, 76, 47, 0.05);
+      }
+    }
+  }
+
+  .p-accordion-content {
+    border: 1px solid rgba(45, 76, 47, 0.1);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md, 0.5rem) var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+
+    .p-accordion-content-inner {
+      padding: 1.25rem;
+    }
+  }
+}
+
+/* Button improvements */
+:host ::ng-deep .p-button {
+  border-radius: var(--radius-md, 0.5rem);
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .story-form-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .stories-card {
+    margin-top: 1.5rem;
+  }
+
+  .floating-field {
+    textarea {
+      min-height: 120px; // Smaller on mobile
+    }
+  }
+
+  .right {
+    display: flex;
+    margin-top: 1rem;
+  }
+}
+
+/* Make any Prime float-label wrappers block-level so next field drops below */
+:host ::ng-deep .p-float-label {
+  display: block;
+  width: 100%;
+}
+
+/* Prevent overflow and allow inputs to shrink nicely on small screens */
+.floating-field {
+  min-width: 0;
+}
+
+/* Mobile stacking: show the chosen date "type" directly under the select.
+   Also ensure Title spans full width. */
+@media (max-width: 640px) {
+  .col-date-mode {
+    order: 30;
+  }
+  .col-date-value {
+    order: 31;
+  }
+  .col-span-2 {
+    grid-column: 1 / -1;
+  } /* Title full width */
+
+  .story-head {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .story-head .left .title {
+    display: inline-block;
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: help;
+    vertical-align: bottom;
+  }
+}

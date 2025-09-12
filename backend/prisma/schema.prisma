@@ -15,16 +15,16 @@ datasource db {
 }
 
 enum PartnerStatus {
-  MARRIED       
-  DIVORCED      
-  SEPARATED     
-  WIDOWED      
-  ENGAGED      
-  PARTNERS      
-  FRIENDS       
-  ANNULLED      
-  UNKNOWN      
-  OTHER         
+  MARRIED
+  DIVORCED
+  SEPARATED
+  WIDOWED
+  ENGAGED
+  PARTNERS
+  FRIENDS
+  ANNULLED
+  UNKNOWN
+  OTHER
 }
 
 model User {
@@ -49,7 +49,7 @@ model FamilyMember {
   gender         String?
   dob            DateTime?
   birthYear      Int?
-  birthNote      String?  
+  birthNote      String?
   dod            DateTime?
   deathYear      Int?
   deathNote      String?
@@ -61,28 +61,36 @@ model FamilyMember {
   relationLabel  String?
   translatedRole String?
 
-  partnerId      String?
-  partner        FamilyMember? @relation("MemberPartner", fields: [partnerId], references: [id])
-  partnerOf      FamilyMember[] @relation("MemberPartner") 
-  partnerStatus  PartnerStatus?
+  partnerId     String?        @unique
+  partner       FamilyMember?  @relation("MemberPartner", fields: [partnerId], references: [id], onDelete: SetNull)
+  partnerOf     FamilyMember[] @relation("MemberPartner")
+  partnerStatus PartnerStatus?
 
   /// back‐relation to MemberProfile (one-to-one)
   profile MemberProfile? @relation("ProfileToMember")
 
-  user     User           @relation(fields: [userId], references: [id])
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   parentOf Relationship[] @relation("ParentChildFrom")
   childOf  Relationship[] @relation("ParentChildTo")
   media    Media[]
+
+  @@unique([userId, role], name: "user_role_unique")
+  @@index([userId])
 }
 
 model Relationship {
-  id           String @id @default(uuid())
+  id           String   @id @default(uuid())
   fromMemberId String
   toMemberId   String
   type         String
+  createdAt    DateTime @default(now())
 
-  fromMember FamilyMember @relation("ParentChildFrom", fields: [fromMemberId], references: [id])
-  toMember   FamilyMember @relation("ParentChildTo", fields: [toMemberId], references: [id])
+  fromMember FamilyMember @relation("ParentChildFrom", fields: [fromMemberId], references: [id], onDelete: Cascade)
+  toMember   FamilyMember @relation("ParentChildTo", fields: [toMemberId], references: [id], onDelete: Cascade)
+
+  @@unique([fromMemberId, toMemberId, type], name: "edge_once") // <-- NEW
+  @@index([fromMemberId])
+  @@index([toMemberId])
 }
 
 model Media {
@@ -93,7 +101,9 @@ model Media {
   caption    String?
   uploadedAt DateTime @default(now())
 
-  member FamilyMember @relation(fields: [memberId], references: [id])
+  member FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
 }
 
 model MemberProfile {
@@ -102,7 +112,7 @@ model MemberProfile {
 
   /// FK → FamilyMember.id (one-to-one)
   memberId String       @unique
-  member   FamilyMember @relation("ProfileToMember", fields: [memberId], references: [id])
+  member   FamilyMember @relation("ProfileToMember", fields: [memberId], references: [id], onDelete: Cascade)
 
   /// long-form biography
   bio String?

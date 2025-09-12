@@ -4,9 +4,16 @@ import { environment } from '../../environments/environment';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { MemberProfile } from '../../shared/models/member-profile.model';
 import { UpsertPayload } from '../../shared/types/member-profile-upsert.type';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+} from '@angular/forms';
 import { WorkForm, WorkFormValue } from '../../shared/types/work-form.type';
 import { EduFormValue, EduForm } from '../../shared/types/edu-form.type';
+import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
+import { StoryItem } from '../../shared/models/story-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberProfileService {
@@ -48,6 +55,7 @@ export class MemberProfileService {
   yearToDate(y?: number | null) {
     return y ? new Date(y, 0, 1) : null;
   }
+
   populateEduForm(
     form: EduForm,
     e?: {
@@ -70,6 +78,7 @@ export class MemberProfileService {
     form.markAsPristine();
     form.markAsUntouched();
   }
+
   populateWorkForm(
     form: WorkForm,
     w?: {
@@ -157,5 +166,107 @@ export class MemberProfileService {
     return Object.fromEntries(
       Object.entries(payload).filter(([, v]) => v !== undefined)
     ) as UpsertPayload;
+  }
+
+  createStoryForm(
+    initial: Partial<{
+      title: string | null;
+      dateMode: BirthDeathDateMode;
+      exactDate: Date | null;
+      yearDate: Date | null;
+      freeDate: string | null;
+      includedMemberIds: string[];
+      content: string | null;
+    }> = {}
+  ): FormGroup<{
+    title: FormControl<string | null>;
+    dateMode: FormControl<BirthDeathDateMode>;
+    exactDate: FormControl<Date | null>;
+    yearDate: FormControl<Date | null>;
+    freeDate: FormControl<string | null>;
+    includedMemberIds: FormControl<string[]>;
+    content: FormControl<string | null>;
+  }> {
+    return this.fb.group({
+      // keep nullable
+      title: new FormControl<string | null>(initial.title ?? null, {
+        validators: [Validators.required],
+      }),
+      // make non-nullable via FormControl ctor (not FormBuilder.control)
+      dateMode: new FormControl<BirthDeathDateMode>(
+        initial.dateMode ?? BirthDeathDateMode.EXACT,
+        { nonNullable: true }
+      ),
+      exactDate: new FormControl<Date | null>(initial.exactDate ?? null),
+      yearDate: new FormControl<Date | null>(initial.yearDate ?? null),
+      freeDate: new FormControl<string | null>(initial.freeDate ?? null),
+      // non-nullable array
+      includedMemberIds: new FormControl<string[]>(
+        initial.includedMemberIds ?? [],
+        { nonNullable: true }
+      ),
+      content: new FormControl<string | null>(initial.content ?? null),
+    });
+  }
+
+  /** Reset to defaults */
+  resetStoryForm(form: FormGroup) {
+    form.reset({
+      title: null,
+      dateMode: BirthDeathDateMode.EXACT,
+      exactDate: null,
+      yearDate: null,
+      freeDate: null,
+      includedMemberIds: [],
+      content: null,
+    });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  /** Populate from a StoryItem for editing */
+  populateStoryForm(form: FormGroup, s?: StoryItem) {
+    form.reset({
+      title: s?.title ?? null,
+      dateMode: (s?.dateMode as BirthDeathDateMode) ?? BirthDeathDateMode.EXACT,
+      exactDate: s?.exactDate ? new Date(s.exactDate) : null,
+      yearDate: s?.year ? this.yearToDate(s.year) : null,
+      freeDate: s?.freeDate ?? null,
+      includedMemberIds: s?.includedMemberIds ?? [],
+      content: s?.content ?? null,
+    });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  /** Normalize form -> plain story fields (without id/createdAt) */
+  storyDraftFromForm(form: FormGroup): Omit<StoryItem, 'id' | 'createdAt'> {
+    const v = form.getRawValue() as {
+      title: string | null;
+      dateMode: BirthDeathDateMode;
+      exactDate: Date | null;
+      yearDate: Date | null;
+      freeDate: string | null;
+      includedMemberIds: string[];
+      content: string | null;
+    };
+    const dm = v.dateMode ?? BirthDeathDateMode.EXACT;
+
+    return {
+      title: (v.title ?? '').trim(),
+      dateMode: dm,
+      exactDate:
+        dm === BirthDeathDateMode.EXACT && v.exactDate
+          ? v.exactDate.toISOString()
+          : null,
+      year:
+        dm === BirthDeathDateMode.YEAR && v.yearDate
+          ? v.yearDate.getFullYear()
+          : null,
+      freeDate:
+        dm === BirthDeathDateMode.NOTE ? (v.freeDate ?? '').trim() : null,
+      includedMemberIds: v.includedMemberIds ?? [],
+      content: (v.content ?? '')?.trim() ?? '',
+    } as Omit<StoryItem, 'id' | 'createdAt'>;
   }
 }

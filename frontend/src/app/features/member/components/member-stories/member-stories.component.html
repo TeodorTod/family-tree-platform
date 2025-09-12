@@ -1,1 +1,211 @@
-<p>member-stories works!</p>
+<!-- Create / edit story -->
+<p-card class="story-form-card">
+  <div class="form-grid story-form" [formGroup]="form">
+    <!-- Title (wider) -->
+    <div
+      class="floating-field col-span-2"
+      [class.active]="form.get('title')?.value"
+    >
+      <input pInputText placeholder=" " formControlName="title" />
+      <label>{{ CONSTANTS.STORIES_TITLE | translate }}</label>
+    </div>
+
+    <!-- Date input (exact | year | note) -->
+    <span class="p-float-label w-full mb-3">
+      <p-select
+        inputId="dateMode"
+        formControlName="dateMode"
+        [options]="dateModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      >
+      </p-select>
+    </span>
+
+    @if (form.value.dateMode === 'exact') {
+    <div class="floating-field" [class.active]="form.get('dateMode')?.value">
+      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+      <p-datepicker
+        formControlName="exactDate"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    } @if (form.value.dateMode === 'year') {
+    <div class="floating-field" [class.active]="form.get('dateMode')?.value">
+      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+      <p-datepicker
+        formControlName="yearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+      ></p-datepicker>
+    </div>
+    } @if (form.value.dateMode === 'note') {
+    <div class="floating-field" [class.active]="form.get('freeDate')?.value">
+      <input pInputText formControlName="freeDate" placeholder=" " />
+      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+    </div>
+    }
+
+    <!-- Included members (full width, chips) -->
+    <div class="floating-field active col-span-4">
+      <p-multiSelect
+        formControlName="includedMemberIds"
+        [options]="memberOptions()"
+        optionLabel="fullName"
+        optionValue="id"
+        [filter]="true"
+        [showToggleAll]="false"
+        appendTo="body"
+        [loading]="loadingMembers()"
+        styleClass="w-full"
+        [display]="'chip'"
+        [showClear]="true"
+        placeholder="{{ CONSTANTS.STORIES_INCLUDED_MEMBERS | translate }}"
+      ></p-multiSelect>
+      <label>{{ CONSTANTS.STORIES_INCLUDED_MEMBERS | translate }}</label>
+    </div>
+
+    <!-- Story text (full width) -->
+    <div
+      class="floating-field col-span-4"
+      [class.active]="form.get('content')?.value"
+    >
+      <textarea
+        pTextarea
+        rows="10"
+        cols="126"
+        placeholder=" "
+        formControlName="content"
+        [autoResize]="true"
+      ></textarea>
+      <label>{{ CONSTANTS.STORIES_STORY | translate }}</label>
+    </div>
+
+    <!-- Actions (add vs update/cancel) -->
+    <div class="actions">
+      @if (editingId()) {
+      <button
+        pButton
+        type="button"
+        class="p-button-secondary"
+        icon="pi pi-undo"
+        label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+        (click)="cancelEdit()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-check"
+        label="{{ CONSTANTS.STORIES_UPDATE | translate }}"
+        (click)="saveEdit()"
+        [disabled]="form.invalid"
+      ></button>
+      } @else {
+      <button
+        pButton
+        type="button"
+        label="{{ CONSTANTS.STORIES_ADD | translate }}"
+        icon="pi pi-plus"
+        (click)="addStory()"
+        [disabled]="form.invalid"
+      ></button>
+      }
+    </div>
+  </div>
+</p-card>
+
+<!-- Stories list -->
+<p-card class="stories-card">
+  <ng-template pTemplate="header">
+    <div class="card-head">
+      <h3>{{ CONSTANTS.STORIES_STORIES | translate }}</h3>
+    </div>
+  </ng-template>
+
+  <p-accordion [multiple]="true" [(value)]="expandedPanels">
+    @for (s of stories(); track s.id) {
+    <p-accordion-panel [value]="s.id">
+      <p-accordion-header>
+        <div class="story-head">
+          <div class="left">
+            <span class="title" [pTooltip]="s.title" appendTo="body">
+              {{ s.title }}
+            </span>
+            <span class="meta">
+              <p-tag [severity]="'secondary'" [value]="displayDate(s)"></p-tag>
+              @if (s.includedMemberIds.length) {
+              <p-badge [value]="s.includedMemberIds.length"></p-badge> }
+            </span>
+          </div>
+
+          <!-- STOP accordion toggle from action buttons -->
+          <div class="right">
+            <button
+              pButton
+              type="button"
+              class="p-button-text"
+              icon="pi pi-pencil"
+              (click)="onEditBtn($event, s)"
+              (mousedown)="$event.stopPropagation()"
+              (touchstart)="$event.stopPropagation()"
+              (keydown.enter)="$event.stopPropagation()"
+              (keydown.space)="$event.stopPropagation()"
+              pTooltip="{{ CONSTANTS.INFO_EDIT | translate }}"
+            ></button>
+
+            <button
+              pButton
+              type="button"
+              class="p-button-text p-button-danger"
+              icon="pi pi-trash"
+              (click)="onRemoveBtn($event, s.id)"
+              (mousedown)="$event.stopPropagation()"
+              (touchstart)="$event.stopPropagation()"
+              (keydown.enter)="$event.stopPropagation()"
+              (keydown.space)="$event.stopPropagation()"
+              pTooltip="{{ CONSTANTS.INFO_DELETE | translate }}"
+            ></button>
+          </div>
+        </div>
+      </p-accordion-header>
+
+      <p-accordion-content>
+        @if (s.content) {
+        <div class="content">
+          <p>{{ s.content }}</p>
+        </div>
+        }
+        <div class="meta-grid">
+          <div>
+            <strong>{{ CONSTANTS.STORIES_DATE | translate }}:</strong>
+            {{ displayDate(s) }}
+          </div>
+          @if (s.includedMemberIds.length) {
+          <div>
+            <strong
+              >{{ CONSTANTS.STORIES_INCLUDED_MEMBERS | translate }}:</strong
+            >
+            {{ memberNames(s.includedMemberIds) }}
+          </div>
+          }
+          <div class="muted">
+            <strong>{{ CONSTANTS.STORIES_CREATED | translate }}:</strong>
+            {{ s.createdAt | date : "medium" }}
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    }
+  </p-accordion>
+
+  @if (stories().length === 0) {
+  <p class="empty-hint">No stories yet.</p>
+  }
+</p-card>

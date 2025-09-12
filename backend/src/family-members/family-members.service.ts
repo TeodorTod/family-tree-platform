@@ -459,33 +459,44 @@ export class FamilyMembersService {
       select: { id: true, role: true },
     });
     if (!existing) throw new NotFoundException(`No member with role ${role}`);
-
     if (existing.role === 'owner') {
       throw new BadRequestException('Owner cannot be deleted.');
     }
 
     const memberId = existing.id;
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.familyMember.updateMany({
-        where: { partnerId: memberId },
-        data: { partnerId: null, partnerStatus: null },
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        await tx.familyMember.updateMany({
+          where: { partnerId: memberId },
+          data: { partnerStatus: null },
+        });
+
+        await tx.familyMember.delete({ where: { id: memberId } });
       });
 
-      await tx.relationship.deleteMany({
-        where: {
-          OR: [{ fromMemberId: memberId }, { toMemberId: memberId }],
-        },
+      return { ok: true };
+    } catch (e: any) {
+      if (e?.code !== 'P2003') throw e;
+
+      await this.prisma.$transaction(async (tx) => {
+        await tx.familyMember.updateMany({
+          where: { partnerId: memberId },
+          data: { partnerId: null, partnerStatus: null },
+        });
+
+        await tx.relationship.deleteMany({
+          where: { OR: [{ fromMemberId: memberId }, { toMemberId: memberId }] },
+        });
+
+        await tx.memberProfile.deleteMany({ where: { memberId } });
+        await tx.media.deleteMany({ where: { memberId } });
+
+        await tx.familyMember.delete({ where: { id: memberId } });
       });
 
-      await tx.memberProfile.deleteMany({ where: { memberId } });
-
-      await tx.media.deleteMany({ where: { memberId } });
-
-      await tx.familyMember.delete({ where: { id: memberId } });
-    });
-
-    return { ok: true };
+      return { ok: true, fallback: true };
+    }
   }
 
   async getFamilyMemberById(userId: string, id: string, q?: GetMyTreeQuery) {

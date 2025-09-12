@@ -51,8 +51,6 @@ export class LoginComponent implements OnInit {
             .getMyFamily()
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((family) => {
-              console.log('Family on login:', family);
-
               if (!family || family.length === 0) {
                 this.router.navigate([CONSTANTS.ROUTES.ONBOARDING.OWNER]);
                 return;

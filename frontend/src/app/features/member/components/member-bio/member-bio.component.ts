@@ -155,7 +155,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     this.confirm.confirm({
       header: this.translateService.instant(CONSTANTS.BIO_DELETE_NOTE),
       message:
-        this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE) + '?',
+        this.translateService.instant(CONSTANTS.BIO_ACTION_NOT_UNDONE),
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: this.translateService.instant(CONSTANTS.INFO_DELETE),
       rejectLabel: this.translateService.instant(CONSTANTS.INFO_CANCEL),

@@ -365,7 +365,11 @@
 
             <!-- STORIES -->
             <p-tabpanel [value]="TAB.STORIES">
-              <app-member-stories></app-member-stories>
+              <app-member-stories
+                [role]="role"
+                [memberId]="(member$ | async)?.id ?? null"
+                [profile]="(profile$ | async) ?? null"
+              ></app-member-stories>
             </p-tabpanel>
 
             <!-- ACHIEVEMENTS -->

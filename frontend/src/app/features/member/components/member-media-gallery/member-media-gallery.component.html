@@ -258,7 +258,9 @@
       preload="metadata"
       class="video-player"
     ></video>
-    <div class="caption" *ngIf="v.caption">{{ v.caption }}</div>
+    @if(v.caption) {
+    <div class="caption">{{ v.caption }}</div>
+    }
   </div>
   }
 </div>
