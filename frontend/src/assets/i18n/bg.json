@@ -93,7 +93,10 @@
     "RESET": "Нулирай",
     "UPDATE": "Актуализирай",
     "ADD": "Добави",
-    "EDIT": "Редактирай"
+    "EDIT": "Редактирай",
+    "EXACT_DATE": "Точна дата",
+    "YEAR_ONLY": "Само година",
+    "FREE_DATE": "Свободен текст"
   },
 
   "ADD": {
@@ -125,19 +128,19 @@
     "OWNER_DAUGHTER": "Дъщеря",
     "OWNER_BROTHER": "Брат",
     "OWNER_SISTER": "Сестра",
-    "OWNER_PARTNER": "Партньор/Съпруг, Съпруга/",
+    "OWNER_PARTNER": "Партньор/Съпруг(а)",
 
     "MOTHER_SON": "Син",
     "MOTHER_DAUGHTER": "Дъщеря",
     "MOTHER_BROTHER": "Вуйчо",
     "MOTHER_SISTER": "Леля (по майчина линия)",
-    "MOTHER_PARTNER": "Партньор/Съпруг, Съпруга/",
+    "MOTHER_PARTNER": "Партньор/Съпруг(а)",
 
     "FATHER_SON": "Син",
     "FATHER_DAUGHTER": "Дъщеря",
     "FATHER_BROTHER": "Чичо",
     "FATHER_SISTER": "Леля (по бащина линия)",
-    "FATHER_PARTNER": "Партньор/Съпруг, Съпруга/",
+    "FATHER_PARTNER": "Партньор/Съпруг(а)",
 
     "MATERNAL_GRANDMOTHER_SISTER": "Леля (сестра на баба по майчина линия)",
     "MATERNAL_GRANDMOTHER_BROTHER": "Вуйчо (брат на баба по майчина линия)",
@@ -184,9 +187,9 @@
     "ENGAGED": "Сгодени",
     "PARTNERS": "Партньори",
     "FRIENDS": "Приятели",
-    "ANNULLED": "Анулирания",
-    "UNKNOWN": "Неизвестен",
-    "OTHER": "Други"
+    "ANNULLED": "Анулиран брак",
+    "UNKNOWN": "Неизвестно",
+    "OTHER": "Друго"
   },
 
   "BIO": {
@@ -260,9 +263,50 @@
     "STORY": "История",
     "UPDATE": "Обнови",
     "ADD": "Добави",
-    "STORIES":"Истории",
+    "STORIES": "Истории",
     "DELETE_STORY": "Изтрий историята",
     "DATE": "Дата",
     "CREATED": "Създадена"
+  },
+
+  "ACH": {
+    "ADD": "Добави постижение",
+    "UPDATE": "Актуализирай постижението",
+    "TITLE": "Заглавие на постижението",
+
+    "CATEGORY_LABEL": "Категория",
+    "LEVEL_LABEL": "Ниво",
+
+    "ORGANIZATION": "Организация / Издател",
+    "LOCATION": "Място",
+    "DATE": "Дата",
+    "DATE_MODE": "Тип дата",
+    "DELETE_TITLE": "Изтриване на постижение",
+    "DELETE_MSG": "Това действие не може да бъде отменено.",
+    "NO_ACH": "Все още няма добавени постижения.",
+
+    "CATEGORY": {
+      "ACADEMIC": "Академично",
+      "CERTIFICATION": "Сертификация",
+      "CAREER": "Кариера",
+      "ENTREPRENEURSHIP": "Предприемачество",
+      "ART": "Изкуство",
+      "SPORTS": "Спорт",
+      "COMMUNITY": "Общност",
+      "MILITARY": "Военна служба",
+      "PUBLICATION": "Публикация",
+      "PATENT": "Патент",
+      "COMPETITION": "Състезание",
+      "PERSONAL_MILESTONE": "Личен етап",
+      "OTHER": "Друго"
+    },
+
+    "LEVEL": {
+      "LOCAL": "Местно",
+      "REGIONAL": "Регионално",
+      "NATIONAL": "Национално",
+      "INTERNATIONAL": "Международно",
+      "OTHER": "Друго"
+    }
   }
 }

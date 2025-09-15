@@ -14,6 +14,9 @@ import { WorkForm, WorkFormValue } from '../../shared/types/work-form.type';
 import { EduFormValue, EduForm } from '../../shared/types/edu-form.type';
 import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
 import { StoryItem } from '../../shared/models/story-item.model';
+import { AchievementCategory } from '../../shared/enums/achievement-category.enum';
+import { AchievementLevel } from '../../shared/enums/achievement-level.enum';
+import { AchievementItem } from '../../shared/models/achievement-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberProfileService {
@@ -268,5 +271,106 @@ export class MemberProfileService {
       includedMemberIds: v.includedMemberIds ?? [],
       content: (v.content ?? '')?.trim() ?? '',
     } as Omit<StoryItem, 'id' | 'createdAt'>;
+  }
+
+  createAchievementForm(
+    initial: Partial<{
+      title: string | null;
+      category: AchievementCategory | null;
+      dateMode: BirthDeathDateMode;
+      exactDate: Date | null;
+      yearDate: Date | null;
+      freeDate: string | null;
+      organization: string | null;
+      location: string | null;
+      level: AchievementLevel | null;
+    }> = {}
+  ) {
+    return this.fb.group({
+      title: this.fb.control(initial.title ?? '', {
+        validators: [Validators.required],
+      }),
+
+      category: new FormControl<AchievementCategory | null>(
+        initial.category ?? null,
+        { validators: [Validators.required] }
+      ),
+
+      dateMode: this.fb.control<BirthDeathDateMode>(
+        initial.dateMode ?? BirthDeathDateMode.EXACT
+      ),
+
+      exactDate: new FormControl<Date | null>(initial.exactDate ?? null),
+      yearDate: new FormControl<Date | null>(initial.yearDate ?? null),
+      freeDate: new FormControl<string | null>(initial.freeDate ?? null),
+
+      organization: new FormControl<string | null>(
+        initial.organization ?? null
+      ),
+      location: new FormControl<string | null>(initial.location ?? null),
+      level: new FormControl<AchievementLevel | null>(initial.level ?? null),
+    });
+  }
+
+  resetAchievementForm(
+    form: ReturnType<MemberProfileService['createAchievementForm']>
+  ) {
+    form.reset({
+      title: '',
+      category: null,
+      dateMode: BirthDeathDateMode.EXACT,
+      exactDate: null,
+      yearDate: null,
+      freeDate: null,
+      organization: null,
+      location: null,
+      level: null,
+    });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  populateAchievementForm(
+    form: ReturnType<MemberProfileService['createAchievementForm']>,
+    a?: AchievementItem
+  ) {
+    form.reset({
+      title: a?.title ?? '',
+      category: (a?.category as AchievementCategory) ?? null,
+      dateMode: (a?.dateMode as BirthDeathDateMode) ?? BirthDeathDateMode.EXACT,
+      exactDate: a?.exactDate ? new Date(a.exactDate) : null,
+      yearDate: a?.year ? this.yearToDate(a.year) : null,
+      freeDate: a?.freeDate ?? null,
+      organization: a?.organization ?? null,
+      location: a?.location ?? null,
+      level: (a?.level as AchievementLevel | null) ?? null,
+    });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  achievementDraftFromForm(
+    form: ReturnType<MemberProfileService['createAchievementForm']>
+  ) {
+    const v = form.getRawValue();
+    const dm = v.dateMode ?? BirthDeathDateMode.EXACT;
+    return {
+      title: (v.title ?? '').trim(),
+      category: v.category!,
+      dateMode: dm as BirthDeathDateMode,
+      exactDate:
+        dm === BirthDeathDateMode.EXACT && v.exactDate
+          ? v.exactDate.toISOString()
+          : null,
+      year:
+        dm === BirthDeathDateMode.YEAR && v.yearDate
+          ? v.yearDate.getFullYear()
+          : null,
+      freeDate:
+        dm === BirthDeathDateMode.NOTE ? (v.freeDate ?? '').trim() : null,
+      organization: (v.organization ?? '')?.trim() || null,
+      location: (v.location ?? '')?.trim() || null,
+      level: v.level ?? null,
+    } satisfies Omit<AchievementItem, 'id' | 'createdAt'>;
   }
 }

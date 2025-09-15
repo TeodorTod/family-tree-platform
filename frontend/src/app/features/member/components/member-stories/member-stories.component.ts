@@ -57,15 +57,15 @@ export class MemberStoriesComponent implements OnInit, OnChanges, UnsavedAware {
 
   dateModeOptions = [
     {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
+      label: this.translate.instant(CONSTANTS.INFO_EXACT_DATE),
       value: BirthDeathDateMode.EXACT,
     },
     {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
+      label: this.translate.instant(CONSTANTS.INFO_YEAR_ONLY),
       value: BirthDeathDateMode.YEAR,
     },
     {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
+      label: this.translate.instant(CONSTANTS.INFO_FREE_DATE),
       value: BirthDeathDateMode.NOTE,
     },
   ];

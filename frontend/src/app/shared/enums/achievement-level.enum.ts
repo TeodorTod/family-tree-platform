@@ -1,0 +1,7 @@
+export enum AchievementLevel {
+  LOCAL = 'LOCAL',
+  REGIONAL = 'REGIONAL',
+  NATIONAL = 'NATIONAL',
+  INTERNATIONAL = 'INTERNATIONAL',
+  OTHER = 'OTHER',
+}

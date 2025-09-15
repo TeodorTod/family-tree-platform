@@ -1,0 +1,383 @@
+:host {
+  display: block;
+}
+
+.ach-form-card {
+  margin-bottom: 2rem !important;
+}
+
+.form-grid.ach-form {
+  --gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: var(--gap);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+.col-span-4 {
+  grid-column: 1 / -1;
+}
+
+.floating-field {
+  position: relative;
+  label {
+    position: absolute;
+    left: 0.875rem;
+    top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    background: var(--surface-card);
+    padding: 0 0.25rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 1;
+    font-weight: 500;
+  }
+  input {
+    width: 100%;
+    padding: 1rem 0.875rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    &:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+    }
+  }
+  &.active label,
+  input:focus + label,
+  input:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  @media (max-width: 640px) {
+    flex-direction: column-reverse;
+  }
+}
+
+.ach-list-card {
+  margin-top: 1rem !important;
+}
+
+.ach-list {
+  margin-top: 1rem;
+}
+
+.card-head {
+  h3 {
+    padding: 1rem;
+  }
+}
+
+.ach-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0;
+    .title {
+      font-weight: 600;
+      color: var(--text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    padding-right: 2rem;
+  }
+  @media (max-width: 640px) {
+    .left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      .title {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+      }
+    }
+    .meta {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.content {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(45, 76, 47, 0.02);
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(45, 76, 47, 0.1);
+}
+
+.meta-grid {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  padding: 1rem;
+  background: var(--surface-ground);
+  border-radius: var(--radius-md, 0.5rem);
+  margin-top: 1rem;
+  > div {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.muted {
+  color: var(--text-color-secondary);
+}
+.empty-hint {
+  color: var(--text-color-secondary);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-style: italic;
+}
+
+/* Prime consistency */
+:host ::ng-deep .p-select,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-multiselect {
+  width: 100%;
+  .p-inputwrapper {
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    &:focus-within,
+    &.p-inputwrapper-focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+    }
+  }
+  .p-select-label,
+  .p-dropdown-label,
+  .p-multiselect-label {
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+  }
+}
+
+/* Datepicker */
+:host ::ng-deep .p-calendar {
+  width: 100%;
+  .p-inputtext {
+    width: 100%;
+    padding: 1rem 0.875rem !important;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    &:focus {
+      border-color: var(--primary-color) !important;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+    }
+  }
+}
+
+p-select {
+  padding: 0 !important;
+}
+
+/* MOBILE: 1 item per row (keep using CSS grid) */
+@media (max-width: 640px) {
+  .form-grid.ach-form {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* single column */
+    gap: var(--gap);
+  }
+
+  /* every direct child takes the full row */
+  .form-grid.ach-form > * {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* neutralize custom span helpers on mobile */
+  .form-grid.ach-form > .col-span-2,
+  .form-grid.ach-form > .col-span-4 {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* ACHIEVEMENTS — match Stories look & feel */
+
+/* Accordion header/link like in Stories */
+:host ::ng-deep .ach-list .p-accordion .p-accordion-header {
+  border-radius: var(--radius-md, 0.5rem);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+:host
+  ::ng-deep
+  .ach-list
+  .p-accordion
+  .p-accordion-header
+  .p-accordion-header-link {
+  display: flex; /* so we can push chevron to the end */
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba(45, 76, 47, 0.02);
+  border: 1px solid rgba(45, 76, 47, 0.1);
+  transition: all 0.2s ease;
+}
+:host
+  ::ng-deep
+  .ach-list
+  .p-accordion
+  .p-accordion-header
+  .p-accordion-header-link:hover {
+  background: rgba(45, 76, 47, 0.05);
+}
+
+/* Put the chevron at the far right, same sizing/colors as Stories */
+:host ::ng-deep .ach-list .p-accordion .p-accordion-toggle-icon {
+  margin-left: auto;
+  font-size: 1rem;
+  color: var(--text-color-secondary);
+}
+:host
+  ::ng-deep
+  .ach-list
+  .p-accordion
+  .p-accordion-header.p-highlight
+  .p-accordion-toggle-icon {
+  color: var(--primary-color);
+}
+
+/* Accordion content like in Stories */
+:host ::ng-deep .ach-list .p-accordion .p-accordion-content {
+  border: 1px solid rgba(45, 76, 47, 0.1);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md, 0.5rem) var(--radius-md, 0.5rem);
+  background: var(--surface-card);
+}
+:host
+  ::ng-deep
+  .ach-list
+  .p-accordion
+  .p-accordion-content
+  .p-accordion-content-inner {
+  padding: 1.25rem;
+}
+
+/* Header layout (same as Stories) */
+.ach-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+.ach-head .left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.ach-head .left .title {
+  font-weight: 600;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ach-head .left .meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.ach-head .right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding-right: 2rem;
+}
+
+/* Icon buttons like Stories (clean, icon-only) */
+:host ::ng-deep .ach-list .p-button.p-button-text {
+  padding: 0.5rem; /* compact */
+  min-width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md, 0.5rem);
+}
+:host ::ng-deep .ach-list .p-button.p-button-text .p-button-icon {
+  font-size: 1rem;
+}
+
+/* Mobile tweaks – same stacking & spacing as Stories */
+@media (max-width: 640px) {
+  .ach-head {
+    display: block;
+  }
+  .ach-head .left .title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+  .ach-head .right {
+    margin-top: 0.5rem;
+    padding-right: 0;
+    gap: 0.25rem;
+  }
+  :host
+    ::ng-deep
+    .ach-list
+    .p-accordion
+    .p-accordion-header
+    .p-accordion-header-link {
+    padding: 1rem;
+  }
+}

@@ -114,7 +114,10 @@ export class CONSTANTS {
   static readonly INFO_RESET = 'INFO.RESET';
   static readonly INFO_UPDATE = 'INFO.UPDATE';
   static readonly INFO_ADD = 'INFO.ADD';
-  static readonly INFO_EDIT = 'INFO.EDIT'
+  static readonly INFO_EDIT = 'INFO.EDIT';
+  static readonly INFO_EXACT_DATE = 'INFO.EXACT_DATE';
+  static readonly INFO_YEAR_ONLY = 'INFO.YEAR_ONLY';
+  static readonly INFO_FREE_DATE = 'INFO.FREE_DATE';
 
   static readonly ADD_PHOTO = 'ADD.PHOTO';
 
@@ -309,13 +312,26 @@ export class CONSTANTS {
   static readonly CAREER_WORK_PROFESSION = 'CAREER.WORK_PROFESSION';
   static readonly CAREER_COL_PROFESSION = 'CAREER.COL_PROFESSION';
 
-  static readonly STORIES_TITLE = 'STORIES.TITLE'
-  static readonly STORIES_INCLUDED_MEMBERS = 'STORIES.INCLUDED_MEMBERS'
-  static readonly STORIES_STORY = 'STORIES.STORY'
-  static readonly STORIES_UPDATE = 'STORIES.UPDATE'
-  static readonly STORIES_ADD = 'STORIES.ADD'
-  static readonly STORIES_STORIES = 'STORIES.STORIES'
-  static readonly STORIES_DELETE_STORY = 'STORIES.DELETE_STORY'
-  static readonly STORIES_DATE = 'STORIES.DATE'
-  static readonly STORIES_CREATED = 'STORIES.CREATED'
+  static readonly STORIES_TITLE = 'STORIES.TITLE';
+  static readonly STORIES_INCLUDED_MEMBERS = 'STORIES.INCLUDED_MEMBERS';
+  static readonly STORIES_STORY = 'STORIES.STORY';
+  static readonly STORIES_UPDATE = 'STORIES.UPDATE';
+  static readonly STORIES_ADD = 'STORIES.ADD';
+  static readonly STORIES_STORIES = 'STORIES.STORIES';
+  static readonly STORIES_DELETE_STORY = 'STORIES.DELETE_STORY';
+  static readonly STORIES_DATE = 'STORIES.DATE';
+  static readonly STORIES_CREATED = 'STORIES.CREATED';
+
+  static readonly ACH_ADD = 'ACH.ADD';
+  static readonly ACH_UPDATE = 'ACH.UPDATE';
+  static readonly ACH_TITLE = 'ACH.TITLE';
+  static readonly ACH_CATEGORY_LABEL = 'ACH.CATEGORY_LABEL';
+  static readonly ACH_LEVEL_LABEL = 'ACH.LEVEL_LABEL';
+  static readonly ACH_ORGANIZATION = 'ACH.ORGANIZATION';
+  static readonly ACH_LOCATION = 'ACH.LOCATION';
+  static readonly ACH_DATE = 'ACH.DATE';
+  static readonly ACH_DATE_MODE = 'ACH.DATE_MODE';
+  static readonly ACH_DELETE_TITLE = 'ACH.DELETE_TITLE';
+  static readonly ACH_DELETE_MSG = 'ACH.DELETE_MSG';
+  static readonly ACH_NO_ACH = 'ACH.NO_ACH';
 }

@@ -374,7 +374,10 @@
 
             <!-- ACHIEVEMENTS -->
             <p-tabpanel [value]="TAB.ACHIEVEMENTS">
-              <app-member-achievements [role]="role"></app-member-achievements>
+              <app-member-achievements
+                [role]="role"
+                [profile]="(profile$ | async) ?? null"
+              ></app-member-achievements>
             </p-tabpanel>
 
             <!-- FAVORITES -->

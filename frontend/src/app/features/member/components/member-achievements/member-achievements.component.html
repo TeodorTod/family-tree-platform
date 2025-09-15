@@ -1,1 +1,225 @@
-<p>member-achievements works!</p>
+<!-- Create / edit achievement -->
+<p-card class="ach-form-card">
+  <div class="form-grid ach-form" [formGroup]="form">
+    <!-- Title -->
+    <div
+      class="floating-field col-span-2"
+      [class.active]="form.get('title')?.value"
+    >
+      <input pInputText placeholder=" " formControlName="title" />
+      <label>{{
+        CONSTANTS.ACH_TITLE || "Achievement title" | translate
+      }}</label>
+    </div>
+
+    <!-- Category -->
+    <div class="floating-field active">
+      <p-select
+        formControlName="category"
+        [options]="categoryOptions"
+        optionValue="value"
+        class="w-full"
+        appendTo="body"
+      >
+        <ng-template pTemplate="selectedItem" let-opt>
+          {{ opt?.i18nKey | translate }}
+        </ng-template>
+        <ng-template pTemplate="item" let-opt>
+          {{ opt.i18nKey | translate }}
+        </ng-template>
+      </p-select>
+      <label>{{ CONSTANTS.ACH_CATEGORY_LABEL | translate }}</label>
+    </div>
+
+    <!-- Level (optional) -->
+    <div class="floating-field active">
+      <p-select
+        formControlName="level"
+        [options]="levelOptions"
+        optionValue="value"
+        [showClear]="true"
+        class="w-full"
+        appendTo="body"
+      >
+        <ng-template pTemplate="selectedItem" let-opt>
+          {{ opt?.i18nKey | translate }}
+        </ng-template>
+        <ng-template pTemplate="item" let-opt>
+          {{ opt.i18nKey | translate }}
+        </ng-template>
+      </p-select>
+      <label>{{ CONSTANTS.ACH_LEVEL_LABEL | translate }}</label>
+    </div>
+
+    <!-- Org & Location (optional) -->
+    <div
+      class="floating-field"
+      [class.active]="form.get('organization')?.value"
+    >
+      <input pInputText placeholder=" " formControlName="organization" />
+      <label>{{
+        CONSTANTS.ACH_ORGANIZATION || "Organization / Issuer" | translate
+      }}</label>
+    </div>
+
+    <div class="floating-field" [class.active]="form.get('location')?.value">
+      <input pInputText placeholder=" " formControlName="location" />
+      <label>{{ CONSTANTS.ACH_LOCATION || "Location" | translate }}</label>
+    </div>
+
+    <!-- Date mode -->
+    <span class="p-float-label w-full mb-3">
+      <p-select
+        formControlName="dateMode"
+        [options]="dateModeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        appendTo="body"
+      ></p-select>
+    </span>
+
+    @if (form.value.dateMode === 'exact') {
+    <div class="floating-field" [class.active]="form.get('exactDate')?.value">
+      <p-datepicker
+        formControlName="exactDate"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+      <label>{{ CONSTANTS.INFO_EXACT_DATE | translate }}</label>
+    </div>
+    } @if (form.value.dateMode === 'year') {
+    <div class="floating-field" [class.active]="form.get('yearDate')?.value">
+      <p-datepicker
+        formControlName="yearDate"
+        [view]="'year'"
+        [dateFormat]="'yy'"
+        [showIcon]="true"
+        [iconDisplay]="'input'"
+        [style]="{ width: '100%' }"
+        appendTo="body"
+      ></p-datepicker>
+      <label>{{ CONSTANTS.INFO_YEAR_ONLY | translate }}</label>
+    </div>
+    } @if (form.value.dateMode === 'note') {
+    <div class="floating-field" [class.active]="form.get('freeDate')?.value">
+      <input pInputText placeholder=" " formControlName="freeDate" />
+      <label>{{ CONSTANTS.INFO_FREE_DATE | translate }}</label>
+    </div>
+    }
+
+    <!-- Actions -->
+    <div class="actions">
+      @if (editingId()) {
+      <button
+        pButton
+        type="button"
+        class="p-button-secondary"
+        icon="pi pi-undo"
+        label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+        (click)="cancelEdit()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-check"
+        label="{{ CONSTANTS.ACH_UPDATE || 'Update' | translate }}"
+        (click)="saveEdit()"
+        [disabled]="form.invalid"
+      ></button>
+      } @else {
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="{{ CONSTANTS.ACH_ADD || 'Add achievement' | translate }}"
+        (click)="addAchievement()"
+        [disabled]="form.invalid"
+      ></button>
+      }
+    </div>
+  </div>
+</p-card>
+
+<!-- Achievements list -->
+<div class="ach-list">
+  <p-card class="ach-list-card">
+    <ng-template pTemplate="header">
+      <div class="card-head">
+        <h3>{{ CONSTANTS.TAB_ACHIEVEMENTS | translate }}</h3>
+      </div>
+    </ng-template>
+
+    <p-accordion [multiple]="true">
+      @for (a of achievements(); track a.id) {
+      <p-accordion-panel [value]="a.id">
+        <p-accordion-header>
+          <div class="ach-head">
+            <div class="left">
+              <span class="title" [pTooltip]="a.title" appendTo="body">{{
+                a.title
+              }}</span>
+              <span class="meta">
+                <p-tag severity="secondary" [value]="displayDate(a)"></p-tag>
+                <p-tag
+                  [value]="'ACH.CATEGORY.' + a.category | translate"
+                ></p-tag>
+                @if (a.level) {
+                <p-tag [value]="'ACH.LEVEL.' + a.level | translate"></p-tag> }
+              </span>
+            </div>
+            <div class="right">
+              <button
+                pButton
+                type="button"
+                class="p-button-text"
+                icon="pi pi-pencil"
+                (click)="$event.stopPropagation(); startEdit(a)"
+                pTooltip="{{ CONSTANTS.INFO_EDIT | translate }}"
+              ></button>
+              <button
+                pButton
+                type="button"
+                class="p-button-text p-button-danger"
+                icon="pi pi-trash"
+                (click)="$event.stopPropagation(); removeAchievement(a.id)"
+                pTooltip="{{ CONSTANTS.INFO_DELETE | translate }}"
+              ></button>
+            </div>
+          </div>
+        </p-accordion-header>
+
+        <p-accordion-content>
+          <div class="content" *ngIf="a.organization || a.location">
+            <div>
+              <strong>{{ CONSTANTS.ACH_ORGANIZATION | translate }}:</strong>
+              {{ a.organization || "—" }}
+            </div>
+            <div>
+              <strong>{{ CONSTANTS.ACH_LOCATION | translate }}:</strong>
+              {{ a.location || "—" }}
+            </div>
+          </div>
+          <div class="meta-grid">
+            <div>
+              <strong>{{ CONSTANTS.ACH_DATE | translate }}:</strong>
+              {{ displayDate(a) }}
+            </div>
+            <div class="muted">
+              <strong>{{ CONSTANTS.STORIES_CREATED | translate }}:</strong>
+              {{ a.createdAt | date : "medium" }}
+            </div>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+      }
+    </p-accordion>
+
+    @if (achievements().length === 0) {
+    <p class="empty-hint">{{ CONSTANTS.ACH_NO_ACH | translate }}</p>
+    }
+  </p-card>
+</div>
