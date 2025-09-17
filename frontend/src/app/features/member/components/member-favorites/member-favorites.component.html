@@ -1,1 +1,130 @@
-<p>member-favorites works!</p>
+<p-card class="fav-form-card">
+  <div class="form-grid fav-form" [formGroup]="form">
+    <!-- Category -->
+    <div class="floating-field active">
+      <p-select
+        formControlName="category"
+        [options]="categoryOptions"
+        optionValue="value"
+        class="w-full"
+      >
+        <ng-template pTemplate="selectedItem" let-opt>
+          {{ opt?.i18nKey | translate }}
+        </ng-template>
+        <ng-template pTemplate="item" let-opt>
+          {{ opt.i18nKey | translate }}
+        </ng-template>
+      </p-select>
+      <label>{{ CONSTANTS.FAV_CATEGORY | translate }}</label>
+    </div>
+
+    <!-- Title -->
+    <div class="floating-field" [class.active]="form.get('title')?.value">
+      <input pInputText formControlName="title" placeholder=" " />
+      <label>{{ CONSTANTS.FAV_TITLE | translate }}</label>
+    </div>
+
+    <!-- Notes -->
+    <div
+      class="floating-field col-span-2"
+      [class.active]="form.get('notes')?.value"
+    >
+      <textarea
+        pTextarea
+        rows="4"
+        formControlName="notes"
+        placeholder=" "
+      ></textarea>
+      <label>{{ CONSTANTS.FAV_NOTES | translate }}</label>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      @if (editingId()) {
+      <button
+        pButton
+        type="button"
+        class="p-button-secondary"
+        icon="pi pi-undo"
+        (click)="cancelEdit()"
+        label="{{ CONSTANTS.INFO_CANCEL | translate }}"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-check"
+        (click)="saveEdit()"
+        [disabled]="form.invalid"
+        label="{{ CONSTANTS.FAV_UPDATE | translate }}"
+      ></button>
+      } @else {
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        (click)="addFavorite()"
+        [disabled]="form.invalid"
+        label="{{ CONSTANTS.FAV_ADD | translate }}"
+      ></button>
+      }
+    </div>
+  </div>
+</p-card>
+
+<div class="fav-list-card">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-head">
+        <h3>{{ CONSTANTS.FAV_LIST | translate }}</h3>
+      </div>
+    </ng-template>
+
+    <p-table [value]="favorites()" [responsiveLayout]="'stack'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 200px">
+            {{ CONSTANTS.FAV_COL_CATEGORY | translate }}
+          </th>
+          <th>{{ CONSTANTS.FAV_COL_TITLE | translate }}</th>
+          <th style="width: 40%">{{ CONSTANTS.FAV_COL_NOTES | translate }}</th>
+          <th style="width: 140px; text-align: right">
+            {{ CONSTANTS.FAV_COL_ACTIONS | translate }}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-fav>
+        <tr>
+          <td>{{ "FAV.CATEGORY." + fav.category | translate }}</td>
+          <td>{{ fav.title }}</td>
+          <td>
+            <span class="muted" *ngIf="!fav.notes">—</span>
+            <span *ngIf="fav.notes">{{ fav.notes }}</span>
+          </td>
+          <td style="text-align: right">
+            <button
+              pButton
+              type="button"
+              class="p-button-text"
+              icon="pi pi-pencil"
+              (click)="startEdit(fav)"
+              pTooltip="{{ CONSTANTS.INFO_EDIT | translate }}"
+            ></button>
+            <button
+              pButton
+              type="button"
+              class="p-button-text p-button-danger"
+              icon="pi pi-trash"
+              (click)="removeFavorite(fav.id)"
+              pTooltip="{{ CONSTANTS.INFO_DELETE | translate }}"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    @if (favorites().length === 0) {
+    <p class="empty-hint">{{ CONSTANTS.FAV_EMPTY | translate }}</p>
+    }
+  </p-card>
+</div>

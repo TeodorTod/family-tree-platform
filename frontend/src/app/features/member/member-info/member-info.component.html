@@ -382,7 +382,10 @@
 
             <!-- FAVORITES -->
             <p-tabpanel [value]="TAB.FAVORITES">
-              <app-member-favorites [role]="role"></app-member-favorites>
+              <app-member-favorites
+                [role]="role"
+                [profile]="(profile$ | async) ?? null"
+              ></app-member-favorites>
             </p-tabpanel>
 
             <!-- PERSONAL -->

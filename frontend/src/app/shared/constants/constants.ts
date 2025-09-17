@@ -334,4 +334,18 @@ export class CONSTANTS {
   static readonly ACH_DELETE_TITLE = 'ACH.DELETE_TITLE';
   static readonly ACH_DELETE_MSG = 'ACH.DELETE_MSG';
   static readonly ACH_NO_ACH = 'ACH.NO_ACH';
+
+  static readonly FAV_CATEGORY = 'FAV.CATEGORY_LABEL';
+  static readonly FAV_TITLE = 'FAV.TITLE';
+  static readonly FAV_NOTES = 'FAV.NOTES';
+  static readonly FAV_ADD = 'FAV.ADD';
+  static readonly FAV_UPDATE = 'FAV.UPDATE';
+  static readonly FAV_LIST = 'FAV.LIST';
+  static readonly FAV_EMPTY = 'FAV.EMPTY';
+  static readonly FAV_COL_CATEGORY = 'FAV.COL_CATEGORY';
+  static readonly FAV_COL_TITLE = 'FAV.COL_TITLE';
+  static readonly FAV_COL_NOTES = 'FAV.COL_NOTES';
+  static readonly FAV_COL_ACTIONS = 'FAV.COL_ACTIONS';
+  static readonly FAV_DELETE_TITLE = 'FAV.DELETE_TITLE';
+  static readonly FAV_DELETE_MSG = 'FAV.DELETE_MSG';
 }

@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.fav-form-card {
+  margin-bottom: 1.5rem !important;
+}
+
+.form-grid.fav-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col-span-2 {
+  grid-column: 1 / -1;
+}
+
+.floating-field {
+  position: relative;
+  label {
+    position: absolute;
+    left: 0.875rem;
+    top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    background: var(--surface-card);
+    padding: 0 0.25rem;
+    transition: 0.2s;
+    z-index: 1;
+    font-weight: 500;
+  }
+  input,
+  textarea {
+    width: 100%;
+    padding: 1rem 0.875rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color, #e1e5e9);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--surface-card);
+    transition: 0.2s;
+    color: var(--text-color);
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+      outline: none;
+    }
+  }
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  &.active label,
+  input:focus + label,
+  textarea:focus + label,
+  input:not(:placeholder-shown) + label,
+  textarea:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.625rem;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  @media (max-width: 640px) {
+    flex-direction: column-reverse;
+  }
+}
+
+.fav-list-card {
+  padding-top: 1rem !important;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  h3 {
+    padding: 1rem;
+  }
+}
+.muted {
+  color: var(--text-color-secondary);
+}
+.empty-hint {
+  color: var(--text-color-secondary);
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+}

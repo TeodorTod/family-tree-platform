@@ -17,6 +17,8 @@ import { StoryItem } from '../../shared/models/story-item.model';
 import { AchievementCategory } from '../../shared/enums/achievement-category.enum';
 import { AchievementLevel } from '../../shared/enums/achievement-level.enum';
 import { AchievementItem } from '../../shared/models/achievement-item.model';
+import { FavoriteCategory } from '../../shared/enums/favorite-category.enum';
+import { FavoriteItem } from '../../shared/models/favorite-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberProfileService {
@@ -372,5 +374,56 @@ export class MemberProfileService {
       location: (v.location ?? '')?.trim() || null,
       level: v.level ?? null,
     } satisfies Omit<AchievementItem, 'id' | 'createdAt'>;
+  }
+
+  createFavoriteForm(
+    initial: Partial<{
+      category: FavoriteCategory | null;
+      title: string | null;
+      notes: string | null;
+    }> = {}
+  ) {
+    return this.fb.group({
+      category: this.fb.control<FavoriteCategory | null>(
+        initial.category ?? null,
+        { validators: [Validators.required] }
+      ),
+      title: this.fb.control(initial.title ?? '', {
+        validators: [Validators.required],
+      }),
+      notes: this.fb.control(initial.notes ?? null),
+    });
+  }
+
+  resetFavoriteForm(
+    form: ReturnType<MemberProfileService['createFavoriteForm']>
+  ) {
+    form.reset({ category: null, title: '', notes: null });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  populateFavoriteForm(
+    form: ReturnType<MemberProfileService['createFavoriteForm']>,
+    f?: FavoriteItem
+  ) {
+    form.reset({
+      category: (f?.category as FavoriteCategory) ?? null,
+      title: f?.title ?? '',
+      notes: f?.notes ?? null,
+    });
+    form.markAsPristine();
+    form.markAsUntouched();
+  }
+
+  favoriteDraftFromForm(
+    form: ReturnType<MemberProfileService['createFavoriteForm']>
+  ): Omit<FavoriteItem, 'id' | 'createdAt'> {
+    const v = form.getRawValue();
+    return {
+      category: (v.category as FavoriteCategory)?.toString(),
+      title: (v.title ?? '').trim(),
+      notes: (v.notes ?? '')?.trim() || null,
+    };
   }
 }
