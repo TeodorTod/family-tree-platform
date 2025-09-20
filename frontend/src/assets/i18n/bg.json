@@ -349,5 +349,33 @@
       "ANIMAL": "Животно",
       "OTHER": "Друго"
     }
+  },
+  "PERSONAL": {
+    "IDENTITY": "Лични данни",
+    "CONTACTS": "Контакти",
+    "RELIGION": "Религия",
+    "NAME_DAY": "Имен ден",
+    "HEIGHT": "Ръст",
+    "WEIGHT": "Тегло",
+    "BLOOD_TYPE": "Кръвна група",
+    "HANDEDNESS": "Водеща ръка",
+    "SMOKING": "Пушене",
+    "ALLERGIES": "Алергии",
+    "CONDITIONS": "Заболявания/състояния",
+    "PHONE": "Телефон",
+    "EMAIL": "Имейл",
+    "WEBSITE": "Сайт",
+    "ADDRESS": "Адрес",
+    "NOTES": "Бележки",
+    "HANDED": {
+      "RIGHT": "Дясна",
+      "LEFT": "Лява",
+      "AMBIDEXTROUS": "И двете"
+    },
+    "SMOKE": {
+      "NEVER": "Никога",
+      "FORMER": "Бивш/а",
+      "CURRENT": "В момента"
+    }
   }
 }

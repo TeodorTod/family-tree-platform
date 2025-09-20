@@ -19,6 +19,10 @@ import { AchievementLevel } from '../../shared/enums/achievement-level.enum';
 import { AchievementItem } from '../../shared/models/achievement-item.model';
 import { FavoriteCategory } from '../../shared/enums/favorite-category.enum';
 import { FavoriteItem } from '../../shared/models/favorite-item.model';
+import { BloodType } from '../../shared/enums/blood-type.enum';
+import { Handedness } from '../../shared/enums/handedness.enum';
+import { SmokingStatus } from '../../shared/enums/smoking-status.enum';
+import { PersonalInfoEntry } from '../../shared/models/personal-info-entry.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberProfileService {
@@ -425,5 +429,45 @@ export class MemberProfileService {
       title: (v.title ?? '').trim(),
       notes: (v.notes ?? '')?.trim() || null,
     };
+  }
+
+  createPersonalInfoForm(initial: Partial<PersonalInfoEntry> = {}): FormGroup<{
+    religion: FormControl<string | null>;
+    nameDay: FormControl<Date | null>;
+    heightCm: FormControl<number | null>;
+    weightKg: FormControl<number | null>;
+    bloodType: FormControl<BloodType | null>;
+    handedness: FormControl<Handedness | null>;
+    smokingStatus: FormControl<SmokingStatus | null>;
+    allergies: FormControl<string | null>;
+    conditions: FormControl<string | null>;
+    phone: FormControl<string | null>;
+    email: FormControl<string | null>;
+    website: FormControl<string | null>;
+    address: FormControl<string | null>;
+    notes: FormControl<string | null>;
+  }> {
+    return this.fb.group({
+      religion: this.fb.control(initial.religion ?? null),
+      nameDay: this.fb.control(initial.nameDay ?? null),
+      heightCm: this.fb.control(initial.heightCm ?? null, {
+        validators: [Validators.min(40), Validators.max(250)],
+      }),
+      weightKg: this.fb.control(initial.weightKg ?? null, {
+        validators: [Validators.min(2), Validators.max(400)],
+      }),
+      bloodType: this.fb.control(initial.bloodType ?? null),
+      handedness: this.fb.control(initial.handedness ?? null),
+      smokingStatus: this.fb.control(initial.smokingStatus ?? null),
+      allergies: this.fb.control(initial.allergies ?? null),
+      conditions: this.fb.control(initial.conditions ?? null),
+      phone: this.fb.control(initial.phone ?? null),
+      email: this.fb.control(initial.email ?? null, {
+        validators: [Validators.email],
+      }),
+      website: this.fb.control(initial.website ?? null),
+      address: this.fb.control(initial.address ?? null),
+      notes: this.fb.control(initial.notes ?? null),
+    });
   }
 }

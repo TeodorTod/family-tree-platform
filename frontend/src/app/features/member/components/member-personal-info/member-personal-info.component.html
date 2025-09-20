@@ -1,1 +1,166 @@
-<p>member-personal-info works!</p>
+<p-card class="pi-card">
+  <div class="grid personal-grid" [formGroup]="form">
+    <!-- Left: Identity & Health -->
+    <div class="group">
+      <div class="group-title">
+        <i class="pi pi-user"></i>
+        {{ CONSTANTS.PERSONAL_IDENTITY | translate }}
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('religion')?.value">
+        <input pInputText formControlName="religion" placeholder=" " />
+        <label>{{ CONSTANTS.PERSONAL_RELIGION | translate }}</label>
+      </div>
+
+      <div class="floating-field active">
+        <p-datepicker
+          formControlName="nameDay"
+          dateFormat="yy-mm-dd"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          [style]="{ width:'100%' }"
+        ></p-datepicker>
+        <label>{{ CONSTANTS.PERSONAL_NAME_DAY | translate }}</label>
+      </div>
+
+      <div class="two-cols">
+        <div class="floating-field active">
+          <p-inputNumber
+            formControlName="heightCm"
+            [useGrouping]="false"
+            [min]="40"
+            [max]="250"
+            [suffix]="' cm'"
+            inputStyleClass="full"
+          ></p-inputNumber>
+          <label>{{ CONSTANTS.PERSONAL_HEIGHT | translate }}</label>
+        </div>
+
+        <div class="floating-field active">
+          <p-inputNumber
+            formControlName="weightKg"
+            [useGrouping]="false"
+            [min]="2"
+            [max]="400"
+            [suffix]="' kg'"
+            inputStyleClass="full"
+          ></p-inputNumber>
+          <label>{{ CONSTANTS.PERSONAL_WEIGHT | translate }}</label>
+        </div>
+      </div>
+
+      <div class="two-cols">
+        <div class="floating-field active">
+          <p-select
+            formControlName="bloodType"
+            [options]="bloodTypes"
+            class="w-full"
+          >
+            <ng-template pTemplate="selectedItem" let-opt>
+              {{ opt }}
+            </ng-template>
+            <ng-template pTemplate="item" let-opt>
+              {{ opt }}
+            </ng-template>
+          </p-select>
+          <label>{{ CONSTANTS.PERSONAL_BLOOD_TYPE | translate }}</label>
+        </div>
+
+        <div class="floating-field active">
+          <p-select
+            formControlName="handedness"
+            [options]="handednessOptions"
+            class="w-full"
+          >
+            <ng-template pTemplate="selectedItem" let-opt>
+              {{ ('PERSONAL.HANDED.' + opt) | translate }}
+            </ng-template>
+            <ng-template pTemplate="item" let-opt>
+              {{ ('PERSONAL.HANDED.' + opt) | translate }}
+            </ng-template>
+          </p-select>
+          <label>{{ CONSTANTS.PERSONAL_HANDEDNESS | translate }}</label>
+        </div>
+      </div>
+
+      <div class="floating-field active">
+        <p-select
+          formControlName="smokingStatus"
+          [options]="smokingOptions"
+          class="w-full"
+        >
+          <ng-template pTemplate="selectedItem" let-opt>
+            {{ ('PERSONAL.SMOKE.' + opt) | translate }}
+          </ng-template>
+          <ng-template pTemplate="item" let-opt>
+            {{ ('PERSONAL.SMOKE.' + opt) | translate }}
+          </ng-template>
+        </p-select>
+        <label>{{ CONSTANTS.PERSONAL_SMOKING | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('allergies')?.value">
+        <textarea
+          pTextarea
+          rows="2"
+          formControlName="allergies"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.PERSONAL_ALLERGIES | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('conditions')?.value">
+        <textarea
+          pTextarea
+          rows="2"
+          formControlName="conditions"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.PERSONAL_CONDITIONS | translate }}</label>
+      </div>
+    </div>
+
+    <!-- Right: Contacts -->
+    <div class="group">
+      <div class="group-title">
+        <i class="pi pi-id-card"></i>
+        {{ CONSTANTS.PERSONAL_CONTACTS | translate }}
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('phone')?.value">
+        <input pInputText formControlName="phone" placeholder=" " />
+        <label>{{ CONSTANTS.PERSONAL_PHONE | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('email')?.value">
+        <input pInputText formControlName="email" placeholder=" " />
+        <label>{{ CONSTANTS.PERSONAL_EMAIL | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('website')?.value">
+        <input pInputText formControlName="website" placeholder=" " />
+        <label>{{ CONSTANTS.PERSONAL_WEBSITE | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('address')?.value">
+        <textarea
+          pTextarea
+          rows="3"
+          formControlName="address"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.PERSONAL_ADDRESS | translate }}</label>
+      </div>
+
+      <div class="floating-field" [class.active]="form.get('notes')?.value">
+        <textarea
+          pTextarea
+          rows="4"
+          formControlName="notes"
+          placeholder=" "
+        ></textarea>
+        <label>{{ CONSTANTS.PERSONAL_NOTES | translate }}</label>
+      </div>
+    </div>
+  </div>
+</p-card>

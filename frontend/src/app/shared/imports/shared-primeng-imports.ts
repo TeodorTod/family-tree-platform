@@ -34,6 +34,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TextareaModule } from 'primeng/textarea';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -71,5 +72,6 @@ export const SHARED_PRIMENG_IMPORTS = [
   MultiSelectModule,
   BadgeModule,
   OverlayBadgeModule,
-  TextareaModule 
+  TextareaModule,
+  InputNumberModule
 ];
