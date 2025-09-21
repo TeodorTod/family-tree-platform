@@ -28,6 +28,8 @@ import MyPreset from '../theme/mypreset';
 import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
+import { PRIMENG_BG } from '../assets/i18n/primeng-bg';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,6 +41,7 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: MyPreset,
       },
+      translation: PRIMENG_BG,
     }),
 
     provideHttpClient(withInterceptorsFromDi()),
