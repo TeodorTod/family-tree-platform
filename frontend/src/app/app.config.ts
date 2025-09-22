@@ -29,7 +29,7 @@ import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { PRIMENG_BG } from '../assets/i18n/primeng-bg';
-
+import { LanguageService } from '../assets/i18n/language.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -54,9 +54,10 @@ export const appConfig: ApplicationConfig = {
       },
     }).providers ?? []),
 
-    provideAppInitializer(() =>
-      appInitializerFactory(inject(TranslateService))()
-    ),
+    provideAppInitializer(() => {
+      inject(LanguageService).init();
+      return appInitializerFactory(inject(TranslateService))();
+    }),
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     ConfirmationService,

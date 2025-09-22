@@ -21,7 +21,7 @@
   @media (min-width: 768px) {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
 }
 
@@ -43,20 +43,266 @@
   }
 }
 
-.nav-mobile-dropdown {
-  background-color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 0.75rem;
-  display: block;
+/* Enhanced Language Switcher for Desktop */
+.lang-switcher {
+  position: relative;
   
+  .p-select {
+    min-width: 140px !important;
+    
+    .p-select-dropdown {
+      background: var(--primary-color) !important;
+      border: 2px solid var(--primary-color) !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: var(--primary-color-hover) !important;
+        border-color: var(--primary-color-hover) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(45, 76, 47, 0.3);
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.2);
+      }
+    }
+    
+    .p-select-label {
+      color: white !important;
+      font-weight: 500 !important;
+      padding: 0.75rem 1rem !important;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      &::before {
+        content: "🌍";
+        font-size: 1rem;
+      }
+    }
+    
+    .p-select-dropdown-icon {
+      color: white !important;
+    }
+  }
+  
+  /* Dropdown Panel Styling */
+  :global(.p-select-overlay) {
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    overflow: hidden;
+    
+    .p-select-list {
+      padding: 0.5rem 0;
+      
+      .p-select-option {
+        padding: 0.75rem 1rem !important;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: none !important;
+        
+        &:hover {
+          background: var(--primary-color) !important;
+          color: white !important;
+        }
+        
+        &.p-selected {
+          background: var(--primary-color) !important;
+          color: white !important;
+          font-weight: 600;
+          
+          &::after {
+            content: "✓";
+            margin-left: auto;
+            font-weight: bold;
+          }
+        }
+        
+        /* Add flag emojis */
+        &[data-value="bg"]::before {
+          content: "🇧🇬";
+        }
+        
+        &[data-value="en"]::before {
+          content: "🇺🇸";
+        }
+      }
+    }
+  }
+}
+
+.nav-mobile-dropdown {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 1.25rem;
+  display: block;
+  border-radius: 0 0 16px 16px;
+  border-top: 3px solid var(--primary-color);
 
   @media (min-width: 768px) {
     display: none;
   }
 
+  /* Mobile Language Section */
+  .mobile-lang-section {
+    margin-bottom: 1.5rem;
+    
+    .lang-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      
+      &::before {
+        content: "🌍";
+        font-size: 1rem;
+      }
+    }
+    
+    .p-select {
+      width: 100%;
+      
+      .p-select-dropdown {
+        background: white !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease;
+        padding: 0.75rem 1rem;
+        
+        &:hover {
+          border-color: var(--primary-color) !important;
+          box-shadow: 0 4px 12px rgba(45, 76, 47, 0.1);
+        }
+        
+        &:focus {
+          border-color: var(--primary-color) !important;
+          box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+        }
+      }
+      
+      .p-select-label {
+        color: var(--primary-color) !important;
+        font-weight: 500 !important;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        
+        /* Add flag based on selected value */
+        &[data-selected="bg"]::before {
+          content: "🇧🇬";
+        }
+        
+        &[data-selected="en"]::before {
+          content: "🇺🇸";
+        }
+      }
+      
+      .p-select-dropdown-icon {
+        color: var(--primary-color) !important;
+      }
+    }
+  }
+
+  /* Enhanced Mobile Buttons */
   button {
     width: 100%;
     text-align: left;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    border-radius: 12px !important;
+    padding: 0.875rem 1.25rem !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent !important;
+    
+    &:hover {
+      background: var(--primary-color) !important;
+      color: white !important;
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(45, 76, 47, 0.25);
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    /* Profile button special styling */
+    &.profile-toggle {
+      background: var(--highlight-bg) !important;
+      border-color: var(--primary-color) !important;
+      
+      .p-button-icon {
+        transition: transform 0.3s ease;
+      }
+      
+      &[aria-expanded="true"] .p-button-icon {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  
+  /* Profile submenu */
+  .profile-submenu {
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--primary-color);
+    margin-bottom: 1rem;
+    
+    button {
+      font-size: 0.875rem;
+      padding: 0.625rem 1rem !important;
+      margin-bottom: 0.5rem;
+      background: rgba(45, 76, 47, 0.05) !important;
+      
+      &:hover {
+        background: var(--primary-color) !important;
+        transform: translateX(2px);
+      }
+    }
+  }
+}
+
+/* Divider Styling */
+.p-divider {
+  margin: 1rem 0 !important;
+  border-color: rgba(45, 76, 47, 0.2) !important;
+}
+
+/* Animation for mobile menu */
+.nav-mobile-dropdown {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-mobile-dropdown {
+    padding: 1rem;
+    
+    .mobile-lang-section .p-select .p-select-dropdown {
+      padding: 0.625rem 0.875rem;
+    }
+    
+    button {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem;
+    }
   }
 }

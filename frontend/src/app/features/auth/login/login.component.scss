@@ -14,6 +14,7 @@
 .login-image {
   flex: 1;
   max-height: 100vh;
+  
   img {
     width: 100%;
     height: 100%;
@@ -55,10 +56,150 @@
   width: 100%;
   max-width: 360px;
   box-sizing: border-box;
+  position: relative;
 
   @media (max-width: 768px) {
     padding: 1.5rem;
     margin-top: 1rem;
+  }
+}
+
+/* Enhanced Language Switcher at Top */
+.card-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(45, 76, 47, 0.1);
+  
+  .lang-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    &::before {
+      content: "🌍";
+      font-size: 1.1rem;
+    }
+  }
+  
+  .lang-select {
+    min-width: 120px;
+    
+    :global(.p-select-dropdown) {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(45, 76, 47, 0.2);
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(45, 76, 47, 0.3);
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.2);
+        outline: none;
+      }
+    }
+    
+    :global(.p-select-label) {
+      color: white !important;
+      font-weight: 500 !important;
+      padding: 0.625rem 0.875rem !important;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      
+      // Add flag icons based on selected language
+      &[data-value="bg"]::before,
+      &:has([data-value="bg"])::before {
+        content: "🇧🇬";
+        font-size: 1rem;
+      }
+      
+      &[data-value="en"]::before,
+      &:has([data-value="en"])::before {
+        content: "🇺🇸";
+        font-size: 1rem;
+      }
+    }
+    
+    :global(.p-select-dropdown-icon) {
+      color: white !important;
+      transition: transform 0.3s ease;
+    }
+    
+    :global(.p-select-open .p-select-dropdown-icon) {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/* Enhanced Dropdown Panel */
+:global(.p-select-overlay) {
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  
+  .p-select-list {
+    padding: 0.75rem 0;
+    background: rgba(255, 255, 255, 0.95);
+    
+    .p-select-option {
+      padding: 0.875rem 1.25rem !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: none !important;
+      margin: 0 0.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      
+      &:hover {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%) !important;
+        color: white !important;
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(45, 76, 47, 0.25);
+      }
+      
+      &.p-selected {
+        background: var(--primary-color) !important;
+        color: white !important;
+        font-weight: 600;
+        
+        &::after {
+          content: "✓";
+          margin-left: auto;
+          font-weight: bold;
+          font-size: 1rem;
+        }
+      }
+      
+      // Add flag emojis to dropdown options
+      &[aria-label*="Български"]::before,
+      &:has([value="bg"])::before {
+        content: "🇧🇬";
+        font-size: 1.1rem;
+      }
+      
+      &[aria-label*="English"]::before,
+      &:has([value="en"])::before {
+        content: "🇺🇸";
+        font-size: 1.1rem;
+      }
+    }
   }
 }
 
@@ -68,44 +209,92 @@
   margin-bottom: 2rem;
   color: var(--primary-color);
   text-align: center;
+  position: relative;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+  }
 }
 
+.login-form-content {
+  .floating-field {
+    position: relative;
+    margin-bottom: 1.5rem;
 
+    label {
+      position: absolute;
+      left: 0.75rem;
+      top: 1rem;
+      font-size: 1rem;
+      color: #777;
+      pointer-events: none;
+      transition: 0.2s ease all;
+      background: #fff;
+      padding: 0 0.25rem;
+      z-index: 1;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem 0.75rem 1.25rem;
+      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
+      }
+    }
+
+    input:focus + label,
+    input:not(:placeholder-shown) + label {
+      top: -0.6rem;
+      left: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+  }
+}
 
 .login-button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.875rem;
   font-size: 1rem;
-  background-color: var(--primary-color);
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   color: white;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
-  &:hover {
-    background-color: var(--primary-color-hover);
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(45, 76, 47, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-}
-
-.login-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-
-  a {
-    margin-left: 0.25rem;
-    color: var(--accent-color);
-    font-weight: 500;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    transform: none;
+    box-shadow: none;
   }
 }
 
@@ -113,12 +302,87 @@
   width: 100%;
   background-color: #ffffff;
   color: #444;
-  border: 1px solid #ccc;
+  border: 2px solid #e2e8f0;
   font-weight: 500;
-  padding: 0.75rem;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background-color: var(--surface-color);
+    background-color: #f8fafc;
+    border-color: var(--primary-color);
     color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.pi-google) {
+    color: #ea4335;
+  }
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+
+  a {
+    margin-left: 0.25rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--primary-color-hover);
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Animation for language dropdown open/close */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+:global(.p-select-overlay) {
+  animation: dropdownFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+  }
+  
+  .card-topbar {
+    margin-bottom: 1.5rem;
+    
+    .lang-label {
+      font-size: 0.8rem;
+    }
+    
+    .lang-select {
+      min-width: 100px;
+      
+      :global(.p-select-label) {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem;
+      }
+    }
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 }

@@ -9,6 +9,8 @@ import { environment } from '../../../environments/environment';
 import { FamilyService } from '../../../core/services/family.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Roles } from '../../../shared/enums/roles.enum';
+import { LanguageService } from '../../../../assets/i18n/language.service';
+import { Lang } from '../../../shared/types/lang.type';
 
 @Component({
   selector: 'app-login',
@@ -23,10 +25,17 @@ export class LoginComponent implements OnInit {
   router = inject(Router);
   translate = inject(TranslateService);
   familyService = inject(FamilyService);
+  lang = inject(LanguageService);
+
   private destroyRef = inject(DestroyRef);
 
   error = signal('');
   form = this.auth.loginForm;
+  langOptions = [
+    { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
+    { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },
+  ];
+  currentLang: Lang = this.lang.current();
 
   ngOnInit(): void {
     const token = new URLSearchParams(window.location.search).get('token');
@@ -35,6 +44,14 @@ export class LoginComponent implements OnInit {
       this.auth.getTokenSignal().set(token);
       this.router.navigate([CONSTANTS.ROUTES.TREE]);
     }
+  }
+
+  switchLang(code: Lang) {
+    this.lang.use(code);
+    this.langOptions = [
+      { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' },
+      { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' },
+    ];
   }
 
   login() {

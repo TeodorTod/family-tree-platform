@@ -24,6 +24,22 @@
           styleClass="p-button-text p-button-plain"
           severity="secondary"
         />
+        <div class="lang-switcher">
+          <p-select
+            [options]="langOptions"
+            [(ngModel)]="currentLang"
+            (ngModelChange)="switchLang($event)"
+            [placeholder]="CONSTANTS.COMMON_LANGUAGE | translate"
+          >
+            <ng-template pTemplate="selectedItem" let-opt>
+              {{ opt.label }}
+            </ng-template>
+            <ng-template pTemplate="item" let-opt>
+              {{ opt.label }}
+            </ng-template>
+          </p-select>
+        </div>
+
         <button
           pButton
           label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
@@ -34,6 +50,22 @@
       </div>
       } @else {
       <div class="nav-desktop">
+        <div class="lang-switcher">
+          <p-select
+            [options]="langOptions"
+            [(ngModel)]="currentLang"
+            (ngModelChange)="switchLang($event)"
+            placeholder="Language"
+          >
+            <ng-template pTemplate="selectedItem" let-opt>
+              {{ opt.label }}
+            </ng-template>
+            <ng-template pTemplate="item" let-opt>
+              {{ opt.label }}
+            </ng-template>
+          </p-select>
+        </div>
+
         <button
           pButton
           label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
@@ -51,7 +83,6 @@
       </div>
       }
 
-      <!-- Hamburger toggle button -->
       <div class="nav-mobile-toggle">
         <button
           type="button"
@@ -65,24 +96,41 @@
     </ng-template>
   </p-menubar>
 
-  <!-- Mobile dropdown -->
   @if (mobileMenuVisible) {
   <div class="nav-mobile-dropdown">
+    <div class="mobile-lang-section">
+      <div class="lang-label">{{ CONSTANTS.COMMON_LANGUAGE | translate }}</div>
+      <p-select
+        [options]="langOptions"
+        [(ngModel)]="currentLang"
+        (ngModelChange)="switchLang($event); mobileMenuVisible = false"
+      >
+        <ng-template pTemplate="selectedItem" let-opt>
+          {{ opt.label }}
+        </ng-template>
+        <ng-template pTemplate="item" let-opt>
+          {{ opt.label }}
+        </ng-template>
+      </p-select>
+    </div>
+
+    <p-divider></p-divider>
+
     @if (isLoggedIn()) {
     <button
       pButton
-      class="w-full text-left mb-2"
+      class="profile-toggle"
       label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
       [icon]="showProfileMenu ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
       (click)="showProfileMenu = !showProfileMenu"
+      [attr.aria-expanded]="showProfileMenu"
     ></button>
 
     @if (showProfileMenu) {
-    <div class="pl-3">
+    <div class="profile-submenu">
       @for (item of settingsItems; track item.label) {
       <button
         pButton
-        class="w-full text-left mb-2"
         [label]="item.label"
         [icon]="item.icon"
         (click)="item.command(); mobileMenuVisible = false"
@@ -93,7 +141,6 @@
 
     <button
       pButton
-      class="w-full text-left mb-2"
       label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
       icon="pi pi-sign-out"
       (click)="logout()"
@@ -101,21 +148,20 @@
     } @else {
     <button
       pButton
-      class="w-full text-left mb-2"
       label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
       icon="pi pi-sign-in"
       routerLink="/auth/login"
+      (click)="mobileMenuVisible = false"
     ></button>
     <button
       pButton
-      class="w-full text-left"
       label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
       icon="pi pi-user-plus"
       routerLink="/auth/register"
+      (click)="mobileMenuVisible = false"
     ></button>
     }
   </div>
-
   }
 </div>
 }

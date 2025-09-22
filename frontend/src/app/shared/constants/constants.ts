@@ -20,6 +20,10 @@ export class CONSTANTS {
   static readonly AUTH_PRIVACY_SETTINGS = 'AUTH.PRIVACY_SETTINGS';
   static readonly AUTH_LOGIN_ERROR = 'AUTH.LOGIN_ERROR';
 
+  static readonly COMMON_LANGUAGE = 'COMMON.LANGUAGE';
+  static readonly COMMON_LANG_BG = 'COMMON.LANG_BG';
+  static readonly COMMON_LANG_EN = 'COMMON.LANG_EN';
+
   static readonly ROUTES = {
     HOME: '',
     LOGIN: '/auth/login',

@@ -7,6 +7,24 @@
   <!-- Right Form -->
   <div class="login-form">
     <div class="login-card">
+      <div class="card-topbar">
+        <span class="lang-label">{{
+          CONSTANTS.COMMON_LANGUAGE | translate
+        }}</span>
+        <p-select
+          [options]="langOptions"
+          [(ngModel)]="currentLang"
+          (ngModelChange)="switchLang($event)"
+          styleClass="lang-select"
+        >
+          <ng-template pTemplate="selectedItem" let-opt>
+            <span [attr.data-value]="opt.value">{{ opt.label }}</span>
+          </ng-template>
+          <ng-template pTemplate="item" let-opt>
+            <span [attr.data-value]="opt.value">{{ opt.label }}</span>
+          </ng-template>
+        </p-select>
+      </div>
       <h2 class="login-title">
         {{ CONSTANTS.AUTH_REGISTER | translate }}
       </h2>
