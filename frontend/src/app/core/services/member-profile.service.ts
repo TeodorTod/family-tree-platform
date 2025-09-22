@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { MemberProfile } from '../../shared/models/member-profile.model';
 import { UpsertPayload } from '../../shared/types/member-profile-upsert.type';

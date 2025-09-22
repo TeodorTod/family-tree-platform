@@ -10,7 +10,7 @@ import { Gender } from '../../../shared/enums/gender.enum';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-owner',

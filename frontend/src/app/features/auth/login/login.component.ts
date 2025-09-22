@@ -5,7 +5,7 @@ import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-i
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { FamilyService } from '../../../core/services/family.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Roles } from '../../../shared/enums/roles.enum';

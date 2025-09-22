@@ -10,7 +10,7 @@ import {
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
 import { FamilyMember } from '../../shared/models/family-member.model';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { Observable, switchMap } from 'rxjs';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
@@ -122,21 +122,21 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const requestOpts = isTableNow
       ? undefined
       : {
-          fields: [
-            'id',
-            'role',
-            'firstName',
-            'lastName',
-            'gender',
-            'dob',
-            'birthYear',
-            'birthNote',
-            'photoUrl',
-            'partnerId',
-            'partnerStatus',
-          ] as (keyof FamilyMember)[],
-          with: ['parentOf', 'childOf'] as const,
-        };
+        fields: [
+          'id',
+          'role',
+          'firstName',
+          'lastName',
+          'gender',
+          'dob',
+          'birthYear',
+          'birthNote',
+          'photoUrl',
+          'partnerId',
+          'partnerStatus',
+        ] as (keyof FamilyMember)[],
+        with: ['parentOf', 'childOf'] as const,
+      };
 
     this.familyService.getMyFamily(requestOpts as any).subscribe((members) => {
       this.members = members as FamilyMember[];
@@ -438,8 +438,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
             baseRole.startsWith('maternal_') || baseRole.startsWith('paternal_')
               ? tierYs.grandparents
               : [Roles.MOTHER, Roles.FATHER].includes(baseRole as Roles)
-              ? tierYs.parents
-              : tierYs.owner;
+                ? tierYs.parents
+                : tierYs.owner;
 
           const fixedXs = members
             .map((m) => posMap.get(m.role))

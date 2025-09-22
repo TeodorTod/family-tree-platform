@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { tap } from 'rxjs';
 import { LoginResponse } from '../../../shared/models/login-response.model';
 import { RegisterRequest } from '../../../shared/models/register-request.model';
@@ -43,14 +43,14 @@ export class AuthService {
       );
   }
 
-register(email: string, password: string, confirmPassword: string) {
-  const data: RegisterRequest = { email, password, confirmPassword };
-  return this.http.post<LoginResponse>(
-    `${environment.apiUrl}/auth/register`,
-    data,
-    { withCredentials: true } 
-  );
-}
+  register(email: string, password: string, confirmPassword: string) {
+    const data: RegisterRequest = { email, password, confirmPassword };
+    return this.http.post<LoginResponse>(
+      `${environment.apiUrl}/auth/register`,
+      data,
+      { withCredentials: true }
+    );
+  }
 
   logout() {
     this.token.set(null);

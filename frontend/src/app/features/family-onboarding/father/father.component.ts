@@ -7,7 +7,7 @@ import { FamilyStateService } from '../../../core/services/family-state.service'
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { switchMap, forkJoin, of } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
@@ -93,20 +93,20 @@ export class FatherComponent implements OnInit {
         const dobMode: BirthDeathDateMode = father.dob
           ? BirthDeathDateMode.EXACT
           : father.birthYear
-          ? BirthDeathDateMode.YEAR
-          : father.birthNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.YEAR
+            : father.birthNote
+              ? BirthDeathDateMode.NOTE
+              : BirthDeathDateMode.EXACT;
 
         const dodMode: BirthDeathDateMode = father.isAlive
           ? BirthDeathDateMode.EXACT
           : father.dod
-          ? BirthDeathDateMode.EXACT
-          : father.deathYear
-          ? BirthDeathDateMode.YEAR
-          : father.deathNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.EXACT
+            : father.deathYear
+              ? BirthDeathDateMode.YEAR
+              : father.deathNote
+                ? BirthDeathDateMode.NOTE
+                : BirthDeathDateMode.EXACT;
 
         this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
 

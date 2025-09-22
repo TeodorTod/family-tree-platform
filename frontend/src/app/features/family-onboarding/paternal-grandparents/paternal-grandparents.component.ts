@@ -7,7 +7,7 @@ import { FamilyStateService } from '../../../core/services/family-state.service'
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
@@ -119,10 +119,10 @@ export class PaternalGrandparentsComponent implements OnInit {
         const dobMode: BirthDeathDateMode = member.dob
           ? BirthDeathDateMode.EXACT
           : member.birthYear
-          ? BirthDeathDateMode.YEAR
-          : member.birthNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.YEAR
+            : member.birthNote
+              ? BirthDeathDateMode.NOTE
+              : BirthDeathDateMode.EXACT;
 
         const deathYear = (member as any).deathYear ?? null;
         const deathNote = (member as any).deathNote ?? null;
@@ -130,12 +130,12 @@ export class PaternalGrandparentsComponent implements OnInit {
         const dodMode: BirthDeathDateMode = member.isAlive
           ? BirthDeathDateMode.EXACT
           : member.dod
-          ? BirthDeathDateMode.EXACT
-          : deathYear
-          ? BirthDeathDateMode.YEAR
-          : deathNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.EXACT
+            : deathYear
+              ? BirthDeathDateMode.YEAR
+              : deathNote
+                ? BirthDeathDateMode.NOTE
+                : BirthDeathDateMode.EXACT;
 
         // set modes first
         form.patchValue({ dobMode, dodMode }, { emitEvent: false });
@@ -247,9 +247,9 @@ export class PaternalGrandparentsComponent implements OnInit {
           exists
             ? this.familyService.updateMemberByRole(role, payload)
             : this.familyService.createMemberByRole(
-                role,
-                payload as FamilyMember
-              )
+              role,
+              payload as FamilyMember
+            )
         ).pipe(takeUntilDestroyed(this.destroyRef));
       });
 

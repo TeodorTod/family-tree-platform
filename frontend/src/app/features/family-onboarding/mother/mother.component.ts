@@ -6,7 +6,7 @@ import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-i
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { switchMap, forkJoin, of } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
@@ -91,20 +91,20 @@ export class MotherComponent implements OnInit {
         const dobMode: BirthDeathDateMode = mother.dob
           ? BirthDeathDateMode.EXACT
           : mother.birthYear
-          ? BirthDeathDateMode.YEAR
-          : mother.birthNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.YEAR
+            : mother.birthNote
+              ? BirthDeathDateMode.NOTE
+              : BirthDeathDateMode.EXACT;
 
         const dodMode: BirthDeathDateMode = mother.isAlive
           ? BirthDeathDateMode.EXACT
           : mother.dod
-          ? BirthDeathDateMode.EXACT
-          : mother.deathYear
-          ? BirthDeathDateMode.YEAR
-          : mother.deathNote
-          ? BirthDeathDateMode.NOTE
-          : BirthDeathDateMode.EXACT;
+            ? BirthDeathDateMode.EXACT
+            : mother.deathYear
+              ? BirthDeathDateMode.YEAR
+              : mother.deathNote
+                ? BirthDeathDateMode.NOTE
+                : BirthDeathDateMode.EXACT;
 
         // set modes first
         this.form.patchValue({ dobMode, dodMode }, { emitEvent: false });
