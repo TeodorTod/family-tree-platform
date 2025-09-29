@@ -12,6 +12,7 @@ async function bootstrap() {
     origin: [
       'https://example.invalid',
       'https://example.invalid',
+      'https://example.invalid'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
