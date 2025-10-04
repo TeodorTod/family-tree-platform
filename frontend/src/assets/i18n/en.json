@@ -19,7 +19,18 @@
     "ACCOUNT_SETTINGS": "Account",
     "SUBSCRIPTION_SETTINGS": "Subscription",
     "PRIVACY_SETTINGS": "Privacy Settings",
-    "LOGIN_ERROR": "Login was not successful. Please check your credentials."
+    "LOGIN_ERROR": "Login was not successful. Please check your credentials.",
+    "PASSWORD_PROMPT": "Enter your password",
+    "PASSWORD_WEAK": "Weak",
+    "PASSWORD_MEDIUM": "Medium",
+    "PASSWORD_STRONG": "Strong",
+    "RESET_PASSWORD": "Reset Password",
+    "RULE_LOWER": "At least one lowercase letter",
+    "RULE_UPPER": "At least one uppercase letter",
+    "RULE_NUMBER": "At least one number",
+    "RULE_SPECIAL": "At least one special character",
+    "RULE_MIN10": "Minimum 10 characters",
+    "PASSWORD_RULES_MSG": "Password must meet all the requirements above."
   },
 
   "INFO": {

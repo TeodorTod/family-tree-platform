@@ -34,6 +34,45 @@ export class RegisterComponent {
     { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },
   ];
   currentLang: Lang = this.lang.current();
+  rules = {
+    lower: false,
+    upper: false,
+    number: false,
+    special: false,
+    min10: false,
+  };
+  showPassRules = false;
+
+  constructor() {
+    const ctrl = this.form.get('password');
+    ctrl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((v) => {
+        this.updateRuleStates((v ?? '') as string);
+      });
+    this.updateRuleStates((ctrl?.value ?? '') as string);
+  }
+
+  private updateRuleStates(v: string) {
+    let lower = 0,
+      upper = 0,
+      digit = 0,
+      special = 0;
+    for (let i = 0; i < v.length; i++) {
+      const c = v.charCodeAt(i);
+      if (c >= 48 && c <= 57) digit++; 
+      else if (c >= 65 && c <= 90) upper++; 
+      else if (c >= 97 && c <= 122) lower++;
+      else special++; 
+    }
+    this.rules = {
+      lower: lower > 0,
+      upper: upper > 0,
+      number: digit > 0,
+      special: special > 0,
+      min10: v.length >= 10,
+    };
+  }
 
   switchLang(code: Lang) {
     this.lang.use(code);
@@ -64,5 +103,14 @@ export class RegisterComponent {
               this.translate.instant(CONSTANTS.AUTH_REGISTER_FAILED)
           ),
       });
+  }
+
+  onPasswordFocus() {
+    this.showPassRules = true;
+  }
+
+  onPasswordBlur() {
+    const ctrl = this.form.get('password');
+    this.showPassRules = !!(ctrl && ctrl.invalid);
   }
 }

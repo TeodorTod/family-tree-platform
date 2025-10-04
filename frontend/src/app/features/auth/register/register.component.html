@@ -45,34 +45,104 @@
           <label for="email">{{ CONSTANTS.AUTH_EMAIL | translate }}</label>
         </div>
 
-        <div class="floating-field">
-          <input
-            id="password"
-            type="password"
-            pInputText
+        <!-- Password -->
+        <p-floatlabel variant="on" class="pass-inputs">
+          <p-password
             formControlName="password"
-            placeholder=" "
+            inputId="password"
+            [toggleMask]="true"
+            [feedback]="false"
+            [inputStyleClass]="'ft-input'"
+            autocomplete="new-password"
+            name="new-password"
+            (onFocus)="onPasswordFocus()"
+            (onBlur)="onPasswordBlur()"
           />
           <label for="password">{{
             CONSTANTS.AUTH_PASSWORD | translate
           }}</label>
-        </div>
+        </p-floatlabel>
 
-        <div class="floating-field">
-          <input
-            id="confirmPassword"
-            type="password"
-            pInputText
+        <!-- Confirm Password -->
+        <p-floatlabel variant="on" class="pass-inputs">
+          <p-password
             formControlName="confirmPassword"
-            placeholder=" "
+            inputId="confirmPassword"
+            [toggleMask]="true"
+            [feedback]="false"
+            [inputStyleClass]="'ft-input'"
+            autocomplete="new-password"
+            name="new-password"
           />
           <label for="confirmPassword">{{
             CONSTANTS.AUTH_CONFIRM_PASSWORD | translate
           }}</label>
+        </p-floatlabel>
+
+        <div
+          class="pass-rules-fixed"
+          *ngIf="
+            showPassRules ||
+            (form.get('password')?.dirty && form.get('password')?.invalid)
+          "
+        >
+          <div class="pass-rules-header">
+            {{ CONSTANTS.AUTH_RESET_PASSWORD | translate }}
+            <button
+              type="button"
+              class="close-btn"
+              (click)="showPassRules = false"
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+          <div
+            class="pass-rules-fixed"
+            *ngIf="
+              showPassRules ||
+              (form.get('password')?.dirty && form.get('password')?.invalid)
+            "
+          >
+            <div class="pass-rules-header">
+              {{ CONSTANTS.AUTH_RESET_PASSWORD | translate }}
+              <button
+                type="button"
+                class="close-btn"
+                (click)="showPassRules = false"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <ul class="pl-2 my-0 leading-normal text-sm">
+              <li [class.ok]="rules.lower">
+                {{ CONSTANTS.AUTH_RULE_LOWER | translate }}
+              </li>
+              <li [class.ok]="rules.upper">
+                {{ CONSTANTS.AUTH_RULE_UPPER | translate }}
+              </li>
+              <li [class.ok]="rules.number">
+                {{ CONSTANTS.AUTH_RULE_NUMBER | translate }}
+              </li>
+              <li [class.ok]="rules.special">
+                {{ CONSTANTS.AUTH_RULE_SPECIAL | translate }}
+              </li>
+              <li [class.ok]="rules.min10">
+                {{ CONSTANTS.AUTH_RULE_MIN10 | translate }}
+              </li>
+            </ul>
+          </div>
         </div>
 
-        @if (error()) {
-        <p-message class="mb-3" severity="error" [text]="error()"></p-message>
+        @if (form.hasError('passwordsMismatch') &&
+        form.get('confirmPassword')?.touched) {
+        <p-message
+          class="mb-3"
+          severity="error"
+          [text]="translate.instant(CONSTANTS.AUTH_PASSWORDS_NOT_MATCH)"
+        >
+        </p-message>
         }
 
         <button

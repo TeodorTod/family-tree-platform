@@ -35,6 +35,7 @@ import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -73,5 +74,6 @@ export const SHARED_PRIMENG_IMPORTS = [
   BadgeModule,
   OverlayBadgeModule,
   TextareaModule,
-  InputNumberModule
+  InputNumberModule,
+  FloatLabelModule
 ];

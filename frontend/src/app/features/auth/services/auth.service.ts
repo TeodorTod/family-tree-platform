@@ -1,6 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  Validators,
+  FormGroup,
+  ValidatorFn,
+  AbstractControl,
+} from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { tap } from 'rxjs';
 import { LoginResponse } from '../../../shared/models/login-response.model';
@@ -13,16 +19,39 @@ export class AuthService {
 
   private token = signal<string | null>(localStorage.getItem('token'));
 
+  private passwordsMatchValidator: ValidatorFn = (group: AbstractControl) => {
+    const pass = group.get('password')?.value ?? '';
+    const conf = group.get('confirmPassword')?.value ?? '';
+    return !pass || !conf
+      ? null
+      : pass === conf
+      ? null
+      : { passwordsMismatch: true };
+  };
+
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
 
-  registerForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    confirmPassword: ['', [Validators.required]],
-  });
+  registerForm = this.fb.group(
+    {
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.pattern(/[a-z]/),
+          Validators.pattern(/[A-Z]/),
+          Validators.pattern(/\d/),
+          Validators.pattern(/[^A-Za-z0-9]/),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: this.passwordsMatchValidator } 
+  );
 
   login(email: string, password: string) {
     return this.http
