@@ -34,6 +34,8 @@ export class CONSTANTS {
   static readonly COMMON_LANGUAGE = 'COMMON.LANGUAGE';
   static readonly COMMON_LANG_BG = 'COMMON.LANG_BG';
   static readonly COMMON_LANG_EN = 'COMMON.LANG_EN';
+  static readonly COMMON_MOBILE_HINT_TITLE = 'COMMON.MOBILE_HINT_TITLE';
+  static readonly COMMON_MOBILE_HINT_MESSAGE = 'COMMON.MOBILE_HINT_MESSAGE';
 
   static readonly ROUTES = {
     HOME: '',

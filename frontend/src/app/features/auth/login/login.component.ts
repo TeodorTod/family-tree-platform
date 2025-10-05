@@ -30,6 +30,8 @@ export class LoginComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   error = signal('');
+  showMobileHint = signal(false);
+
   form = this.auth.loginForm;
   langOptions = [
     { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
@@ -43,6 +45,11 @@ export class LoginComponent implements OnInit {
       localStorage.setItem('token', token);
       this.auth.getTokenSignal().set(token);
       this.router.navigate([CONSTANTS.ROUTES.TREE]);
+    }
+
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      this.showMobileHint.set(true);
+      setTimeout(() => this.showMobileHint.set(false), 10000);
     }
   }
 

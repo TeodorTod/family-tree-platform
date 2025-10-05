@@ -392,6 +392,8 @@
   "COMMON": {
     "LANGUAGE": "Language",
     "LANG_BG": "Bulgarian",
-    "LANG_EN": "English"
+    "LANG_EN": "English",
+    "MOBILE_HINT_TITLE": "Better experience on larger screens",
+    "MOBILE_HINT_MESSAGE": "The family tree visualization is optimized for desktop and tablet. Use a larger screen for the best view and smoother experience."
   }
 }

@@ -87,3 +87,24 @@
     </div>
   </div>
 </div>
+
+<p-dialog
+  [visible]="showMobileHint()"
+  (onHide)="showMobileHint.set(false)"
+  [modal]="false"
+  [dismissableMask]="true"
+  [breakpoints]="{ '960px': '90vw', '640px': '95vw' }"
+  [style]="{ width: '28rem', maxWidth: '95vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  contentStyleClass="mobile-hint-content"
+  header="{{ 'COMMON.MOBILE_HINT_TITLE' | translate }}"
+>
+  <div class="mobile-hint-body">
+    <i class="pi pi-desktop icon"></i>
+    <div class="text">
+      {{ "COMMON.MOBILE_HINT_MESSAGE" | translate }}
+    </div>
+  </div>
+</p-dialog>
