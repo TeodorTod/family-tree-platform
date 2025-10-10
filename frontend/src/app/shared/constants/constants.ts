@@ -14,7 +14,7 @@ export class CONSTANTS {
   static readonly AUTH_NO_ACCOUNT = 'AUTH.NO_ACCOUNT';
   static readonly AUTH_REGISTER_NOW = 'AUTH.REGISTER_NOW';
   static readonly AUTH_GOOGLE_LOGIN = 'AUTH.GOOGLE_LOGIN';
-  static readonly AUTH_SETTINGS: 'AUTH_SETTINGS';
+  static readonly AUTH_SETTINGS = 'AUTH.SETTINGS';
   static readonly AUTH_ACCOUNT_SETTINGS = 'AUTH.ACCOUNT_SETTINGS';
   static readonly AUTH_SUBSCRIPTION_SETTINGS = 'AUTH.SUBSCRIPTION_SETTINGS';
   static readonly AUTH_PRIVACY_SETTINGS = 'AUTH.PRIVACY_SETTINGS';
@@ -30,6 +30,12 @@ export class CONSTANTS {
   static readonly AUTH_RULE_SPECIAL = 'AUTH.RULE_SPECIAL';
   static readonly AUTH_RULE_MIN10 = 'AUTH.RULE_MIN10';
   static readonly AUTH_PASSWORD_RULES_MSG = 'AUTH.PASSWORD_RULES_MSG';
+  static readonly AUTH_FORGOT_PASSWORD = 'AUTH.FORGOT_PASSWORD';
+  static readonly AUTH_SEND_RESET_LINK = 'AUTH.SEND_RESET_LINK';
+  static readonly AUTH_RESET_LINK_SENT_GENERIC = 'AUTH.RESET_LINK_SENT_GENERIC';
+  static readonly AUTH_SAVE_NEW_PASSWORD = 'AUTH.SAVE_NEW_PASSWORD';
+  static readonly AUTH_PASSWORD_UPDATED = 'AUTH.PASSWORD_UPDATED';
+  static readonly AUTH_RESET_ERROR = 'AUTH.RESET_ERROR';
 
   static readonly COMMON_LANGUAGE = 'COMMON.LANGUAGE';
   static readonly COMMON_LANG_BG = 'COMMON.LANG_BG';
@@ -41,6 +47,7 @@ export class CONSTANTS {
     HOME: '',
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
+    AUTH_FORGOT: '/auth/forgot',
     TREE: '/tree',
     MEMBER: '/member',
     AUTH_GOOGLE_LOGIN: '/auth/google',

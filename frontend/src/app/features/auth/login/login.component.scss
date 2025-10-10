@@ -489,3 +489,20 @@
     margin-bottom: 1.5rem;
   }
 }
+
+.forgot-link {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--primary-color-hover);
+    text-decoration: underline;
+  }
+}
+
+

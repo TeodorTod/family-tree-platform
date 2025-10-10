@@ -30,7 +30,13 @@
     "RULE_NUMBER": "At least one number",
     "RULE_SPECIAL": "At least one special character",
     "RULE_MIN10": "Minimum 10 characters",
-    "PASSWORD_RULES_MSG": "Password must meet all the requirements above."
+    "PASSWORD_RULES_MSG": "Password must meet all the requirements above.",
+    "FORGOT_PASSWORD": "Forgot password",
+    "SEND_RESET_LINK": "Send reset link",
+    "RESET_LINK_SENT_GENERIC": "If this email exists, we’ve sent a password reset link.",
+    "SAVE_NEW_PASSWORD": "Save new password",
+    "PASSWORD_UPDATED": "Your password has been successfully updated.",
+    "RESET_ERROR": "The reset link is invalid or expired. Please request a new one."
   },
 
   "INFO": {

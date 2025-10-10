@@ -44,12 +44,21 @@ export class NavbarComponent implements OnDestroy {
     );
   }
 
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
-
   shouldShowNavbar(): boolean {
-    return !['/auth/login', '/auth/register'].includes(this.router.url);
+    const tree = this.router.parseUrl(this.router.url);
+
+    const path =
+      '/' +
+      (tree.root.children['primary']?.segments.map((s) => s.path).join('/') ??
+        '');
+
+    const isAuthResetWithToken =
+      path === '/auth/reset' && !!tree.queryParams['token'];
+
+    const hideOnPaths = ['/auth/login', '/auth/register', '/auth/forgot'];
+    const isOtherAuthPage = hideOnPaths.includes(path);
+
+    return !(isOtherAuthPage || isAuthResetWithToken);
   }
 
   switchLang(code: Lang) {
@@ -105,5 +114,9 @@ export class NavbarComponent implements OnDestroy {
         value: 'en' as Lang,
       },
     ];
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

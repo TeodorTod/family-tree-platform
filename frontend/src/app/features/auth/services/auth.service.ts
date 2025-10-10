@@ -50,7 +50,7 @@ export class AuthService {
       ],
       confirmPassword: ['', [Validators.required]],
     },
-    { validators: this.passwordsMatchValidator } 
+    { validators: this.passwordsMatchValidator }
   );
 
   login(email: string, password: string) {
@@ -96,5 +96,41 @@ export class AuthService {
 
   isLoggedInSignal() {
     return signal(() => this.token() !== null);
+  }
+
+  forgotPasswordForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+  });
+
+  resetPasswordForm = this.fb.group(
+    {
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.pattern(/[a-z]/),
+          Validators.pattern(/[A-Z]/),
+          Validators.pattern(/\d/),
+          Validators.pattern(/[^A-Za-z0-9]/),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: this.passwordsMatchValidator }
+  );
+
+  requestPasswordReset(email: string) {
+    return this.http.post(`${environment.apiUrl}/auth/forgot-password`, {
+      email,
+    });
+  }
+
+  resetPassword(token: string, password: string, confirmPassword: string) {
+    return this.http.post(`${environment.apiUrl}/auth/reset-password`, {
+      token,
+      password,
+      confirmPassword,
+    });
   }
 }

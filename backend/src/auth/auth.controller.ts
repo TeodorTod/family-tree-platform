@@ -14,6 +14,8 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -48,21 +50,38 @@ export class AuthController {
     // redirect handled by passport
   }
 
-@Get('google/redirect')
-@UseGuards(AuthGuard('google'))
-async googleRedirect(@Req() req: Request & { user: any }, @Res() res: Response) {
-  const jwt = await this.authService.login(req.user); 
-  const token = jwt.access_token;
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  async googleRedirect(
+    @Req() req: Request & { user: any },
+    @Res() res: Response,
+  ) {
+    const jwt = await this.authService.login(req.user);
+    const token = jwt.access_token;
 
-  // ✅ use Express res.redirect
-  res.redirect(`https://example.invalid
-}
+    // ✅ use Express res.redirect
+    res.redirect(`https://example.invalid
+  }
 
-@UseGuards(AuthGuard('jwt'))
-@Get('me')
-getMe(@Req() req: any) {
-  return req.user;
-}
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getMe(@Req() req: any) {
+    return req.user;
+  }
 
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.authService.issuePasswordReset(dto.email);
+    return { ok: true };
+  }
 
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    if (dto.password !== dto.confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    await this.authService.resetPasswordWithToken(dto.token, dto.password);
+    return { ok: true };
+  }
+  
 }
