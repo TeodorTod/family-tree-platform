@@ -43,6 +43,8 @@ export class CONSTANTS {
   static readonly COMMON_MOBILE_HINT_TITLE = 'COMMON.MOBILE_HINT_TITLE';
   static readonly COMMON_MOBILE_HINT_MESSAGE = 'COMMON.MOBILE_HINT_MESSAGE';
   static readonly COMMON_FAQ = 'COMMON.FAQ';
+  static readonly COMMON_SETTINGS = 'COMMON.SETTINGS';
+  static readonly COMMON_CURRENCY_EUR = 'COMMON.CURRENCY_EUR';
 
   static readonly FAQ_TITLE = 'FAQ.TITLE';
   static readonly FAQ_INTRO = 'FAQ.INTRO';
@@ -66,10 +68,13 @@ export class CONSTANTS {
     MEMBER: '/member',
     AUTH_GOOGLE_LOGIN: '/auth/google',
     FAMILY_MEMBERS: 'family-members',
+    ACCOUNT: {
+      MY_ACCOUNT: '/account/my-account',
+      SUBSCRIPTION: '/account/subscription',
+      PRIVACY: '/account/privacy',
+    },
     SETTINGS: {
-      ACCOUNT: '/settings/account',
-      SUBSCRIPTION: '/settings/subscription',
-      PRIVACY: '/settings/privacy',
+      SUBSCRIPTION_PLANS: '/settings/plans',
     },
     ONBOARDING: {
       OWNER: '/onboarding/owner',
@@ -404,4 +409,22 @@ export class CONSTANTS {
   static readonly PERSONAL_WEBSITE = 'PERSONAL.WEBSITE';
   static readonly PERSONAL_ADDRESS = 'PERSONAL.ADDRESS';
   static readonly PERSONAL_NOTES = 'PERSONAL.NOTES';
+
+  // Settings / Plans labels
+  static readonly SETTINGS_PLANS = 'SETTINGS.PLANS';
+  static readonly SETTINGS_PLANS_TITLE = 'SETTINGS.PLANS_TITLE';
+  static readonly SETTINGS_PLANS_BEST = 'SETTINGS.PLANS_BEST';
+  static readonly SETTINGS_PLANS_PRICE_PER_DAY = 'SETTINGS.PLANS_PRICE_PER_DAY';
+  static readonly SETTINGS_PLANS_TOTAL = 'SETTINGS.PLANS_TOTAL';
+  static readonly SETTINGS_PLANS_NOTES = 'SETTINGS.PLANS_NOTES';
+  static readonly SETTINGS_PLANS_PERKS_TITLE = 'SETTINGS.PLANS_PERKS_TITLE';
+  static readonly SETTINGS_PLANS_PERK_FEATURES = 'SETTINGS.PLANS_PERK_FEATURES';
+  static readonly SETTINGS_PLANS_PERK_BACKUP = 'SETTINGS.PLANS_PERK_BACKUP';
+  static readonly SETTINGS_PLANS_PERK_SUPPORT = 'SETTINGS.PLANS_PERK_SUPPORT';
+  static readonly SETTINGS_PLANS_CHOOSE = 'SETTINGS.PLANS_CHOOSE';
+
+  // Plan names
+  static readonly SETTINGS_PLAN_6M = 'SETTINGS.PLAN_6M';
+  static readonly SETTINGS_PLAN_1Y = 'SETTINGS.PLAN_1Y';
+  static readonly SETTINGS_PLAN_2Y = 'SETTINGS.PLAN_2Y';
 }

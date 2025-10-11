@@ -8,10 +8,10 @@ export const routes: Routes = [
       import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
   {
-    path: 'settings',
+    path: 'account',
     loadChildren: () =>
-      import('./features/settings/settings.routes').then(
-        (m) => m.settingsRoutes
+      import('./features/account/account.routes').then(
+        (m) => m.accountRoutes
       ),
     canActivate: [authGuard],
   },
@@ -39,6 +39,12 @@ export const routes: Routes = [
     path: 'faq',
     loadChildren: () =>
       import('./features/faq/faq.routes').then((m) => m.default),
+  },
+    {
+    path: 'settings',
+    loadChildren: () =>
+      import('./features/settings/settings.routes').then((m) => m.settingsRoutes),
+    canActivate: [authGuard],
   },
   {
     path: '**',

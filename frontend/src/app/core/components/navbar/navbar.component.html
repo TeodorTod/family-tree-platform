@@ -2,7 +2,7 @@
 <div class="navbar-container">
   <p-menubar [model]="[]">
     <ng-template pTemplate="start">
-      <a routerLink="/" class="logo-link">
+      <a [routerLink]="CONSTANTS.ROUTES.HOME" class="logo-link" aria-label="Home">
         <img
           src="assets/images/logo.png"
           alt="FamilyTree logo"
@@ -16,6 +16,26 @@
     <ng-template pTemplate="end">
       @if (isLoggedIn()) {
       <div class="nav-desktop">
+        <!-- Settings select -->
+        <div class="settings-switcher">
+          <p-select
+            [options]="settingsOptions"
+            [(ngModel)]="currentSettingsRoute"
+            (ngModelChange)="goToSettings($event)"
+            [placeholder]="CONSTANTS.COMMON_SETTINGS | translate"
+            [showClear]="false"
+            appendTo="body"
+          >
+            <ng-template pTemplate="selectedItem" let-opt>
+              {{ opt?.label }}
+            </ng-template>
+            <ng-template pTemplate="item" let-opt>
+              {{ opt.label }}
+            </ng-template>
+          </p-select>
+        </div>
+
+        <!-- Profile split button -->
         <p-splitButton
           label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
           icon="pi pi-cog"
@@ -23,7 +43,9 @@
           class="p-button-text"
           styleClass="p-button-text p-button-plain"
           severity="secondary"
-        />
+        ></p-splitButton>
+
+        <!-- Language select -->
         <div class="lang-switcher">
           <p-select
             [options]="langOptions"
@@ -31,12 +53,8 @@
             (ngModelChange)="switchLang($event)"
             [placeholder]="CONSTANTS.COMMON_LANGUAGE | translate"
           >
-            <ng-template pTemplate="selectedItem" let-opt>
-              {{ opt.label }}
-            </ng-template>
-            <ng-template pTemplate="item" let-opt>
-              {{ opt.label }}
-            </ng-template>
+            <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
+            <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
           </p-select>
         </div>
 
@@ -55,14 +73,10 @@
             [options]="langOptions"
             [(ngModel)]="currentLang"
             (ngModelChange)="switchLang($event)"
-            placeholder="Language"
+            [placeholder]="CONSTANTS.COMMON_LANGUAGE | translate"
           >
-            <ng-template pTemplate="selectedItem" let-opt>
-              {{ opt.label }}
-            </ng-template>
-            <ng-template pTemplate="item" let-opt>
-              {{ opt.label }}
-            </ng-template>
+            <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
+            <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
           </p-select>
         </div>
 
@@ -83,6 +97,7 @@
       </div>
       }
 
+      <!-- Mobile toggle -->
       <div class="nav-mobile-toggle">
         <button
           type="button"
@@ -90,6 +105,7 @@
           icon="pi pi-bars"
           class="hamburger-toggle p-button-rounded p-button-icon-only"
           (click)="mobileMenuVisible = !mobileMenuVisible"
+          [attr.aria-expanded]="mobileMenuVisible"
           aria-label="Toggle Menu"
         ></button>
       </div>
@@ -105,61 +121,75 @@
         [(ngModel)]="currentLang"
         (ngModelChange)="switchLang($event); mobileMenuVisible = false"
       >
-        <ng-template pTemplate="selectedItem" let-opt>
-          {{ opt.label }}
-        </ng-template>
-        <ng-template pTemplate="item" let-opt>
-          {{ opt.label }}
-        </ng-template>
+        <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
+        <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
       </p-select>
     </div>
 
     <p-divider></p-divider>
 
     @if (isLoggedIn()) {
-    <button
-      pButton
-      class="profile-toggle"
-      label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
-      [icon]="showProfileMenu ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-      (click)="showProfileMenu = !showProfileMenu"
-      [attr.aria-expanded]="showProfileMenu"
-    ></button>
+      <!-- Mobile settings -->
+      <div class="mobile-settings-section">
+        <div class="settings-label">{{ CONSTANTS.COMMON_SETTINGS | translate }}</div>
+        <p-select
+          [options]="settingsOptions"
+          [(ngModel)]="currentSettingsRoute"
+          (ngModelChange)="goToSettings($event)"
+          [placeholder]="CONSTANTS.COMMON_SETTINGS | translate"
+          appendTo="body"
+        >
+          <ng-template pTemplate="selectedItem" let-opt>{{ opt?.label }}</ng-template>
+          <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
+        </p-select>
+      </div>
 
-    @if (showProfileMenu) {
-    <div class="profile-submenu">
-      @for (item of settingsItems; track item.label) {
+      <p-divider></p-divider>
+
+      <!-- Profile submenu -->
       <button
         pButton
-        [label]="item.label"
-        [icon]="item.icon"
-        (click)="item.command(); mobileMenuVisible = false"
+        class="profile-toggle"
+        label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
+        [icon]="showProfileMenu ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+        (click)="showProfileMenu = !showProfileMenu"
+        [attr.aria-expanded]="showProfileMenu"
       ></button>
-      }
-    </div>
-    }
 
-    <button
-      pButton
-      label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
-      icon="pi pi-sign-out"
-      (click)="logout()"
-    ></button>
+      @if (showProfileMenu) {
+        <div class="profile-submenu">
+          @for (item of settingsItems; track item.label) {
+            <button
+              pButton
+              [label]="item.label"
+              [icon]="item.icon"
+              (click)="item.command(); mobileMenuVisible = false"
+            ></button>
+          }
+        </div>
+      }
+
+      <button
+        pButton
+        label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
+        icon="pi pi-sign-out"
+        (click)="logout()"
+      ></button>
     } @else {
-    <button
-      pButton
-      label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
-      icon="pi pi-sign-in"
-      routerLink="/auth/login"
-      (click)="mobileMenuVisible = false"
-    ></button>
-    <button
-      pButton
-      label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
-      icon="pi pi-user-plus"
-      routerLink="/auth/register"
-      (click)="mobileMenuVisible = false"
-    ></button>
+      <button
+        pButton
+        label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
+        icon="pi pi-sign-in"
+        [routerLink]="CONSTANTS.ROUTES.LOGIN"
+        (click)="mobileMenuVisible = false"
+      ></button>
+      <button
+        pButton
+        label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
+        icon="pi pi-user-plus"
+        [routerLink]="CONSTANTS.ROUTES.REGISTER"
+        (click)="mobileMenuVisible = false"
+      ></button>
     }
   </div>
   }

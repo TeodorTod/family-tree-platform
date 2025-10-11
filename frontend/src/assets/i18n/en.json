@@ -402,7 +402,9 @@
     "MOBILE_HINT_TITLE": "Better experience on larger screens",
     "MOBILE_HINT_MESSAGE": "The family tree visualization is optimized for desktop and tablet. Use a larger screen for the best view and smoother experience.",
     "FAQ": "FAQ",
-    "HELP": "Help"
+    "HELP": "Help",
+    "SETTINGS": "Settings",
+    "CURRENCY_EUR": "€"
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",
@@ -421,5 +423,21 @@
       "SUBSCRIPTIONS": "We offer Free, Family+, Premium, and Lifetime. See subscription settings for details.",
       "PRIVACY": "We store data securely, use encryption, and give you control over tree visibility."
     }
+  },
+  "SETTINGS": {
+    "PLANS": "Subscription Plans",
+    "PLANS_TITLE": "Choose your plan",
+    "PLANS_BEST": "Most popular",
+    "PLANS_PRICE_PER_DAY": "/day",
+    "PLANS_TOTAL": "Total: {{value}}",
+    "PLANS_NOTES": "All prices are in EUR. Per-day = total ÷ days (6m: 182, 1y: 365, 2y: 730).",
+    "PLANS_PERKS_TITLE": "Included",
+    "PLANS_PERK_FEATURES": "Full access to features",
+    "PLANS_PERK_BACKUP": "Secure cloud backup",
+    "PLANS_PERK_SUPPORT": "Priority support",
+    "PLANS_CHOOSE": "Choose plan",
+    "PLAN_6M": "6 months",
+    "PLAN_1Y": "1 year",
+    "PLAN_2Y": "2 years"
   }
 }

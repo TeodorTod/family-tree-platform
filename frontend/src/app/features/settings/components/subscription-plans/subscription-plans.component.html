@@ -1,0 +1,71 @@
+<p-fieldset class="plans-fieldset padded">
+  <p-header>
+    <div class="plans-header" role="heading" aria-level="2">
+      <i class="pi pi-sliders plans-header__icon" aria-hidden="true"></i>
+      <span class="plans-header__title">
+        {{ CONSTANTS.SETTINGS_PLANS_TITLE | translate }}
+      </span>
+    </div>
+  </p-header>
+
+  <div class="plans-container">
+    @for (p of plans; track p.code) {
+    <article
+      class="plan-card"
+      [class.highlight]="p.highlight"
+      [attr.aria-label]="(p.titleKey | translate) || ''"
+    >
+      @if (p.highlight) {
+      <div class="plan-badge">
+        {{ CONSTANTS.SETTINGS_PLANS_BEST | translate }}
+      </div>
+      }
+
+      <div class="plan-title">{{ p.titleKey | translate }}</div>
+
+      <div class="price-per-day">
+        {{ EUR }}{{ perDayStr(p) }}
+        <span class="per-day">
+          {{ CONSTANTS.SETTINGS_PLANS_PRICE_PER_DAY | translate }}
+        </span>
+      </div>
+
+      <div class="price-total">
+        {{
+          CONSTANTS.SETTINGS_PLANS_TOTAL | translate : { value: totalStr(p) }
+        }}
+      </div>
+
+      <div class="perks-title">
+        {{ CONSTANTS.SETTINGS_PLANS_PERKS_TITLE | translate }}
+      </div>
+      <ul class="plan-perks">
+        <li>
+          <i class="pi pi-check"></i>
+          {{ CONSTANTS.SETTINGS_PLANS_PERK_FEATURES | translate }}
+        </li>
+        <li>
+          <i class="pi pi-check"></i>
+          {{ CONSTANTS.SETTINGS_PLANS_PERK_BACKUP | translate }}
+        </li>
+        <li>
+          <i class="pi pi-check"></i>
+          {{ CONSTANTS.SETTINGS_PLANS_PERK_SUPPORT | translate }}
+        </li>
+      </ul>
+
+      <button
+        pButton
+        class="choose-btn"
+        [label]="CONSTANTS.SETTINGS_PLANS_CHOOSE | translate"
+        icon="pi pi-check"
+        (click)="select(p)"
+      ></button>
+    </article>
+    }
+  </div>
+
+  <div class="notes">
+    {{ CONSTANTS.SETTINGS_PLANS_NOTES | translate }}
+  </div>
+</p-fieldset>

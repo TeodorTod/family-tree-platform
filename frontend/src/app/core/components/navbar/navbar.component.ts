@@ -34,15 +34,31 @@ export class NavbarComponent implements OnDestroy {
   langOptions = this.buildLangOptions();
   currentLang: Lang = this.lang.current();
 
-  constructor() {
-    // When language changes, rebuild labels and options
-    this.sub.add(
-      this.translate.onLangChange.subscribe(() => {
-        this.settingsItems = this.buildSettings();
-        this.langOptions = this.buildLangOptions();
-      })
-    );
-  }
+  currentSettingsRoute: string | null = null;
+  
+
+  settingsOptions = [
+    {
+      label: this.translate.instant(CONSTANTS.SETTINGS_PLANS),
+      value: CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS,
+    },
+  ];
+
+constructor() {
+  this.sub.add(
+    this.translate.onLangChange.subscribe(() => {
+      this.settingsItems = this.buildSettings();
+      this.langOptions = this.buildLangOptions();
+      this.settingsOptions = [
+        {
+          label: this.translate.instant(CONSTANTS.SETTINGS_PLANS),
+          value: CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS ?? CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS,
+        },
+      ];
+      this.currentSettingsRoute = null;
+    })
+  );
+}
 
   shouldShowNavbar(): boolean {
     const tree = this.router.parseUrl(this.router.url);
@@ -86,19 +102,18 @@ export class NavbarComponent implements OnDestroy {
         label: this.translate.instant(CONSTANTS.AUTH_ACCOUNT_SETTINGS),
         icon: 'pi pi-user-edit',
         command: () =>
-          this.router.navigate([CONSTANTS.ROUTES.SETTINGS.ACCOUNT]),
+          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.MY_ACCOUNT]),
       },
       {
         label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
         icon: 'pi pi-credit-card',
         command: () =>
-          this.router.navigate([CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION]),
+          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.SUBSCRIPTION]),
       },
       {
         label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
         icon: 'pi pi-lock',
-        command: () =>
-          this.router.navigate([CONSTANTS.ROUTES.SETTINGS.PRIVACY]),
+        command: () => this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.PRIVACY]),
       },
     ];
   }
@@ -115,6 +130,12 @@ export class NavbarComponent implements OnDestroy {
       },
     ];
   }
+
+goToSettings(path: string) {
+  if (path) this.router.navigateByUrl(path);
+  setTimeout(() => (this.currentSettingsRoute = null), 0);
+  this.mobileMenuVisible = false;
+}
 
   ngOnDestroy() {
     this.sub.unsubscribe();

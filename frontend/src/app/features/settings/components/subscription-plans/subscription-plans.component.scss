@@ -1,0 +1,119 @@
+/* features/settings/subscription-plans/subscription-plans.component.scss */
+:host {
+  display: block;
+  padding: 1rem;
+  min-height: calc(100vh - var(--navbar-h, 64px) - var(--footer-h, 56px));
+}
+
+.plans-fieldset {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+}
+
+.plans-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  padding: 1rem 0.5rem;
+}
+
+.plan-card {
+  position: relative;
+  background: var(--surface-card);
+  border: 1px solid var(--border-color, #e1e5e9);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .2s ease;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.08); }
+  &.highlight { border-color: var(--primary-color); box-shadow: 0 14px 30px rgba(0,0,0,0.10); }
+}
+
+.plan-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+  color: var(--primary-color-text);
+  font-size: .75rem; font-weight: 700;
+  padding: .35rem .5rem;
+  border-radius: var(--radius-sm, .375rem);
+  letter-spacing: .3px;
+}
+
+.plan-title { font-weight: 700; font-size: 1.2rem; margin-bottom: .5rem; color: var(--text-color); }
+
+.price-per-day {
+  font-size: 2.35rem; font-weight: 800; line-height: 1.05;
+  margin: .35rem 0 .25rem; color: var(--text-color);
+  .per-day { font-size: .95rem; font-weight: 600; margin-left: .35rem; opacity: .8; }
+}
+
+.price-total { font-size: .95rem; opacity: .85; margin-bottom: 1rem; .total-value { font-weight: 700; } }
+
+.perks-title {
+  font-weight: 600; color: var(--primary-color);
+  margin: .5rem 0 .25rem; text-transform: uppercase; letter-spacing: .4px; font-size: .8rem;
+}
+
+.plan-perks {
+  list-style: none; padding: 0; margin: 0 0 1.25rem; text-align: left; color: var(--text-color);
+  li { display: flex; align-items: center; gap: .5rem; padding: .35rem 0;
+    i { color: var(--primary-color); font-size: .95rem; }
+  }
+}
+
+.choose-btn { width: 100%; font-weight: 700; padding: .85rem 1rem; border-radius: var(--radius-md, .5rem); }
+.notes { margin-top: .75rem; font-size: .85rem; opacity: .8; text-align: center; }
+
+@media (max-width: 480px) {
+  :host { padding: .5rem; }
+  .price-per-day { font-size: 2rem; }
+}
+
+.plans-fieldset {
+  ::ng-deep .p-fieldset-legend {
+    width: 100%;               
+    display: flex;             
+    justify-content: center;   
+    padding: 0;
+    border: none;
+    margin: 0;                 
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .plans-header {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .65rem;
+    padding: .75rem 1.25rem;
+    border-radius: 9999px;
+    margin: 0 auto;          
+    border: 1px solid var(--border-color, #e1e5e9);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--primary-color) 10%, white) 0%,
+      color-mix(in srgb, var(--primary-color) 3%, white) 100%
+    );
+    box-shadow: 0 4px 10px rgba(0,0,0,.06);
+  }
+
+  .plans-header__icon { font-size: 1.1rem; color: var(--primary-color); }
+  .plans-header__title { font-weight: 700; font-size: 1.15rem; letter-spacing: .2px; text-align: center; }
+
+  ::ng-deep .p-fieldset-content {
+    border-top: 0 !important;
+    padding-top: 1.25rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+
+
