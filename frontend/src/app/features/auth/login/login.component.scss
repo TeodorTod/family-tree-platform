@@ -505,4 +505,40 @@
   }
 }
 
+:host ::ng-deep .pass-inputs .p-floatlabel > label,
+:host ::ng-deep .p-floatlabel > label {
+  background: #ffffff !important;
+  color: #475569 !important;              /* slate-600-ish, readable */
+  padding: 0 0.25rem;                     /* make the chip look clean */
+  line-height: 1.1;
+}
 
+/* When input is focused or has value (PrimeNG adds these classes) */
+:host ::ng-deep .p-floatlabel.p-inputwrapper-focus > label,
+:host ::ng-deep .p-floatlabel.p-inputwrapper-filled > label {
+  color: var(--primary-color) !important; /* your green */
+  font-weight: 600;
+}
+
+/* Ensure the password input itself is light */
+:host ::ng-deep .pass-inputs .p-password input.p-inputtext,
+:host ::ng-deep .ft-input {
+  background: #ffffff !important;
+  color: #333333 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Password suggestions / strength panel (keeps light in dark OS) */
+:host ::ng-deep .p-password-panel {
+  color-scheme: light !important;
+  background: #ffffff !important;
+  color: #333333 !important;
+  border-color: #d0d7de !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+
+/* iOS autofill for the password field */
+:host ::ng-deep .pass-inputs input:-webkit-autofill {
+  -webkit-text-fill-color: #333333 !important;
+  transition: background-color 9999s ease-in-out 0s;
+}

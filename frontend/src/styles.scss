@@ -419,3 +419,98 @@ body {
     align-items: center;
   }
 }
+
+/* ===== DENY DARK MODE: force light rendering when OS is dark ===== */
+@media (prefers-color-scheme: dark) {
+  /* Stop UA auto-darkening globally */
+  :root, html, body { color-scheme: light !important; }
+
+  html, body {
+    background: #f9f9f9 !important;
+    color: #333333 !important;
+  }
+
+  /* Base component surfaces */
+  .p-component {
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-color: #d0d7de !important;
+  }
+
+  /* Overlays / portals (dialogs, dropdowns, menus, tooltips, datepicker, etc.) */
+  .p-overlay, .p-component-overlay,
+  .p-overlaypanel,
+  .p-dialog, .p-dialog-header, .p-dialog-content, .p-dialog-footer, .p-dialog-mask,
+  .p-select-overlay, .p-select-list,
+  .p-dropdown-panel, .p-dropdown-items,
+  .p-multiselect-panel,
+  .p-datepicker, .p-calendar, .p-datepicker-group,
+  .p-menu, .p-tieredmenu, .p-menubar,
+  .p-tooltip, .p-sidebar, .p-sidebar-mask,
+  .p-confirmdialog, .p-toast {
+    color-scheme: light !important;
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-color: #d0d7de !important;
+  }
+
+  /* Inputs (native + PrimeNG) */
+  input, textarea, select,
+  .p-inputtext, .p-inputnumber input, .p-password input,
+  .p-autocomplete .p-inputtext,
+  .p-dropdown .p-inputtext, .p-dropdown-filter,
+  .p-select .p-select-label,
+  .p-multiselect .p-inputtext,
+  .p-datepicker .p-inputtext {
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-color: #d0d7de !important;
+  }
+
+  /* Dropdown/select labels & icons (fix “white on white” cases) */
+  .p-select .p-select-label,
+  .p-dropdown .p-dropdown-label,
+  .p-dropdown .p-dropdown-trigger-icon,
+  .p-select .p-select-dropdown-icon,
+  .p-menuitem-text,
+  .p-dialog .p-dialog-header .p-dialog-title {
+    color: #334155 !important;
+    fill: #334155 !important;
+  }
+
+  /* Panel list items + active states */
+  .p-select-overlay .p-select-option,
+  .p-dropdown-item,
+  .p-multiselect-item,
+  .p-menuitem > .p-menuitem-content {
+    background: #ffffff !important;
+    color: #333333 !important;
+  }
+  .p-select-overlay .p-select-option.p-selected,
+  .p-dropdown-item.p-highlight,
+  .p-multiselect-item.p-highlight,
+  .p-menuitem.p-highlight > .p-menuitem-content {
+    background: #f2f4f7 !important;
+    color: #1f2937 !important;
+  }
+
+  /* Masks stay standard (not extra-darkened by UA) */
+  .p-component-overlay, .p-dialog-mask, .p-sidebar-mask {
+    background: rgba(0,0,0,.4) !important;
+  }
+
+  /* Floating labels & chips match light cards */
+  .floating-field label {
+    background: #ffffff !important;
+    color: #666666 !important;
+  }
+
+  /* iOS autofill */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: #333333 !important;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+}
+
