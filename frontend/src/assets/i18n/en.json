@@ -400,6 +400,26 @@
     "LANG_BG": "Bulgarian",
     "LANG_EN": "English",
     "MOBILE_HINT_TITLE": "Better experience on larger screens",
-    "MOBILE_HINT_MESSAGE": "The family tree visualization is optimized for desktop and tablet. Use a larger screen for the best view and smoother experience."
+    "MOBILE_HINT_MESSAGE": "The family tree visualization is optimized for desktop and tablet. Use a larger screen for the best view and smoother experience.",
+    "FAQ": "FAQ",
+    "HELP": "Help"
+  },
+  "FAQ": {
+    "TITLE": "Frequently Asked Questions",
+    "INTRO": "Here are answers to the most common questions about FamilyTree.",
+    "Q": {
+      "WHAT_IS_APP": "What is FamilyTree?",
+      "HOW_ADD_FAMILY": "How do I add my first relatives?",
+      "MEDIA_LIMITS": "What are the photo/video limits?",
+      "SUBSCRIPTIONS": "What subscriptions do you offer?",
+      "PRIVACY": "How do you protect my data?"
+    },
+    "A": {
+      "WHAT_IS_APP": "FamilyTree is a web app for building interactive family trees with media and stories.",
+      "HOW_ADD_FAMILY": "After login, you’ll follow forms in this order: You → Mother → Maternal grandparents → Father → Paternal grandparents.",
+      "MEDIA_LIMITS": "Free plan: up to 100MB total. Paid plans increase limits depending on tier.",
+      "SUBSCRIPTIONS": "We offer Free, Family+, Premium, and Lifetime. See subscription settings for details.",
+      "PRIVACY": "We store data securely, use encryption, and give you control over tree visibility."
+    }
   }
 }

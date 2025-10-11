@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { CONSTANTS } from '../../../shared/constants/constants';
 
 @Component({
   selector: 'app-footer',
@@ -9,5 +10,6 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-i
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent {
-    currentYear = new Date().getFullYear();
+  CONSTANTS = CONSTANTS;
+  currentYear = new Date().getFullYear();
 }

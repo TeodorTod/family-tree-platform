@@ -1,0 +1,95 @@
+:host {
+  display: block;
+  padding: 1rem;
+  min-height: calc(100vh - var(--navbar-h, 64px) - var(--footer-h, 56px));
+  --border-color: #e1e5e9;
+  --text-color-secondary: #6b7280;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+/* Outer wrapper keeps same max-width and centering */
+.faq-page {
+  max-width: 1300px;
+  margin: 0 auto;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Gradient header like member-header */
+.faq-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
+  color: var(--primary-color-text);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/assets/images/tree-of-life-tile.svg") 0 0 / 96px 96px repeat;
+    opacity: 0.2;
+  }
+
+  .faq-title,
+  .faq-lead {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+  }
+
+  .faq-title {
+    font-size: 2rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    @media (max-width: 768px) { font-size: 1.5rem; }
+  }
+
+  .faq-lead {
+    margin-top: .5rem;
+    opacity: .95;
+  }
+}
+
+/* Inner card body */
+.faq-card {
+  background: var(--surface-card);
+}
+
+.faq-content {
+  padding: 2rem;
+
+  @media (max-width: 768px) { padding: 1.5rem; }
+
+  .answer { line-height: 1.6; }
+}
+
+/* PrimeNG v19 Accordion cosmetics (match your member-info tone) */
+::ng-deep .p-accordion {
+  .p-accordion-panel {
+    border: 1px solid rgba(45, 76, 47, 0.1);
+    border-radius: var(--radius-md);
+    background: rgba(45, 76, 47, 0.02);
+    overflow: hidden;
+
+    &:not(:last-child) { margin-bottom: 1rem; }
+  }
+
+  .p-accordion-header {
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: transparent;
+
+    &:hover { background: rgba(45, 76, 47, 0.05); }
+  }
+
+  .p-accordion-content {
+    padding: 1rem 1.25rem 1.25rem;
+    background: transparent;
+  }
+}

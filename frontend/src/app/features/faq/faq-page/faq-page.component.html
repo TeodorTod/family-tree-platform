@@ -1,0 +1,21 @@
+<div class="faq-page">
+  <div class="faq-header">
+    <h1 class="faq-title">{{ CONSTANTS.FAQ_TITLE | translate }}</h1>
+    <p class="faq-lead">{{ CONSTANTS.FAQ_INTRO | translate }}</p>
+  </div>
+
+  <div class="faq-card">
+    <div class="faq-content">
+      <p-accordion [multiple]="true">
+        @for (item of faqItems(); track item.qKey) {
+          <p-accordion-panel [value]="item.qKey">
+            <p-accordion-header>{{ item.qKey | translate }}</p-accordion-header>
+            <p-accordion-content>
+              <div class="answer">{{ item.aKey | translate }}</div>
+            </p-accordion-content>
+          </p-accordion-panel>
+        }
+      </p-accordion>
+    </div>
+  </div>
+</div>

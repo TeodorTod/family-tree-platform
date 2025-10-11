@@ -42,6 +42,20 @@ export class CONSTANTS {
   static readonly COMMON_LANG_EN = 'COMMON.LANG_EN';
   static readonly COMMON_MOBILE_HINT_TITLE = 'COMMON.MOBILE_HINT_TITLE';
   static readonly COMMON_MOBILE_HINT_MESSAGE = 'COMMON.MOBILE_HINT_MESSAGE';
+  static readonly COMMON_FAQ = 'COMMON.FAQ';
+
+  static readonly FAQ_TITLE = 'FAQ.TITLE';
+  static readonly FAQ_INTRO = 'FAQ.INTRO';
+  static readonly FAQ_Q_WHAT_IS_APP = 'FAQ.Q.WHAT_IS_APP';
+  static readonly FAQ_A_WHAT_IS_APP = 'FAQ.A.WHAT_IS_APP';
+  static readonly FAQ_Q_HOW_ADD_FAMILY = 'FAQ.Q.HOW_ADD_FAMILY';
+  static readonly FAQ_A_HOW_ADD_FAMILY = 'FAQ.A.HOW_ADD_FAMILY';
+  static readonly FAQ_Q_MEDIA_LIMITS = 'FAQ.Q.MEDIA_LIMITS';
+  static readonly FAQ_A_MEDIA_LIMITS = 'FAQ.A.MEDIA_LIMITS';
+  static readonly FAQ_Q_SUBSCRIPTIONS = 'FAQ.Q.SUBSCRIPTIONS';
+  static readonly FAQ_A_SUBSCRIPTIONS = 'FAQ.A.SUBSCRIPTIONS';
+  static readonly FAQ_Q_PRIVACY = 'FAQ.Q.PRIVACY';
+  static readonly FAQ_A_PRIVACY = 'FAQ.A.PRIVACY';
 
   static readonly ROUTES = {
     HOME: '',
@@ -64,6 +78,7 @@ export class CONSTANTS {
       FATHER: '/onboarding/father',
       PATERNAL_GRANDPARENTS: '/onboarding/paternal-grandparents',
     },
+    FAQ: '/faq',
   };
 
   static readonly INFO_OWNER = 'INFO.OWNER';

@@ -36,6 +36,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'faq',
+    loadChildren: () =>
+      import('./features/faq/faq.routes').then((m) => m.default),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
