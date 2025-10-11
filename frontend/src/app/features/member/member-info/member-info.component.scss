@@ -406,3 +406,54 @@ floating-field.relation-section {
     grid-column: 1 / -1;
   }
 }
+
+/* ===== Tabs scroll arrows: force light, readable icons in Dark OS ===== */
+@media (prefers-color-scheme: dark) {
+  :host { color-scheme: light !important; }
+
+  /* Cover both APIs: new <p-tabs> and classic <p-tabview> */
+  :host ::ng-deep
+  /* new Tabs */
+  .p-tabs .p-tablist .p-tabs-scrollbutton,
+  .p-tabs .p-tablist .p-tabs-prev,
+  .p-tabs .p-tablist .p-tabs-next,
+  /* classic TabView */
+  .p-tabview .p-tabview-nav .p-tabview-nav-btn,
+  .p-tabview .p-tabview-nav-prev,
+  .p-tabview .p-tabview-nav-next {
+    background: #ffffff !important;
+    color: #1f2937 !important;         /* dark gray for icon */
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
+
+  /* Make sure the actual icon is visible (covers <i>, svg, wrapper) */
+  :host ::ng-deep
+  .p-tabs .p-tablist .p-tabs-scrollbutton .p-icon,
+  .p-tabs .p-tablist .p-tabs-scrollbutton .pi,
+  .p-tabview .p-tabview-nav .p-tabview-nav-btn .p-icon,
+  .p-tabview .p-tabview-nav .p-tabview-nav-btn .pi,
+  .p-tabs .p-tablist .p-tabs-prev .p-icon,
+  .p-tabs .p-tablist .p-tabs-next .p-icon {
+    color: #1f2937 !important;
+    fill: #1f2937 !important;
+  }
+
+  /* Hover/active states stay readable */
+  :host ::ng-deep
+  .p-tabs .p-tablist .p-tabs-scrollbutton:hover,
+  .p-tabview .p-tabview-nav .p-tabview-nav-btn:hover {
+    background: #f2f4f7 !important;
+    color: #111827 !important;
+  }
+
+  /* Disabled arrows */
+  :host ::ng-deep
+  .p-tabs .p-tablist .p-tabs-scrollbutton.p-disabled,
+  .p-tabview .p-tabview-nav .p-tabview-nav-btn.p-disabled {
+    background: #ffffff !important;
+    color: #9ca3af !important;
+    opacity: 0.7 !important;
+  }
+}
+

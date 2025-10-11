@@ -493,3 +493,57 @@
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
+
+/* ===== NAVBAR MENUS: deny dark, always render as light ===== */
+@media (prefers-color-scheme: dark) {
+  :host { color-scheme: light !important; }
+
+  /* Menubar bar itself */
+  :host ::ng-deep .p-menubar,
+  :host ::ng-deep .p-menubar-root-list,
+  :host ::ng-deep .p-menubar-end,
+  :host ::ng-deep .p-menubar-start {
+    color-scheme: light !important;
+    background: #ffffff !important;
+    color: #1f2937 !important; /* slate-800-ish */
+    border-color: #e5e7eb !important;
+  }
+
+  /* SplitButton overlay panel + menu items */
+  :host ::ng-deep .p-splitbutton-overlay,
+  :host ::ng-deep .p-splitbutton-overlay .p-menu,
+  :host ::ng-deep .p-splitbutton-overlay .p-menu-list,
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem,
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-content {
+    color-scheme: light !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border-color: #e5e7eb !important;
+  }
+
+  /* Actual clickable link + its text/icon */
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-link,
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-text,
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-icon {
+    color: #1f2937 !important;
+    fill: #1f2937 !important;
+  }
+
+  /* Hover/active states stay readable */
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-content:hover {
+    background: #f2f4f7 !important;
+    color: #1f2937 !important;
+  }
+  :host ::ng-deep .p-splitbutton-overlay .p-menuitem.p-highlight .p-menuitem-content {
+    background: #eaf3ec !important;  /* soft green */
+    color: #1f3a20 !important;
+  }
+
+  /* The tiny triangle caret / trigger icons */
+  :host ::ng-deep .p-splitbutton .p-splitbutton-dropdown .p-button-icon,
+  :host ::ng-deep .p-splitbutton .p-splitbutton-button .p-button-icon {
+    color: #1f2937 !important; /* for any icon that gets inverted by UA */
+    fill: #1f2937 !important;
+  }
+}
+
