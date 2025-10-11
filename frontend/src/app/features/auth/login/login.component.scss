@@ -115,7 +115,6 @@
     }
 
     :global(.p-select-label) {
-      color: white !important;
       font-weight: 500 !important;
       padding: 0.625rem 0.875rem !important;
       display: flex;
@@ -505,6 +504,9 @@
   }
 }
 
+/* ===== Fix p-floatlabel for the password field (always light) ===== */
+
+/* Base label on light card */
 :host ::ng-deep .pass-inputs .p-floatlabel > label,
 :host ::ng-deep .p-floatlabel > label {
   background: #ffffff !important;
@@ -542,3 +544,7 @@
   -webkit-text-fill-color: #333333 !important;
   transition: background-color 9999s ease-in-out 0s;
 }
+
+
+
+
