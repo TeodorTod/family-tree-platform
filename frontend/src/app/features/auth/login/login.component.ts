@@ -53,6 +53,13 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  get dialogVisible() {
+    return this.showMobileHint();
+  }
+  set dialogVisible(v: boolean) {
+    this.showMobileHint.set(v);
+  }
+
   switchLang(code: Lang) {
     this.lang.use(code);
     this.langOptions = [

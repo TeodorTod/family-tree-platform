@@ -4,7 +4,7 @@ import { PrivacySettingsComponent } from './privacy-settings/privacy-settings.co
 import { SubscriptionSettingsComponent } from './subscription-settings/subscription-settings.component';
 
 export const accountRoutes: Routes = [
-  { path: 'account', component: AccountSettingsComponent },
+  { path: 'my-account', component: AccountSettingsComponent },
   { path: 'subscription', component: SubscriptionSettingsComponent },
   { path: 'privacy', component: PrivacySettingsComponent },
 ];

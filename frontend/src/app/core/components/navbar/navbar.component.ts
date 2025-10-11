@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { Subscription } from 'rxjs';
 import { Lang } from '../../../shared/types/lang.type';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-navbar',
@@ -28,37 +29,90 @@ export class NavbarComponent implements OnDestroy {
 
   isLoggedIn = this.auth.getTokenSignal();
   mobileMenuVisible = false;
-  showProfileMenu = false;
 
-  // bound in template
-  langOptions = this.buildLangOptions();
-  currentLang: Lang = this.lang.current();
+  // Language items for split button
+  langItems: MenuItem[] = [];
+  currentLangLabel = '';
 
-  currentSettingsRoute: string | null = null;
-  
+  // Settings items for split button
+  settingsItems: MenuItem[] = [];
+  currentSettingsLabel = '';
 
-  settingsOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.SETTINGS_PLANS),
-      value: CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS,
-    },
-  ];
+  // Profile items for split button
+  profileItems: MenuItem[] = [];
 
-constructor() {
-  this.sub.add(
-    this.translate.onLangChange.subscribe(() => {
-      this.settingsItems = this.buildSettings();
-      this.langOptions = this.buildLangOptions();
-      this.settingsOptions = [
-        {
-          label: this.translate.instant(CONSTANTS.SETTINGS_PLANS),
-          value: CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS ?? CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS,
+  constructor() {
+    this.updateLabels();
+
+    this.sub.add(
+      this.translate.onLangChange.subscribe(() => {
+        this.updateLabels();
+      })
+    );
+  }
+
+  private updateLabels() {
+    // Update language items
+    const currentLang = this.lang.current();
+    this.currentLangLabel =
+      currentLang === 'bg'
+        ? this.translate.instant(CONSTANTS.COMMON_LANG_BG)
+        : this.translate.instant(CONSTANTS.COMMON_LANG_EN);
+
+    this.langItems = [
+      {
+        label: this.translate.instant(CONSTANTS.COMMON_LANG_BG),
+        icon: 'pi pi-globe',
+        command: () => this.switchLang('bg'),
+      },
+      {
+        label: this.translate.instant(CONSTANTS.COMMON_LANG_EN),
+        icon: 'pi pi-globe',
+        command: () => this.switchLang('en'),
+      },
+    ];
+
+    // Update settings items
+    this.currentSettingsLabel = this.translate.instant(
+      CONSTANTS.COMMON_SETTINGS
+    );
+    this.settingsItems = [
+      {
+        label: this.translate.instant(CONSTANTS.SETTINGS_PLANS),
+        icon: 'pi pi-credit-card',
+        command: () =>
+          this.goToSettings(CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS),
+      },
+    ];
+
+    // Update profile items
+    this.profileItems = [
+      {
+        label: this.translate.instant(CONSTANTS.AUTH_ACCOUNT_SETTINGS),
+        icon: 'pi pi-user-edit',
+        command: () => {
+          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.MY_ACCOUNT]);
+          this.mobileMenuVisible = false;
         },
-      ];
-      this.currentSettingsRoute = null;
-    })
-  );
-}
+      },
+      {
+        label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
+        icon: 'pi pi-credit-card',
+        command: () => {
+          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.SUBSCRIPTION]);
+          this.mobileMenuVisible = false;
+        },
+      },
+      {
+        label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
+        icon: 'pi pi-lock',
+        command: () => {
+          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.PRIVACY]);
+          this.mobileMenuVisible = false;
+        },
+      },
+    ];
+  }
 
   shouldShowNavbar(): boolean {
     const tree = this.router.parseUrl(this.router.url);
@@ -79,7 +133,7 @@ constructor() {
 
   switchLang(code: Lang) {
     this.lang.use(code);
-    // onLangChange subscription will refresh labels/options
+    this.mobileMenuVisible = false;
   }
 
   logout() {
@@ -94,48 +148,12 @@ constructor() {
     this.mobileMenuVisible = false;
   }
 
-  // Settings menu built from current translations
-  settingsItems = this.buildSettings();
-  private buildSettings() {
-    return [
-      {
-        label: this.translate.instant(CONSTANTS.AUTH_ACCOUNT_SETTINGS),
-        icon: 'pi pi-user-edit',
-        command: () =>
-          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.MY_ACCOUNT]),
-      },
-      {
-        label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
-        icon: 'pi pi-credit-card',
-        command: () =>
-          this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.SUBSCRIPTION]),
-      },
-      {
-        label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
-        icon: 'pi pi-lock',
-        command: () => this.router.navigate([CONSTANTS.ROUTES.ACCOUNT.PRIVACY]),
-      },
-    ];
+  goToSettings(path: string) {
+    if (path) {
+      this.router.navigateByUrl(path);
+      this.mobileMenuVisible = false;
+    }
   }
-
-  private buildLangOptions() {
-    return [
-      {
-        label: this.translate.instant(CONSTANTS.COMMON_LANG_BG),
-        value: 'bg' as Lang,
-      },
-      {
-        label: this.translate.instant(CONSTANTS.COMMON_LANG_EN),
-        value: 'en' as Lang,
-      },
-    ];
-  }
-
-goToSettings(path: string) {
-  if (path) this.router.navigateByUrl(path);
-  setTimeout(() => (this.currentSettingsRoute = null), 0);
-  this.mobileMenuVisible = false;
-}
 
   ngOnDestroy() {
     this.sub.unsubscribe();

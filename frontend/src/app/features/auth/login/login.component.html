@@ -93,7 +93,7 @@
 
 <p-dialog
   [visible]="showMobileHint()"
-  (onHide)="showMobileHint.set(false)"
+  (visibleChange)="showMobileHint.set($event)"
   [modal]="false"
   [dismissableMask]="true"
   [breakpoints]="{ '960px': '90vw', '640px': '95vw' }"

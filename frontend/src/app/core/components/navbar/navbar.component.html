@@ -1,8 +1,13 @@
+<!-- navbar.component.html -->
 @if (shouldShowNavbar()) {
 <div class="navbar-container">
   <p-menubar [model]="[]">
     <ng-template pTemplate="start">
-      <a [routerLink]="CONSTANTS.ROUTES.HOME" class="logo-link" aria-label="Home">
+      <a
+        [routerLink]="CONSTANTS.ROUTES.HOME"
+        class="logo-link"
+        aria-label="Home"
+      >
         <img
           src="assets/images/logo.png"
           alt="FamilyTree logo"
@@ -16,69 +21,51 @@
     <ng-template pTemplate="end">
       @if (isLoggedIn()) {
       <div class="nav-desktop">
-        <!-- Settings select -->
-        <div class="settings-switcher">
-          <p-select
-            [options]="settingsOptions"
-            [(ngModel)]="currentSettingsRoute"
-            (ngModelChange)="goToSettings($event)"
-            [placeholder]="CONSTANTS.COMMON_SETTINGS | translate"
-            [showClear]="false"
-            appendTo="body"
-          >
-            <ng-template pTemplate="selectedItem" let-opt>
-              {{ opt?.label }}
-            </ng-template>
-            <ng-template pTemplate="item" let-opt>
-              {{ opt.label }}
-            </ng-template>
-          </p-select>
-        </div>
-
-        <!-- Profile split button -->
+        <!-- Settings split button -->
         <p-splitButton
-          label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
+          [label]="currentSettingsLabel"
           icon="pi pi-cog"
           [model]="settingsItems"
-          class="p-button-text"
-          styleClass="p-button-text p-button-plain"
+          styleClass="settings-split-btn"
           severity="secondary"
         ></p-splitButton>
 
-        <!-- Language select -->
-        <div class="lang-switcher">
-          <p-select
-            [options]="langOptions"
-            [(ngModel)]="currentLang"
-            (ngModelChange)="switchLang($event)"
-            [placeholder]="CONSTANTS.COMMON_LANGUAGE | translate"
-          >
-            <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
-            <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
-          </p-select>
-        </div>
+        <!-- Profile split button -->
+        <p-splitButton
+          [label]="CONSTANTS.AUTH_PROFILE | translate"
+          icon="pi pi-user"
+          [model]="profileItems"
+          styleClass="profile-split-btn"
+          severity="secondary"
+        ></p-splitButton>
+
+        <!-- Language split button -->
+        <p-splitButton
+          [label]="currentLangLabel"
+          icon="pi pi-globe"
+          [model]="langItems"
+          styleClass="lang-split-btn"
+          severity="primary"
+        ></p-splitButton>
 
         <button
           pButton
           label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
           icon="pi pi-sign-out"
-          class="p-button-text"
+          class="p-button-text logout-btn"
           (click)="logout()"
         ></button>
       </div>
       } @else {
       <div class="nav-desktop">
-        <div class="lang-switcher">
-          <p-select
-            [options]="langOptions"
-            [(ngModel)]="currentLang"
-            (ngModelChange)="switchLang($event)"
-            [placeholder]="CONSTANTS.COMMON_LANGUAGE | translate"
-          >
-            <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
-            <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
-          </p-select>
-        </div>
+        <!-- Language split button -->
+        <p-splitButton
+          [label]="currentLangLabel"
+          icon="pi pi-globe"
+          [model]="langItems"
+          styleClass="lang-split-btn"
+          severity="primary"
+        ></p-splitButton>
 
         <button
           pButton
@@ -114,82 +101,67 @@
 
   @if (mobileMenuVisible) {
   <div class="nav-mobile-dropdown">
-    <div class="mobile-lang-section">
-      <div class="lang-label">{{ CONSTANTS.COMMON_LANGUAGE | translate }}</div>
-      <p-select
-        [options]="langOptions"
-        [(ngModel)]="currentLang"
-        (ngModelChange)="switchLang($event); mobileMenuVisible = false"
-      >
-        <ng-template pTemplate="selectedItem" let-opt>{{ opt.label }}</ng-template>
-        <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
-      </p-select>
-    </div>
-
-    <p-divider></p-divider>
-
     @if (isLoggedIn()) {
-      <!-- Mobile settings -->
-      <div class="mobile-settings-section">
-        <div class="settings-label">{{ CONSTANTS.COMMON_SETTINGS | translate }}</div>
-        <p-select
-          [options]="settingsOptions"
-          [(ngModel)]="currentSettingsRoute"
-          (ngModelChange)="goToSettings($event)"
-          [placeholder]="CONSTANTS.COMMON_SETTINGS | translate"
-          appendTo="body"
-        >
-          <ng-template pTemplate="selectedItem" let-opt>{{ opt?.label }}</ng-template>
-          <ng-template pTemplate="item" let-opt>{{ opt.label }}</ng-template>
-        </p-select>
-      </div>
+    <!-- Mobile Language Split Button -->
+    <p-splitButton
+      [label]="currentLangLabel"
+      icon="pi pi-globe"
+      [model]="langItems"
+      styleClass="mobile-split-btn"
+      [style]="{ width: '100%' }"
+    ></p-splitButton>
 
-      <p-divider></p-divider>
+    <!-- Mobile Settings Split Button -->
+    <p-splitButton
+      [label]="currentSettingsLabel"
+      icon="pi pi-cog"
+      [model]="settingsItems"
+      styleClass="mobile-split-btn"
+      [style]="{ width: '100%' }"
+    ></p-splitButton>
 
-      <!-- Profile submenu -->
-      <button
-        pButton
-        class="profile-toggle"
-        label="{{ CONSTANTS.AUTH_PROFILE | translate }}"
-        [icon]="showProfileMenu ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-        (click)="showProfileMenu = !showProfileMenu"
-        [attr.aria-expanded]="showProfileMenu"
-      ></button>
+    <!-- Mobile Profile Split Button -->
+    <p-splitButton
+      [label]="CONSTANTS.AUTH_PROFILE | translate"
+      icon="pi pi-user"
+      [model]="profileItems"
+      styleClass="mobile-split-btn"
+      [style]="{ width: '100%' }"
+    ></p-splitButton>
 
-      @if (showProfileMenu) {
-        <div class="profile-submenu">
-          @for (item of settingsItems; track item.label) {
-            <button
-              pButton
-              [label]="item.label"
-              [icon]="item.icon"
-              (click)="item.command(); mobileMenuVisible = false"
-            ></button>
-          }
-        </div>
-      }
-
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
-        icon="pi pi-sign-out"
-        (click)="logout()"
-      ></button>
+    <button
+      pButton
+      label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
+      icon="pi pi-sign-out"
+      class="mobile-logout-btn"
+      (click)="logout()"
+    ></button>
     } @else {
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
-        icon="pi pi-sign-in"
-        [routerLink]="CONSTANTS.ROUTES.LOGIN"
-        (click)="mobileMenuVisible = false"
-      ></button>
-      <button
-        pButton
-        label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
-        icon="pi pi-user-plus"
-        [routerLink]="CONSTANTS.ROUTES.REGISTER"
-        (click)="mobileMenuVisible = false"
-      ></button>
+    <!-- Mobile Language Split Button -->
+    <p-splitButton
+      [label]="currentLangLabel"
+      icon="pi pi-globe"
+      [model]="langItems"
+      styleClass="mobile-split-btn"
+      [style]="{ width: '100%' }"
+    ></p-splitButton>
+
+    <button
+      pButton
+      label="{{ CONSTANTS.AUTH_LOGIN | translate }}"
+      icon="pi pi-sign-in"
+      [routerLink]="CONSTANTS.ROUTES.LOGIN"
+      (click)="mobileMenuVisible = false"
+      class="mobile-auth-btn"
+    ></button>
+    <button
+      pButton
+      label="{{ CONSTANTS.AUTH_REGISTER | translate }}"
+      icon="pi pi-user-plus"
+      [routerLink]="CONSTANTS.ROUTES.REGISTER"
+      (click)="mobileMenuVisible = false"
+      class="mobile-auth-btn"
+    ></button>
     }
   </div>
   }
