@@ -514,156 +514,106 @@ body {
   }
 }
 
-/* === PRIME NG TREE / TREETABLE — FORCE LIGHT IN iOS DARK MODE === */
+/* Always render light on devices using dark mode */
 @media (prefers-color-scheme: dark) {
-  /* Tell Safari: render these as light */
-  .p-tree,
-  .p-treetable,
-  .p-treetable-wrapper,
-  .p-treetable-scrollable-body,
-  .p-treetable-scrollable-header,
-  .p-treetable-scrollable-footer {
-    color-scheme: light !important;
-    background: #ffffff !important;
-    color: #333333 !important;
-    border-color: #e5e7eb !important;
+  :root, html, body { color-scheme: light !important; background:#f9f9f9 !important; color:#1f2937 !important; }
+
+  /* ---- PrimeNG overlays/menus/panels appended to body ---- */
+  body > .p-overlay,
+  body > .p-component-overlay,
+  body > .p-dialog,
+  body > .p-dialog-mask,
+  body > .p-dropdown-panel,
+  body > .p-select-overlay,
+  body > .p-multiselect-panel,
+  body > .p-datepicker,
+  body > .p-tooltip,
+  body > .p-sidebar,
+  body > .p-sidebar-mask,
+  body > .p-confirmdialog,
+  body > .p-toast,
+  body > .p-menu,
+  body > .p-tieredmenu,
+  body > .p-splitbutton-overlay {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    border-color:#e5e7eb !important;
+    -webkit-text-fill-color:#1f2937 !important; /* iOS text forcing */
   }
 
-  /* Treetable table parts */
-  .p-treetable-table,
-  .p-treetable thead > tr > th,
-  .p-treetable tbody > tr > td,
-  .p-treetable tfoot > tr > td {
-    background: #ffffff !important;
-    color: #333333 !important;
-    border-color: #e5e7eb !important;
+  /* Menu item text/icons inside any overlay */
+  .p-menuitem,
+  .p-menuitem .p-menuitem-content,
+  .p-menuitem .p-menuitem-link,
+  .p-menuitem .p-menuitem-text,
+  .p-menuitem .p-menuitem-icon {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    fill:#1f2937 !important;
+    -webkit-text-fill-color:#1f2937 !important;
   }
 
-  /* Header/footers */
-  .p-treetable-header,
-  .p-treetable-thead,
-  .p-treetable-footer {
-    background: #ffffff !important;
-    color: #1f2937 !important;
-    border-color: #e5e7eb !important;
+  .p-menuitem .p-menuitem-content:hover,
+  .p-dropdown-item.p-highlight,
+  .p-multiselect-item.p-highlight,
+  .p-select-option.p-selected {
+    background:#f2f4f7 !important;
+    color:#1f2937 !important;
+    -webkit-text-fill-color:#1f2937 !important;
   }
 
-  /* Row states */
-  .p-treetable-striped .p-treetable-tbody > tr:nth-child(even),
-  .p-tree .p-treenode-content:nth-child(even) {
-    background: #fafafa !important;
-  }
-  .p-treetable-tbody > tr:hover,
-  .p-tree .p-treenode-content:hover {
-    background: #f5f5f5 !important;
-  }
-  .p-treetable-tbody > tr.p-highlight,
-  .p-tree .p-treenode-content.p-highlight,
-  .p-tree .p-treenode-content.p-focus {
-    background: #eaf3ec !important;  /* soft green */
-    color: #1f3a20 !important;
-  }
-
-  /* Tree (non-table) node surfaces */
-  .p-tree,
-  .p-tree-container,
-  .p-tree .p-treenode,
-  .p-tree .p-treenode-content {
-    background: #ffffff !important;
-    color: #333333 !important;
-    border-color: #e5e7eb !important;
+  /* ---- Table: force white rows, cells, headers, paginator ---- */
+  .p-datatable,
+  .p-datatable-wrapper,
+  .p-datatable-table,
+  .p-datatable-thead > tr,
+  .p-datatable-tbody > tr,
+  .p-datatable-tfoot > tr,
+  .p-datatable-thead > tr > th,
+  .p-datatable-tbody > tr > td,
+  .p-datatable-tfoot > tr > td {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    border-color:#e5e7eb !important;
+    -webkit-text-fill-color:#1f2937 !important;
   }
 
-  /* Connectors/lines between nodes (when lines enabled) */
-  .p-tree .p-treenode-children,
-  .p-tree .p-tree-connector {
-    border-color: #e5e7eb !important;
+  .p-sortable-column .p-sortable-column-icon,
+  .p-sortable-column .p-sortable-column-badge {
+    color:#1f2937 !important;
+    fill:#1f2937 !important;
   }
 
-  /* Expand/collapse togglers + icons readable */
-  .p-treetable-toggler,
-  .p-tree-toggler,
-  .p-treetable .p-tree-toggler,
-  .p-tree .p-tree-toggler,
-  .p-tree .p-treenode-icon,
-  .p-treetable .p-treenode-icon,
-  .p-treetable .p-sortable-column .p-sortable-column-icon {
-    color: #1f2937 !important;
-    fill: #1f2937 !important;
-  }
-  .p-treetable-toggler:hover,
-  .p-tree-toggler:hover {
-    background: #f2f4f7 !important;
-    border-radius: 4px;
+  .p-paginator,
+  .p-paginator .p-dropdown,
+  .p-paginator .p-dropdown .p-inputtext,
+  .p-paginator .p-paginator-page {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    border-color:#e5e7eb !important;
+    -webkit-text-fill-color:#1f2937 !important;
   }
 
-  /* Checkbox/radio inside tree rows */
-  .p-treetable .p-checkbox .p-checkbox-box,
-  .p-tree .p-checkbox .p-checkbox-box {
-    background: #ffffff !important;
-    border-color: #d0d7de !important;
-  }
-  .p-treetable .p-checkbox .p-checkbox-box.p-highlight,
-  .p-tree .p-checkbox .p-checkbox-box.p-highlight {
-    background: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
+  /* Buttons in table (round icon buttons) */
+  .p-button,
+  .p-button.p-button-rounded,
+  .p-button.p-button-text {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    border-color:#e5e7eb !important;
   }
 
-  /* Scroll headers/footers (sticky areas) */
-  .p-treetable-scrollable-header-box,
-  .p-treetable-scrollable-footer-box {
-    background: #ffffff !important;
-  }
-
-  /* Paginator used under TreeTable (if any) */
-  .p-treetable + .p-paginator,
-  .p-paginator {
-    color-scheme: light !important;
-    background: #ffffff !important;
-    color: #333333 !important;
-    border-top: 1px solid #e5e7eb !important;
+  /* Inputs/labels inside overlays (dropdown/search fields, etc.) */
+  input, textarea, select,
+  .p-inputtext, .p-dropdown .p-inputtext, .p-dropdown-filter,
+  .p-multiselect .p-inputtext, .p-inputnumber input, .p-password input {
+    background:#ffffff !important;
+    color:#1f2937 !important;
+    border-color:#e5e7eb !important;
+    -webkit-text-fill-color:#1f2937 !important;
   }
 }
 
-/* ===== SplitButton overlay menus — force light in Dark OS ===== */
-@media (prefers-color-scheme: dark) {
-  /* Overlay container + inner menu */
-  .p-splitbutton-overlay,
-  .p-splitbutton-overlay .p-menu,
-  .p-splitbutton-overlay .p-menu-list {
-    color-scheme: light !important;
-    background: #ffffff !important;
-    color: #1f2937 !important;
-    border: 1px solid #e5e7eb !important;
-  }
-
-  /* Each item row */
-  .p-splitbutton-overlay .p-menuitem,
-  .p-splitbutton-overlay .p-menuitem .p-menuitem-content {
-    background: #ffffff !important;
-    color: #1f2937 !important;
-  }
-
-  /* Clickable link, text and icon (cover all) */
-  .p-splitbutton-overlay .p-menuitem .p-menuitem-link,
-  .p-splitbutton-overlay .p-menuitem .p-menuitem-text,
-  .p-splitbutton-overlay .p-menuitem .p-menuitem-icon,
-  .p-splitbutton-overlay .p-menuitem .p-icon,
-  .p-splitbutton-overlay .p-menuitem .pi {
-    color: #1f2937 !important;
-    fill: #1f2937 !important;
-  }
-
-  /* Hover / active */
-  .p-splitbutton-overlay .p-menuitem .p-menuitem-content:hover {
-    background: #f2f4f7 !important;
-    color: #1f2937 !important;
-  }
-  .p-splitbutton-overlay .p-menuitem.p-highlight .p-menuitem-content {
-    background: #eaf3ec !important; /* soft green */
-    color: #1f3a20 !important;
-  }
-}
 
 
 

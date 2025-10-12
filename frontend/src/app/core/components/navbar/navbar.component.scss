@@ -547,3 +547,10 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  .p-splitbutton-overlay .p-menuitem-text { 
+    color:#1f2937 !important; 
+    -webkit-text-fill-color:#1f2937 !important;
+  }
+}
+
