@@ -504,6 +504,21 @@
   }
 }
 
+/* Only adjust position on small screens */
+@media (max-width: 768px) {
+  .pass-rules-fixed {
+    top: auto;              /* override desktop top */
+    right: auto;            /* override desktop right */
+    left: 50%;              /* center horizontally */
+    bottom: 16px;           /* sit near bottom */
+    transform: translateX(-50%);
+    width: min(360px, 92vw);/* keep it readable on phones */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); /* iOS notch */
+    z-index: 9999;          /* stay above the form */
+  }
+}
+
+
 
 
 
