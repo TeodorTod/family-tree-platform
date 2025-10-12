@@ -504,14 +504,12 @@
   }
 }
 
-/* ===== Fix p-floatlabel for the password field (always light) ===== */
-
 /* Base label on light card */
 :host ::ng-deep .pass-inputs .p-floatlabel > label,
 :host ::ng-deep .p-floatlabel > label {
   background: #ffffff !important;
-  color: #475569 !important;              /* slate-600-ish, readable */
-  padding: 0 0.25rem;                     /* make the chip look clean */
+  color: #475569 !important; /* slate-600-ish, readable */
+  padding: 0 0.25rem; /* make the chip look clean */
   line-height: 1.1;
 }
 
@@ -536,7 +534,7 @@
   background: #ffffff !important;
   color: #333333 !important;
   border-color: #d0d7de !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* iOS autofill for the password field */
@@ -547,17 +545,13 @@
 
 @media (max-width: 768px) {
   .pass-rules-fixed {
-    top: auto;              /* override desktop top */
-    right: auto;            /* override desktop right */
-    left: 50%;              /* center horizontally */
-    bottom: 16px;           /* sit near bottom */
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: 16px;
     transform: translateX(-50%);
-    width: min(360px, 92vw);/* keep it readable on phones */
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); /* iOS notch */
-    z-index: 9999;          /* stay above the form */
+    width: min(360px, 92vw);
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    z-index: 9999;
   }
 }
-
-
-
-
