@@ -1,0 +1,165 @@
+<p-fieldset class="contact-fieldset padded">
+  <p-header>
+    <div class="contact-header" role="heading" aria-level="2">
+      <i class="pi pi-comments contact-header__icon" aria-hidden="true"></i>
+      <span class="contact-header__title">
+        {{ CONSTANTS.CONTACT_TITLE | translate }}
+      </span>
+      <span class="contact-header__subtitle">
+        {{ CONSTANTS.CONTACT_SUBTITLE | translate }}
+      </span>
+    </div>
+  </p-header>
+
+  <div class="contact-grid" (keydown)="onKeyDownSubmit($event)">
+    <!-- Left: Contact info -->
+    <div class="info-col">
+      <p-card class="info-card" role="region" aria-labelledby="contact-email">
+        <div class="info-row">
+          <i class="pi pi-envelope info-icon" aria-hidden="true"></i>
+          <div>
+            <div id="contact-email" class="info-title">
+              {{ CONSTANTS.CONTACT_CARD_EMAIL | translate }}
+            </div>
+            <div class="info-sub">support&#64;familytree.com</div>
+          </div>
+        </div>
+      </p-card>
+
+      <p-card class="info-card" role="region" aria-labelledby="contact-address">
+        <div class="info-row">
+          <i class="pi pi-map-marker info-icon" aria-hidden="true"></i>
+          <div>
+            <div id="contact-address" class="info-title">
+              {{ CONSTANTS.CONTACT_CARD_ADDRESS | translate }}
+            </div>
+            <div class="info-sub">Sofia, Bulgaria</div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="form-col" [formGroup]="form">
+      <p-card class="form-card">
+        <div class="form-grid">
+          <!-- Name -->
+          <div class="grid-row">
+            <span class="p-float-label w-100">
+              <input
+                pInputText
+                id="fullName"
+                formControlName="fullName"
+                class="w-100"
+                autocomplete="name"
+              />
+              <label for="fullName">{{
+                CONSTANTS.CONTACT_FULL_NAME | translate
+              }}</label>
+            </span>
+            <p-message
+              *ngIf="isInvalid('fullName')"
+              severity="warn"
+              [text]="CONSTANTS.CONTACT_FULL_NAME_ERR | translate"
+            ></p-message>
+          </div>
+
+          <!-- Email -->
+          <div class="grid-row">
+            <span class="p-float-label w-100">
+              <input
+                pInputText
+                id="email"
+                formControlName="email"
+                class="w-100"
+                autocomplete="email"
+              />
+              <label for="email">{{
+                CONSTANTS.CONTACT_EMAIL | translate
+              }}</label>
+            </span>
+            <p-message
+              *ngIf="isInvalid('email')"
+              severity="warn"
+              [text]="CONSTANTS.CONTACT_EMAIL_ERR | translate"
+            ></p-message>
+          </div>
+
+          <!-- Topic -->
+          <div class="grid-row">
+            <span class="p-float-label w-100">
+              <p-select
+                inputId="topic"
+                formControlName="topic"
+                [options]="topics()"
+                optionLabel="label"
+                optionValue="value"
+                class="w-100"
+              ></p-select>
+              <label for="topic">{{
+                CONSTANTS.CONTACT_TOPIC | translate
+              }}</label>
+            </span>
+            <p-message
+              *ngIf="isInvalid('topic')"
+              severity="warn"
+              [text]="CONSTANTS.CONTACT_TOPIC_ERR | translate"
+            ></p-message>
+          </div>
+
+          <!-- Message -->
+          <div class="grid-row">
+            <span class="p-float-label w-100">
+              <textarea
+                pTextarea
+                id="message"
+                formControlName="message"
+                autoResize
+                rows="6"
+                class="w-100"
+                maxlength="2000"
+                aria-describedby="messageCounter"
+              ></textarea>
+              <label for="message">{{
+                CONSTANTS.CONTACT_MESSAGE | translate
+              }}</label>
+            </span>
+            <div id="messageCounter" class="counter">
+              {{ messageLen() }}/{{ maxLen }} • {{ remaining() }}
+              {{ CONSTANTS.CONTACT_CHAR_REMAINING | translate }}
+            </div>
+            <p-message
+              *ngIf="isInvalid('message')"
+              severity="warn"
+              [text]="CONSTANTS.CONTACT_MESSAGE_ERR | translate"
+            ></p-message>
+          </div>
+
+          <!-- Consent -->
+          <div class="grid-row consent-row">
+            <p-checkbox
+              inputId="consent"
+              binary="true"
+              formControlName="consent"
+            ></p-checkbox>
+            <label for="consent" class="consent-label">
+              {{ CONSTANTS.CONTACT_CONSENT | translate }}
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <div class="grid-row submit-row">
+            <button
+              pButton
+              type="button"
+              [label]="CONSTANTS.CONTACT_SEND | translate"
+              [icon]="submitting() ? 'pi pi-spinner pi-spin' : 'pi pi-send'"
+              [disabled]="submitting()"
+              (click)="submit()"
+            ></button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</p-fieldset>

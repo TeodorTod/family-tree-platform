@@ -42,13 +42,17 @@
       >
         <i class="pi pi-instagram"></i>
       </a>
-      <a
-        href="mailto:redacted@example.invalid"
+      <button
+        pButton
+        type="button"
         class="p-button p-button-icon-only p-button-rounded p-button-text my-icons"
-        aria-label="Email"
+        [routerLink]="['/contact']"
+        aria-label="Contact Us"
+        pTooltip="{{ CONSTANTS.COMMON_CONTACT_US | translate }}"
+        tooltipPosition="top"
       >
         <i class="pi pi-envelope"></i>
-      </a>
+      </button>
     </div>
   </ng-template>
 </p-menubar>

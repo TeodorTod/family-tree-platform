@@ -10,9 +10,7 @@ export const routes: Routes = [
   {
     path: 'account',
     loadChildren: () =>
-      import('./features/account/account.routes').then(
-        (m) => m.accountRoutes
-      ),
+      import('./features/account/account.routes').then((m) => m.accountRoutes),
     canActivate: [authGuard],
   },
   {
@@ -40,11 +38,18 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/faq/faq.routes').then((m) => m.default),
   },
-    {
+  {
     path: 'settings',
     loadChildren: () =>
-      import('./features/settings/settings.routes').then((m) => m.settingsRoutes),
+      import('./features/settings/settings.routes').then(
+        (m) => m.settingsRoutes
+      ),
     canActivate: [authGuard],
+  },
+  {
+    path: 'contact',
+    loadChildren: () =>
+      import('./features/contact/contact.routes').then((m) => m.contactRoutes),
   },
   {
     path: '**',

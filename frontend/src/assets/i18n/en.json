@@ -404,7 +404,10 @@
     "FAQ": "FAQ",
     "HELP": "Help",
     "SETTINGS": "Settings",
-    "CURRENCY_EUR": "€"
+    "CURRENCY_EUR": "€",
+    "CONTACT_US": "Contact Us",
+    "VALIDATION": "Validation",
+    "ERROR": "Error"
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",
@@ -439,5 +442,39 @@
     "PLAN_6M": "6 months",
     "PLAN_1Y": "1 year",
     "PLAN_2Y": "2 years"
+  },
+  "CONTACT": {
+    "TITLE": "Contact Us",
+    "SUBTITLE": "Send us a message — we’ll get back to you as soon as possible.",
+    "CHAR_REMAINING": "characters remaining",
+    "CARD": {
+      "EMAIL": "Support Email",
+      "ADDRESS": "Address",
+      "HOURS": "Working Hours",
+      "HOURS_VALUE": "Mon–Fri, 9:00–18:00"
+    },
+    "FORM": {
+      "FULL_NAME": "Full Name",
+      "FULL_NAME_ERR": "Please enter a valid name (min. 2 characters).",
+      "EMAIL": "Email",
+      "EMAIL_ERR": "Please enter a valid email.",
+      "TOPIC": "Topic",
+      "TOPIC_ERR": "Please select a topic.",
+      "MESSAGE": "Message",
+      "MESSAGE_ERR": "Please enter a message (min. 10 characters).",
+      "CONSENT": "I agree to the processing of my personal data according to the Privacy Policy.",
+      "SEND": "Send"
+    },
+    "STATUS": {
+      "SENT_TITLE": "Message sent",
+      "SENT_DESC": "Thank you! We’ll contact you soon.",
+      "ERROR_DESC": "There was a problem sending your message. Please try again."
+    },
+    "TOPICS": {
+      "SUPPORT": "Technical Support",
+      "BILLING": "Billing & Subscriptions",
+      "SUGGESTION": "Feature Suggestion",
+      "OTHER": "Other"
+    }
   }
 }
