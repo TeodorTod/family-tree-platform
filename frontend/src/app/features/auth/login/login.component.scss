@@ -555,3 +555,33 @@
     z-index: 9999;
   }
 }
+
+:host ::ng-deep .card-topbar .lang-select {
+  position: relative !important;
+  background: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  overflow: visible !important;
+}
+
+:host ::ng-deep .card-topbar .lang-select::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .card-topbar .lang-select .p-select-label,
+:host ::ng-deep .card-topbar .lang-select .p-select-dropdown {
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+:host ::ng-deep .card-topbar .lang-select.p-focus::after {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.15) !important;
+}

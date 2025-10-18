@@ -1,4 +1,3 @@
-// navbar.component.scss - Unified Split Button Styles
 .navbar-container {
   width: 100%;
   background: rgba(255, 255, 255, 0.98);
@@ -70,69 +69,36 @@
   }
 }
 
-/* ========== Unified Split Button Styles for Desktop ========== */
+/* ========== Unified Button Styles for Desktop ========== */
 ::ng-deep .nav-desktop {
-  .p-splitbutton {
-    .p-splitbutton-button {
-      border-radius: 10px 0 0 10px !important;
-      padding: 0.625rem 1rem !important;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      border-right: none !important;
+  .unified-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem !important;
+    border-radius: 10px !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: white !important;
+    border: 1.5px solid #e2e8f0 !important;
+    color: var(--primary-color) !important;
+
+    &:hover {
+      background: rgba(45, 76, 47, 0.05) !important;
+      border-color: var(--primary-color) !important;
+      transform: translateY(-1px);
     }
 
-    .p-splitbutton-dropdown {
-      border-radius: 0 10px 10px 0 !important;
-      transition: all 0.3s ease;
-      padding: 0.625rem 0.75rem !important;
+    .dropdown-icon {
+      font-size: 0.75rem;
+      transition: transform 0.3s ease;
+      order: 999; /* Places chevron last */
     }
-  }
 
-  // Settings button - white with border
-  .settings-split-btn {
-    .p-splitbutton-button,
-    .p-splitbutton-dropdown {
-      background: white !important;
-      border: 1.5px solid #e2e8f0 !important;
-      color: var(--primary-color) !important;
-
-      &:hover {
-        background: rgba(45, 76, 47, 0.05) !important;
-        border-color: var(--primary-color) !important;
-        transform: translateY(-1px);
-      }
-    }
-  }
-
-  // Profile button - white with border
-  .profile-split-btn {
-    .p-splitbutton-button,
-    .p-splitbutton-dropdown {
-      background: white !important;
-      border: 1.5px solid #e2e8f0 !important;
-      color: var(--primary-color) !important;
-
-      &:hover {
-        background: rgba(45, 76, 47, 0.05) !important;
-        border-color: var(--primary-color) !important;
-        transform: translateY(-1px);
-      }
-    }
-  }
-
-  // Language button - primary colored
-  .lang-split-btn {
-    .p-splitbutton-button,
-    .p-splitbutton-dropdown {
-      background: white !important;
-      border: 1.5px solid #e2e8f0 !important;
-      color: var(--primary-color) !important;
-
-      &:hover {
-        background: rgba(45, 76, 47, 0.05) !important;
-        border-color: var(--primary-color) !important;
-        transform: translateY(-1px);
-      }
+    &:hover .dropdown-icon {
+      transform: translateY(2px);
     }
   }
 
@@ -169,28 +135,33 @@
   }
 }
 
-/* ========== Split Button Dropdown Panel Styling ========== */
-::ng-deep .p-splitbutton-overlay {
+/* ========== Popup Menu Panel Styling ========== */
+::ng-deep .p-menu.p-menu-overlay {
   border-radius: 12px !important;
   border: none !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
   overflow: hidden;
   margin-top: 0.5rem;
+  min-width: 200px !important;
 
   .p-menu-list {
     padding: 0.5rem;
 
     .p-menuitem {
+      width: 100%;
+
       .p-menuitem-content {
         border-radius: 8px !important;
         margin-bottom: 0.25rem;
         transition: all 0.2s ease;
+        width: 100%;
 
         .p-menuitem-link {
           padding: 0.75rem 1rem !important;
           display: flex;
           align-items: center;
           gap: 0.75rem;
+          width: 100%;
 
           &:hover {
             background: rgba(45, 76, 47, 0.08) !important;
@@ -200,11 +171,13 @@
           .p-menuitem-icon {
             color: var(--primary-color);
             font-size: 1rem;
+            flex-shrink: 0;
           }
 
           .p-menuitem-text {
             color: var(--text-color);
             font-weight: 500;
+            flex: 1;
           }
         }
 
@@ -232,113 +205,48 @@
     display: none;
   }
 
-  .mobile-section {
-    margin-bottom: 1.5rem;
-    background: white;
-    padding: 1.25rem;
-    border-radius: 14px;
-    box-shadow: 0 2px 8px rgba(45, 76, 47, 0.06);
-    border: 1px solid rgba(45, 76, 47, 0.08);
-    transition: all 0.3s ease;
+  /* Mobile Unified Button Styles */
+  .mobile-unified-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem !important;
+    margin-bottom: 0.75rem;
+    border-radius: 12px !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--primary-color-hover) 100%
+    ) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(45, 76, 47, 0.2);
+    position: relative;
 
     &:hover {
-      box-shadow: 0 4px 16px rgba(45, 76, 47, 0.1);
+      background: linear-gradient(
+        135deg,
+        var(--primary-color-hover) 0%,
+        var(--primary-color) 100%
+      ) !important;
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(45, 76, 47, 0.3);
     }
 
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      margin-bottom: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid rgba(45, 76, 47, 0.1);
-
-      i {
-        font-size: 1.1rem;
-        background: linear-gradient(
-          135deg,
-          var(--primary-color),
-          var(--primary-color-hover)
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-    }
-  }
-
-  /* Mobile Split Button Styles */
-  ::ng-deep .mobile-split-btn {
-    width: 100% !important;
-    box-shadow: 0 2px 8px rgba(45, 76, 47, 0.08);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: 0 4px 16px rgba(45, 76, 47, 0.15);
-      transform: translateY(-1px);
+    .dropdown-icon {
+      font-size: 0.875rem;
+      transition: transform 0.3s ease;
+      position: absolute;
+      right: 1.25rem;
     }
 
-    .p-splitbutton-button {
-      flex: 1;
-      background: linear-gradient(
-        135deg,
-        var(--primary-color) 0%,
-        var(--primary-color-hover) 100%
-      ) !important;
-      border: none !important;
-      color: white !important;
-      padding: 1rem 1.25rem !important;
-      font-weight: 600;
-      border-radius: 12px 0 0 12px !important;
-      transition: all 0.3s ease;
-      letter-spacing: 0.3px;
-
-      &:hover {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color-hover) 0%,
-          var(--primary-color) 100%
-        ) !important;
-      }
-
-      .p-button-icon {
-        font-size: 1.1rem;
-        margin-right: 0.5rem;
-      }
-    }
-
-    .p-splitbutton-dropdown {
-      background: linear-gradient(
-        135deg,
-        var(--primary-color) 0%,
-        var(--primary-color-hover) 100%
-      ) !important;
-      border: none !important;
-      color: white !important;
-      padding: 1rem 0.875rem !important;
-      border-radius: 0 12px 12px 0 !important;
-      transition: all 0.3s ease;
-      border-left: 1px solid rgba(255, 255, 255, 0.2) !important;
-
-      &:hover {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color-hover) 0%,
-          var(--primary-color) 100%
-        ) !important;
-      }
-
-      .p-button-icon {
-        font-size: 1rem;
-      }
+    &:hover .dropdown-icon {
+      transform: translateY(2px);
     }
   }
 
@@ -424,19 +332,6 @@
   }
 }
 
-/* Divider Styling */
-::ng-deep .p-divider {
-  margin: 1.25rem 0 !important;
-  border-color: rgba(45, 76, 47, 0.1) !important;
-
-  &.p-divider-horizontal {
-    &::before {
-      border-top-width: 1px;
-      border-top-style: solid;
-    }
-  }
-}
-
 /* Animations */
 @keyframes slideDown {
   from {
@@ -460,21 +355,9 @@
   .nav-mobile-dropdown {
     padding: 1.25rem;
 
-    .mobile-section {
-      margin-bottom: 1rem;
-
-      .section-label {
-        font-size: 0.75rem;
-      }
-    }
-
-    ::ng-deep .mobile-split-btn {
-      .p-splitbutton-button,
-      .p-splitbutton-dropdown {
-        padding: 0.75rem 0.875rem !important;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-      }
+    .mobile-unified-btn {
+      padding: 0.875rem 1rem !important;
+      font-size: 0.9rem;
     }
   }
 }
@@ -496,7 +379,9 @@
 
 /* ===== NAVBAR MENUS: deny dark, always render as light ===== */
 @media (prefers-color-scheme: dark) {
-  :host { color-scheme: light !important; }
+  :host {
+    color-scheme: light !important;
+  }
 
   /* Menubar bar itself */
   :host ::ng-deep .p-menubar,
@@ -505,16 +390,15 @@
   :host ::ng-deep .p-menubar-start {
     color-scheme: light !important;
     background: #ffffff !important;
-    color: #1f2937 !important; /* slate-800-ish */
+    color: #1f2937 !important;
     border-color: #e5e7eb !important;
   }
 
-  /* SplitButton overlay panel + menu items */
-  :host ::ng-deep .p-splitbutton-overlay,
-  :host ::ng-deep .p-splitbutton-overlay .p-menu,
-  :host ::ng-deep .p-splitbutton-overlay .p-menu-list,
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem,
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-content {
+  /* Popup menu panel + menu items */
+  :host ::ng-deep .p-menu.p-menu-overlay,
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menu-list,
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem,
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-content {
     color-scheme: light !important;
     background: #ffffff !important;
     color: #1f2937 !important;
@@ -522,35 +406,31 @@
   }
 
   /* Actual clickable link + its text/icon */
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-link,
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-text,
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-icon {
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-link,
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-text,
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-icon {
     color: #1f2937 !important;
     fill: #1f2937 !important;
   }
 
   /* Hover/active states stay readable */
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem-content:hover {
+  :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-content:hover {
     background: #f2f4f7 !important;
     color: #1f2937 !important;
   }
-  :host ::ng-deep .p-splitbutton-overlay .p-menuitem.p-highlight .p-menuitem-content {
-    background: #eaf3ec !important;  /* soft green */
+  :host
+    ::ng-deep
+    .p-menu.p-menu-overlay
+    .p-menuitem.p-highlight
+    .p-menuitem-content {
+    background: #eaf3ec !important;
     color: #1f3a20 !important;
-  }
-
-  /* The tiny triangle caret / trigger icons */
-  :host ::ng-deep .p-splitbutton .p-splitbutton-dropdown .p-button-icon,
-  :host ::ng-deep .p-splitbutton .p-splitbutton-button .p-button-icon {
-    color: #1f2937 !important; /* for any icon that gets inverted by UA */
-    fill: #1f2937 !important;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  .p-splitbutton-overlay .p-menuitem-text { 
-    color:#1f2937 !important; 
-    -webkit-text-fill-color:#1f2937 !important;
+  .p-menu.p-menu-overlay .p-menuitem-text {
+    color: #1f2937 !important;
+    -webkit-text-fill-color: #1f2937 !important;
   }
 }
-

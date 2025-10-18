@@ -65,6 +65,7 @@ export class NavbarComponent implements OnDestroy {
         icon: 'pi pi-globe',
         command: () => this.switchLang('bg'),
       },
+       { separator: true },
       {
         label: this.translate.instant(CONSTANTS.COMMON_LANG_EN),
         icon: 'pi pi-globe',
@@ -83,6 +84,15 @@ export class NavbarComponent implements OnDestroy {
         command: () =>
           this.goToSettings(CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS),
       },
+      { separator: true },
+      {
+        label: this.translate.instant(CONSTANTS.COMMON_CONTACT_US), // reuse your existing key
+        icon: 'pi pi-envelope',
+        command: () => {
+          this.router.navigate(['/contact']);
+          this.mobileMenuVisible = false;
+        },
+      },
     ];
 
     // Update profile items
@@ -95,6 +105,7 @@ export class NavbarComponent implements OnDestroy {
           this.mobileMenuVisible = false;
         },
       },
+      { separator: true },
       {
         label: this.translate.instant(CONSTANTS.AUTH_SUBSCRIPTION_SETTINGS),
         icon: 'pi pi-credit-card',
@@ -103,6 +114,7 @@ export class NavbarComponent implements OnDestroy {
           this.mobileMenuVisible = false;
         },
       },
+      { separator: true },
       {
         label: this.translate.instant(CONSTANTS.AUTH_PRIVACY_SETTINGS),
         icon: 'pi pi-lock',

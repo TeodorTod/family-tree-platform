@@ -20,32 +20,56 @@
     <ng-template pTemplate="end">
       @if (isLoggedIn()) {
       <div class="nav-desktop">
-        <!-- Settings split button -->
-        <p-splitButton
-          [label]="currentSettingsLabel"
-          icon="pi pi-cog"
+        <!-- Settings menu button -->
+        <p-menu
+          #settingsMenu
           [model]="settingsItems"
-          styleClass="settings-split-btn"
-          severity="secondary"
-        ></p-splitButton>
+          [popup]="true"
+          appendTo="body"
+        ></p-menu>
+        <button
+          pButton
+          class="unified-btn settings-btn"
+          (click)="settingsMenu.toggle($event)"
+        >
+          <i class="pi pi-chevron-down dropdown-icon"></i>
+          <i class="pi pi-cog"></i>
+          <span>{{ currentSettingsLabel }}</span>
+        </button>
 
-        <!-- Profile split button -->
-        <p-splitButton
-          [label]="CONSTANTS.AUTH_PROFILE | translate"
-          icon="pi pi-user"
+        <!-- Profile menu button -->
+        <p-menu
+          #profileMenu
           [model]="profileItems"
-          styleClass="profile-split-btn"
-          severity="secondary"
-        ></p-splitButton>
+          [popup]="true"
+          appendTo="body"
+        ></p-menu>
+        <button
+          pButton
+          class="unified-btn profile-btn"
+          (click)="profileMenu.toggle($event)"
+        >
+          <i class="pi pi-chevron-down dropdown-icon"></i>
+          <i class="pi pi-user"></i>
+          <span>{{ CONSTANTS.AUTH_PROFILE | translate }}</span>
+        </button>
 
-        <!-- Language split button -->
-        <p-splitButton
-          [label]="currentLangLabel"
-          icon="pi pi-globe"
+        <!-- Language menu button -->
+        <p-menu
+          #langMenu
           [model]="langItems"
-          styleClass="lang-split-btn"
-          severity="primary"
-        ></p-splitButton>
+          [popup]="true"
+          appendTo="body"
+        ></p-menu>
+        <button
+          pButton
+          class="unified-btn lang-btn"
+          (click)="langMenu.toggle($event)"
+        >
+          <i class="pi pi-chevron-down dropdown-icon"></i>
+          <i class="pi pi-globe"></i>
+          <span>{{ currentLangLabel }}</span>
+        </button>
 
         <button
           pButton
@@ -57,14 +81,22 @@
       </div>
       } @else {
       <div class="nav-desktop">
-        <!-- Language split button -->
-        <p-splitButton
+        <!-- Language menu button -->
+        <p-menu
+          #langMenuLoggedOut
+          [model]="langItems"
+          [popup]="true"
+          appendTo="body"
+        ></p-menu>
+        <button
+          pButton
           [label]="currentLangLabel"
           icon="pi pi-globe"
-          [model]="langItems"
-          styleClass="lang-split-btn"
-          severity="primary"
-        ></p-splitButton>
+          class="unified-btn lang-btn"
+          (click)="langMenuLoggedOut.toggle($event)"
+        >
+          <i class="pi pi-chevron-down dropdown-icon"></i>
+        </button>
 
         <button
           pButton
@@ -101,32 +133,56 @@
   @if (mobileMenuVisible) {
   <div class="nav-mobile-dropdown">
     @if (isLoggedIn()) {
-    <!-- Mobile Language Split Button -->
-    <p-splitButton
+    <!-- Mobile Language Menu Button -->
+    <p-menu
+      #langMenuMobile
+      [model]="langItems"
+      [popup]="true"
+      appendTo="body"
+    ></p-menu>
+    <button
+      pButton
       [label]="currentLangLabel"
       icon="pi pi-globe"
-      [model]="langItems"
-      styleClass="mobile-split-btn"
-      [style]="{ width: '100%' }"
-    ></p-splitButton>
+      class="mobile-unified-btn"
+      (click)="langMenuMobile.toggle($event)"
+    >
+      <i class="pi pi-chevron-down dropdown-icon"></i>
+    </button>
 
-    <!-- Mobile Settings Split Button -->
-    <p-splitButton
+    <!-- Mobile Settings Menu Button -->
+    <p-menu
+      #settingsMenuMobile
+      [model]="settingsItems"
+      [popup]="true"
+      appendTo="body"
+    ></p-menu>
+    <button
+      pButton
       [label]="currentSettingsLabel"
       icon="pi pi-cog"
-      [model]="settingsItems"
-      styleClass="mobile-split-btn"
-      [style]="{ width: '100%' }"
-    ></p-splitButton>
+      class="mobile-unified-btn"
+      (click)="settingsMenuMobile.toggle($event)"
+    >
+      <i class="pi pi-chevron-down dropdown-icon"></i>
+    </button>
 
-    <!-- Mobile Profile Split Button -->
-    <p-splitButton
+    <!-- Mobile Profile Menu Button -->
+    <p-menu
+      #profileMenuMobile
+      [model]="profileItems"
+      [popup]="true"
+      appendTo="body"
+    ></p-menu>
+    <button
+      pButton
       [label]="CONSTANTS.AUTH_PROFILE | translate"
       icon="pi pi-user"
-      [model]="profileItems"
-      styleClass="mobile-split-btn"
-      [style]="{ width: '100%' }"
-    ></p-splitButton>
+      class="mobile-unified-btn"
+      (click)="profileMenuMobile.toggle($event)"
+    >
+      <i class="pi pi-chevron-down dropdown-icon"></i>
+    </button>
 
     <button
       pButton
@@ -136,14 +192,22 @@
       (click)="logout()"
     ></button>
     } @else {
-    <!-- Mobile Language Split Button -->
-    <p-splitButton
+    <!-- Mobile Language Menu Button -->
+    <p-menu
+      #langMenuMobileLoggedOut
+      [model]="langItems"
+      [popup]="true"
+      appendTo="body"
+    ></p-menu>
+    <button
+      pButton
       [label]="currentLangLabel"
       icon="pi pi-globe"
-      [model]="langItems"
-      styleClass="mobile-split-btn"
-      [style]="{ width: '100%' }"
-    ></p-splitButton>
+      class="mobile-unified-btn"
+      (click)="langMenuMobileLoggedOut.toggle($event)"
+    >
+      <i class="pi pi-chevron-down dropdown-icon"></i>
+    </button>
 
     <button
       pButton

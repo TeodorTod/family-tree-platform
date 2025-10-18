@@ -24,31 +24,6 @@ body {
   color: #333333 !important;
 }
 
-/* PrimeNG overlays/portals appended to <body> */
-:where(
-    body > .p-overlay,
-    body > .p-component-overlay,
-    body > .p-dialog,
-    body > .p-dialog-mask,
-    body > .p-dropdown-panel,
-    body > .p-select-overlay,
-    body > .p-multiselect-panel,
-    body > .p-datepicker,
-    body > .p-tooltip,
-    body > .p-sidebar,
-    body > .p-sidebar-mask,
-    body > .p-confirmdialog,
-    body > .p-toast,
-    body > .p-menu,
-    body > .p-tieredmenu,
-    body > .p-splitbutton-overlay
-  ) {
-  color-scheme: light !important;
-  background: #ffffff !important;
-  color: #1f2937 !important;
-  border-color: #e5e7eb !important;
-}
-
 /* Inputs (native + PrimeNG) — avoid iOS autofill “white-on-white” */
 input,
 textarea,
