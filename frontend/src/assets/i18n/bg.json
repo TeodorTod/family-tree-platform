@@ -38,7 +38,6 @@
     "PASSWORD_UPDATED": "Паролата беше успешно променена.",
     "RESET_ERROR": "Линкът е невалиден или е изтекъл. Моля, заявете нов линк."
   },
-
   "INFO": {
     "OWNER": "Твоите данни",
     "MOTHER": "Данни за твоята майка",
@@ -115,17 +114,14 @@
     "YEAR_ONLY": "Само година",
     "FREE_DATE": "Свободен текст"
   },
-
   "ADD": {
     "PHOTO": "Добави снимка"
   },
-
   "GENDER": {
     "MALE": "Мъж",
     "FEMALE": "Жена",
     "OTHER": "Друго"
   },
-
   "RELATION": {
     "OWNER": "Ти самият",
     "MOTHER": "Майка",
@@ -135,30 +131,25 @@
     "BROTHER": "Брат",
     "SISTER": "Сестра",
     "PARTNER": "Партньор/Съпруг",
-
     "MATERNAL_GRANDMOTHER": "Баба (по майчина линия)",
     "MATERNAL_GRANDFATHER": "Дядо (по майчина линия)",
     "PATERNAL_GRANDMOTHER": "Баба (по бащина линия)",
     "PATERNAL_GRANDFATHER": "Дядо (по бащина линия)",
-
     "OWNER_SON": "Син",
     "OWNER_DAUGHTER": "Дъщеря",
     "OWNER_BROTHER": "Брат",
     "OWNER_SISTER": "Сестра",
     "OWNER_PARTNER": "Партньор/Съпруг(а)",
-
     "MOTHER_SON": "Син",
     "MOTHER_DAUGHTER": "Дъщеря",
     "MOTHER_BROTHER": "Вуйчо",
     "MOTHER_SISTER": "Леля (по майчина линия)",
     "MOTHER_PARTNER": "Партньор/Съпруг(а)",
-
     "FATHER_SON": "Син",
     "FATHER_DAUGHTER": "Дъщеря",
     "FATHER_BROTHER": "Чичо",
     "FATHER_SISTER": "Леля (по бащина линия)",
     "FATHER_PARTNER": "Партньор/Съпруг(а)",
-
     "MATERNAL_GRANDMOTHER_SISTER": "Леля (сестра на баба по майчина линия)",
     "MATERNAL_GRANDMOTHER_BROTHER": "Вуйчо (брат на баба по майчина линия)",
     "MATERNAL_GRANDFATHER_SISTER": "Леля (сестра на дядо по майчина линия)",
@@ -167,7 +158,6 @@
     "MATERNAL_GRANDMOTHER_MOTHER": "Прабаба (съпруга на дядо по майчина линия)",
     "MATERNAL_GRANDFATHER_MOTHER": "Прабаба (съпруга на дядо по майчина линия)",
     "MATERNAL_GRANDFATHER_FATHER": "Прадядо (съпруг на баба по майчина линия)",
-
     "PATERNAL_GRANDMOTHER_SISTER": "Леля (сестра на баба по бащина линия)",
     "PATERNAL_GRANDMOTHER_BROTHER": "Чичо (брат на баба по бащина линия)",
     "PATERNAL_GRANDFATHER_SISTER": "Леля (сестра на дядо по бащина линия)",
@@ -176,7 +166,6 @@
     "PATERNAL_GRANDMOTHER_MOTHER": "Прабаба (съпруга на дядо по бащина линия)",
     "PATERNAL_GRANDFATHER_MOTHER": "Прабаба (съпруга на дядо по бащина линия)",
     "PATERNAL_GRANDFATHER_FATHER": "Прадядо (съпруг на баба по бащина линия)",
-
     "ADD_RELATIVE_HEADER": "Добави роднина",
     "CHOOSE_RELATION": "Избери връзка",
     "MATERNAL_GENERIC": "Роднина (по майчина линия)",
@@ -184,7 +173,6 @@
     "UNKNOWN": "Роля",
     "TYPE": "Роднинска връзка"
   },
-
   "TAB": {
     "GENERAL_INFO": "Общи данни",
     "STORIES": "Истории",
@@ -195,7 +183,6 @@
     "FAVORITES": "Любими",
     "PERSONAL_INFO": "Лична информация"
   },
-
   "PARTNER_STATUS": {
     "MARRIED": "Женен/Омъжена",
     "DIVORCED": "Разведен/Разведена",
@@ -208,7 +195,6 @@
     "UNKNOWN": "Неизвестно",
     "OTHER": "Друго"
   },
-
   "BIO": {
     "MAIN_BIO": "Основна биография",
     "NOTES": "Бележки",
@@ -222,7 +208,6 @@
     "COMMON_NOTE_TITLE": "Бележка",
     "NO_NOTES": "Все още няма бележки."
   },
-
   "MEDIA": {
     "TAB_IMAGES": "Снимки",
     "TAB_VIDEOS": "Видеа",
@@ -245,7 +230,6 @@
     "RESET_DELETES": "Възстанови изтривания",
     "REMOVE_FROM_GALLERY": "Премахни от галерията"
   },
-
   "CAREER": {
     "COMPLETED": "Завършено",
     "NOT_COMPLETED": "Не е завършено",
@@ -273,7 +257,6 @@
     "WORK_PROFESSION": "Професия",
     "COL_PROFESSION": "Професия"
   },
-
   "STORIES": {
     "TITLE": "Заглавие",
     "INCLUDED_MEMBERS": "Включени роднини",
@@ -285,15 +268,12 @@
     "DATE": "Дата",
     "CREATED": "Създадена"
   },
-
   "ACH": {
     "ADD": "Добави постижение",
     "UPDATE": "Актуализирай постижението",
     "TITLE": "Заглавие на постижението",
-
     "CATEGORY_LABEL": "Категория",
     "LEVEL_LABEL": "Ниво",
-
     "ORGANIZATION": "Организация / Издател",
     "LOCATION": "Място",
     "DATE": "Дата",
@@ -301,7 +281,6 @@
     "DELETE_TITLE": "Изтриване на постижение",
     "DELETE_MSG": "Това действие не може да бъде отменено.",
     "NO_ACH": "Все още няма добавени постижения.",
-
     "CATEGORY": {
       "ACADEMIC": "Академично",
       "CERTIFICATION": "Сертификация",
@@ -317,7 +296,6 @@
       "PERSONAL_MILESTONE": "Личен етап",
       "OTHER": "Друго"
     },
-
     "LEVEL": {
       "LOCAL": "Местно",
       "REGIONAL": "Регионално",
@@ -326,7 +304,6 @@
       "OTHER": "Друго"
     }
   },
-
   "FAV": {
     "ADD": "Добави любимо",
     "UPDATE": "Запази промените",
@@ -335,15 +312,12 @@
     "CATEGORY_LABEL": "Категория",
     "LIST": "Любими неща",
     "EMPTY": "Няма добавени любими.",
-
     "COL_CATEGORY": "Категория",
     "COL_TITLE": "Любимо",
     "COL_NOTES": "Бележки",
     "COL_ACTIONS": "Действия",
-
     "DELETE_TITLE": "Изтриване на любимо",
     "DELETE_MSG": "Това действие не може да бъде отменено.",
-
     "CATEGORY": {
       "BOOK": "Книга",
       "MOVIE": "Филм",
@@ -416,7 +390,10 @@
     "CREATED_AT": "Създадено на",
     "SAVE": "Запази",
     "APPROVE": "Одобри",
-    "REJECT": "Откажи"
+    "REJECT": "Откажи",
+    "OWNER": "Собственик",
+    "OPTIONAL": "По избор",
+    "SEND": "Изпрати"
   },
   "FAQ": {
     "TITLE": "Често задавани въпроси",

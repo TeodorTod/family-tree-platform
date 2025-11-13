@@ -136,3 +136,7 @@
   }
 }
 
+:host ::ng-deep .p-paginator-rpp-dropdown {
+  width: 90px !important;
+  min-width: 90px !important;
+}

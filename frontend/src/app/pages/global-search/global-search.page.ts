@@ -29,6 +29,9 @@ export class GlobalSearchPage implements OnInit {
   showAddDialog = signal(false);
   baseOwner: any = null;
   clonedMemberId: string | null = null;
+  showMsgDialog = signal(false);
+  selectedTarget: SearchResultDto | null = null;
+  msgDraft = signal('');
 
   ngOnInit(): void {
     const initialQ = this.route.snapshot.queryParamMap.get('q') ?? '';
@@ -52,10 +55,28 @@ export class GlobalSearchPage implements OnInit {
     });
   }
 
-  requestAccess(item: SearchResultDto) {
-    this.api.createShareRequest({ targetMemberId: item.id }).subscribe(() => {
-      this.search();
-    });
+  openRequestDialog(item: SearchResultDto) {
+    this.selectedTarget = item;
+    this.msgDraft.set('');
+    this.showMsgDialog.set(true);
+  }
+
+  cancelRequestDialog() {
+    this.showMsgDialog.set(false);
+    this.selectedTarget = null;
+    this.msgDraft.set('');
+  }
+
+  confirmRequestDialog() {
+    if (!this.selectedTarget) return;
+    const raw = this.msgDraft();
+    const message = raw ? String(raw).slice(0, 255) : undefined;
+    this.api
+      .createShareRequest({ targetMemberId: this.selectedTarget.id, message })
+      .subscribe(() => {
+        this.cancelRequestDialog();
+        this.search();
+      });
   }
 
   importDirect(item: SearchResultDto) {

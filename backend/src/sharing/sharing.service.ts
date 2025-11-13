@@ -133,7 +133,16 @@ export class SharingService {
         targetMemberId: true,
         message: true,
         createdAt: true,
-        requester: { select: { displayName: true } },
+        requester: {
+          select: {
+            displayName: true,
+            familyMembers: {
+              where: { role: 'owner' },
+              select: { firstName: true, lastName: true },
+              take: 1,
+            },
+          },
+        },
         target: { select: { firstName: true, lastName: true } },
       },
     });
@@ -146,9 +155,19 @@ export class SharingService {
       select: {
         id: true,
         status: true,
+        message: true,
         targetMemberId: true,
         createdAt: true,
-        target: { select: { firstName: true, lastName: true, userId: true, birthYear: true, deathYear: true } },
+        target: {
+          select: {
+            firstName: true,
+            lastName: true,
+            userId: true,
+            birthYear: true,
+            deathYear: true,
+            user: { select: { displayName: true } },
+          },
+        },
       },
     });
   }

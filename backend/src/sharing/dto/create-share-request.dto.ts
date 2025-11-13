@@ -6,7 +6,6 @@ export class CreateShareRequestDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   message?: string;
 }
-

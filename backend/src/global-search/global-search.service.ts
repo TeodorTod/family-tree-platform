@@ -48,7 +48,7 @@ export class GlobalSearchService {
     const ownerIds = Array.from(new Set(candidates.map((c) => c.userId)));
     const memberIds = candidates.map((c) => c.id);
 
-    const [settings, consents] = await Promise.all([
+    const [settings, consents, owners] = await Promise.all([
       this.prisma.userSettings.findMany({
         where: { userId: { in: ownerIds } },
         select: {
@@ -66,6 +66,10 @@ export class GlobalSearchService {
           allowDetails: true,
         },
       }),
+      this.prisma.familyMember.findMany({
+        where: { userId: { in: ownerIds }, role: 'owner' },
+        select: { userId: true, firstName: true, lastName: true },
+      }),
     ]);
 
     const settingsByOwner = new Map(
@@ -73,6 +77,13 @@ export class GlobalSearchService {
     );
     const consentByPair = new Map(
       consents.map((c) => [`${c.ownerUserId}:${c.memberId}`, c])
+    );
+
+    const ownerNameByUser = new Map(
+      owners.map((o) => [
+        o.userId,
+        `${o.firstName ?? ''} ${o.lastName ?? ''}`.trim() || null,
+      ])
     );
 
     const results: SearchResultDto[] = [];
@@ -96,7 +107,7 @@ export class GlobalSearchService {
         deathYear: m.deathYear ?? null,
         photoUrl: m.photoUrl ?? null,
         requiresShareApproval: !allowDetails,
-        ownerDisplayName: m.user.displayName ?? null,
+        ownerDisplayName: m.user.displayName ?? ownerNameByUser.get(m.userId) ?? null,
       };
       results.push(out);
       if (results.length >= size) break;
@@ -105,4 +116,3 @@ export class GlobalSearchService {
     return results;
   }
 }
-

@@ -103,6 +103,9 @@ export class CONSTANTS {
   static readonly COMMON_SAVE = 'COMMON.SAVE';
   static readonly COMMON_APPROVE = 'COMMON.APPROVE';
   static readonly COMMON_REJECT = 'COMMON.REJECT';
+  static readonly COMMON_OWNER = 'COMMON.OWNER';
+  static readonly COMMON_OPTIONAL = 'COMMON.OPTIONAL';
+  static readonly COMMON_SEND = 'COMMON.SEND';
 
   static readonly SEARCH_PLACEHOLDER = 'SEARCH.PLACEHOLDER';
   static readonly SEARCH_PUBLIC = 'SEARCH.PUBLIC';

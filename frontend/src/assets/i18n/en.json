@@ -416,7 +416,10 @@
     "CREATED_AT": "Created At",
     "SAVE": "Save",
     "APPROVE": "Approve",
-    "REJECT": "Reject"
+    "REJECT": "Reject",
+    "OWNER": "Owner",
+    "OPTIONAL": "Optional",
+    "SEND": "Send"
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",

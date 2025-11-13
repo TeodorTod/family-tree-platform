@@ -25,7 +25,7 @@
           <p-tag severity="warning" [value]="(CONSTANTS.SEARCH_REQUIRES_REQUEST | translate)"></p-tag>
         </td>
         <td>
-          <button pButton size="small" label="{{ CONSTANTS.SEARCH_REQUEST_ACCESS | translate }}" (click)="requestAccess(item)"></button>
+          <button pButton size="small" label="{{ CONSTANTS.SEARCH_REQUEST_ACCESS | translate }}" (click)="openRequestDialog(item)"></button>
         </td>
       </tr>
     </ng-template>
@@ -39,5 +39,28 @@
     (close)="showAddDialog.set(false)"
     (saved)="handleDialogSaved($event)"
   ></app-add-relative-dialog>
+  }
+
+  @if (showMsgDialog()) {
+  <p-dialog
+    [visible]="showMsgDialog()"
+    [modal]="true"
+    [style]="{ width: '420px' }"
+    [closable]="true"
+    appendTo="body"
+    (onHide)="cancelRequestDialog()"
+    [header]="CONSTANTS.SEARCH_REQUEST_ACCESS | translate"
+  >
+    <div class="d-flex flex-column gap-2">
+      <div>
+        <label class="mb-1 d-block">{{ CONSTANTS.COMMON_MESSAGE | translate }} ({{ CONSTANTS.COMMON_OPTIONAL | translate }})</label>
+        <textarea pTextarea rows="4" [maxlength]="255" [ngModel]="msgDraft()" (ngModelChange)="msgDraft.set($event)" class="w-full"></textarea>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button pButton type="button" class="p-button-secondary" (click)="cancelRequestDialog()" label="{{ CONSTANTS.INFO_CANCEL | translate }}"></button>
+        <button pButton type="button" (click)="confirmRequestDialog()" label="{{ CONSTANTS.COMMON_SEND | translate }}"></button>
+      </div>
+    </div>
+  </p-dialog>
   }
 </div>
