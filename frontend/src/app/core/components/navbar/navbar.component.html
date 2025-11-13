@@ -20,6 +20,16 @@
     <ng-template pTemplate="end">
       @if (isLoggedIn()) {
       <div class="nav-desktop">
+        <div class="search-infield">
+          <i class="pi pi-search"></i>
+          <input 
+            pInputText 
+            type="text" 
+            [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate" 
+            [(ngModel)]="searchText" 
+            (keyup.enter)="submitSearch()" 
+          />
+        </div>
         <!-- Settings menu button -->
         <p-menu
           #settingsMenu
@@ -133,6 +143,17 @@
   @if (mobileMenuVisible) {
   <div class="nav-mobile-dropdown">
     @if (isLoggedIn()) {
+          <!-- Mobile Search Box -->
+    <div class="search-infield mobile-search">
+      <i class="pi pi-search"></i>
+      <input 
+        pInputText 
+        type="text" 
+        [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate" 
+        [(ngModel)]="searchText" 
+        (keyup.enter)="submitSearch()" 
+      />
+    </div>
     <!-- Mobile Language Menu Button -->
     <p-menu
       #langMenuMobile

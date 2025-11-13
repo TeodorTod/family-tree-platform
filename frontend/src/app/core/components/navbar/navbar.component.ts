@@ -40,6 +40,7 @@ export class NavbarComponent implements OnDestroy {
 
   // Profile items for split button
   profileItems: MenuItem[] = [];
+  searchText = '';
 
   constructor() {
     this.updateLabels();
@@ -83,6 +84,23 @@ export class NavbarComponent implements OnDestroy {
         icon: 'pi pi-credit-card',
         command: () =>
           this.goToSettings(CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS),
+      },
+      { separator: true },
+      {
+        label: this.translate.instant(CONSTANTS.SHARING_SETTINGS_TITLE),
+        icon: 'pi pi-shield',
+        command: () => {
+          this.router.navigate([CONSTANTS.ROUTES.SETTINGS.SHARING]);
+          this.mobileMenuVisible = false;
+        },
+      },
+      {
+        label: this.translate.instant(CONSTANTS.SHARING_REQUESTS_MENU),
+        icon: 'pi pi-inbox',
+        command: () => {
+          this.router.navigate([CONSTANTS.ROUTES.SHARING.REQUESTS]);
+          this.mobileMenuVisible = false;
+        },
       },
       { separator: true },
       {
@@ -157,6 +175,12 @@ export class NavbarComponent implements OnDestroy {
 
   navigate(path: string): void {
     this.router.navigate([path]);
+    this.mobileMenuVisible = false;
+  }
+
+  submitSearch() {
+    const q = (this.searchText || '').trim();
+    this.router.navigate(['/search'], { queryParams: { q: q || null } });
     this.mobileMenuVisible = false;
   }
 

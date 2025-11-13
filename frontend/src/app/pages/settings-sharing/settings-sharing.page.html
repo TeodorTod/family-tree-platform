@@ -1,0 +1,37 @@
+<div class="settings-sharing">
+  <h2>{{ CONSTANTS.SHARING_SETTINGS_TITLE | translate }}</h2>
+
+  <div class="section">
+    <h3>{{ CONSTANTS.SHARING_DEFAULTS | translate }}</h3>
+    <div class="field">
+      <p-inputSwitch [ngModel]="settings().allowDeceasedDiscoveryDefault" (ngModelChange)="onDiscoveryDefaultChange($event)"></p-inputSwitch>
+      <label>{{ CONSTANTS.SHARING_ALLOW_DISCOVERY_DEFAULT | translate }}</label>
+    </div>
+    <div class="field">
+      <p-inputSwitch [ngModel]="settings().allowDeceasedDetailsDefault" (ngModelChange)="onDetailsDefaultChange($event)"></p-inputSwitch>
+      <label>{{ CONSTANTS.SHARING_ALLOW_DETAILS_DEFAULT | translate }}</label>
+    </div>
+    <button pButton label="{{ CONSTANTS.COMMON_SAVE | translate }}" (click)="saveSettings()"></button>
+  </div>
+
+  <div class="section">
+    <h3>{{ CONSTANTS.SHARING_PER_MEMBER | translate }}</h3>
+    <p-table [value]="rows()">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ CONSTANTS.COMMON_NAME | translate }}</th>
+          <th>{{ CONSTANTS.SHARING_ALLOW_DISCOVERY | translate }}</th>
+          <th>{{ CONSTANTS.SHARING_ALLOW_DETAILS | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.firstName }} {{ row.lastName }}</td>
+          <td><p-checkbox [binary]="true" [(ngModel)]="row.allowDiscovery"></p-checkbox></td>
+          <td><p-checkbox [binary]="true" [(ngModel)]="row.allowDetails"></p-checkbox></td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <button pButton label="{{ CONSTANTS.COMMON_SAVE | translate }}" (click)="saveConsents()"></button>
+  </div>
+</div>

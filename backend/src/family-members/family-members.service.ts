@@ -33,6 +33,8 @@ const ALLOWED_FIELDS = new Set([
   'partnerStatus',
   'createdAt',
   'updatedAt',
+  'copiedFromMemberId',
+  'copiedSnapshotAt',
 ]);
 
 const DEFAULT_FIELDS = [
@@ -134,6 +136,16 @@ export class FamilyMembersService {
         role: role.toLowerCase(),
       },
     });
+  }
+
+  async assignMemberRole(userId: string, memberId: string, newRole: string) {
+    const target = await this.prisma.familyMember.findFirst({ where: { id: memberId, userId } });
+    if (!target) throw new NotFoundException('Member not found');
+    const role = newRole.toLowerCase();
+    if (role === 'owner') throw new BadRequestException('Cannot assign owner');
+    const exists = await this.prisma.familyMember.findFirst({ where: { userId, role } });
+    if (exists && exists.id !== memberId) throw new BadRequestException('Role already exists');
+    return this.prisma.familyMember.update({ where: { id: memberId }, data: { role } });
   }
 
   async updateFamilyMemberByRole(

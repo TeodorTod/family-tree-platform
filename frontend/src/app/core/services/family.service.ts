@@ -394,4 +394,11 @@ export class FamilyService {
       })
       .pipe(tap(() => this.memberByRoleCache.clear()));
   }
+
+  assignRole(memberId: string, newRole: string) {
+    return this.http.post(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/assign-role`,
+      { memberId, newRole }
+    );
+  }
 }

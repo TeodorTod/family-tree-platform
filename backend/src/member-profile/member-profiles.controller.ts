@@ -31,6 +31,11 @@ export class MemberProfilesController {
     return this.service.getByRole(req.user.sub, role);
   }
 
+  @Get('by-id/:memberId')
+  getByMemberId(@Param('memberId') memberId: string, @Req() req: any) {
+    return this.service.getByMemberId(req.user.sub, memberId);
+  }
+
   @Post(':memberId/upload')
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async upload(

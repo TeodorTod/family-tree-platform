@@ -69,6 +69,7 @@ export class CONSTANTS {
     AUTH_FORGOT: '/auth/forgot',
     TREE: '/tree',
     MEMBER: '/member',
+    SEARCH: '/search',
     AUTH_GOOGLE_LOGIN: '/auth/google',
     FAMILY_MEMBERS: 'family-members',
     ACCOUNT: {
@@ -78,6 +79,10 @@ export class CONSTANTS {
     },
     SETTINGS: {
       SUBSCRIPTION_PLANS: '/settings/plans',
+      SHARING: '/settings/sharing',
+    },
+    SHARING: {
+      REQUESTS: '/sharing/requests',
     },
     ONBOARDING: {
       OWNER: '/onboarding/owner',
@@ -88,6 +93,40 @@ export class CONSTANTS {
     },
     FAQ: '/faq',
   };
+
+  static readonly COMMON_NAME = 'COMMON.NAME';
+  static readonly COMMON_YEARS = 'COMMON.YEARS';
+  static readonly COMMON_STATUS = 'COMMON.STATUS';
+  static readonly COMMON_ACTIONS = 'COMMON.ACTIONS';
+  static readonly COMMON_MESSAGE = 'COMMON.MESSAGE';
+  static readonly COMMON_CREATED_AT = 'COMMON.CREATED_AT';
+  static readonly COMMON_SAVE = 'COMMON.SAVE';
+  static readonly COMMON_APPROVE = 'COMMON.APPROVE';
+  static readonly COMMON_REJECT = 'COMMON.REJECT';
+
+  static readonly SEARCH_PLACEHOLDER = 'SEARCH.PLACEHOLDER';
+  static readonly SEARCH_PUBLIC = 'SEARCH.PUBLIC';
+  static readonly SEARCH_REQUIRES_REQUEST = 'SEARCH.REQUIRES_REQUEST';
+  static readonly SEARCH_IMPORT_AND_ADD = 'SEARCH.IMPORT_AND_ADD';
+  static readonly SEARCH_REQUEST_ACCESS = 'SEARCH.REQUEST_ACCESS';
+
+  static readonly SHARING_SETTINGS_TITLE = 'SHARING.SETTINGS_TITLE';
+  static readonly SHARING_DEFAULTS = 'SHARING.DEFAULTS';
+  static readonly SHARING_ALLOW_DISCOVERY_DEFAULT =
+    'SHARING.ALLOW_DISCOVERY_DEFAULT';
+  static readonly SHARING_ALLOW_DETAILS_DEFAULT =
+    'SHARING.ALLOW_DETAILS_DEFAULT';
+  static readonly SHARING_PER_MEMBER = 'SHARING.PER_MEMBER';
+  static readonly SHARING_ALLOW_DISCOVERY = 'SHARING.ALLOW_DISCOVERY';
+  static readonly SHARING_ALLOW_DETAILS = 'SHARING.ALLOW_DETAILS';
+  static readonly SHARING_INCOMING = 'SHARING.INCOMING';
+  static readonly SHARING_OUTGOING = 'SHARING.OUTGOING';
+  static readonly SHARING_TARGET = 'SHARING.TARGET';
+  static readonly SHARING_REQUESTER = 'SHARING.REQUESTER';
+  static readonly SHARING_REQUESTS_MENU = 'SHARING.REQUESTS_MENU';
+  static readonly SHARING_USE_IMPORTED = 'SHARING.USE_IMPORTED';
+  static readonly SHARING_SELECT_IMPORTED = 'SHARING.SELECT_IMPORTED';
+  static readonly SHARING_APPROVED = 'SHARING.APPROVED';
 
   static readonly INFO_OWNER = 'INFO.OWNER';
   static readonly INFO_MOTHER = 'INFO.MOTHER';
@@ -459,5 +498,4 @@ export class CONSTANTS {
   static readonly CONTACT_TOPIC_BILLING = 'CONTACT.TOPICS.BILLING';
   static readonly CONTACT_TOPIC_SUGGESTION = 'CONTACT.TOPICS.SUGGESTION';
   static readonly CONTACT_TOPIC_OTHER = 'CONTACT.TOPICS.OTHER';
-  
 }

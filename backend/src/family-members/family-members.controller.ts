@@ -18,6 +18,7 @@ import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { GetFamilyPagedDto } from './dto/get-family-page.dto';
 import { SetPartnerDto } from './dto/set-partner.dto';
 import { GetMyTreeQuery } from './dto/get-my-tree.query';
+import { AssignRoleDto } from './dto/assign-role.dto';
 
 @Controller('family-members')
 @UseGuards(JwtAuthGuard)
@@ -66,6 +67,11 @@ export class FamilyMembersController {
   @Post('clear-partner')
   clearPartner(@Body('memberId') memberId: string, @Req() req: any) {
     return this.familyService.clearPartner(req.user.sub, memberId);
+  }
+
+  @Post('assign-role')
+  assignRole(@Req() req: any, @Body() dto: AssignRoleDto) {
+    return this.familyService.assignMemberRole(req.user.sub, dto.memberId, dto.newRole);
   }
 
   @Get(':role')

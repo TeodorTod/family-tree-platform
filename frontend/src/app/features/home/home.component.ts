@@ -13,6 +13,7 @@ import { FamilyMember } from '../../shared/models/family-member.model';
 import { environment } from '../../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { Observable, switchMap } from 'rxjs';
+import { SharingApiService } from '../../core/services/sharing-api.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
@@ -45,6 +46,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   hoveredNode = signal<{ id: string; x: number; y: number } | null>(null);
   private familyService = inject(FamilyService);
   private route = inject(ActivatedRoute);
+  private sharingApi = inject(SharingApiService);
   router = inject(Router);
   cy?: cytoscape.Core;
 
@@ -120,7 +122,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const isTableNow = this.showTableView();
     // ask for a slim payload if we’re rendering the chart (nodes + light edges)
     const requestOpts = isTableNow
-      ? undefined
+      ? ({ with: ['profile'] as const } as const)
       : {
         fields: [
           'id',
@@ -856,11 +858,103 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   handleAddRelative(event: {
-    member: Partial<FamilyMember>;
+    member?: Partial<FamilyMember>;
     relation: string;
+    clonedMemberId?: string;
+    approvedRequestId?: string;
   }) {
     const base = this.selectedMember();
     if (!base) return;
+
+    const ensureCloned = (cb: (id: string) => void) => {
+      if (event.clonedMemberId) return cb(event.clonedMemberId);
+      if (event.approvedRequestId) {
+        this.sharingApi
+          .cloneApprovedRequest(event.approvedRequestId)
+          .subscribe(({ newMemberId }) => cb(newMemberId));
+        return;
+      }
+      cb('');
+    };
+
+    if (event.clonedMemberId || event.approvedRequestId) {
+      const relationshipType =
+        event.relation === 'partner'
+          ? 'partner'
+          : event.relation === 'brother' || event.relation === 'sister'
+          ? 'sibling'
+          : 'parent';
+
+      ensureCloned((newId) => {
+        if (!newId) return; // safety
+        const prefix = `${base.role}_${event.relation}`;
+        const existing = this.members.filter(
+          (m) => m.role === prefix || m.role.startsWith(`${prefix}_`)
+        );
+        let newRole = prefix;
+        if (existing.length > 0) {
+          const suffixes = existing
+            .map((m) => {
+              if (m.role === prefix) return 1;
+              const match = m.role.match(new RegExp(`${prefix}_(\\d+)$`));
+              return match ? parseInt(match[1], 10) : 0;
+            })
+            .filter((n) => Number.isFinite(n));
+          const max = suffixes.length > 0 ? Math.max(...suffixes) : 1;
+          newRole = `${prefix}_${max + 1}`;
+        }
+
+        const proceed = () =>
+          this.familyService
+            .assignRole(newId, newRole)
+            .subscribe(() => {
+              this.familyService
+                .createRelationship({
+                  fromMemberId: base.id!,
+                  toMemberId: newId,
+                  type: relationshipType,
+                })
+                .subscribe(() => {
+                  if (event.relation === 'partner') {
+                    this.familyService
+                      .setPartner(base.id!, newId, PartnerStatus.UNKNOWN)
+                      .subscribe(() => {
+                        this.showAddDialog.set(false);
+                        this.selectedMember.set(null);
+                        this.familyService.getMyFamily().subscribe((members) => {
+                          this.members = members as any;
+                          this.renderGraph(members as FamilyMember[]);
+                        });
+                      });
+                  } else {
+                    this.showAddDialog.set(false);
+                    this.selectedMember.set(null);
+                    this.familyService.getMyFamily().subscribe((members) => {
+                      this.members = members as any;
+                      this.renderGraph(members as FamilyMember[]);
+                    });
+                  }
+                });
+            });
+
+        if (event.member) {
+          this.familyService
+            .getFamilyMemberById(newId)
+            .subscribe((m: any) => {
+              if (m?.role) {
+                this.familyService
+                  .updateMemberByRole(m.role, event.member!)
+                  .subscribe(() => proceed());
+              } else {
+                proceed();
+              }
+            });
+        } else {
+          proceed();
+        }
+      });
+      return;
+    }
 
     const prefix = `${base.role}_${event.relation}`;
     const existing = this.members.filter(
@@ -884,7 +978,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
 
     const newMember: FamilyMember = {
-      ...event.member,
+      ...(event.member as any),
       role: newRole,
     } as FamilyMember;
 

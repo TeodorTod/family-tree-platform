@@ -69,6 +69,67 @@
   }
 }
 
+/* ========== Search Input with Icon ========== */
+.search-infield {
+  position: relative;
+  display: inline-block;
+  
+  @media (min-width: 768px) {
+    width: 280px;
+  }
+
+  i.pi {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    color: var(--primary-color);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  input.p-inputtext {
+    width: 100%;
+    padding-left: 2.5rem !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 2px rgba(45, 76, 47, 0.1) !important;
+    }
+    
+    &:hover {
+      border-color: #cbd5e0 !important;
+    }
+  }
+}
+
+/* Mobile-specific search styling */
+.mobile-search {
+  width: 100%;
+  margin-bottom: 1rem;
+  
+  input.p-inputtext {
+    padding: 0.875rem 1rem 0.875rem 2.5rem !important;
+    font-size: 1rem;
+    background: white !important;
+    border: 1.5px solid #e2e8f0 !important;
+    
+    &:focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
+    }
+  }
+  
+  i.pi {
+    left: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
 /* ========== Unified Button Styles for Desktop ========== */
 ::ng-deep .nav-desktop {
   .unified-btn {
@@ -94,7 +155,7 @@
     .dropdown-icon {
       font-size: 0.75rem;
       transition: transform 0.3s ease;
-      order: 999; /* Places chevron last */
+      order: 999;
     }
 
     &:hover .dropdown-icon {
@@ -102,7 +163,6 @@
     }
   }
 
-  // Logout button
   .logout-btn {
     background: transparent !important;
     border: none !important;
@@ -118,7 +178,6 @@
     }
   }
 
-  // Regular text buttons
   .p-button-text {
     background: transparent !important;
     border: none !important;
@@ -205,7 +264,6 @@
     display: none;
   }
 
-  /* Mobile Unified Button Styles */
   .mobile-unified-btn {
     width: 100%;
     display: flex;
@@ -250,7 +308,6 @@
     }
   }
 
-  /* Mobile Logout & Auth Buttons */
   .mobile-logout-btn,
   .mobile-auth-btn {
     width: 100%;
@@ -359,6 +416,10 @@
       padding: 0.875rem 1rem !important;
       font-size: 0.9rem;
     }
+    
+    .mobile-search input.p-inputtext {
+      padding: 0.75rem 1rem 0.75rem 2.5rem !important;
+    }
   }
 }
 
@@ -383,7 +444,6 @@
     color-scheme: light !important;
   }
 
-  /* Menubar bar itself */
   :host ::ng-deep .p-menubar,
   :host ::ng-deep .p-menubar-root-list,
   :host ::ng-deep .p-menubar-end,
@@ -394,7 +454,6 @@
     border-color: #e5e7eb !important;
   }
 
-  /* Popup menu panel + menu items */
   :host ::ng-deep .p-menu.p-menu-overlay,
   :host ::ng-deep .p-menu.p-menu-overlay .p-menu-list,
   :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem,
@@ -405,7 +464,6 @@
     border-color: #e5e7eb !important;
   }
 
-  /* Actual clickable link + its text/icon */
   :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-link,
   :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-text,
   :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-icon {
@@ -413,7 +471,6 @@
     fill: #1f2937 !important;
   }
 
-  /* Hover/active states stay readable */
   :host ::ng-deep .p-menu.p-menu-overlay .p-menuitem-content:hover {
     background: #f2f4f7 !important;
     color: #1f2937 !important;

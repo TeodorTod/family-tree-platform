@@ -38,6 +38,8 @@ export const FIELD_WHITELIST = [
   'partnerStatus',
   'createdAt',
   'updatedAt',
+  'copiedFromMemberId',
+  'copiedSnapshotAt',
 ] as const;
 
 export const WITH_WHITELIST = [

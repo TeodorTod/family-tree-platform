@@ -122,6 +122,12 @@ export class MemberProfileService {
     return this.profileCache.get(key)!;
   }
 
+  getProfileByMemberId(memberId: string): Observable<MemberProfile | null> {
+    return this.http.get<MemberProfile | null>(
+      `${this.api}/member-profiles/by-id/${memberId}`
+    );
+  }
+
   createProfileByRole(role: string, data: Partial<MemberProfile>) {
     return this.http.post<MemberProfile>(
       `${this.api}/member-profiles/${role}`,

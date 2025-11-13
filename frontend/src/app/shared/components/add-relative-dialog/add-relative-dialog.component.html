@@ -11,6 +11,21 @@
     (ngSubmit)="onSave()"
     class="d-flex flex-column gap-3"
   >
+    <div class="d-flex gap-2 align-items-center">
+      <p-checkbox [binary]="true" formControlName="useImported"></p-checkbox>
+      <span>{{ CONSTANTS.SHARING_USE_IMPORTED | translate }}</span>
+    </div>
+    <ng-container *ngIf="useImported()">
+      <p-select
+        formControlName="importedId"
+        [options]="importedOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="CONSTANTS.SHARING_SELECT_IMPORTED | translate"
+        class="w-full"
+      ></p-select>
+    </ng-container>
+
     <!-- Relation -->
     <p-select
       formControlName="relation"
@@ -54,7 +69,7 @@
 
     <!-- Exact date -->
     @if (form.value.dobMode === 'exact') {
-    <div class="floating-field" [class.active]="form.get('dob')?.value">
+    <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
       <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
       <p-datepicker
         formControlName="dob"
@@ -69,9 +84,72 @@
     </div>
     }
 
+    <div class="d-flex gap-2 align-items-center">
+      <p-checkbox [binary]="true" formControlName="isAlive"></p-checkbox>
+      <span>{{ CONSTANTS.INFO_IS_ALIVE | translate }}</span>
+    </div>
+
+    <div class="death-section" [class.collapsed]="form.value.isAlive">
+      <span class="p-float-label w-full mb-3">
+        <label for="dodMode">{{ CONSTANTS.INFO_DOD_MODE | translate }}</label>
+        <p-select
+          inputId="dodMode"
+          formControlName="dodMode"
+          [options]="dodModeOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+          appendTo="body"
+          panelStyleClass="force-open-up"
+        ></p-select>
+      </span>
+
+      @if (form.value.dodMode === 'exact') {
+      <div
+        class="floating-field mb-3 mt-4"
+        [class.active]="form.get('dod')?.value"
+      >
+        <label>{{ CONSTANTS.INFO_DATE_OF_DEATH | translate }}</label>
+        <p-datepicker
+          formControlName="dod"
+          dateFormat="yy-mm-dd"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          appendTo="body"
+          panelStyleClass="calendar-up"
+          class="w-full"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+      </div>
+      } @if (form.value.dodMode === 'year') {
+      <div
+        class="floating-field mb-3 mt-4"
+        [class.active]="form.get('dod')?.value"
+      >
+        <label>{{ CONSTANTS.INFO_DOD_YEAR_ONLY | translate }}</label>
+        <p-datepicker
+          formControlName="dod"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          appendTo="body"
+          panelStyleClass="calendar-up"
+          class="w-full"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+      </div>
+      } @if (form.value.dodMode === 'note') {
+      <div class="floating-field mt-4">
+        <input pInputText formControlName="deathNote" placeholder=" " />
+        <label>{{ CONSTANTS.INFO_DOD_NOTE_LABEL | translate }}</label>
+      </div>
+      }
+    </div>
+
     <!-- Year only -->
     @if (form.value.dobMode === 'year') {
-    <div class="floating-field" [class.active]="form.get('dob')?.value">
+    <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
       <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
       <p-datepicker
         formControlName="dob"

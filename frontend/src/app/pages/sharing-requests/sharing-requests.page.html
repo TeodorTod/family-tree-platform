@@ -1,0 +1,64 @@
+<div class="sharing-requests">
+  <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)">
+    <p-tablist>
+      <p-tab [value]="'incoming'">{{ CONSTANTS.SHARING_INCOMING | translate }}</p-tab>
+      <p-tab [value]="'outgoing'">{{ CONSTANTS.SHARING_OUTGOING | translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="'incoming'">
+        <p-table [value]="incoming()">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>{{ CONSTANTS.SHARING_REQUESTER | translate }}</th>
+              <th>{{ CONSTANTS.SHARING_TARGET | translate }}</th>
+              <th>{{ CONSTANTS.COMMON_STATUS | translate }}</th>
+              <th>{{ CONSTANTS.COMMON_MESSAGE | translate }}</th>
+              <th>{{ CONSTANTS.COMMON_CREATED_AT | translate }}</th>
+              <th>{{ CONSTANTS.COMMON_ACTIONS | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td>{{ row.requester?.displayName || '-' }}</td>
+              <td>{{ row.target?.firstName }} {{ row.target?.lastName }}</td>
+              <td><p-tag [value]="row.status"></p-tag></td>
+              <td>{{ row.message || '' }}</td>
+              <td>{{ row.createdAt | date: 'yyyy-MM-dd' }}</td>
+              <td>
+                <button *ngIf="row.status==='PENDING'" pButton size="small" label="{{ CONSTANTS.COMMON_APPROVE | translate }}" (click)="decide(row.id,'APPROVED')"></button>
+                <button *ngIf="row.status==='PENDING'" class="ml-2" pButton severity="secondary" size="small" label="{{ CONSTANTS.COMMON_REJECT | translate }}" (click)="decide(row.id,'REJECTED')"></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel [value]="'outgoing'">
+        <p-table [value]="outgoing()">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>{{ CONSTANTS.SHARING_TARGET | translate }}</th>
+              <th>{{ CONSTANTS.COMMON_STATUS | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td>{{ row.target?.firstName }} {{ row.target?.lastName }}</td>
+              <td>
+                <p-tag [value]="row.status"></p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+
+  <app-add-relative-dialog
+    *ngIf="showAddDialog()"
+    [visible]="showAddDialog()"
+    [baseMember]="baseOwner"
+    [clonedMemberId]="clonedMemberId!"
+    (close)="showAddDialog.set(false)"
+    (saved)="handleDialogSaved($event)"
+  ></app-add-relative-dialog>
+</div>

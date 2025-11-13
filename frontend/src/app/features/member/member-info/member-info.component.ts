@@ -25,7 +25,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MemberProfile } from '../../../shared/models/member-profile.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
-import { firstValueFrom, Observable, of, shareReplay, tap } from 'rxjs';
+import { firstValueFrom, Observable, of, shareReplay, tap, switchMap } from 'rxjs';
 import { TabRef } from '../../../shared/types/tab-ref.type';
 import { UnsavedAware } from '../../../shared/interfaces/unsaved-aware';
 import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
@@ -281,7 +281,12 @@ export class MemberInfoComponent implements OnInit {
       shareReplay(1)
     );
 
-    this.profile$ = this.profileService.getProfileByRole(this.role).pipe(
+    this.profile$ = this.member$.pipe(
+      switchMap((member: any) =>
+        member?.id
+          ? this.profileService.getProfileByMemberId(member.id)
+          : of(null)
+      ),
       tap((profile) => {
         this.profileDraft = profile ? { ...profile } : {};
       }),

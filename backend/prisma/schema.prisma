@@ -28,6 +28,12 @@ enum PartnerStatus {
   OTHER
 }
 
+enum ShareRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id          String    @id @default(uuid())
   email       String    @unique
@@ -38,8 +44,12 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
 
-  familyMembers      FamilyMember[]
-  PasswordResetToken PasswordResetToken[]
+  familyMembers          FamilyMember[]
+  PasswordResetToken     PasswordResetToken[]
+  userSettings           UserSettings?
+  memberShareConsents    MemberShareConsent[]
+  shareRequestsRequested ShareRequest[]       @relation("RequesterUser")
+  shareRequestsDecided   ShareRequest[]       @relation("DecidedByUser")
 }
 
 model FamilyMember {
@@ -71,13 +81,24 @@ model FamilyMember {
   /// back‐relation to MemberProfile (one-to-one)
   profile MemberProfile? @relation("ProfileToMember")
 
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parentOf Relationship[] @relation("ParentChildFrom")
-  childOf  Relationship[] @relation("ParentChildTo")
-  media    Media[]
+  copiedFromMemberId String?
+  copiedFromMember   FamilyMember?  @relation("CopiedFrom", fields: [copiedFromMemberId], references: [id], onDelete: SetNull)
+  copiedClones       FamilyMember[] @relation("CopiedFrom")
+  copiedSnapshotAt   DateTime?
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentOf            Relationship[]       @relation("ParentChildFrom")
+  childOf             Relationship[]       @relation("ParentChildTo")
+  media               Media[]
+  memberShareConsents MemberShareConsent[]
+  shareRequests       ShareRequest[]
 
   @@unique([userId, role], name: "user_role_unique")
   @@index([userId])
+  @@index([isAlive])
+  @@index([dod])
+  @@index([deathYear])
+  @@index([copiedFromMemberId])
 }
 
 model Relationship {
@@ -148,4 +169,52 @@ model PasswordResetToken {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model UserSettings {
+  id                            String    @id @default(uuid())
+  userId                        String    @unique
+  allowDeceasedDiscoveryDefault Boolean   @default(true)
+  allowDeceasedDetailsDefault   Boolean   @default(false)
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime? @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MemberShareConsent {
+  id             String    @id @default(uuid())
+  ownerUserId    String
+  memberId       String
+  allowDiscovery Boolean   @default(true)
+  allowDetails   Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+
+  owner  User         @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  member FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerUserId, memberId])
+}
+
+model ShareRequest {
+  id              String             @id @default(uuid())
+  requesterUserId String
+  targetMemberId  String
+  status          ShareRequestStatus @default(PENDING)
+  message         String?
+  decidedByUserId String?
+  decidedAt       DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime?          @updatedAt
+
+  requester User         @relation("RequesterUser", fields: [requesterUserId], references: [id], onDelete: Cascade)
+  target    FamilyMember @relation(fields: [targetMemberId], references: [id], onDelete: Cascade)
+  decidedBy User?        @relation("DecidedByUser", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([requesterUserId])
+  @@index([targetMemberId])
+  @@index([status])
 }

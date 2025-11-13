@@ -11,6 +11,8 @@ import { MemberProfilesModule } from './member-profile/member-profiles.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MailerModule } from './mailer/mailer.module';
+import { GlobalSearchModule } from './global-search/global-search.module';
+import { SharingModule } from './sharing/sharing.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { MailerModule } from './mailer/mailer.module';
     MediaModule,
     MailerModule,
     MemberProfilesModule,
+    GlobalSearchModule,
+    SharingModule,
        ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'), 
       serveRoot: '/',                        

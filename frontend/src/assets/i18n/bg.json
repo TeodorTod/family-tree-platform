@@ -407,7 +407,16 @@
     "CURRENCY_EUR": "€",
     "CONTACT_US": "Свържете се с нас",
     "VALIDATION": "Валидация",
-    "ERROR": "Грешка"
+    "ERROR": "Грешка",
+    "NAME": "Име",
+    "YEARS": "Години",
+    "STATUS": "Статус",
+    "ACTIONS": "Действия",
+    "MESSAGE": "Съобщение",
+    "CREATED_AT": "Създадено на",
+    "SAVE": "Запази",
+    "APPROVE": "Одобри",
+    "REJECT": "Откажи"
   },
   "FAQ": {
     "TITLE": "Често задавани въпроси",
@@ -476,5 +485,29 @@
       "SUGGESTION": "Предложение за подобрение",
       "OTHER": "Друго"
     }
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "Глобално търсене...",
+    "PUBLIC": "Публичен",
+    "REQUIRES_REQUEST": "Изисква заявка",
+    "IMPORT_AND_ADD": "Импортирай и добави",
+    "REQUEST_ACCESS": "Искай достъп"
+  },
+  "SHARING": {
+    "SETTINGS_TITLE": "Настройки за споделяне",
+    "DEFAULTS": "Моите по подразбиране",
+    "ALLOW_DISCOVERY_DEFAULT": "Разреши откриване на починали (по подразбиране)",
+    "ALLOW_DETAILS_DEFAULT": "Разреши детайли за починали (по подразбиране)",
+    "PER_MEMBER": "Пер-член настройки",
+    "ALLOW_DISCOVERY": "Разреши откриване",
+    "ALLOW_DETAILS": "Разреши детайли",
+    "INCOMING": "Входящи",
+    "OUTGOING": "Изходящи",
+    "TARGET": "Целеви член",
+    "REQUESTER": "Заявител",
+    "REQUESTS_MENU": "Заявки за споделяне",
+    "USE_IMPORTED": "Използвай импортиран",
+    "SELECT_IMPORTED": "Избери импортиран член",
+    "APPROVED": "Одобрени"
   }
 }

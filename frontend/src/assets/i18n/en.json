@@ -407,7 +407,16 @@
     "CURRENCY_EUR": "€",
     "CONTACT_US": "Contact Us",
     "VALIDATION": "Validation",
-    "ERROR": "Error"
+    "ERROR": "Error",
+    "NAME": "Name",
+    "YEARS": "Years",
+    "STATUS": "Status",
+    "ACTIONS": "Actions",
+    "MESSAGE": "Message",
+    "CREATED_AT": "Created At",
+    "SAVE": "Save",
+    "APPROVE": "Approve",
+    "REJECT": "Reject"
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",
@@ -476,5 +485,29 @@
       "SUGGESTION": "Feature Suggestion",
       "OTHER": "Other"
     }
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "Global search...",
+    "PUBLIC": "Public",
+    "REQUIRES_REQUEST": "Requires Request",
+    "IMPORT_AND_ADD": "Import and Add",
+    "REQUEST_ACCESS": "Request Access"
+  },
+  "SHARING": {
+    "SETTINGS_TITLE": "Sharing Settings",
+    "DEFAULTS": "My Defaults",
+    "ALLOW_DISCOVERY_DEFAULT": "Allow deceased discovery (default)",
+    "ALLOW_DETAILS_DEFAULT": "Allow deceased details (default)",
+    "PER_MEMBER": "Per-member overrides",
+    "ALLOW_DISCOVERY": "Allow discovery",
+    "ALLOW_DETAILS": "Allow details",
+    "INCOMING": "Incoming",
+    "OUTGOING": "Outgoing",
+    "TARGET": "Target Member",
+    "REQUESTER": "Requester",
+    "REQUESTS_MENU": "Sharing Requests",
+    "USE_IMPORTED": "Use imported",
+    "SELECT_IMPORTED": "Select imported member",
+    "APPROVED": "Approved"
   }
 }

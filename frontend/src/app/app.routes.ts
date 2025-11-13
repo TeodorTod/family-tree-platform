@@ -39,6 +39,24 @@ export const routes: Routes = [
       import('./features/faq/faq.routes').then((m) => m.default),
   },
   {
+    path: 'search',
+    loadComponent: () =>
+      import('./pages/global-search/global-search.page').then((m) => m.GlobalSearchPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'settings/sharing',
+    loadComponent: () =>
+      import('./pages/settings-sharing/settings-sharing.page').then((m) => m.SettingsSharingPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'sharing/requests',
+    loadComponent: () =>
+      import('./pages/sharing-requests/sharing-requests.page').then((m) => m.SharingRequestsPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'settings',
     loadChildren: () =>
       import('./features/settings/settings.routes').then(

@@ -34,6 +34,14 @@ export class MemberProfilesService {
     });
   }
 
+  async getByMemberId(userId: string, memberId: string) {
+    const member = await this.prisma.familyMember.findUnique({ where: { id: memberId } });
+    if (!member) throw new NotFoundException('Member not found');
+    if (member.userId !== userId)
+      throw new BadRequestException('Member does not belong to the current user');
+    return this.prisma.memberProfile.findUnique({ where: { memberId } });
+  }
+
   async createByRole(
     userId: string,
     role: string,
