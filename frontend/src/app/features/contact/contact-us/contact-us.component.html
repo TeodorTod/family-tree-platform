@@ -57,11 +57,12 @@
                 CONSTANTS.CONTACT_FULL_NAME | translate
               }}</label>
             </span>
+            @if (isInvalid('fullName')) {
             <p-message
-              *ngIf="isInvalid('fullName')"
               severity="warn"
               [text]="CONSTANTS.CONTACT_FULL_NAME_ERR | translate"
             ></p-message>
+            }
           </div>
 
           <!-- Email -->
@@ -78,11 +79,12 @@
                 CONSTANTS.CONTACT_EMAIL | translate
               }}</label>
             </span>
+            @if (isInvalid('email')) {
             <p-message
-              *ngIf="isInvalid('email')"
               severity="warn"
               [text]="CONSTANTS.CONTACT_EMAIL_ERR | translate"
             ></p-message>
+            }
           </div>
 
           <!-- Topic -->
@@ -100,11 +102,12 @@
                 CONSTANTS.CONTACT_TOPIC | translate
               }}</label>
             </span>
+            @if (isInvalid('topic')) {
             <p-message
-              *ngIf="isInvalid('topic')"
               severity="warn"
               [text]="CONSTANTS.CONTACT_TOPIC_ERR | translate"
             ></p-message>
+            }
           </div>
 
           <!-- Message -->
@@ -128,11 +131,12 @@
               {{ messageLen() }}/{{ maxLen }} • {{ remaining() }}
               {{ CONSTANTS.CONTACT_CHAR_REMAINING | translate }}
             </div>
+            @if (isInvalid('message')) {
             <p-message
-              *ngIf="isInvalid('message')"
               severity="warn"
               [text]="CONSTANTS.CONTACT_MESSAGE_ERR | translate"
             ></p-message>
+            }
           </div>
 
           <!-- Consent -->

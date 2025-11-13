@@ -31,12 +31,13 @@
     </ng-template>
   </p-table>
 
+  @if (showAddDialog()) {
   <app-add-relative-dialog
-    *ngIf="showAddDialog()"
     [visible]="showAddDialog()"
     [baseMember]="baseOwner"
     [clonedMemberId]="clonedMemberId!"
     (close)="showAddDialog.set(false)"
     (saved)="handleDialogSaved($event)"
   ></app-add-relative-dialog>
+  }
 </div>

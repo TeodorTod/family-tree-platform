@@ -79,12 +79,9 @@
           }}</label>
         </p-floatlabel>
 
+        @if (showPassRules || (form.get('password')?.dirty && form.get('password')?.invalid)) {
         <div
           class="pass-rules-fixed"
-          *ngIf="
-            showPassRules ||
-            (form.get('password')?.dirty && form.get('password')?.invalid)
-          "
         >
           <div class="pass-rules-header">
             {{ CONSTANTS.AUTH_RESET_PASSWORD | translate }}
@@ -97,12 +94,9 @@
               ×
             </button>
           </div>
+          @if (showPassRules || (form.get('password')?.dirty && form.get('password')?.invalid)) {
           <div
             class="pass-rules-fixed"
-            *ngIf="
-              showPassRules ||
-              (form.get('password')?.dirty && form.get('password')?.invalid)
-            "
           >
             <div class="pass-rules-header">
               {{ CONSTANTS.AUTH_RESET_PASSWORD | translate }}
@@ -133,7 +127,9 @@
               </li>
             </ul>
           </div>
+          }
         </div>
+        }
 
         @if (form.hasError('passwordsMismatch') &&
         form.get('confirmPassword')?.touched) {

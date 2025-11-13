@@ -15,7 +15,7 @@
       <p-checkbox [binary]="true" formControlName="useImported"></p-checkbox>
       <span>{{ CONSTANTS.SHARING_USE_IMPORTED | translate }}</span>
     </div>
-    <ng-container *ngIf="useImported()">
+    @if (useImported()) {
       <p-select
         formControlName="importedId"
         [options]="importedOptions()"
@@ -24,7 +24,7 @@
         [placeholder]="CONSTANTS.SHARING_SELECT_IMPORTED | translate"
         class="w-full"
       ></p-select>
-    </ng-container>
+    }
 
     <!-- Relation -->
     <p-select

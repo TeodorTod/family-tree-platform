@@ -98,8 +98,8 @@
           <td>{{ "FAV.CATEGORY." + fav.category | translate }}</td>
           <td>{{ fav.title }}</td>
           <td>
-            <span class="muted" *ngIf="!fav.notes">—</span>
-            <span *ngIf="fav.notes">{{ fav.notes }}</span>
+            @if (!fav.notes) { <span class="muted">—</span> }
+            @else { <span>{{ fav.notes }}</span> }
           </td>
           <td style="text-align: right">
             <button
