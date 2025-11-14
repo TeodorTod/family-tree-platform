@@ -129,7 +129,7 @@ export class TreeTableComponent {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: errorMessage,
+            detail: errorMessage.message,
           });
           this.inflight = false;
         },
