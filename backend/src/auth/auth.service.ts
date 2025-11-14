@@ -37,8 +37,12 @@ export class AuthService {
     return this.usersService.findByEmail(email);
   }
 
-  async createUser(email: string, password: string) {
-    return this.usersService.createLocalUser(email, password, email);
+  async createUser(email: string, password: string, language: 'bg' | 'en') {
+    return this.usersService.createLocalUser(email, password, email, language);
+  }
+
+  async updateUserLanguage(userId: string, language: 'bg' | 'en') {
+    return this.usersService.updateLanguage(userId, language);
   }
 
  async issuePasswordReset(email: string, locale: 'bg' | 'en' = 'bg') {

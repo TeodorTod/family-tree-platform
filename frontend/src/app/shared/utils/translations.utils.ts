@@ -2,6 +2,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
+import { Lang } from '../types/lang.type';
+
+const SUPPORTED: Lang[] = ['bg', 'en'];
+const FALLBACK: Lang = 'bg';
 
 export function HttpLoaderFactory(handler: HttpBackend): TranslateHttpLoader {
   const httpClient = new HttpClient(handler);
@@ -11,5 +15,15 @@ export function HttpLoaderFactory(handler: HttpBackend): TranslateHttpLoader {
 export function appInitializerFactory(
   translate: TranslateService
 ): () => Promise<void> {
-  return () => firstValueFrom(translate.use('bg')).then(() => void 0);
-} 
+  return () => {
+    const stored = localStorage.getItem('lang') as Lang | null;
+    const current = translate.currentLang as Lang | undefined;
+    const lang = (SUPPORTED.includes(current as Lang)
+      ? current
+      : stored && SUPPORTED.includes(stored)
+      ? stored
+      : FALLBACK) as Lang;
+
+    return firstValueFrom(translate.use(lang)).then(() => void 0);
+  };
+}

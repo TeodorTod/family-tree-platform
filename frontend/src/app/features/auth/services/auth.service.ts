@@ -11,6 +11,8 @@ import { environment } from '../../../../environments/environment';
 import { tap } from 'rxjs';
 import { LoginResponse } from '../../../shared/models/login-response.model';
 import { RegisterRequest } from '../../../shared/models/register-request.model';
+import { Lang } from '../../../shared/types/lang.type';
+import { AuthUser } from '../../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -53,14 +55,19 @@ export class AuthService {
     { validators: this.passwordsMatchValidator }
   );
 
-  login(email: string, password: string) {
+  login(email: string, password: string, language?: Lang) {
+    const payload: Record<string, unknown> = {
+      email,
+      password,
+    };
+    if (language) {
+      payload['language'] = language;
+    }
+
     return this.http
       .post<LoginResponse>(
         `${environment.apiUrl}/auth/login`,
-        {
-          email,
-          password,
-        },
+        payload,
         { withCredentials: true }
       )
 
@@ -68,16 +75,37 @@ export class AuthService {
         tap((res) => {
           this.token.set(res.access_token);
           localStorage.setItem('token', res.access_token);
+          const lang = (res.user?.language as Lang | undefined) ?? 'bg';
+          localStorage.setItem('lang', lang);
         })
       );
   }
 
-  register(email: string, password: string, confirmPassword: string) {
-    const data: RegisterRequest = { email, password, confirmPassword };
+  register(
+    email: string,
+    password: string,
+    confirmPassword: string,
+    language: Lang,
+  ) {
+    const data: RegisterRequest = { email, password, confirmPassword, language };
     return this.http.post<LoginResponse>(
       `${environment.apiUrl}/auth/register`,
       data,
       { withCredentials: true }
+    );
+  }
+
+  getProfile() {
+    return this.http.get<AuthUser>(`${environment.apiUrl}/auth/me`, {
+      withCredentials: true,
+    });
+  }
+
+  updateLanguagePreference(language: Lang) {
+    return this.http.patch<{ language: Lang }>(
+      `${environment.apiUrl}/auth/language`,
+      { language },
+      { withCredentials: true },
     );
   }
 

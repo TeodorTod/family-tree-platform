@@ -163,6 +163,9 @@ export class NavbarComponent implements OnDestroy {
 
   switchLang(code: Lang) {
     this.lang.use(code);
+    this.auth.updateLanguagePreference(code).subscribe({
+      error: () => void 0,
+    });
     this.mobileMenuVisible = false;
   }
 

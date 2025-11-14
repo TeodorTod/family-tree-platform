@@ -4,6 +4,8 @@ import { PRIME_NG_CONFIG } from 'primeng/config';
 import { PRIMENG_BG } from '../../assets/i18n/primeng-bg';
 import { PRIMENG_EN } from '../../assets/i18n/primeng-en';
 import { Lang } from '../../app/shared/types/lang.type';
+import { AuthService } from '../../app/features/auth/services/auth.service';
+import { take } from 'rxjs';
 
 const FALLBACK: Lang = 'bg';
 
@@ -16,6 +18,7 @@ const PRIMENG_MAP: Record<Lang, any> = {
 export class LanguageService {
   private t = inject(TranslateService);
   private primeng = inject(PRIME_NG_CONFIG);
+  private auth = inject(AuthService, { optional: true });
 
   init() {
     const saved = (localStorage.getItem('lang') as Lang) || FALLBACK;
@@ -24,6 +27,7 @@ export class LanguageService {
     this.t.addLangs(['bg', 'en']);
     this.t.setDefaultLang(FALLBACK);
     this.use(initial);
+    this.trySyncFromServer(initial);
   }
 
   use(lang: Lang) {
@@ -39,5 +43,24 @@ export class LanguageService {
   current(): Lang {
     const c = (this.t.currentLang as Lang) || FALLBACK;
     return (['bg', 'en'] as Lang[]).includes(c) ? c : FALLBACK;
+  }
+
+  private trySyncFromServer(current: Lang) {
+    if (!this.auth || !this.auth.getTokenValue()) {
+      return;
+    }
+
+    this.auth
+      .getProfile()
+      .pipe(take(1))
+      .subscribe({
+        next: (user) => {
+          const lang = (user?.language as Lang) || current;
+          if (lang && lang !== current) {
+            this.use(lang);
+          }
+        },
+        error: () => void 0,
+      });
   }
 }

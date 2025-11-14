@@ -8,6 +8,7 @@ import {
   Get,
   Req,
   Res,
+  Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -23,13 +24,20 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(
+    @Request() req,
+    @Body('language') language?: 'bg' | 'en',
+  ) {
+    if (language && ['bg', 'en'].includes(language)) {
+      await this.authService.updateUserLanguage(req.user.id, language);
+      req.user.language = language;
+    }
     return this.authService.login(req.user);
   }
 
   @Post('register')
   async register(@Body() dto: RegisterDto) {
-    const { email, password, confirmPassword } = dto;
+    const { email, password, confirmPassword, language } = dto;
 
     if (password !== confirmPassword) {
       throw new BadRequestException('Паролите не съвпадат');
@@ -40,7 +48,7 @@ export class AuthController {
       throw new BadRequestException('Този имейл вече е регистриран');
     }
 
-    const user = await this.authService.createUser(email, password);
+    const user = await this.authService.createUser(email, password, language);
     return this.authService.login(user); // return JWT on success
   }
 
@@ -82,6 +90,22 @@ export class AuthController {
     }
     await this.authService.resetPasswordWithToken(dto.token, dto.password);
     return { ok: true };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('language')
+  async updateLanguage(
+    @Req() req: any,
+    @Body('language') language: 'bg' | 'en',
+  ) {
+    if (!['bg', 'en'].includes(language)) {
+      throw new BadRequestException('Invalid language code');
+    }
+    const user = await this.authService.updateUserLanguage(
+      req.user.id,
+      language,
+    );
+    return { language: user.language };
   }
   
 }

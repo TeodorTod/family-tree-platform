@@ -1,8 +1,8 @@
 import {
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsStrongPassword,
-  MinLength,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -27,4 +27,8 @@ export class RegisterDto {
 
   @IsNotEmpty()
   confirmPassword: string;
+
+  @IsNotEmpty()
+  @IsIn(['bg', 'en'])
+  language: 'bg' | 'en';
 }

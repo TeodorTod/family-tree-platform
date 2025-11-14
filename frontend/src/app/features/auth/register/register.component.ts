@@ -93,7 +93,7 @@ export class RegisterComponent {
     }
 
     this.auth
-      .register(email!, password!, confirmPassword!)
+      .register(email!, password!, confirmPassword!, this.currentLang)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.router.navigate([CONSTANTS.ROUTES.LOGIN]),

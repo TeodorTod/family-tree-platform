@@ -5,4 +5,5 @@ export class User {
   displayName: string;
   provider: 'local' | 'google' | 'facebook';
   providerId?: string;
+  language: string;
 }

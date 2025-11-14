@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
   lang = inject(LanguageService);
 
   private destroyRef = inject(DestroyRef);
+  private readonly pendingLangKey = 'ft-pending-lang-pref';
 
   error = signal('');
   showMobileHint = signal(false);
@@ -38,12 +39,36 @@ export class LoginComponent implements OnInit {
     { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },
   ];
   currentLang: Lang = this.lang.current();
+  private initialLang: Lang = this.currentLang;
+  langDirty = false;
 
   ngOnInit(): void {
     const token = new URLSearchParams(window.location.search).get('token');
     if (token) {
       localStorage.setItem('token', token);
       this.auth.getTokenSignal().set(token);
+      const pendingLang = sessionStorage.getItem(
+        this.pendingLangKey
+      ) as Lang | null;
+
+      if (pendingLang) {
+        this.applyLanguage(pendingLang, false);
+        this.auth.updateLanguagePreference(pendingLang).subscribe({
+          next: () => this.applyLanguage(pendingLang),
+          error: () => void 0,
+        });
+      } else {
+        this.auth.getProfile().subscribe({
+          next: (user) => {
+            if (user?.language) {
+              this.applyLanguage(user.language as Lang);
+            }
+          },
+          error: () => void 0,
+        });
+      }
+
+      sessionStorage.removeItem(this.pendingLangKey);
       this.router.navigate([CONSTANTS.ROUTES.TREE]);
     }
 
@@ -61,11 +86,8 @@ export class LoginComponent implements OnInit {
   }
 
   switchLang(code: Lang) {
-    this.lang.use(code);
-    this.langOptions = [
-      { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' },
-      { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' },
-    ];
+    this.applyLanguage(code, false);
+    this.langDirty = code !== this.initialLang;
   }
 
   login() {
@@ -74,10 +96,17 @@ export class LoginComponent implements OnInit {
     const { email, password } = this.form.value;
 
     this.auth
-      .login(email!, password!)
+      .login(email!, password!, this.langDirty ? this.currentLang : undefined)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: (res) => {
+          const serverLang =
+            (res?.user?.language as Lang | undefined) ?? this.currentLang;
+          if (serverLang) {
+            this.applyLanguage(serverLang);
+          }
+          this.langDirty = false;
+
           this.familyService
             .getMyFamily()
             .pipe(takeUntilDestroyed(this.destroyRef))
@@ -121,6 +150,28 @@ export class LoginComponent implements OnInit {
   }
 
   loginWithGoogle() {
+    if (this.langDirty) {
+      sessionStorage.setItem(this.pendingLangKey, this.currentLang);
+    } else {
+      sessionStorage.removeItem(this.pendingLangKey);
+    }
     window.location.href = `${environment.apiUrl}${CONSTANTS.ROUTES.AUTH_GOOGLE_LOGIN}`;
+  }
+
+  private applyLanguage(lang: Lang, persistBaseline = true) {
+    this.lang.use(lang);
+    this.currentLang = lang;
+    this.refreshLangOptions();
+    if (persistBaseline) {
+      this.initialLang = lang;
+      this.langDirty = false;
+    }
+  }
+
+  private refreshLangOptions() {
+    this.langOptions = [
+      { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
+      { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },
+    ];
   }
 }
