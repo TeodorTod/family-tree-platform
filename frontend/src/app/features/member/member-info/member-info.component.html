@@ -340,13 +340,11 @@
 
             <!-- BIO -->
             <p-tabpanel [value]="TAB.BIO">
-              @if (activeIndex() === TAB.BIO) {
               <app-member-bio
                 [role]="role"
                 [memberId]="(member$ | async)?.id ?? null"
                 [profile]="(profile$ | async) ?? null"
               ></app-member-bio>
-              }
             </p-tabpanel>
 
             <!-- MEDIA -->
