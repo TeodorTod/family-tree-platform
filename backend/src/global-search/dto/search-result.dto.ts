@@ -7,5 +7,5 @@ export class SearchResultDto {
   photoUrl?: string | null;
   requiresShareApproval!: boolean;
   ownerDisplayName?: string | null;
+  hasPendingRequest!: boolean;
 }
-

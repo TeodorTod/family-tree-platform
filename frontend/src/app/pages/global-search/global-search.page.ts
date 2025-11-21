@@ -56,6 +56,7 @@ export class GlobalSearchPage implements OnInit {
   }
 
   openRequestDialog(item: SearchResultDto) {
+    if (item.hasPendingRequest) return;
     this.selectedTarget = item;
     this.msgDraft.set('');
     this.showMsgDialog.set(true);

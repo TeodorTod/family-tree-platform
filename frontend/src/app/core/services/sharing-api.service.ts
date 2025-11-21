@@ -11,6 +11,7 @@ export interface SearchResultDto {
   photoUrl?: string | null;
   requiresShareApproval: boolean;
   ownerDisplayName?: string | null;
+  hasPendingRequest: boolean;
 }
 
 export interface UpdateUserSettingsDto {

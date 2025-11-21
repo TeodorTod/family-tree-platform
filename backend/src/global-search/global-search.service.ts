@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ShareRequestStatus } from '../../generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchQueryDto } from './dto/search-query.dto';
 import { SearchResultDto } from './dto/search-result.dto';
@@ -48,7 +49,7 @@ export class GlobalSearchService {
     const ownerIds = Array.from(new Set(candidates.map((c) => c.userId)));
     const memberIds = candidates.map((c) => c.id);
 
-    const [settings, consents, owners] = await Promise.all([
+    const [settings, consents, owners, pendingRequests] = await Promise.all([
       this.prisma.userSettings.findMany({
         where: { userId: { in: ownerIds } },
         select: {
@@ -70,6 +71,16 @@ export class GlobalSearchService {
         where: { userId: { in: ownerIds }, role: 'owner' },
         select: { userId: true, firstName: true, lastName: true },
       }),
+      memberIds.length
+        ? this.prisma.shareRequest.findMany({
+            where: {
+              requesterUserId: userId,
+              targetMemberId: { in: memberIds },
+              status: ShareRequestStatus.PENDING,
+            },
+            select: { targetMemberId: true },
+          })
+        : Promise.resolve([]),
     ]);
 
     const settingsByOwner = new Map(
@@ -85,6 +96,8 @@ export class GlobalSearchService {
         `${o.firstName ?? ''} ${o.lastName ?? ''}`.trim() || null,
       ])
     );
+
+    const pendingTargetIds = new Set(pendingRequests.map((r) => r.targetMemberId));
 
     const results: SearchResultDto[] = [];
     for (const m of candidates) {
@@ -108,6 +121,7 @@ export class GlobalSearchService {
         photoUrl: m.photoUrl ?? null,
         requiresShareApproval: !allowDetails,
         ownerDisplayName: m.user.displayName ?? ownerNameByUser.get(m.userId) ?? null,
+        hasPendingRequest: pendingTargetIds.has(m.id),
       };
       results.push(out);
       if (results.length >= size) break;

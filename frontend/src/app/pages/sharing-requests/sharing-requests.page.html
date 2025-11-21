@@ -51,7 +51,13 @@
           <ng-template pTemplate="body" let-row>
             <tr>
               <td>{{ row.target?.firstName }} {{ row.target?.lastName }}</td>
-              <td>{{ row.target?.user?.displayName || '-' }}</td>
+              <td>
+                {{
+                  row.target?.user?.displayName
+                    || ((row.target?.user?.familyMembers?.[0]?.firstName || '') + ' ' + (row.target?.user?.familyMembers?.[0]?.lastName || '')).trim()
+                    || '-'
+                }}
+              </td>
               <td><p-tag [value]="row.status"></p-tag></td>
               <td>{{ row.message || '' }}</td>
             </tr>

@@ -468,7 +468,8 @@
     "PUBLIC": "Публичен",
     "REQUIRES_REQUEST": "Изисква заявка",
     "IMPORT_AND_ADD": "Импортирай и добави",
-    "REQUEST_ACCESS": "Искай достъп"
+    "REQUEST_ACCESS": "Искай достъп",
+    "REQUEST_PENDING": "Заявката е изпратена"
   },
   "SHARING": {
     "SETTINGS_TITLE": "Настройки за споделяне",

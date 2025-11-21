@@ -494,7 +494,8 @@
     "PUBLIC": "Public",
     "REQUIRES_REQUEST": "Requires Request",
     "IMPORT_AND_ADD": "Import and Add",
-    "REQUEST_ACCESS": "Request Access"
+    "REQUEST_ACCESS": "Request Access",
+    "REQUEST_PENDING": "Request Sent"
   },
   "SHARING": {
     "SETTINGS_TITLE": "Sharing Settings",

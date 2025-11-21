@@ -25,7 +25,11 @@
           <p-tag severity="warning" [value]="(CONSTANTS.SEARCH_REQUIRES_REQUEST | translate)"></p-tag>
         </td>
         <td>
+          @if (!item.hasPendingRequest) {
           <button pButton size="small" label="{{ CONSTANTS.SEARCH_REQUEST_ACCESS | translate }}" (click)="openRequestDialog(item)"></button>
+          } @else {
+          <p-tag severity="info" [value]="(CONSTANTS.SEARCH_REQUEST_PENDING | translate)"></p-tag>
+          }
         </td>
       </tr>
     </ng-template>

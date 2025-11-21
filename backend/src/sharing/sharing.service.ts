@@ -165,7 +165,16 @@ export class SharingService {
             userId: true,
             birthYear: true,
             deathYear: true,
-            user: { select: { displayName: true } },
+            user: {
+              select: {
+                displayName: true,
+                familyMembers: {
+                  where: { role: 'owner' },
+                  select: { firstName: true, lastName: true },
+                  take: 1,
+                },
+              },
+            },
           },
         },
       },
