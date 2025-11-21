@@ -1,5 +1,5 @@
 // navbar.component.ts
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -10,6 +10,7 @@ import { LanguageService } from '../../../../assets/i18n/language.service';
 import { Subscription } from 'rxjs';
 import { Lang } from '../../../shared/types/lang.type';
 import { MenuItem } from 'primeng/api';
+import { SharingNotificationsService } from '../../services/sharing-notifications.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,6 +25,7 @@ export class NavbarComponent implements OnDestroy {
   private router = inject(Router);
   private translate = inject(TranslateService);
   private lang = inject(LanguageService);
+  private notifications = inject(SharingNotificationsService);
 
   private sub = new Subscription();
 
@@ -41,6 +43,7 @@ export class NavbarComponent implements OnDestroy {
   // Profile items for split button
   profileItems: MenuItem[] = [];
   searchText = '';
+  totalPending = this.notifications.totalPending;
 
   constructor() {
     this.updateLabels();
@@ -50,6 +53,15 @@ export class NavbarComponent implements OnDestroy {
         this.updateLabels();
       })
     );
+
+    effect(() => {
+      const token = this.isLoggedIn();
+      if (token) {
+        this.notifications.refresh();
+      } else {
+        this.notifications.reset();
+      }
+    });
   }
 
   private updateLabels() {

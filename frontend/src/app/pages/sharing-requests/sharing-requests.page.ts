@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
 import { SharingApiService } from '../../core/services/sharing-api.service';
+import { SharingNotificationsService } from '../../core/services/sharing-notifications.service';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { FamilyService } from '../../core/services/family.service';
@@ -18,6 +19,7 @@ export class SharingRequestsPage implements OnInit {
   CONSTANTS = CONSTANTS;
   private api = inject(SharingApiService);
   private family = inject(FamilyService);
+  private notifications = inject(SharingNotificationsService);
 
   activeTab = signal<'incoming' | 'outgoing'>('incoming');
   incoming = signal<any[]>([]);
@@ -41,7 +43,10 @@ export class SharingRequestsPage implements OnInit {
   }
 
   decide(id: string, status: 'APPROVED' | 'REJECTED') {
-    this.api.decideRequest(id, status).subscribe(() => this.refresh());
+    this.api.decideRequest(id, status).subscribe(() => {
+      this.refresh();
+      this.notifications.refresh();
+    });
   }
 
   importApproved(row: any) {

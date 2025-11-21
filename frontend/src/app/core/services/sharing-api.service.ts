@@ -30,6 +30,11 @@ export interface CreateShareRequestDto {
   message?: string;
 }
 
+export interface ShareRequestCounters {
+  incomingPending: number;
+  outgoingDecided: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SharingApiService {
   private http = inject(HttpClient);
@@ -81,5 +86,9 @@ export class SharingApiService {
 
   cloneApprovedRequest(requestId: string) {
     return this.http.post<{ newMemberId: string }>(`${this.api}/sharing/requests/${requestId}/clone`, {});
+  }
+
+  getRequestCounters() {
+    return this.http.get<ShareRequestCounters>(`${this.api}/sharing/requests/counters`);
   }
 }

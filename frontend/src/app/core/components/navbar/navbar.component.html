@@ -30,6 +30,18 @@
             (keyup.enter)="submitSearch()" 
           />
         </div>
+        <button
+          type="button"
+          pButton
+          class="notification-btn"
+          (click)="navigate(CONSTANTS.ROUTES.SHARING.REQUESTS)"
+          [attr.aria-label]="CONSTANTS.SHARING_REQUESTS_MENU | translate"
+        >
+          <i class="pi pi-bell"></i>
+          @if (totalPending() > 0) {
+          <span class="notification-count">{{ totalPending() }}</span>
+          }
+        </button>
         <!-- Settings menu button -->
         <p-menu
           #settingsMenu
@@ -154,6 +166,19 @@
         (keyup.enter)="submitSearch()" 
       />
     </div>
+    <button
+      type="button"
+      pButton
+      class="mobile-notification-btn"
+      (click)="navigate(CONSTANTS.ROUTES.SHARING.REQUESTS)"
+      [attr.aria-label]="CONSTANTS.SHARING_REQUESTS_MENU | translate"
+    >
+      <i class="pi pi-bell"></i>
+      @if (totalPending() > 0) {
+      <span class="notification-count">{{ totalPending() }}</span>
+      }
+      <span class="mobile-notification-label">{{ CONSTANTS.SHARING_REQUESTS_MENU | translate }}</span>
+    </button>
     <!-- Mobile Language Menu Button -->
     <p-menu
       #langMenuMobile

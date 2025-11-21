@@ -181,6 +181,21 @@ export class SharingService {
     });
   }
 
+  async getRequestCounters(userId: string) {
+    const [incomingPending, outgoingDecided] = await Promise.all([
+      this.prisma.shareRequest.count({
+        where: { status: ShareRequestStatus.PENDING, target: { userId } },
+      }),
+      this.prisma.shareRequest.count({
+        where: {
+          requesterUserId: userId,
+          status: { in: [ShareRequestStatus.APPROVED, ShareRequestStatus.REJECTED] },
+        },
+      }),
+    ]);
+    return { incomingPending, outgoingDecided };
+  }
+
   private async generateUniqueRole(userId: string, base: string) {
     const prefix = base.toLowerCase();
     let attempt = 0;
