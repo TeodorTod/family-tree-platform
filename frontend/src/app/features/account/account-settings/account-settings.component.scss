@@ -214,6 +214,52 @@
   }
 }
 
+.dialog-warning {
+  margin: 1rem 0;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  button {
+    min-width: 150px;
+  }
+
+  .danger-btn {
+    background: #dc2626 !important;
+    border: none !important;
+    color: #fff !important;
+
+    &:hover {
+      background: #b91c1c !important;
+    }
+  }
+}
+
+.delete-trigger {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+
+  .trash-btn.p-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #dc2626;
+    color: #fff;
+
+    &:hover {
+      background: #b91c1c;
+    }
+  }
+}
+
 @media (max-width: 600px) {
   .account-header {
     padding: 1.5rem;

@@ -105,4 +105,8 @@ export class UsersService {
       hasPassword: !!password,
     };
   }
+
+  async deleteUser(userId: string) {
+    await this.prisma.user.delete({ where: { id: userId } });
+  }
 }

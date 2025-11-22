@@ -115,6 +115,10 @@ export class AuthService {
     await this.usersService.updatePassword(userId, newPassword);
   }
 
+  async deleteAccount(userId: string) {
+    await this.usersService.deleteUser(userId);
+  }
+
   async issuePasswordReset(email: string, locale: LanguageCode = 'bg') {
     const user = await this.usersService.findByEmail(email);
     if (!user) return;

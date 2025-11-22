@@ -69,6 +69,14 @@ export class NavbarComponent implements OnDestroy {
         this.refreshLogoTitle();
       }
     });
+
+    this.sub.add(
+      this.auth.onProfileRefresh().subscribe(() => {
+        if (this.isLoggedIn()) {
+          this.loadProfileDisplayName();
+        }
+      })
+    );
   }
 
   private updateLabels() {

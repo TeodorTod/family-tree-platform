@@ -45,4 +45,10 @@ export class AccountService {
       { withCredentials: true },
     );
   }
+
+  deleteAccount() {
+    return this.http.delete<{ ok: boolean }>(`${environment.apiUrl}/auth/me`, {
+      withCredentials: true,
+    });
+  }
 }

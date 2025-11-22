@@ -8,7 +8,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
-import { tap } from 'rxjs';
+import { Subject, tap } from 'rxjs';
 import { LoginResponse } from '../../../shared/models/login-response.model';
 import { RegisterRequest } from '../../../shared/models/register-request.model';
 import { Lang } from '../../../shared/types/lang.type';
@@ -20,6 +20,7 @@ export class AuthService {
   private fb = inject(FormBuilder);
 
   private token = signal<string | null>(localStorage.getItem('token'));
+  private profileRefresh$ = new Subject<void>();
 
   private passwordsMatchValidator: ValidatorFn = (group: AbstractControl) => {
     const pass = group.get('password')?.value ?? '';
@@ -160,5 +161,13 @@ export class AuthService {
       password,
       confirmPassword,
     });
+  }
+
+  onProfileRefresh() {
+    return this.profileRefresh$.asObservable();
+  }
+
+  refreshProfile() {
+    this.profileRefresh$.next();
   }
 }

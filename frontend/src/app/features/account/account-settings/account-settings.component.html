@@ -10,12 +10,6 @@
     </div>
   </div>
 
-  @if (loadingProfile()) {
-  <div class="account-loading">
-    <p-progressSpinner strokeWidth="4"></p-progressSpinner>
-  </div>
-  }
-
   <div class="account-grid" [class.busy]="loadingProfile()">
     <section class="account-card">
       <div class="card-header">
@@ -221,5 +215,61 @@
       </div>
       }
     </section>
+
   </div>
+
+  <div class="delete-trigger">
+    <button
+      type="button"
+      class="trash-btn"
+      pButton
+      icon="pi pi-trash"
+      pTooltip="{{ CONSTANTS.ACCOUNT_DELETE_BUTTON | translate }}"
+      tooltipPosition="top"
+      (click)="openDeleteDialog()"
+      [attr.aria-label]="CONSTANTS.ACCOUNT_DELETE_BUTTON | translate"
+    ></button>
+  </div>
+
+  <p-dialog
+    [visible]="deleteDialogVisible()"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: '450px' }"
+    (onHide)="closeDeleteDialog()"
+  >
+    <ng-template pTemplate="header">
+      {{ CONSTANTS.ACCOUNT_DELETE_DIALOG_TITLE | translate }}
+    </ng-template>
+    <p>{{ CONSTANTS.ACCOUNT_DELETE_DIALOG_MESSAGE | translate }}</p>
+    <p class="dialog-warning">
+      {{ CONSTANTS.ACCOUNT_DELETE_DIALOG_WARNING | translate }}
+    </p>
+
+    @if (deleteError()) {
+    <p-message
+      class="mt-2"
+      severity="error"
+      [text]="deleteError() ?? ''"
+    ></p-message>
+    }
+
+    <div class="dialog-actions">
+      <button
+        type="button"
+        pButton
+        class="secondary"
+        (click)="closeDeleteDialog()"
+        [label]="CONSTANTS.ACCOUNT_DELETE_CANCEL | translate"
+      ></button>
+      <button
+        type="button"
+        pButton
+        class="danger-btn"
+        [loading]="deleteLoading()"
+        (click)="confirmDeleteAccount()"
+        [label]="CONSTANTS.ACCOUNT_DELETE_CONFIRM | translate"
+      ></button>
+    </div>
+  </p-dialog>
 </div>

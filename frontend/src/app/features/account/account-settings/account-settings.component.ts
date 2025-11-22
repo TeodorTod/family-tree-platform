@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   DestroyRef,
   OnInit,
@@ -14,6 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { AccountService } from '../services/account.service';
@@ -22,6 +23,7 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { Lang } from '../../../shared/types/lang.type';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -37,6 +39,8 @@ export class AccountSettingsComponent implements OnInit {
   private account = inject(AccountService);
   private langService = inject(LanguageService);
   private translate = inject(TranslateService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
   user = signal<AuthUser | null>(null);
@@ -54,6 +58,9 @@ export class AccountSettingsComponent implements OnInit {
   passwordMessage = signal<
     { severity: 'success' | 'error'; text: string } | null
   >(null);
+  deleteDialogVisible = signal(false);
+  deleteLoading = signal(false);
+  deleteError = signal<string | null>(null);
 
   private readonly passwordErrorMap: Record<string, string> = {
     'Current password is incorrect': CONSTANTS.AUTH_ERROR_CURRENT_PASSWORD,
@@ -163,6 +170,7 @@ export class AccountSettingsComponent implements OnInit {
             severity: 'success',
             text: this.translate.instant(CONSTANTS.ACCOUNT_PROFILE_UPDATED),
           });
+          this.auth.refreshProfile();
         },
         error: (err) => {
           this.profileSaving.set(false);
@@ -260,6 +268,42 @@ export class AccountSettingsComponent implements OnInit {
       });
   }
 
+  openDeleteDialog() {
+    this.deleteError.set(null);
+    this.deleteDialogVisible.set(true);
+  }
+
+  closeDeleteDialog() {
+    this.deleteDialogVisible.set(false);
+    this.deleteError.set(null);
+  }
+
+  confirmDeleteAccount() {
+    if (this.deleteLoading()) {
+      return;
+    }
+    this.deleteLoading.set(true);
+    this.deleteError.set(null);
+
+    this.account
+      .deleteAccount()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.deleteLoading.set(false);
+          this.deleteDialogVisible.set(false);
+          this.auth.logout();
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          this.deleteLoading.set(false);
+          this.deleteError.set(
+            this.resolveErrorMessage(err, CONSTANTS.ACCOUNT_DELETE_ERROR),
+          );
+        },
+      });
+  }
+
   languageMatchesProfile() {
     const selection = this.languageControl.value;
     return (
@@ -294,6 +338,7 @@ export class AccountSettingsComponent implements OnInit {
           const lang = (user.language as Lang) ?? this.langService.current();
           this.languageControl.setValue(lang, { emitEvent: false });
           this.loadingProfile.set(false);
+          this.auth.refreshProfile();
         },
         error: (err) => {
           this.loadingProfile.set(false);

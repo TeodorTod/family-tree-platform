@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -134,6 +135,13 @@ export class AuthController {
       dto.newPassword,
       language,
     );
+    return { ok: true };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('me')
+  async deleteAccount(@Req() req: any) {
+    await this.authService.deleteAccount(req.user.id);
     return { ok: true };
   }
 }

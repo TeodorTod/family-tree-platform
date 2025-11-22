@@ -69,7 +69,16 @@
     "PASSWORD_UPDATED": "Password updated successfully.",
     "PASSWORD_UPDATE_ERROR": "We couldn't update your password. Check the values and try again.",
     "PASSWORD_UNAVAILABLE_TITLE": "Password managed by Google",
-    "PASSWORD_UNAVAILABLE_DESC": "This account uses Google Sign-In. To change your password, update it from your Google Account."
+    "PASSWORD_UNAVAILABLE_DESC": "This account uses Google Sign-In. To change your password, update it from your Google Account.",
+    "DELETE_TITLE": "Delete account",
+    "DELETE_DESC": "Deleting your account is irreversible and removes all stored data and shared access.",
+    "DELETE_BUTTON": "Delete my account",
+    "DELETE_DIALOG_TITLE": "Confirm account deletion",
+    "DELETE_DIALOG_MESSAGE": "This action permanently removes your profile, family tree data, and all sharing permissions.",
+    "DELETE_DIALOG_WARNING": "This cannot be undone. Are you sure you want to continue?",
+    "DELETE_CONFIRM": "Yes, delete my account",
+    "DELETE_CANCEL": "Keep account",
+    "DELETE_ERROR": "We couldn't delete your account. Please try again."
   },
 
   "INFO": {
