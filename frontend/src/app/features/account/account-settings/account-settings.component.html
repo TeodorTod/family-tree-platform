@@ -1,1 +1,225 @@
-<p>account-settings works!</p>
+<div class="account-settings">
+  <div class="account-header">
+    <div class="account-heading">
+      <p class="eyebrow">{{ CONSTANTS.AUTH_ACCOUNT_SETTINGS | translate }}</p>
+      <h1>{{ CONSTANTS.ACCOUNT_PAGE_TITLE | translate }}</h1>
+      <p class="subtitle">{{ CONSTANTS.ACCOUNT_PAGE_SUBTITLE | translate }}</p>
+    </div>
+    <div class="account-avatar" aria-hidden="true">
+      <span>{{ initials() }}</span>
+    </div>
+  </div>
+
+  @if (loadingProfile()) {
+  <div class="account-loading">
+    <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+  </div>
+  }
+
+  <div class="account-grid" [class.busy]="loadingProfile()">
+    <section class="account-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">{{ CONSTANTS.ACCOUNT_SECTION_PROFILE | translate }}</p>
+          <h2>{{ CONSTANTS.ACCOUNT_SECTION_PROFILE_DESC | translate }}</h2>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+        <div
+          class="floating-field"
+          [class.active]="profileForm.get('displayName')?.value"
+        >
+          <input
+            id="displayName"
+            type="text"
+            pInputText
+            formControlName="displayName"
+            maxlength="120"
+            placeholder=" "
+          />
+          <label for="displayName">{{ CONSTANTS.ACCOUNT_DISPLAY_NAME | translate }}</label>
+        </div>
+
+        @if (profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched) {
+        <small class="error">
+          {{ CONSTANTS.COMMON_VALIDATION | translate }}
+        </small>
+        }
+
+
+        <div class="meta-row">
+          <span>
+            {{ CONSTANTS.ACCOUNT_MEMBER_SINCE | translate }}:
+            <strong>{{ user()?.createdAt | date: 'longDate' }}</strong>
+          </span>
+          <span>
+            {{ CONSTANTS.ACCOUNT_LAST_UPDATED | translate }}:
+            <strong>{{ (user()?.updatedAt || user()?.createdAt) | date: 'medium' }}</strong>
+          </span>
+        </div>
+
+        @if (profileMessage()) {
+        <p-message
+          class="mt-2"
+          [severity]="profileMessage()?.severity ?? 'info'"
+          [text]="profileMessage()?.text ?? ''"
+        ></p-message>
+        }
+
+        <div class="actions">
+          <button
+            type="submit"
+            pButton
+            [label]="CONSTANTS.ACCOUNT_SAVE_PROFILE | translate"
+            class="primary"
+            [loading]="profileSaving()"
+            [disabled]="profileSaving() || profileForm.invalid"
+          ></button>
+        </div>
+      </form>
+    </section>
+
+    <section class="account-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">{{ CONSTANTS.ACCOUNT_SECTION_LANGUAGE | translate }}</p>
+          <h2>{{ CONSTANTS.ACCOUNT_SECTION_LANGUAGE_DESC | translate }}</h2>
+        </div>
+      </div>
+
+      <div
+        class="floating-field"
+        [class.active]="languageControl.value"
+      >
+        <p-select
+          inputId="languageSelect"
+          [options]="languageOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [formControl]="languageControl"
+        ></p-select>
+        <label for="languageSelect">{{ CONSTANTS.COMMON_LANGUAGE | translate }}</label>
+      </div>
+
+      @if (languageMessage()) {
+      <p-message
+        class="mt-2"
+        [severity]="languageMessage()?.severity ?? 'info'"
+        [text]="languageMessage()?.text ?? ''"
+      ></p-message>
+      }
+
+      <div class="actions">
+        <button
+          type="button"
+          pButton
+          [label]="CONSTANTS.ACCOUNT_SAVE_LANGUAGE | translate"
+          class="secondary"
+          [loading]="languageSaving()"
+          (click)="updateLanguage()"
+          [disabled]="languageSaving() || languageMatchesProfile()"
+        ></button>
+      </div>
+    </section>
+
+    <section class="account-card">
+      <div class="card-header">
+        <div>
+          <p class="eyebrow">{{ CONSTANTS.ACCOUNT_SECTION_SECURITY | translate }}</p>
+          <h2>{{ CONSTANTS.ACCOUNT_SECTION_SECURITY_DESC | translate }}</h2>
+        </div>
+      </div>
+
+      @if (canChangePassword()) {
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+        <div class="field-grid">
+          <div
+            class="floating-field"
+            [class.active]="passwordForm.get('currentPassword')?.value"
+          >
+            <p-password
+              inputId="currentPassword"
+              formControlName="currentPassword"
+              [feedback]="false"
+              [toggleMask]="true"
+              [inputStyleClass]="'ft-input'"
+              placeholder=" "
+            ></p-password>
+            <label for="currentPassword">
+              {{ CONSTANTS.ACCOUNT_CURRENT_PASSWORD | translate }}
+            </label>
+          </div>
+          <div
+            class="floating-field"
+            [class.active]="passwordForm.get('newPassword')?.value"
+          >
+            <p-password
+              inputId="newPassword"
+              formControlName="newPassword"
+              [feedback]="false"
+              [toggleMask]="true"
+              [inputStyleClass]="'ft-input'"
+              placeholder=" "
+            ></p-password>
+            <label for="newPassword">
+              {{ CONSTANTS.ACCOUNT_NEW_PASSWORD | translate }}
+            </label>
+          </div>
+          <div
+            class="floating-field"
+            [class.active]="passwordForm.get('confirmPassword')?.value"
+          >
+            <p-password
+              inputId="confirmPassword"
+              formControlName="confirmPassword"
+              [feedback]="false"
+              [toggleMask]="true"
+              [inputStyleClass]="'ft-input'"
+              placeholder=" "
+            ></p-password>
+            <label for="confirmPassword">
+              {{ CONSTANTS.ACCOUNT_CONFIRM_NEW_PASSWORD | translate }}
+            </label>
+          </div>
+        </div>
+
+        @if (passwordForm.hasError('passwordsMismatch') && passwordForm.touched) {
+        <p-message
+          class="mt-2"
+          severity="warn"
+          [text]="CONSTANTS.AUTH_PASSWORDS_NOT_MATCH | translate"
+        ></p-message>
+        }
+        <p class="password-hint">
+          {{ CONSTANTS.AUTH_PASSWORD_RULES_MSG | translate }}
+        </p>
+
+        @if (passwordMessage()) {
+        <p-message
+          class="mt-2"
+          [severity]="passwordMessage()?.severity ?? 'info'"
+          [text]="passwordMessage()?.text ?? ''"
+        ></p-message>
+        }
+
+        <div class="actions">
+          <button
+            type="submit"
+            pButton
+            [label]="CONSTANTS.ACCOUNT_SAVE_PASSWORD | translate"
+            class="primary"
+            [loading]="passwordSaving()"
+            [disabled]="passwordSaving() || passwordForm.invalid"
+          ></button>
+        </div>
+      </form>
+      } @else {
+      <div class="no-password">
+        <h3>{{ CONSTANTS.ACCOUNT_PASSWORD_UNAVAILABLE_TITLE | translate }}</h3>
+        <p>{{ CONSTANTS.ACCOUNT_PASSWORD_UNAVAILABLE_DESC | translate }}</p>
+      </div>
+      }
+    </section>
+  </div>
+</div>

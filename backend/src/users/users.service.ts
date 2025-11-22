@@ -32,6 +32,8 @@ export class UsersService {
       data: {
         email,
         password: hashed,
+        displayName,
+        provider: 'local',
         language,
       },
     });
@@ -67,5 +69,40 @@ export class UsersService {
       where: { id: userId },
       data: { language },
     });
+  }
+
+  async updateProfile(
+    userId: string,
+    data: { displayName?: string | null },
+  ) {
+    const payload: { displayName?: string | null } = {};
+    if (data.displayName !== undefined) {
+      const trimmed = data.displayName?.trim();
+      payload.displayName = trimmed ? trimmed : null;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      const user = await this.findById(userId);
+      return this.toPublicUser(user);
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: payload,
+    });
+    return this.toPublicUser(updated);
+  }
+
+  toPublicUser<T extends { password?: string | null }>(
+    user: T | null,
+  ): (Omit<T, 'password'> & { hasPassword: boolean }) | null {
+    if (!user) {
+      return null;
+    }
+    const { password, ...rest } = user as T & { password?: string | null };
+    return {
+      ...(rest as Omit<T, 'password'>),
+      hasPassword: !!password,
+    };
   }
 }

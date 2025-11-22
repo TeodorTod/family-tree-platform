@@ -1,5 +1,6 @@
 // navbar.component.ts
-import { Component, effect, inject, OnDestroy } from '@angular/core';
+import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -14,12 +15,14 @@ import { SharingNotificationsService } from '../../services/sharing-notification
 
 @Component({
   selector: 'app-navbar',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, NgOptimizedImage],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnDestroy {
   CONSTANTS = CONSTANTS;
+  logoTitle = signal('');
+  private displayName = signal('');
 
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -28,6 +31,7 @@ export class NavbarComponent implements OnDestroy {
   private notifications = inject(SharingNotificationsService);
 
   private sub = new Subscription();
+  private profileRequest?: Subscription;
 
   isLoggedIn = this.auth.getTokenSignal();
   mobileMenuVisible = false;
@@ -58,8 +62,11 @@ export class NavbarComponent implements OnDestroy {
       const token = this.isLoggedIn();
       if (token) {
         this.notifications.refresh();
+        this.loadProfileDisplayName();
       } else {
         this.notifications.reset();
+        this.displayName.set('');
+        this.refreshLogoTitle();
       }
     });
   }
@@ -154,6 +161,8 @@ export class NavbarComponent implements OnDestroy {
         },
       },
     ];
+
+    this.refreshLogoTitle();
   }
 
   shouldShowNavbar(): boolean {
@@ -208,5 +217,31 @@ export class NavbarComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.sub.unsubscribe();
+    this.profileRequest?.unsubscribe();
+  }
+
+  private loadProfileDisplayName() {
+    this.profileRequest?.unsubscribe();
+    this.profileRequest = this.auth.getProfile().subscribe({
+      next: (user) => {
+        const name = (user?.displayName ?? '').trim();
+        this.displayName.set(name);
+        this.refreshLogoTitle();
+      },
+      error: () => {
+        this.displayName.set('');
+        this.refreshLogoTitle();
+      },
+    });
+  }
+
+  private refreshLogoTitle() {
+    const name = this.displayName().trim();
+    const translated = name
+      ? this.translate.instant(CONSTANTS.COMMON_APP_NAME_PERSONALIZED, {
+          name,
+        })
+      : this.translate.instant(CONSTANTS.COMMON_APP_NAME);
+    this.logoTitle.set(translated);
   }
 }

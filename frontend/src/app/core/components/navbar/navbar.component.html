@@ -8,12 +8,16 @@
         aria-label="Home"
       >
         <img
-          src="assets/images/logo.png"
+          ngSrc="assets/images/logo.png"
           alt="FamilyTree logo"
           width="48"
           height="48"
           class="logo-img"
+          priority
         />
+        <span class="logo-title">
+          {{ logoTitle() }}
+        </span>
       </a>
     </ng-template>
 

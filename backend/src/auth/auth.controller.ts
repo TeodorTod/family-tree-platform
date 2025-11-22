@@ -17,6 +17,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -107,5 +109,31 @@ export class AuthController {
     );
     return { language: user.language };
   }
-  
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('profile')
+  async updateProfile(@Req() req: any, @Body() dto: UpdateProfileDto) {
+    const updated = await this.authService.updateProfile(req.user.id, dto);
+    if (updated) {
+      req.user = { ...req.user, ...updated };
+    }
+    return updated;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('change-password')
+  async changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
+    if (dto.newPassword !== dto.confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    const language: 'bg' | 'en' =
+      req.user?.language === 'bg' ? 'bg' : 'en';
+    await this.authService.changePassword(
+      req.user.id,
+      dto.currentPassword,
+      dto.newPassword,
+      language,
+    );
+    return { ok: true };
+  }
 }

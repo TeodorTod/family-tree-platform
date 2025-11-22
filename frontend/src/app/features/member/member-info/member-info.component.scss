@@ -1,4 +1,5 @@
 // member-info.component.scss
+@use '../../../../styles/forms/floating-field' as ff;
 :host {
   display: block;
   padding: 1rem;
@@ -47,6 +48,16 @@
   }
 }
 
+.form-content-wrapper {
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+@include ff.floating-field();
+
 floating-field.relation-section {
   padding: 2rem;
   background: var(--highlight-bg);
@@ -66,123 +77,6 @@ floating-field.relation-section {
   }
 }
 
-.form-content-wrapper {
-  padding: 2rem;
-
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-  }
-}
-
-.floating-field {
-  position: relative;
-  margin-bottom: 1.5rem;
-
-  label {
-    position: absolute;
-    left: 0.875rem;
-    top: 1rem;
-    font-size: 0.875rem;
-    color: var(--text-color-secondary, #6b7280);
-    pointer-events: none;
-    transition: all 0.2s ease;
-    background: var(--surface-card);
-    padding: 0 0.25rem;
-    z-index: 1;
-    font-weight: 500;
-  }
-
-  input {
-    width: 100%;
-    padding: 1rem 0.875rem;
-    font-size: 1rem;
-    border: 2px solid var(--border-color, #e1e5e9);
-    border-radius: var(--radius-md, 0.5rem);
-    background: var(--surface-card);
-    transition: all 0.2s ease;
-    color: var(--text-color);
-
-    &:focus {
-      border-color: var(--primary-color);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1);
-    }
-  }
-
-  input:focus + label,
-  input:not(:placeholder-shown) + label,
-  &.active label {
-    top: -0.5rem;
-    left: 0.625rem;
-    font-size: 0.75rem;
-    color: var(--primary-color);
-    font-weight: 600;
-  }
-
-  ::ng-deep .p-calendar {
-    width: 100%;
-
-    .p-inputtext {
-      width: 100%;
-      padding: 1rem 0.875rem !important;
-      font-size: 1rem;
-      border: 2px solid var(--border-color, #e1e5e9);
-      border-radius: var(--radius-md, 0.5rem);
-      background: var(--surface-card);
-      transition: all 0.2s ease;
-      color: var(--text-color);
-
-      &:focus {
-        border-color: var(--primary-color) !important;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
-      }
-    }
-
-    .p-datepicker-trigger {
-      right: 0.875rem;
-    }
-
-    .p-calendar-w-btn {
-      .p-inputtext {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-
-      .p-datepicker-trigger {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-left: none;
-      }
-    }
-  }
-
-  ::ng-deep .p-dropdown {
-    width: 100%;
-
-    .p-dropdown-label {
-      padding: 1rem 0.875rem !important;
-      font-size: 1rem;
-    }
-
-    .p-inputwrapper {
-      border: 2px solid var(--border-color, #e1e5e9);
-      border-radius: var(--radius-md, 0.5rem);
-      background: var(--surface-card);
-      transition: all 0.2s ease;
-
-      &:focus-within,
-      &.p-inputwrapper-focus {
-        border-color: var(--primary-color) !important;
-        box-shadow: 0 0 0 3px rgba(45, 76, 47, 0.1) !important;
-      }
-    }
-
-    .p-dropdown-trigger {
-      right: 0.875rem;
-    }
-  }
-}
 
 .form-grid {
   display: grid;

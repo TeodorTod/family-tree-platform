@@ -34,6 +34,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       );
     }
 
-    done(null, user);
+    const safeUser = this.usersService.toPublicUser(user);
+    done(null, safeUser);
   }
 }

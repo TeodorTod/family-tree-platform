@@ -22,7 +22,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    const { password, ...result } = user;
-    return { ...result, sub: payload.sub };
+    const safeUser = this.usersService.toPublicUser(user);
+    if (!safeUser) {
+      throw new UnauthorizedException();
+    }
+    return { ...safeUser, sub: payload.sub };
   }
 }
