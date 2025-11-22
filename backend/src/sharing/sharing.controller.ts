@@ -51,6 +51,11 @@ export class SharingController {
     return this.service.getRequestCounters(req.user.sub);
   }
 
+  @Post('requests/outgoing/viewed')
+  markOutgoingViewed(@Req() req: any) {
+    return this.service.markOutgoingViewed(req.user.sub);
+  }
+
   @Post('requests/:id/decide')
   decide(@Req() req: any, @Param('id') id: string, @Body() dto: DecideShareRequestDto) {
     return this.service.decide(req.user.sub, id, dto.status);

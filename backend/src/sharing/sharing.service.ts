@@ -8,6 +8,8 @@ import { CreateShareRequestDto } from './dto/create-share-request.dto';
 @Injectable()
 export class SharingService {
   constructor(private prisma: PrismaService) {}
+  private viewStateAvailable = true;
+  private fallbackSeenState = new Map<string, number>();
 
   async getMySettings(userId: string) {
     const s = await this.prisma.userSettings.findUnique({ where: { userId } });
@@ -182,7 +184,7 @@ export class SharingService {
   }
 
   async getRequestCounters(userId: string) {
-    const [incomingPending, outgoingDecided] = await Promise.all([
+    const [incomingPending, outgoingDecided, viewState] = await Promise.all([
       this.prisma.shareRequest.count({
         where: { status: ShareRequestStatus.PENDING, target: { userId } },
       }),
@@ -192,8 +194,61 @@ export class SharingService {
           status: { in: [ShareRequestStatus.APPROVED, ShareRequestStatus.REJECTED] },
         },
       }),
+      this.safeGetViewState(userId),
     ]);
-    return { incomingPending, outgoingDecided };
+    const outgoingSeen = Math.min(viewState?.outgoingSeenCount ?? 0, outgoingDecided);
+    return {
+      incomingPending,
+      outgoingDecided,
+      outgoingUnseen: Math.max(outgoingDecided - outgoingSeen, 0),
+    };
+  }
+
+  async markOutgoingViewed(userId: string) {
+    const outgoingDecided = await this.prisma.shareRequest.count({
+      where: {
+        requesterUserId: userId,
+        status: { in: [ShareRequestStatus.APPROVED, ShareRequestStatus.REJECTED] },
+      },
+    });
+    await this.safeUpsertViewState(userId, outgoingDecided);
+    return { ok: true };
+  }
+
+  private async safeGetViewState(userId: string) {
+    if (!this.viewStateAvailable) {
+      return { outgoingSeenCount: this.fallbackSeenState.get(userId) ?? 0 };
+    }
+    try {
+      return await this.prisma.shareRequestViewState.findUnique({ where: { userId } });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
+        this.viewStateAvailable = false;
+        return { outgoingSeenCount: this.fallbackSeenState.get(userId) ?? 0 };
+      }
+      throw error;
+    }
+  }
+
+  private async safeUpsertViewState(userId: string, outgoingSeenCount: number) {
+    if (!this.viewStateAvailable) {
+      this.fallbackSeenState.set(userId, outgoingSeenCount);
+      return;
+    }
+    try {
+      await this.prisma.shareRequestViewState.upsert({
+        where: { userId },
+        update: { outgoingSeenCount },
+        create: { userId, outgoingSeenCount },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
+          this.viewStateAvailable = false;
+          this.fallbackSeenState.set(userId, outgoingSeenCount);
+          return;
+      }
+      throw error;
+    }
   }
 
   private async generateUniqueRole(userId: string, base: string) {

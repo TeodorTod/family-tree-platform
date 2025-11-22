@@ -38,7 +38,7 @@
           type="button"
           pButton
           class="notification-btn"
-          (click)="navigate(CONSTANTS.ROUTES.SHARING.REQUESTS)"
+          (click)="openSharingRequests()"
           [attr.aria-label]="CONSTANTS.SHARING_REQUESTS_MENU | translate"
         >
           <i class="pi pi-bell"></i>
@@ -174,7 +174,7 @@
       type="button"
       pButton
       class="mobile-notification-btn"
-      (click)="navigate(CONSTANTS.ROUTES.SHARING.REQUESTS)"
+      (click)="openSharingRequests()"
       [attr.aria-label]="CONSTANTS.SHARING_REQUESTS_MENU | translate"
     >
       <i class="pi pi-bell"></i>

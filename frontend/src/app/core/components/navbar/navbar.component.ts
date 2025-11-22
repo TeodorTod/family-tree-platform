@@ -1,14 +1,14 @@
 // navbar.component.ts
-import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../../assets/i18n/language.service';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 import { Lang } from '../../../shared/types/lang.type';
 import { MenuItem } from 'primeng/api';
 import { SharingNotificationsService } from '../../services/sharing-notifications.service';
@@ -18,6 +18,7 @@ import { SharingNotificationsService } from '../../services/sharing-notification
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, NgOptimizedImage],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent implements OnDestroy {
   CONSTANTS = CONSTANTS;
@@ -29,6 +30,7 @@ export class NavbarComponent implements OnDestroy {
   private translate = inject(TranslateService);
   private lang = inject(LanguageService);
   private notifications = inject(SharingNotificationsService);
+  private currentPath = signal(this.router.url || '/');
 
   private sub = new Subscription();
   private profileRequest?: Subscription;
@@ -49,6 +51,23 @@ export class NavbarComponent implements OnDestroy {
   searchText = '';
   totalPending = this.notifications.totalPending;
 
+  shouldShowNavbar = computed(() => {
+    const tree = this.router.parseUrl(this.currentPath());
+
+    const path =
+      '/' +
+      (tree.root.children['primary']?.segments.map((s) => s.path).join('/') ??
+        '');
+
+    const isAuthResetWithToken =
+      path === '/auth/reset' && !!tree.queryParams['token'];
+
+    const hideOnPaths = ['/auth/login', '/auth/register', '/auth/forgot'];
+    const isOtherAuthPage = hideOnPaths.includes(path);
+
+    return !(isOtherAuthPage || isAuthResetWithToken);
+  });
+
   constructor() {
     this.updateLabels();
 
@@ -56,6 +75,13 @@ export class NavbarComponent implements OnDestroy {
       this.translate.onLangChange.subscribe(() => {
         this.updateLabels();
       })
+    );
+    this.sub.add(
+      this.router.events
+        .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+        .subscribe((event) => {
+          this.currentPath.set(event.urlAfterRedirects || event.url);
+        })
     );
 
     effect(() => {
@@ -173,23 +199,6 @@ export class NavbarComponent implements OnDestroy {
     this.refreshLogoTitle();
   }
 
-  shouldShowNavbar(): boolean {
-    const tree = this.router.parseUrl(this.router.url);
-
-    const path =
-      '/' +
-      (tree.root.children['primary']?.segments.map((s) => s.path).join('/') ??
-        '');
-
-    const isAuthResetWithToken =
-      path === '/auth/reset' && !!tree.queryParams['token'];
-
-    const hideOnPaths = ['/auth/login', '/auth/register', '/auth/forgot'];
-    const isOtherAuthPage = hideOnPaths.includes(path);
-
-    return !(isOtherAuthPage || isAuthResetWithToken);
-  }
-
   switchLang(code: Lang) {
     this.lang.use(code);
     this.auth.updateLanguagePreference(code).subscribe({
@@ -202,7 +211,6 @@ export class NavbarComponent implements OnDestroy {
     this.auth.logout();
     this.router.navigate(['/auth/login']);
     this.mobileMenuVisible = false;
-    localStorage.clear();
   }
 
   navigate(path: string): void {
@@ -221,6 +229,15 @@ export class NavbarComponent implements OnDestroy {
       this.router.navigateByUrl(path);
       this.mobileMenuVisible = false;
     }
+  }
+
+  openSharingRequests() {
+    const targetTab = this.notifications.preferredTab();
+    this.notifications.markTabViewed(targetTab);
+    this.router.navigate([CONSTANTS.ROUTES.SHARING.REQUESTS], {
+      queryParams: { tab: targetTab },
+    });
+    this.mobileMenuVisible = false;
   }
 
   ngOnDestroy() {

@@ -5,12 +5,26 @@ import { ShareRequestCounters, SharingApiService } from './sharing-api.service';
 @Injectable({ providedIn: 'root' })
 export class SharingNotificationsService {
   private api = inject(SharingApiService);
-  private counters = signal<ShareRequestCounters>({ incomingPending: 0, outgoingDecided: 0 });
+  private counters = signal<ShareRequestCounters>({
+    incomingPending: 0,
+    outgoingDecided: 0,
+    outgoingUnseen: 0,
+  });
 
   readonly countersSignal = this.counters.asReadonly();
   readonly totalPending = computed(() => {
-    const c = this.counters();
-    return c.incomingPending + c.outgoingDecided;
+    const counters = this.counters();
+    return counters.incomingPending + this.currentOutgoingUnseen(counters);
+  });
+  readonly preferredTab = computed<'incoming' | 'outgoing'>(() => {
+    const counters = this.counters();
+    if (counters.incomingPending > 0) {
+      return 'incoming';
+    }
+    if (this.currentOutgoingUnseen(counters) > 0) {
+      return 'outgoing';
+    }
+    return 'incoming';
   });
 
   refresh() {
@@ -23,7 +37,35 @@ export class SharingNotificationsService {
       });
   }
 
+  markTabViewed(tab: 'incoming' | 'outgoing') {
+    if (tab === 'outgoing') {
+      this.api
+        .markOutgoingViewed()
+        .pipe(take(1))
+        .subscribe({
+          next: () =>
+            this.counters.update((current) => ({
+              ...current,
+              outgoingUnseen: 0,
+            })),
+          error: () => void 0,
+        });
+    }
+  }
+
   reset() {
-    this.counters.set({ incomingPending: 0, outgoingDecided: 0 });
+    this.counters.set({
+      incomingPending: 0,
+      outgoingDecided: 0,
+      outgoingUnseen: 0,
+    });
+  }
+
+  private currentOutgoingUnseen(counters: ShareRequestCounters) {
+    const fromApi =
+      typeof counters.outgoingUnseen === 'number'
+        ? counters.outgoingUnseen
+        : counters.outgoingDecided ?? 0;
+    return Math.max(fromApi, 0);
   }
 }

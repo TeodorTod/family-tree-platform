@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
 import { SharingApiService } from '../../core/services/sharing-api.service';
@@ -7,6 +7,8 @@ import { CONSTANTS } from '../../shared/constants/constants';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { FamilyService } from '../../core/services/family.service';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-sharing-requests-page',
@@ -14,12 +16,16 @@ import { PartnerStatus } from '../../shared/enums/partner-status.enum';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, AddRelativeDialogComponent],
   templateUrl: './sharing-requests.page.html',
   styleUrls: ['./sharing-requests.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SharingRequestsPage implements OnInit {
   CONSTANTS = CONSTANTS;
   private api = inject(SharingApiService);
   private family = inject(FamilyService);
   private notifications = inject(SharingNotificationsService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   activeTab = signal<'incoming' | 'outgoing'>('incoming');
   incoming = signal<any[]>([]);
@@ -30,16 +36,26 @@ export class SharingRequestsPage implements OnInit {
   clonedMemberId: string | null = null;
 
   ngOnInit(): void {
+    this.listenForTabChanges();
     this.refresh();
   }
 
   refresh() {
     this.api.getIncomingRequests().subscribe((d) => this.incoming.set(d));
     this.api.getOutgoingRequests().subscribe((d) => this.outgoing.set(d));
+    this.notifications.refresh();
   }
 
-  onTabChange(v: any) {
-    this.activeTab.set((v as 'incoming' | 'outgoing'));
+  onTabChange(value: 'incoming' | 'outgoing' | string | number) {
+    const nextTab: 'incoming' | 'outgoing' = value === 'outgoing' ? 'outgoing' : 'incoming';
+    this.activeTab.set(nextTab);
+    this.notifications.markTabViewed(nextTab);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: nextTab },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   decide(id: string, status: 'APPROVED' | 'REJECTED') {
@@ -132,5 +148,16 @@ export class SharingRequestsPage implements OnInit {
         updateThen(newId);
       }
     });
+  }
+
+  private listenForTabChanges() {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const tabParam = params.get('tab');
+        const nextTab: 'incoming' | 'outgoing' = tabParam === 'outgoing' ? 'outgoing' : 'incoming';
+        this.activeTab.set(nextTab);
+        this.notifications.markTabViewed(nextTab);
+      });
   }
 }

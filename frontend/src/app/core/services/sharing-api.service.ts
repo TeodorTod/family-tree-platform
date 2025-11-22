@@ -33,6 +33,7 @@ export interface CreateShareRequestDto {
 export interface ShareRequestCounters {
   incomingPending: number;
   outgoingDecided: number;
+  outgoingUnseen?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -78,6 +79,10 @@ export class SharingApiService {
 
   decideRequest(id: string, status: 'APPROVED' | 'REJECTED') {
     return this.http.post<{ newMemberId?: string }>(`${this.api}/sharing/requests/${id}/decide`, { status });
+  }
+
+  markOutgoingViewed() {
+    return this.http.post<{ ok: boolean }>(`${this.api}/sharing/requests/outgoing/viewed`, {});
   }
 
   cloneDirect(targetMemberId: string) {

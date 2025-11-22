@@ -74,10 +74,10 @@ export class AuthService {
 
       .pipe(
         tap((res) => {
-          this.token.set(res.access_token);
-          localStorage.setItem('token', res.access_token);
           const lang = (res.user?.language as Lang | undefined) ?? 'bg';
           localStorage.setItem('lang', lang);
+          this.token.set(res.access_token);
+          localStorage.setItem('token', res.access_token);
         })
       );
   }
