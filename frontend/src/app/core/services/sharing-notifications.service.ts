@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { take } from 'rxjs';
 import { ShareRequestCounters, SharingApiService } from './sharing-api.service';
+import { ShareRequestTab } from '../../shared/enums/share-request-tab.enum';
 
 @Injectable({ providedIn: 'root' })
 export class SharingNotificationsService {
@@ -16,15 +17,15 @@ export class SharingNotificationsService {
     const counters = this.counters();
     return counters.incomingPending + this.currentOutgoingUnseen(counters);
   });
-  readonly preferredTab = computed<'incoming' | 'outgoing'>(() => {
+  readonly preferredTab = computed<ShareRequestTab>(() => {
     const counters = this.counters();
     if (counters.incomingPending > 0) {
-      return 'incoming';
+      return ShareRequestTab.Incoming;
     }
     if (this.currentOutgoingUnseen(counters) > 0) {
-      return 'outgoing';
+      return ShareRequestTab.Outgoing;
     }
-    return 'incoming';
+    return ShareRequestTab.Incoming;
   });
 
   refresh() {
@@ -37,8 +38,8 @@ export class SharingNotificationsService {
       });
   }
 
-  markTabViewed(tab: 'incoming' | 'outgoing') {
-    if (tab === 'outgoing') {
+  markTabViewed(tab: ShareRequestTab) {
+    if (tab === ShareRequestTab.Outgoing) {
       this.api
         .markOutgoingViewed()
         .pipe(take(1))

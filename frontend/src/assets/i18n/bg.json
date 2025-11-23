@@ -514,7 +514,8 @@
     "REQUIRES_REQUEST": "Изисква заявка",
     "IMPORT_AND_ADD": "Импортирай и добави",
     "REQUEST_ACCESS": "Искай достъп",
-    "REQUEST_PENDING": "Заявката е изпратена"
+    "REQUEST_PENDING": "Заявката е изпратена",
+    "REQUEST_ERROR": "Заявката не можа да бъде изпратена. Опитайте отново."
   },
   "SHARING": {
     "SETTINGS_TITLE": "Настройки за споделяне",
@@ -531,6 +532,9 @@
     "REQUESTS_MENU": "Заявки за споделяне",
     "USE_IMPORTED": "Използвай импортиран",
     "SELECT_IMPORTED": "Избери импортиран член",
-    "APPROVED": "Одобрени"
+    "APPROVED": "Одобрени",
+    "STATUS_PENDING": "В изчакване",
+    "STATUS_APPROVED": "Одобрена",
+    "STATUS_REJECTED": "Отхвърлена"
   }
 }

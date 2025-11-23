@@ -9,7 +9,7 @@
       <tr>
         <th></th>
         <th>{{ CONSTANTS.COMMON_NAME | translate }}</th>
-        <th>{{ CONSTANTS.COMMON_YEARS | translate }}</th>
+        <th>{{ CONSTANTS.COMMON_OWNER | translate }}</th>
         <th>{{ CONSTANTS.COMMON_STATUS | translate }}</th>
         <th>{{ CONSTANTS.COMMON_ACTIONS | translate }}</th>
       </tr>
@@ -20,15 +20,19 @@
           <img [src]="item.photoUrl || 'assets/images/user-image/user.svg'" width="40" height="40" />
         </td>
         <td>{{ item.firstName }} {{ item.lastName }}</td>
-        <td>{{ item.birthYear || '' }} - {{ item.deathYear || '' }}</td>
+        <td>{{ item.ownerDisplayName || '-' }}</td>
         <td>
+          @if (item.requestStatus) {
+          <p-tag [severity]="statusSeverity(item.requestStatus)" [value]="requestStatusKey(item.requestStatus) | translate"></p-tag>
+          } @else {
           <p-tag severity="warning" [value]="(CONSTANTS.SEARCH_REQUIRES_REQUEST | translate)"></p-tag>
+          }
         </td>
-        <td>
-          @if (!item.hasPendingRequest) {
+        <td class="global-search-actions">
+          @if (!isRequestLocked(item.requestStatus)) {
           <button pButton size="small" label="{{ CONSTANTS.SEARCH_REQUEST_ACCESS | translate }}" (click)="openRequestDialog(item)"></button>
           } @else {
-          <p-tag severity="info" [value]="(CONSTANTS.SEARCH_REQUEST_PENDING | translate)"></p-tag>
+          <p-tag severity="info" [value]="requestStatusKey(item.requestStatus) | translate"></p-tag>
           }
         </td>
       </tr>

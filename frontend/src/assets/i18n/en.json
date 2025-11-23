@@ -539,7 +539,8 @@
     "REQUIRES_REQUEST": "Requires Request",
     "IMPORT_AND_ADD": "Import and Add",
     "REQUEST_ACCESS": "Request Access",
-    "REQUEST_PENDING": "Request Sent"
+    "REQUEST_PENDING": "Request Sent",
+    "REQUEST_ERROR": "Unable to send request. Please try again."
   },
   "SHARING": {
     "SETTINGS_TITLE": "Sharing Settings",
@@ -556,6 +557,9 @@
     "REQUESTS_MENU": "Sharing Requests",
     "USE_IMPORTED": "Use imported",
     "SELECT_IMPORTED": "Select imported member",
-    "APPROVED": "Approved"
+    "APPROVED": "Approved",
+    "STATUS_PENDING": "Pending",
+    "STATUS_APPROVED": "Approved",
+    "STATUS_REJECTED": "Rejected"
   }
 }

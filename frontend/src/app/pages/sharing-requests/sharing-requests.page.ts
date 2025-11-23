@@ -9,6 +9,8 @@ import { FamilyService } from '../../core/services/family.service';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
+import { ShareRequestTab } from '../../shared/enums/share-request-tab.enum';
 
 @Component({
   selector: 'app-sharing-requests-page',
@@ -20,14 +22,37 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class SharingRequestsPage implements OnInit {
   CONSTANTS = CONSTANTS;
+  ShareRequestStatusEnum = ShareRequestStatus;
+  ShareRequestTabEnum = ShareRequestTab;
   private api = inject(SharingApiService);
   private family = inject(FamilyService);
   private notifications = inject(SharingNotificationsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  statusLabelKey: Record<ShareRequestStatus, string> = {
+    [ShareRequestStatus.Pending]: CONSTANTS.SHARING_STATUS_PENDING,
+    [ShareRequestStatus.Approved]: CONSTANTS.SHARING_STATUS_APPROVED,
+    [ShareRequestStatus.Rejected]: CONSTANTS.SHARING_STATUS_REJECTED,
+  };
 
-  activeTab = signal<'incoming' | 'outgoing'>('incoming');
+  truncateMessage(message?: string | null) {
+    const value = (message ?? '').trim();
+    if (value.length <= 20) {
+      return value || '-';
+    }
+    return `${value.slice(0, 20)}…`;
+  }
+
+  statusLabelKeyFor(status?: ShareRequestStatus | string | null) {
+    if (!status) {
+      return '';
+    }
+    const key = status as ShareRequestStatus;
+    return this.statusLabelKey[key] ?? status;
+  }
+
+  activeTab = signal<ShareRequestTab>(ShareRequestTab.Incoming);
   incoming = signal<any[]>([]);
   outgoing = signal<any[]>([]);
 
@@ -46,8 +71,8 @@ export class SharingRequestsPage implements OnInit {
     this.notifications.refresh();
   }
 
-  onTabChange(value: 'incoming' | 'outgoing' | string | number) {
-    const nextTab: 'incoming' | 'outgoing' = value === 'outgoing' ? 'outgoing' : 'incoming';
+  onTabChange(value: ShareRequestTab | string | number) {
+    const nextTab = this.toTab(value);
     this.activeTab.set(nextTab);
     this.notifications.markTabViewed(nextTab);
     this.router.navigate([], {
@@ -58,7 +83,7 @@ export class SharingRequestsPage implements OnInit {
     });
   }
 
-  decide(id: string, status: 'APPROVED' | 'REJECTED') {
+  decide(id: string, status: ShareRequestStatus.Approved | ShareRequestStatus.Rejected) {
     this.api.decideRequest(id, status).subscribe(() => {
       this.refresh();
       this.notifications.refresh();
@@ -151,13 +176,18 @@ export class SharingRequestsPage implements OnInit {
   }
 
   private listenForTabChanges() {
-    this.route.queryParamMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const tabParam = params.get('tab');
-        const nextTab: 'incoming' | 'outgoing' = tabParam === 'outgoing' ? 'outgoing' : 'incoming';
-        this.activeTab.set(nextTab);
-        this.notifications.markTabViewed(nextTab);
-      });
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const tabParam = params.get('tab');
+      const nextTab = this.toTab(tabParam ?? ShareRequestTab.Incoming);
+      this.activeTab.set(nextTab);
+      this.notifications.markTabViewed(nextTab);
+    });
+  }
+
+  private toTab(value: ShareRequestTab | string | number) {
+    if (value === ShareRequestTab.Outgoing || value === 'outgoing') {
+      return ShareRequestTab.Outgoing;
+    }
+    return ShareRequestTab.Incoming;
   }
 }

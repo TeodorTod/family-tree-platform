@@ -49,7 +49,7 @@ export class GlobalSearchService {
     const ownerIds = Array.from(new Set(candidates.map((c) => c.userId)));
     const memberIds = candidates.map((c) => c.id);
 
-    const [settings, consents, owners, pendingRequests] = await Promise.all([
+    const [settings, consents, owners, existingRequests] = await Promise.all([
       this.prisma.userSettings.findMany({
         where: { userId: { in: ownerIds } },
         select: {
@@ -76,9 +76,15 @@ export class GlobalSearchService {
             where: {
               requesterUserId: userId,
               targetMemberId: { in: memberIds },
-              status: ShareRequestStatus.PENDING,
+              status: {
+                in: [
+                  ShareRequestStatus.PENDING,
+                  ShareRequestStatus.APPROVED,
+                  ShareRequestStatus.REJECTED,
+                ],
+              },
             },
-            select: { targetMemberId: true },
+            select: { targetMemberId: true, status: true },
           })
         : Promise.resolve([]),
     ]);
@@ -97,10 +103,16 @@ export class GlobalSearchService {
       ])
     );
 
-    const pendingTargetIds = new Set(pendingRequests.map((r) => r.targetMemberId));
+    const existingByTarget = new Map<string, ShareRequestStatus>();
+    for (const req of existingRequests) {
+      existingByTarget.set(req.targetMemberId, req.status);
+    }
 
     const results: SearchResultDto[] = [];
     for (const m of candidates) {
+      if (m.userId === userId) {
+        continue;
+      }
       const key = `${m.userId}:${m.id}`;
       const consent = consentByPair.get(key);
       const cfg = settingsByOwner.get(m.userId);
@@ -112,6 +124,11 @@ export class GlobalSearchService {
       const allowDetails =
         consent?.allowDetails ?? cfg?.allowDeceasedDetailsDefault ?? false;
 
+      const existingStatus = existingByTarget.get(m.id) ?? null;
+      const hasPendingRequest =
+        existingStatus === ShareRequestStatus.PENDING ||
+        existingStatus === ShareRequestStatus.APPROVED;
+
       const out: SearchResultDto = {
         id: m.id,
         firstName: m.firstName,
@@ -121,7 +138,8 @@ export class GlobalSearchService {
         photoUrl: m.photoUrl ?? null,
         requiresShareApproval: !allowDetails,
         ownerDisplayName: m.user.displayName ?? ownerNameByUser.get(m.userId) ?? null,
-        hasPendingRequest: pendingTargetIds.has(m.id),
+        hasPendingRequest,
+        requestStatus: existingStatus,
       };
       results.push(out);
       if (results.length >= size) break;

@@ -1,3 +1,5 @@
+import { ShareRequestStatus } from '../../../generated/prisma';
+
 export class SearchResultDto {
   id!: string;
   firstName!: string;
@@ -8,4 +10,5 @@ export class SearchResultDto {
   requiresShareApproval!: boolean;
   ownerDisplayName?: string | null;
   hasPendingRequest!: boolean;
+  requestStatus?: ShareRequestStatus | null;
 }

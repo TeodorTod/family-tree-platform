@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
 
 export interface SearchResultDto {
   id: string;
@@ -12,6 +13,7 @@ export interface SearchResultDto {
   requiresShareApproval: boolean;
   ownerDisplayName?: string | null;
   hasPendingRequest: boolean;
+  requestStatus?: ShareRequestStatus | null;
 }
 
 export interface UpdateUserSettingsDto {

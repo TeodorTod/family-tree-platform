@@ -7,6 +7,9 @@ import { CONSTANTS } from '../../shared/constants/constants';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
 import { FamilyService } from '../../core/services/family.service';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
+import { MessageService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
+import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
 
 @Component({
   selector: 'app-global-search-page',
@@ -21,6 +24,8 @@ export class GlobalSearchPage implements OnInit {
   private router = inject(Router);
   private api = inject(SharingApiService);
   private family = inject(FamilyService);
+  private messages = inject(MessageService);
+  private translate = inject(TranslateService);
 
   q = signal('');
   results = signal<SearchResultDto[]>([]);
@@ -32,6 +37,11 @@ export class GlobalSearchPage implements OnInit {
   showMsgDialog = signal(false);
   selectedTarget: SearchResultDto | null = null;
   msgDraft = signal('');
+  private statusKey: Record<ShareRequestStatus, string> = {
+    [ShareRequestStatus.Pending]: CONSTANTS.SHARING_STATUS_PENDING,
+    [ShareRequestStatus.Approved]: CONSTANTS.SHARING_STATUS_APPROVED,
+    [ShareRequestStatus.Rejected]: CONSTANTS.SHARING_STATUS_REJECTED,
+  };
 
   ngOnInit(): void {
     const initialQ = this.route.snapshot.queryParamMap.get('q') ?? '';
@@ -56,7 +66,9 @@ export class GlobalSearchPage implements OnInit {
   }
 
   openRequestDialog(item: SearchResultDto) {
-    if (item.hasPendingRequest) return;
+    if (this.isRequestLocked(item.requestStatus)) {
+      return;
+    }
     this.selectedTarget = item;
     this.msgDraft.set('');
     this.showMsgDialog.set(true);
@@ -74,9 +86,12 @@ export class GlobalSearchPage implements OnInit {
     const message = raw ? String(raw).slice(0, 255) : undefined;
     this.api
       .createShareRequest({ targetMemberId: this.selectedTarget.id, message })
-      .subscribe(() => {
-        this.cancelRequestDialog();
-        this.search();
+      .subscribe({
+        next: () => {
+          this.cancelRequestDialog();
+          this.search();
+        },
+        error: (err) => this.handleRequestError(err),
       });
   }
 
@@ -160,5 +175,50 @@ export class GlobalSearchPage implements OnInit {
         updateThen(newId);
       }
     });
+  }
+
+  private handleRequestError(error: unknown) {
+    const detail = this.extractErrorMessage(error);
+    this.messages.add({
+      severity: 'error',
+      summary: this.translate.instant(CONSTANTS.SEARCH_REQUEST_ACCESS),
+      detail,
+    });
+  }
+
+  private extractErrorMessage(error: unknown) {
+    const fallback = this.translate.instant(CONSTANTS.SEARCH_REQUEST_ERROR);
+    if (!error) return fallback;
+    const err: any = error;
+    const message = err?.error?.message ?? err?.message;
+    if (Array.isArray(message)) {
+      return String(message[0] ?? fallback);
+    }
+    if (typeof message === 'string') {
+      return message;
+    }
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+    return fallback;
+  }
+
+  requestStatusKey(status?: ShareRequestStatus | null) {
+    if (!status) return '';
+    return this.statusKey[status] ?? '';
+  }
+
+  statusSeverity(status?: ShareRequestStatus | null) {
+    if (!status) return 'warning';
+    if (status === ShareRequestStatus.Approved) return 'success';
+    if (status === ShareRequestStatus.Rejected) return 'danger';
+    return 'info';
+  }
+
+  isRequestLocked(status?: ShareRequestStatus | null) {
+    return (
+      status === ShareRequestStatus.Pending ||
+      status === ShareRequestStatus.Approved
+    );
   }
 }

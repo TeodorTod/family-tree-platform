@@ -107,9 +107,13 @@ export class SharingService {
     if (!eff.allowDiscovery) throw new ForbiddenException('Not discoverable');
 
     const existing = await this.prisma.shareRequest.findFirst({
-      where: { requesterUserId: userId, targetMemberId: target.id, status: ShareRequestStatus.PENDING },
+      where: {
+        requesterUserId: userId,
+        targetMemberId: target.id,
+        status: { in: [ShareRequestStatus.PENDING, ShareRequestStatus.APPROVED] },
+      },
     });
-    if (existing) throw new BadRequestException('Already pending');
+    if (existing) throw new BadRequestException('Already requested');
 
     return this.prisma.shareRequest.create({
       data: {
@@ -124,7 +128,6 @@ export class SharingService {
   async listIncoming(userId: string) {
     return this.prisma.shareRequest.findMany({
       where: {
-        status: { in: [ShareRequestStatus.PENDING, ShareRequestStatus.APPROVED] },
         target: { userId },
       },
       orderBy: { createdAt: 'desc' },

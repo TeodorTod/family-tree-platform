@@ -25,13 +25,22 @@
                   || '-' }}
               </td>
               <td>{{ row.target?.firstName }} {{ row.target?.lastName }}</td>
-              <td><p-tag [value]="row.status"></p-tag></td>
-              <td>{{ row.message || '' }}</td>
+              <td><p-tag [value]="statusLabelKeyFor(row.status) | translate"></p-tag></td>
+              <td>
+                <span
+                  pTooltip="{{ row.message || '' }}"
+                  tooltipPosition="top"
+                  [escape]="false"
+                  class="message-snippet"
+                >
+                  {{ truncateMessage(row.message) }}
+                </span>
+              </td>
               <td>{{ row.createdAt | date: 'yyyy-MM-dd' }}</td>
               <td>
-                @if (row.status==='PENDING') {
-                <button pButton size="small" label="{{ CONSTANTS.COMMON_APPROVE | translate }}" (click)="decide(row.id,'APPROVED')"></button>
-                <button class="ml-2" pButton severity="secondary" size="small" label="{{ CONSTANTS.COMMON_REJECT | translate }}" (click)="decide(row.id,'REJECTED')"></button>
+                @if (row.status===ShareRequestStatusEnum.Pending) {
+                <button pButton size="small" label="{{ CONSTANTS.COMMON_APPROVE | translate }}" (click)="decide(row.id, ShareRequestStatusEnum.Approved)"></button>
+                <button class="ml-2" pButton severity="secondary" size="small" label="{{ CONSTANTS.COMMON_REJECT | translate }}" (click)="decide(row.id, ShareRequestStatusEnum.Rejected)"></button>
                 }
               </td>
             </tr>
@@ -58,8 +67,17 @@
                     || '-'
                 }}
               </td>
-              <td><p-tag [value]="row.status"></p-tag></td>
-              <td>{{ row.message || '' }}</td>
+              <td><p-tag [value]="statusLabelKeyFor(row.status) | translate"></p-tag></td>
+              <td>
+                <span
+                  pTooltip="{{ row.message || '' }}"
+                  tooltipPosition="top"
+                  [escape]="false"
+                  class="message-snippet"
+                >
+                  {{ truncateMessage(row.message) }}
+                </span>
+              </td>
             </tr>
           </ng-template>
         </p-table>
