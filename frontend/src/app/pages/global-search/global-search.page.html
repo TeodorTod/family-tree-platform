@@ -1,8 +1,4 @@
 <div class="global-search">
-  <div class="search-bar">
-    <input pInputText type="text" [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate" [ngModel]="q()" (ngModelChange)="q.set($event)" (keyup.enter)="onSubmit()" />
-    <button pButton icon="pi pi-search" (click)="onSubmit()"></button>
-  </div>
 
   <p-table [value]="results()" [loading]="loading()">
     <ng-template pTemplate="header">

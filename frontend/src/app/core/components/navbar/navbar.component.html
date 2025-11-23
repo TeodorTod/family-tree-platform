@@ -26,13 +26,16 @@
       <div class="nav-desktop">
         <div class="search-infield">
           <i class="pi pi-search"></i>
-          <input 
-            pInputText 
-            type="text" 
-            [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate" 
-            [(ngModel)]="searchText" 
-            (keyup.enter)="submitSearch()" 
+          <input
+            pInputText
+            type="text"
+            [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate"
+            [(ngModel)]="searchText"
+            (keyup.enter)="submitSearch()"
           />
+          <button type="button" class="search-btn" (click)="submitSearch()" [attr.aria-label]="CONSTANTS.SEARCH_PLACEHOLDER | translate">
+            <i class="pi pi-arrow-right"></i>
+          </button>
         </div>
         <button
           type="button"
@@ -162,13 +165,16 @@
           <!-- Mobile Search Box -->
     <div class="search-infield mobile-search">
       <i class="pi pi-search"></i>
-      <input 
-        pInputText 
-        type="text" 
-        [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate" 
-        [(ngModel)]="searchText" 
-        (keyup.enter)="submitSearch()" 
+      <input
+        pInputText
+        type="text"
+        [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate"
+        [(ngModel)]="searchText"
+        (keyup.enter)="submitSearch()"
       />
+      <button type="button" class="search-btn" (click)="submitSearch()" [attr.aria-label]="CONSTANTS.SEARCH_PLACEHOLDER | translate">
+        <i class="pi pi-arrow-right"></i>
+      </button>
     </div>
     <button
       type="button"

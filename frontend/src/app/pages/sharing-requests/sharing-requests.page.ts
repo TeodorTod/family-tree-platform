@@ -11,6 +11,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
 import { ShareRequestTab } from '../../shared/enums/share-request-tab.enum';
+import { ConfirmationService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sharing-requests-page',
@@ -30,11 +32,23 @@ export class SharingRequestsPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private confirmation = inject(ConfirmationService);
+  private translate = inject(TranslateService);
   statusLabelKey: Record<ShareRequestStatus, string> = {
     [ShareRequestStatus.Pending]: CONSTANTS.SHARING_STATUS_PENDING,
     [ShareRequestStatus.Approved]: CONSTANTS.SHARING_STATUS_APPROVED,
     [ShareRequestStatus.Rejected]: CONSTANTS.SHARING_STATUS_REJECTED,
   };
+
+  statusSeverity(status?: ShareRequestStatus | string | null) {
+    if (status === ShareRequestStatus.Approved) {
+      return 'success';
+    }
+    if (status === ShareRequestStatus.Rejected) {
+      return 'danger';
+    }
+    return 'info';
+  }
 
   truncateMessage(message?: string | null) {
     const value = (message ?? '').trim();
@@ -87,6 +101,26 @@ export class SharingRequestsPage implements OnInit {
     this.api.decideRequest(id, status).subscribe(() => {
       this.refresh();
       this.notifications.refresh();
+    });
+  }
+
+  confirmDecision(row: any, status: ShareRequestStatus.Approved | ShareRequestStatus.Rejected) {
+    const isApprove = status === ShareRequestStatus.Approved;
+    const headerKey = isApprove ? CONSTANTS.SHARING_CONFIRM_APPROVE_TITLE : CONSTANTS.SHARING_CONFIRM_REJECT_TITLE;
+    const messageKey = isApprove ? CONSTANTS.SHARING_CONFIRM_APPROVE_MESSAGE : CONSTANTS.SHARING_CONFIRM_REJECT_MESSAGE;
+    const targetName = `${row?.target?.firstName ?? ''} ${row?.target?.lastName ?? ''}`.trim() || '-';
+
+    this.confirmation.confirm({
+      key: 'sharing-action',
+      header: this.translate.instant(headerKey),
+      message: this.translate.instant(messageKey, { target: targetName }),
+      acceptLabel: this.translate.instant(CONSTANTS.COMMON_CONFIRM),
+      rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
+      acceptButtonStyleClass: isApprove ? undefined : 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => this.decide(row.id, status),
+      reject: () => this.confirmation.close(),
+      closeOnEscape: true,
     });
   }
 

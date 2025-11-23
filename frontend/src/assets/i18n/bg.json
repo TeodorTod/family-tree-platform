@@ -1,4 +1,4 @@
-﻿{
+{
   "AUTH": {
     "LOGIN": "Вход",
     "LOGOUT": "Изход",
@@ -80,7 +80,6 @@
     "DELETE_CANCEL": "Запази акаунта",
     "DELETE_ERROR": "Не успяхме да изтрием акаунта. Опитайте отново."
   },
-
   "INFO": {
     "OWNER": "Твоите данни",
     "MOTHER": "Данни за твоята майка",
@@ -438,7 +437,8 @@
     "REJECT": "Откажи",
     "OWNER": "Собственик",
     "OPTIONAL": "По избор",
-    "SEND": "Изпрати"
+    "SEND": "Изпрати",
+    "CONFIRM": "Потвърди"
   },
   "FAQ": {
     "TITLE": "Често задавани въпроси",
@@ -535,6 +535,10 @@
     "APPROVED": "Одобрени",
     "STATUS_PENDING": "В изчакване",
     "STATUS_APPROVED": "Одобрена",
-    "STATUS_REJECTED": "Отхвърлена"
+    "STATUS_REJECTED": "Отхвърлена",
+    "CONFIRM_APPROVE_TITLE": "Потвърдете одобрението",
+    "CONFIRM_APPROVE_MESSAGE": "Сигурни ли сте, че искате да одобрите достъпа до {{target}}?",
+    "CONFIRM_REJECT_TITLE": "Потвърдете отказа",
+    "CONFIRM_REJECT_MESSAGE": "Сигурни ли сте, че искате да откажете заявката за {{target}}?"
   }
 }

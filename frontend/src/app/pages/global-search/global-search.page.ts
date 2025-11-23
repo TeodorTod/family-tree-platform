@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
@@ -10,6 +10,7 @@ import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-global-search-page',
@@ -26,6 +27,7 @@ export class GlobalSearchPage implements OnInit {
   private family = inject(FamilyService);
   private messages = inject(MessageService);
   private translate = inject(TranslateService);
+  private destroyRef = inject(DestroyRef);
 
   q = signal('');
   results = signal<SearchResultDto[]>([]);
@@ -44,19 +46,23 @@ export class GlobalSearchPage implements OnInit {
   };
 
   ngOnInit(): void {
-    const initialQ = this.route.snapshot.queryParamMap.get('q') ?? '';
-    this.q.set(initialQ);
-    this.search();
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const value = params.get('q') ?? '';
+        this.q.set(value);
+        this.search();
+      });
   }
 
   onSubmit() {
     this.router.navigate([], { queryParams: { q: this.q() || null } });
-    this.search();
   }
 
   search() {
+    const term = (this.q() || '').trim();
     this.loading.set(true);
-    this.api.searchDeceased(this.q()).subscribe({
+    this.api.searchDeceased(term).subscribe({
       next: (res) => {
         this.results.set(res);
         this.loading.set(false);

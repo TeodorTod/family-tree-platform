@@ -80,7 +80,6 @@
     "DELETE_CANCEL": "Keep account",
     "DELETE_ERROR": "We couldn't delete your account. Please try again."
   },
-
   "INFO": {
     "OWNER": "Your Data",
     "MOTHER": "Data for Your Mother",
@@ -157,17 +156,14 @@
     "YEAR_ONLY": "Year Only",
     "FREE_DATE": "Free Text"
   },
-
   "ADD": {
     "PHOTO": "Add Photo"
   },
-
   "GENDER": {
     "MALE": "Male",
     "FEMALE": "Female",
     "OTHER": "Other"
   },
-
   "RELATION": {
     "OWNER": "Yourself",
     "MOTHER": "Mother",
@@ -177,30 +173,25 @@
     "BROTHER": "Brother",
     "SISTER": "Sister",
     "PARTNER": "Partner/Spouse",
-
     "MATERNAL_GRANDMOTHER": "Grandmother (Maternal)",
     "MATERNAL_GRANDFATHER": "Grandfather (Maternal)",
     "PATERNAL_GRANDMOTHER": "Grandmother (Paternal)",
     "PATERNAL_GRANDFATHER": "Grandfather (Paternal)",
-
     "OWNER_SON": "Son",
     "OWNER_DAUGHTER": "Daughter",
     "OWNER_BROTHER": "Brother",
     "OWNER_SISTER": "Sister",
     "OWNER_PARTNER": "Partner/Spouse",
-
     "MOTHER_SON": "Son",
     "MOTHER_DAUGHTER": "Daughter",
     "MOTHER_BROTHER": "Uncle (Maternal)",
     "MOTHER_SISTER": "Aunt (Maternal)",
     "MOTHER_PARTNER": "Partner/Spouse",
-
     "FATHER_SON": "Son",
     "FATHER_DAUGHTER": "Daughter",
     "FATHER_BROTHER": "Uncle (Paternal)",
     "FATHER_SISTER": "Aunt (Paternal)",
     "FATHER_PARTNER": "Partner/Spouse",
-
     "MATERNAL_GRANDMOTHER_SISTER": "Aunt (Sister of Maternal Grandmother)",
     "MATERNAL_GRANDMOTHER_BROTHER": "Uncle (Brother of Maternal Grandmother)",
     "MATERNAL_GRANDFATHER_SISTER": "Aunt (Sister of Maternal Grandfather)",
@@ -209,7 +200,6 @@
     "MATERNAL_GRANDMOTHER_MOTHER": "Great-Grandmother (Wife of Maternal Grandfather)",
     "MATERNAL_GRANDFATHER_MOTHER": "Great-Grandmother (Wife of Maternal Grandfather)",
     "MATERNAL_GRANDFATHER_FATHER": "Great-Grandfather (Husband of Maternal Grandmother)",
-
     "PATERNAL_GRANDMOTHER_SISTER": "Aunt (Sister of Paternal Grandmother)",
     "PATERNAL_GRANDMOTHER_BROTHER": "Uncle (Brother of Paternal Grandmother)",
     "PATERNAL_GRANDFATHER_SISTER": "Aunt (Sister of Paternal Grandfather)",
@@ -218,7 +208,6 @@
     "PATERNAL_GRANDMOTHER_MOTHER": "Great-Grandmother (Wife of Paternal Grandfather)",
     "PATERNAL_GRANDFATHER_MOTHER": "Great-Grandmother (Wife of Paternal Grandfather)",
     "PATERNAL_GRANDFATHER_FATHER": "Great-Grandfather (Husband of Paternal Grandmother)",
-
     "ADD_RELATIVE_HEADER": "Add Relative",
     "CHOOSE_RELATION": "Choose Relation",
     "MATERNAL_GENERIC": "Relative (Maternal)",
@@ -226,7 +215,6 @@
     "UNKNOWN": "Role",
     "TYPE": "Relationship Type"
   },
-
   "TAB": {
     "GENERAL_INFO": "General Data",
     "STORIES": "Stories",
@@ -237,7 +225,6 @@
     "FAVORITES": "Favorites",
     "PERSONAL_INFO": "Personal Information"
   },
-
   "PARTNER_STATUS": {
     "MARRIED": "Married",
     "DIVORCED": "Divorced",
@@ -250,7 +237,6 @@
     "UNKNOWN": "Unknown",
     "OTHER": "Other"
   },
-
   "BIO": {
     "MAIN_BIO": "Main Biography",
     "NOTES": "Notes",
@@ -264,7 +250,6 @@
     "COMMON_NOTE_TITLE": "Note",
     "NO_NOTES": "No notes yet."
   },
-
   "MEDIA": {
     "TAB_IMAGES": "Photos",
     "TAB_VIDEOS": "Videos",
@@ -287,7 +272,6 @@
     "RESET_DELETES": "Restore Deletions",
     "REMOVE_FROM_GALLERY": "Remove from Gallery"
   },
-
   "CAREER": {
     "COMPLETED": "Completed",
     "NOT_COMPLETED": "Not Completed",
@@ -315,7 +299,6 @@
     "WORK_PROFESSION": "Profession",
     "COL_PROFESSION": "Profession"
   },
-
   "STORIES": {
     "TITLE": "Title",
     "INCLUDED_MEMBERS": "Included Relatives",
@@ -327,15 +310,12 @@
     "DATE": "Date",
     "CREATED": "Created"
   },
-
   "ACH": {
     "ADD": "Add Achievement",
     "UPDATE": "Update Achievement",
     "TITLE": "Achievement Title",
-
     "CATEGORY_LABEL": "Category",
     "LEVEL_LABEL": "Level",
-
     "ORGANIZATION": "Organization / Publisher",
     "LOCATION": "Location",
     "DATE": "Date",
@@ -343,7 +323,6 @@
     "DELETE_TITLE": "Delete Achievement",
     "DELETE_MSG": "This action cannot be undone.",
     "NO_ACH": "No achievements added yet.",
-
     "CATEGORY": {
       "ACADEMIC": "Academic",
       "CERTIFICATION": "Certification",
@@ -359,7 +338,6 @@
       "PERSONAL_MILESTONE": "Personal Milestone",
       "OTHER": "Other"
     },
-
     "LEVEL": {
       "LOCAL": "Local",
       "REGIONAL": "Regional",
@@ -368,7 +346,6 @@
       "OTHER": "Other"
     }
   },
-
   "FAV": {
     "ADD": "Add Favorite",
     "UPDATE": "Save Changes",
@@ -377,15 +354,12 @@
     "CATEGORY_LABEL": "Category",
     "LIST": "Favorites",
     "EMPTY": "No favorites added.",
-
     "COL_CATEGORY": "Category",
     "COL_TITLE": "Favorite",
     "COL_NOTES": "Notes",
     "COL_ACTIONS": "Actions",
-
     "DELETE_TITLE": "Delete Favorite",
     "DELETE_MSG": "This action cannot be undone.",
-
     "CATEGORY": {
       "BOOK": "Book",
       "MOVIE": "Movie",
@@ -463,7 +437,8 @@
     "REJECT": "Reject",
     "OWNER": "Owner",
     "OPTIONAL": "Optional",
-    "SEND": "Send"
+    "SEND": "Send",
+    "CONFIRM": "Confirm"
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",
@@ -560,6 +535,10 @@
     "APPROVED": "Approved",
     "STATUS_PENDING": "Pending",
     "STATUS_APPROVED": "Approved",
-    "STATUS_REJECTED": "Rejected"
+    "STATUS_REJECTED": "Rejected",
+    "CONFIRM_APPROVE_TITLE": "Confirm Approval",
+    "CONFIRM_APPROVE_MESSAGE": "Are you sure you want to approve access to {{target}}?",
+    "CONFIRM_REJECT_TITLE": "Confirm Rejection",
+    "CONFIRM_REJECT_MESSAGE": "Are you sure you want to reject the request for {{target}}?"
   }
 }
