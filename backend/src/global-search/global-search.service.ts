@@ -17,12 +17,21 @@ export class GlobalSearchService {
     const size = dto.size ?? 20;
     const q = this.normalizeText(dto.q);
 
+    const words = q
+      ? q
+          .split(/\s+/)
+          .map((w) => w.trim())
+          .filter(Boolean)
+      : [];
+
     const whereBase: any = { isAlive: false };
-    if (q) {
-      whereBase.OR = [
-        { firstName: { contains: q, mode: 'insensitive' } },
-        { lastName: { contains: q, mode: 'insensitive' } },
-      ];
+    if (words.length > 0) {
+      whereBase.AND = words.map((word) => ({
+        OR: [
+          { firstName: { contains: word, mode: 'insensitive' } },
+          { lastName: { contains: word, mode: 'insensitive' } },
+        ],
+      }));
     }
 
     const take = Math.min(Math.max(size * 3, 50), 300);
