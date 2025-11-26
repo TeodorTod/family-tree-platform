@@ -461,3 +461,10 @@
     outline-offset: 2px;
   }
 }
+
+.recaptcha-note {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-color-secondary);
+  line-height: 1.4;
+}

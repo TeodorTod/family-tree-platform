@@ -463,6 +463,8 @@
     "CONTACT_US": "Contact Us",
     "VALIDATION": "Validation",
     "ERROR": "Error",
+    "RECAPTCHA_FAILED": "Please verify that you're not a robot before continuing.",
+    "RECAPTCHA_NOTICE": "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.",
     "NAME": "Name",
     "YEARS": "Years",
     "STATUS": "Status",

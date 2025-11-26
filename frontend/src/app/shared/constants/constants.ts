@@ -102,6 +102,8 @@ export class CONSTANTS {
   static readonly COMMON_CONTACT_US = 'COMMON.CONTACT_US';
   static readonly COMMON_VALIDATION = 'COMMON.VALIDATION';
   static readonly COMMON_ERROR = 'COMMON.ERROR';
+  static readonly COMMON_RECAPTCHA_FAILED = 'COMMON.RECAPTCHA_FAILED';
+  static readonly COMMON_RECAPTCHA_NOTICE = 'COMMON.RECAPTCHA_NOTICE';
 
   static readonly FAQ_TITLE = 'FAQ.TITLE';
   static readonly FAQ_INTRO = 'FAQ.INTRO';

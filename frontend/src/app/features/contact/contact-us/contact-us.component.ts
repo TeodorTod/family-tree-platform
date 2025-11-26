@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  ChangeDetectionStrategy,
   computed,
   effect,
   inject,
@@ -14,11 +15,15 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { ContactService } from './contact.service';
-import { startWith } from 'rxjs';
+import { startWith, switchMap, finalize } from 'rxjs';
 import {
   ContactTopic,
   ContactMessageDto,
 } from '../../../shared/types/contact.types';
+import {
+  RecaptchaException,
+  RecaptchaService,
+} from '../../../core/services/recaptcha.service';
 
 const MAX_MESSAGE_LEN = 2000;
 
@@ -27,6 +32,7 @@ const MAX_MESSAGE_LEN = 2000;
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './contact-us.component.html',
   styleUrls: ['./contact-us.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactUsComponent {
   CONSTANTS = CONSTANTS;
@@ -36,6 +42,7 @@ export class ContactUsComponent {
   private msg = inject(MessageService);
   private api = inject(ContactService);
   private destroyRef = inject(DestroyRef);
+  private recaptcha = inject(RecaptchaService);
 
   submitting = signal(false);
   maxLen = MAX_MESSAGE_LEN;
@@ -111,18 +118,24 @@ export class ContactUsComponent {
 
     this.submitting.set(true);
 
-    const payload: ContactMessageDto = {
-      fullName: this.form.value.fullName!.trim(),
-      email: this.form.value.email!.trim(),
-      topic: this.form.value.topic as ContactMessageDto['topic'],
-      message: this.form.value.message!.trim(),
-      consent: !!this.form.value.consent,
-      lang: this.translate.currentLang || 'bg',
-    };
-
-    this.api
-      .send(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.recaptcha
+      .execute('contact')
+      .pipe(
+        switchMap((token) => {
+          const payload: ContactMessageDto = {
+            fullName: this.form.value.fullName!.trim(),
+            email: this.form.value.email!.trim(),
+            topic: this.form.value.topic as ContactMessageDto['topic'],
+            message: this.form.value.message!.trim(),
+            consent: !!this.form.value.consent,
+            lang: this.translate.currentLang || 'bg',
+            recaptchaToken: token,
+          };
+          return this.api.send(payload);
+        }),
+        finalize(() => this.submitting.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: () => {
           this.msg.add({
@@ -132,9 +145,18 @@ export class ContactUsComponent {
             life: 4000,
           });
           this.form.reset({ consent: false });
-          this.submitting.set(false);
         },
         error: (err) => {
+          if (err instanceof RecaptchaException) {
+            this.msg.add({
+              severity: 'warn',
+              summary: this.translate.instant(CONSTANTS.COMMON_VALIDATION),
+              detail: this.translate.instant(CONSTANTS.COMMON_RECAPTCHA_FAILED),
+              life: 4000,
+            });
+            return;
+          }
+
           console.error('[Contact] send error:', err);
           this.msg.add({
             severity: 'error',
@@ -142,7 +164,6 @@ export class ContactUsComponent {
             detail: this.translate.instant(CONSTANTS.CONTACT_ERROR_DESC),
             life: 5000,
           });
-          this.submitting.set(false);
         },
       });
   }

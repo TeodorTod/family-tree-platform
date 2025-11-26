@@ -31,6 +31,18 @@
 $ npm install
 ```
 
+### Required environment variables
+
+Add the following entries to your `.env` file to enable human-verification on login and the contact form:
+
+```
+RECAPTCHA_SECRET_KEY=<server-side key from Google>
+RECAPTCHA_MIN_SCORE=0.5
+CONTACT_FORM_RECIPIENT=redacted@example.invalid
+```
+
+`RECAPTCHA_MIN_SCORE` controls the minimum acceptable score for reCAPTCHA v3 (increase it if you see too many false positives). `CONTACT_FORM_RECIPIENT` is the inbox that will receive submissions from the public contact form.
+
 ## Compile and run the project
 
 ```bash

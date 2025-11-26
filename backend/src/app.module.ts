@@ -14,6 +14,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { GlobalSearchModule } from './global-search/global-search.module';
 import { SharingModule } from './sharing/sharing.module';
 import { BillingModule } from './billing/billing.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BillingModule } from './billing/billing.module';
     GlobalSearchModule,
     SharingModule,
     BillingModule,
+    ContactModule,
        ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'), 
       serveRoot: '/',                        

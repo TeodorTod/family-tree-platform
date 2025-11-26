@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, OnInit, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -11,12 +11,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { Lang } from '../../../shared/types/lang.type';
+import { RecaptchaException, RecaptchaService } from '../../../core/services/recaptcha.service';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   CONSTANTS = CONSTANTS;
@@ -26,6 +29,7 @@ export class LoginComponent implements OnInit {
   translate = inject(TranslateService);
   familyService = inject(FamilyService);
   lang = inject(LanguageService);
+  recaptcha = inject(RecaptchaService);
 
   private destroyRef = inject(DestroyRef);
   private readonly pendingLangKey = 'ft-pending-lang-pref';
@@ -94,10 +98,18 @@ export class LoginComponent implements OnInit {
     if (this.form.invalid) return;
 
     const { email, password } = this.form.value;
+    const langOverride = this.langDirty ? this.currentLang : undefined;
 
-    this.auth
-      .login(email!, password!, this.langDirty ? this.currentLang : undefined)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.error.set('');
+
+    this.recaptcha
+      .execute('login')
+      .pipe(
+        switchMap((token) =>
+          this.auth.login(email!, password!, langOverride, token)
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: (res) => {
           const serverLang =
@@ -143,7 +155,13 @@ export class LoginComponent implements OnInit {
               }
             });
         },
-        error: () => {
+        error: (err) => {
+          if (err instanceof RecaptchaException) {
+            this.error.set(
+              this.translate.instant(CONSTANTS.COMMON_RECAPTCHA_FAILED)
+            );
+            return;
+          }
           this.error.set(this.translate.instant(CONSTANTS.AUTH_LOGIN_ERROR));
         },
       });

@@ -1,7 +1,13 @@
 <div class="login-container">
   <!-- Left Image -->
   <div class="login-image">
-    <img src="assets/images/tree_mobile.png" alt="Family Tree" />
+    <img
+      ngSrc="assets/images/tree_mobile.png"
+      width="640"
+      height="960"
+      alt="Family Tree"
+      priority
+    />
   </div>
 
   <!-- Right Form -->
@@ -76,6 +82,10 @@
           label="{{ CONSTANTS.AUTH_GOOGLE_LOGIN | translate }}"
           (click)="loginWithGoogle()"
         ></button>
+
+        <p class="recaptcha-note">
+          {{ CONSTANTS.COMMON_RECAPTCHA_NOTICE | translate }}
+        </p>
 
         <div class="login-footer">
           <span>{{ CONSTANTS.AUTH_NO_ACCOUNT | translate }}</span>

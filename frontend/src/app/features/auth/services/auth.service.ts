@@ -56,13 +56,21 @@ export class AuthService {
     { validators: this.passwordsMatchValidator }
   );
 
-  login(email: string, password: string, language?: Lang) {
+  login(
+    email: string,
+    password: string,
+    language?: Lang,
+    recaptchaToken?: string,
+  ) {
     const payload: Record<string, unknown> = {
       email,
       password,
     };
     if (language) {
       payload['language'] = language;
+    }
+    if (recaptchaToken) {
+      payload['recaptchaToken'] = recaptchaToken;
     }
 
     return this.http

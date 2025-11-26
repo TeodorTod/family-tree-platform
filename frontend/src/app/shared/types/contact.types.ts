@@ -7,5 +7,5 @@ export interface ContactMessageDto {
   message: string;
   consent: boolean;
   lang?: string;
+  recaptchaToken: string;
 }
-

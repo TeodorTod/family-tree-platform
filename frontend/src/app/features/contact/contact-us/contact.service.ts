@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Observable, of, delay } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ContactTopic, ContactMessageDto } from '../../../shared/types/contact.types';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ContactService {
@@ -21,8 +22,7 @@ export class ContactService {
     consent: [false, [Validators.requiredTrue]],
   });
 
-  // TODO: replace mock with real endpoint
   send(payload: ContactMessageDto): Observable<void> {
-    return of(void 0).pipe(delay(900));
+    return this.http.post<void>(`${environment.apiUrl}/support/contact`, payload);
   }
 }
