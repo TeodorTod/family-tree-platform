@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { SubscriptionPlanCode } from 'src/shared/enums/subscription-plan.enum';
 
 type LanguageCode = 'bg' | 'en';
 
@@ -89,6 +90,23 @@ export class UsersService {
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: payload,
+    });
+    return this.toPublicUser(updated);
+  }
+
+  async updateSubscription(
+    userId: string,
+    plan: SubscriptionPlanCode,
+    startAt: Date,
+    endAt: Date,
+  ) {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionPlan: plan,
+        subscriptionStartAt: startAt,
+        subscriptionEndAt: endAt,
+      },
     });
     return this.toPublicUser(updated);
   }

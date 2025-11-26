@@ -38,6 +38,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { MenuModule } from 'primeng/menu';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { SkeletonModule } from 'primeng/skeleton';
 
 export const SHARED_PRIMENG_IMPORTS = [
   ButtonModule,
@@ -80,4 +81,5 @@ export const SHARED_PRIMENG_IMPORTS = [
   FloatLabelModule,
   MenuModule,
   InputSwitchModule,
+  SkeletonModule,
 ];

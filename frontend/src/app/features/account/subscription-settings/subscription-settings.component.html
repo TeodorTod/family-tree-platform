@@ -1,1 +1,39 @@
-<p>subscription-settings works!</p>
+<section class="subscription-settings">
+  <header class="subscription-settings__header">
+    <h1>{{ CONSTANTS.SUBSCRIPTION_SETTINGS_TITLE | translate }}</h1>
+    <p>{{ CONSTANTS.SUBSCRIPTION_SETTINGS_LIMITS | translate }}</p>
+  </header>
+
+  <article class="subscription-settings__card">
+    @if (isLoading()) {
+      <p-skeleton width="100%" height="4rem" borderRadius="0.75rem" />
+    } @else {
+      @if (profile(); as user) {
+        @if (user.subscriptionPlan) {
+          <div class="subscription-settings__active">
+            <p class="subscription-settings__plan-label">
+              {{ CONSTANTS.SUBSCRIPTION_SETTINGS_CURRENT | translate }}
+              <strong>{{ planLabel() }}</strong>
+            </p>
+            <p>
+              {{ CONSTANTS.SUBSCRIPTION_SETTINGS_EXPIRES | translate }}
+              {{ user.subscriptionEndAt | date: 'longDate' }}
+            </p>
+          </div>
+        } @else {
+          <div class="subscription-settings__inactive">
+            <p>{{ CONSTANTS.SUBSCRIPTION_SETTINGS_NONE | translate }}</p>
+          </div>
+        }
+      }
+    }
+  </article>
+
+  <a
+    pButton
+    class="subscription-settings__cta"
+    [routerLink]="CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS"
+  >
+    {{ CONSTANTS.SUBSCRIPTION_SETTINGS_CHANGE | translate }}
+  </a>
+</section>

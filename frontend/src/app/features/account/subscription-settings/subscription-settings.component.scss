@@ -1,0 +1,37 @@
+.subscription-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+
+  &__header {
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: var(--surface-500);
+    }
+  }
+
+  &__card {
+    border: 1px solid var(--surface-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    min-height: 4rem;
+    background-color: var(--surface-card);
+  }
+
+  &__plan-label {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__inactive {
+    color: var(--surface-600);
+  }
+
+  &__cta {
+    align-self: flex-start;
+  }
+}

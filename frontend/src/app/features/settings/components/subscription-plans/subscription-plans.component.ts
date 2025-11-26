@@ -1,44 +1,61 @@
 // features/settings/subscription-plans/subscription-plans.component.ts
-import { Component, inject } from '@angular/core';
-
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
-import { Plan } from '../../../../shared/types/plan.type';
+import { SUBSCRIPTION_PLAN_OPTIONS } from '../../../../shared/constants/subscription-plan-options';
+import {
+  SubscriptionPlanCode,
+  SubscriptionPlanOption,
+} from '../../../../shared/types/subscription-plan.type';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subscription-plans',
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './subscription-plans.component.html',
   styleUrls: ['./subscription-plans.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubscriptionPlansComponent {
   private t = inject(TranslateService);
+  private router = inject(Router);
 
-  CONSTANTS = CONSTANTS;
-  EUR = this.t.instant(CONSTANTS.COMMON_CURRENCY_EUR);
+  readonly CONSTANTS = CONSTANTS;
+  readonly plans = SUBSCRIPTION_PLAN_OPTIONS;
+  readonly currencySymbol = computed(() =>
+    this.t.instant(CONSTANTS.COMMON_CURRENCY_EUR)
+  );
+  readonly isNavigating = signal<SubscriptionPlanCode | null>(null);
 
-  plans: Plan[] = [
-    { code: '6m', titleKey: CONSTANTS.SETTINGS_PLAN_6M, total: 39, days: 182 },
-    {
-      code: '1y',
-      titleKey: CONSTANTS.SETTINGS_PLAN_1Y,
-      total: 69,
-      days: 365,
-      highlight: true,
-    },
-    { code: '2y', titleKey: CONSTANTS.SETTINGS_PLAN_2Y, total: 109, days: 730 },
-  ];
-
-  perDayStr(p: Plan): string {
-    return (p.total / p.days).toFixed(2);
-  }
-  totalStr(p: Plan): string {
-    return `${this.EUR}${p.total}`;
+  perDayStr(plan: SubscriptionPlanOption): string {
+    return (plan.priceEur / plan.durationDays).toFixed(2);
   }
 
-  select(p: Plan) {
-    console.log('Selected plan:', p.code);
+  totalStr(plan: SubscriptionPlanOption): string {
+    return `${this.currencySymbol()}${plan.priceEur}`;
+  }
+
+  select(plan: SubscriptionPlanOption) {
+    if (this.isNavigating()) {
+      return;
+    }
+
+    this.isNavigating.set(plan.code);
+    void this.router
+      .navigate([CONSTANTS.ROUTES.SUBSCRIPTION.PAYMENT], {
+        queryParams: {
+          plan: plan.code,
+          returnUrl: CONSTANTS.ROUTES.ACCOUNT.SUBSCRIPTION,
+        },
+      })
+      .finally(() => this.isNavigating.set(null));
   }
 }

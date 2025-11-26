@@ -6,6 +6,7 @@ import {
   inject,
   signal,
   OnInit,
+  DestroyRef,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../imports/shared-primeng-imports';
@@ -21,6 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../constants/constants';
 import { FamilyService } from '../../../core/services/family.service';
 import { SharingApiService } from '../../../core/services/sharing-api.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-add-relative-dialog',
@@ -51,6 +53,7 @@ export class AddRelativeDialogComponent implements OnInit {
   private familyService = inject(FamilyService);
   private family = inject(FamilyService);
   private sharing = inject(SharingApiService);
+  private destroyRef = inject(DestroyRef);
   importedOptions = signal<{ label: string; value: string; meta: { firstName?: string; lastName?: string; birthYear?: number | null; deathYear?: number | null } }[]>([]);
   showImported = signal(false);
 
@@ -110,6 +113,15 @@ export class AddRelativeDialogComponent implements OnInit {
     this.form.addControl('importedId', new FormControl<string | null>(this.clonedMemberId ?? null));
     this.showImported.set(!!this.clonedMemberId);
     this.form.get('useImported')?.valueChanges.subscribe((v) => this.showImported.set(!!v));
+
+    this.familyService
+      .onSubscriptionLimitReached()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.visible) {
+          this.close.emit();
+        }
+      });
 
     this.sharing.getOutgoingRequests().subscribe((reqs) => {
       const list = (reqs || [])

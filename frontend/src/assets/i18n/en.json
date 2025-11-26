@@ -80,6 +80,43 @@
     "DELETE_CANCEL": "Keep account",
     "DELETE_ERROR": "We couldn't delete your account. Please try again."
   },
+  "SUBSCRIPTION": {
+    "PLAN_UPDATED": "Subscription activated",
+    "PLAN_ACTIVE": "{{plan}} is now active.",
+    "PLAN_UPDATE_ERROR": "We couldn't update your subscription. Please try again.",
+    "SETTINGS_TITLE": "Subscription plan",
+    "CURRENT_PLAN": "Current plan",
+    "NO_PLAN": "No active plan. You're on the free tier.",
+    "EXPIRES_ON": "Renews on",
+    "CHANGE_PLAN": "Explore plans",
+    "LIMITS": "Free accounts can add up to 10 members and cannot upload photos or videos.",
+    "PAYMENT_TITLE": "Complete your subscription",
+    "PAYMENT_DESC": "Secure checkout for {{plan}}.",
+    "PAYMENT_SUMMARY": "Plan summary",
+    "PAYMENT_TOTAL": "Total",
+    "PAYMENT_PER_DAY": "Per day",
+    "PAYMENT_FORM_TITLE": "Payment details",
+    "PAYMENT_CARD_NAME": "Name on card",
+    "PAYMENT_CARD_NUMBER": "Card number",
+    "PAYMENT_EXPIRY": "Expiration",
+      "PAYMENT_CVC": "CVC",
+      "PAYMENT_SUBMIT": "Pay and activate",
+      "PAYMENT_PROVIDER_TITLE": "Secure checkout",
+      "PAYMENT_PROVIDER_NOTE": "You will be redirected to Stripe to complete your purchase. We never store your card details.",
+      "PAYMENT_PROVIDER_SECURE": "Stripe encrypts and processes your payment information.",
+      "PAYMENT_PROVIDER_SUPPORT": "Automatic receipts and support via email for every plan.",
+      "PAYMENT_REDIRECT": "Continue to secure checkout",
+      "PAYMENT_NOT_CONFIGURED": "Payments are temporarily unavailable. Please reach out to support.",
+      "PAYMENT_CANCELED": "Payment canceled",
+      "PAYMENT_RETRY": "You can try again whenever you're ready.",
+      "PAYMENT_SUCCESS": "Payment completed",
+      "PAYMENT_ERROR": "We couldn't process your payment. Please try again.",
+    "PAYMENT_TERMS": "By continuing you agree to the Terms of Service and recurring billing.",
+    "PAYMENT_BACK": "Back to plans",
+    "LIMIT_TITLE": "Subscription required",
+    "LIMIT_MESSAGE": "You need an active subscription to add more members or upload media.",
+    "LIMIT_CTA": "View subscription plans"
+  },
   "INFO": {
     "OWNER": "Your Data",
     "MOTHER": "Data for Your Mother",
@@ -540,5 +577,16 @@
     "CONFIRM_APPROVE_MESSAGE": "Are you sure you want to approve access to {{target}}?",
     "CONFIRM_REJECT_TITLE": "Confirm Rejection",
     "CONFIRM_REJECT_MESSAGE": "Are you sure you want to reject the request for {{target}}?"
+  },
+  "ONBOARDING": {
+    "SUBSCRIPTION": {
+      "TITLE": "Choose your plan",
+      "DESC": "Select a plan to unlock unlimited members, uploads, and sharing. You can skip for now.",
+      "PER_DAY": "Per day",
+      "DURATION": "Duration",
+      "MONTHS": "months",
+      "SKIP": "Skip for now",
+      "LIMITS": "Free accounts are limited to 10 members and cannot upload photos or videos."
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SubscriptionPlansComponent } from './subscription-plans.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 describe('SubscriptionPlansComponent', () => {
   let component: SubscriptionPlansComponent;
@@ -8,9 +9,18 @@ describe('SubscriptionPlansComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SubscriptionPlansComponent]
-    })
-    .compileComponents();
+      imports: [TranslateModule.forRoot(), SubscriptionPlansComponent],
+      providers: [
+        {
+          provide: Router,
+          useValue: {
+            navigate: jasmine
+              .createSpy('navigate')
+              .and.returnValue(Promise.resolve(true)),
+          },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SubscriptionPlansComponent);
     component = fixture.componentInstance;

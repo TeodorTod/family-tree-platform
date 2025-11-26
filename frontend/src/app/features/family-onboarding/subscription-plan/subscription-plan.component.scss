@@ -1,0 +1,66 @@
+.subscription-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+
+  &__intro {
+    text-align: center;
+
+    h1 {
+      margin-bottom: 0.5rem;
+      font-size: 1.75rem;
+    }
+
+    p {
+      color: var(--surface-500);
+    }
+  }
+
+  &__plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  &__limits {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  &__skip {
+    align-self: center;
+    width: fit-content;
+  }
+}
+
+.plan-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: var(--surface-card);
+  text-align: center;
+
+  &--highlight {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.25);
+  }
+
+  &__price {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+  }
+
+  &__per-day,
+  &__duration {
+    color: var(--surface-500);
+  }
+
+  &__action {
+    margin-top: 0.75rem;
+  }
+}

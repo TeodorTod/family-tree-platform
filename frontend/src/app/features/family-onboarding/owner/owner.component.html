@@ -98,12 +98,15 @@
       />}
     </div>
 
-    <button
-      pButton
-      type="submit"
-      icon="pi pi-arrow-right"
-      label="{{ CONSTANTS.INFO_FORWARD | translate }}"
-      [disabled]="form.invalid"
-    ></button>
+
+      <button
+        pButton
+        type="submit"
+        icon="pi pi-arrow-right"
+        label="{{ CONSTANTS.INFO_FORWARD | translate }}"
+        [disabled]="form.invalid"
+        class="p-button-primary onboarding-primary-btn"
+      ></button>
+  
   </form>
 </div>

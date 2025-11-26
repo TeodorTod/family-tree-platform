@@ -39,6 +39,14 @@ export const routes: Routes = [
       import('./features/faq/faq.routes').then((m) => m.default),
   },
   {
+    path: 'subscription/payment',
+    loadComponent: () =>
+      import('./pages/subscription-payment/subscription-payment.page').then(
+        (m) => m.SubscriptionPaymentPage
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'search',
     loadComponent: () =>
       import('./pages/global-search/global-search.page').then((m) => m.GlobalSearchPage),

@@ -5,6 +5,7 @@ import { join, basename, dirname, extname, normalize, sep } from 'path';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { createReadStream } from 'fs';
+import { hasActiveSubscription } from 'src/shared/utils/subscription';
 
 const EXT_BY_MIME: Record<string, string> = {
   'image/png': 'png',
@@ -76,6 +77,8 @@ export class MediaService {
     memberId: string,
     file: Express.Multer.File,
   ): Promise<{ url: string }> {
+    await this.ensureUploadAllowed(memberId);
+
     const url = await this.uploadToLocalOrCloud(file);
     await this.prisma.media.create({
       data: {
@@ -103,12 +106,9 @@ export class MediaService {
     }
   }
 
-  async saveForMember(
-    memberId: string,
-    file: Express.Multer.File,
-    userId?: string,
-  ) {
+  async saveForMember(memberId: string, file: Express.Multer.File) {
     if (!file?.buffer) throw new BadRequestException('Empty file');
+    const ownerId = await this.ensureUploadAllowed(memberId);
 
     const now = new Date();
     const y = String(now.getFullYear());
@@ -116,7 +116,7 @@ export class MediaService {
 
     const folder = join(
       this.mediaRoot(),
-      userId ?? 'user',
+      ownerId,
       memberId,
       this.subdirFor(file.mimetype, file.originalname),
       y,
@@ -154,6 +154,34 @@ export class MediaService {
     });
 
     return { id: created.id, path: absPath };
+  }
+
+  private async ensureUploadAllowed(memberId: string) {
+    const member = await this.prisma.familyMember.findUnique({
+      where: { id: memberId },
+      select: {
+        userId: true,
+        user: {
+          select: {
+            subscriptionPlan: true,
+            subscriptionStartAt: true,
+            subscriptionEndAt: true,
+          },
+        },
+      },
+    });
+
+    if (!member) {
+      throw new BadRequestException('Member not found');
+    }
+
+    if (!hasActiveSubscription(member.user)) {
+      throw new BadRequestException(
+        'Active subscription required to upload images or videos.',
+      );
+    }
+
+    return member.userId;
   }
 
   async listByMember(memberId: string) {

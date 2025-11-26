@@ -24,7 +24,7 @@
       <div class="plan-title">{{ p.titleKey | translate }}</div>
 
       <div class="price-per-day">
-        {{ EUR }}{{ perDayStr(p) }}
+        {{ currencySymbol() }}{{ perDayStr(p) }}
         <span class="per-day">
           {{ CONSTANTS.SETTINGS_PLANS_PRICE_PER_DAY | translate }}
         </span>
@@ -32,7 +32,8 @@
 
       <div class="price-total">
         {{
-          CONSTANTS.SETTINGS_PLANS_TOTAL | translate : { value: totalStr(p) }
+          CONSTANTS.SETTINGS_PLANS_TOTAL
+            | translate : { value: totalStr(p) }
         }}
       </div>
 
@@ -59,6 +60,7 @@
         class="choose-btn"
         [label]="CONSTANTS.SETTINGS_PLANS_CHOOSE | translate"
         icon="pi pi-check"
+        [disabled]="!!isNavigating()"
         (click)="select(p)"
       ></button>
     </article>

@@ -201,7 +201,7 @@ export class PaternalGrandparentsComponent implements OnInit {
   }
 
   save() {
-    this.saveAndNavigate(CONSTANTS.ROUTES.HOME);
+    this.saveAndNavigate(CONSTANTS.ROUTES.ONBOARDING.SUBSCRIPTION);
   }
 
   private saveAndNavigate(route: string) {

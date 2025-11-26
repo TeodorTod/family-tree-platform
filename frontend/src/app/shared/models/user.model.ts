@@ -1,4 +1,5 @@
 import { Lang } from '../types/lang.type';
+import { SubscriptionPlanCode } from '../types/subscription-plan.type';
 
 export interface AuthUser {
   id: string;
@@ -10,4 +11,7 @@ export interface AuthUser {
   picture?: string | null;
   updatedAt?: string | null;
   hasPassword?: boolean;
+  subscriptionPlan?: SubscriptionPlanCode | null;
+  subscriptionStartAt?: string | null;
+  subscriptionEndAt?: string | null;
 }

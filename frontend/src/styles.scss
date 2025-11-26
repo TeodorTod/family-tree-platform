@@ -91,6 +91,34 @@ body {
   justify-content: flex-end !important;
 }
 
+.onboarding-actions {
+  position: sticky;
+  bottom: 0rem;
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    var(--surface-card) 70%
+  );
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .onboarding-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .onboarding-actions button {
+    width: 100%;
+  }
+}
+
 /* === Spacing Utilities === */
 .m-0 {
   margin: 0 !important;
@@ -454,23 +482,33 @@ body {
 }
 
 @media (max-width: 768px) {
-  .mathernal-grandparents-container {
-    flex-direction: column;
-    align-items: center;
-  }
+.mathernal-grandparents-container {
+  flex-direction: column;
+  align-items: center;
+}
 
-  .granparents {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
+.granparents {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
-  .maternal-parents-buttons {
-    padding-bottom: 20px;
-    padding-left: 50px;
-    padding-right: 50px;
-    align-items: center;
-  }
+.maternal-parents-buttons {
+  padding-left: 50px;
+  padding-right: 50px;
+  align-items: center;
+}
+}
+
+.mathernal-grandparents-container {
+  width: min(839px, 100%);
+  margin: 0 auto 1.5rem;
+  padding-inline: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.mathernal-grandparents-container + .onboarding-actions {
+  width: min(839px, 100%);
+  margin: 0 auto;
 }
 
 /* ===== DENY DARK MODE: force light rendering when OS is dark ===== */

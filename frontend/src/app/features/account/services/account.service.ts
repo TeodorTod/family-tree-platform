@@ -3,6 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { AuthUser } from '../../../shared/models/user.model';
 import { Lang } from '../../../shared/types/lang.type';
+import { SubscriptionPlanCode } from '../../../shared/types/subscription-plan.type';
+
+export interface CreateCheckoutSessionPayload {
+  plan: SubscriptionPlanCode;
+  successUrl?: string;
+  cancelUrl?: string;
+}
+
+export interface CheckoutSessionResponse {
+  sessionId: string;
+}
 
 export interface UpdateProfilePayload {
   displayName?: string | null;
@@ -50,5 +61,13 @@ export class AccountService {
     return this.http.delete<{ ok: boolean }>(`${environment.apiUrl}/auth/me`, {
       withCredentials: true,
     });
+  }
+
+  createSubscriptionCheckoutSession(payload: CreateCheckoutSessionPayload) {
+    return this.http.post<CheckoutSessionResponse>(
+      `${environment.apiUrl}/billing/checkout-session`,
+      payload,
+      { withCredentials: true }
+    );
   }
 }

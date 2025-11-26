@@ -11,6 +11,7 @@ import { GetFamilyPagedDto } from './dto/get-family-page.dto';
 import { PartnerStatus } from 'src/shared/enums/partner-status.enum';
 import { GetMyTreeQuery } from './dto/get-my-tree.query';
 import { Prisma } from 'generated/prisma';
+import { hasActiveSubscription } from 'src/shared/utils/subscription';
 
 const ALLOWED_FIELDS = new Set([
   'id',
@@ -53,6 +54,8 @@ const DEFAULT_FIELDS = [
 ];
 
 const ALLOWED_WITH = new Set(['parentOf', 'childOf', 'media', 'profile']);
+
+const FREE_MEMBER_LIMIT = 10;
 
 @Injectable()
 export class FamilyMembersService {
@@ -102,6 +105,8 @@ export class FamilyMembersService {
   }
 
   async createFamilyMember(userId: string, dto: CreateFamilyMemberDto) {
+    await this.ensureMemberQuota(userId);
+
     const dobPayload = this.normalizeDobPayload(dto);
     const dodPayload = this.normalizeDodPayload(dto);
 
@@ -136,6 +141,31 @@ export class FamilyMembersService {
         role: role.toLowerCase(),
       },
     });
+  }
+
+  private async ensureMemberQuota(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        subscriptionPlan: true,
+        subscriptionStartAt: true,
+        subscriptionEndAt: true,
+      },
+    });
+
+    if (hasActiveSubscription(user)) {
+      return;
+    }
+
+    const familyCount = await this.prisma.familyMember.count({
+      where: { userId },
+    });
+
+    if (familyCount >= FREE_MEMBER_LIMIT) {
+      throw new BadRequestException(
+        'Active subscription required to manage more than 10 family members.',
+      );
+    }
   }
 
   async assignMemberRole(userId: string, memberId: string, newRole: string) {

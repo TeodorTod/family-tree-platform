@@ -13,6 +13,7 @@ import { join } from 'path';
 import { MailerModule } from './mailer/mailer.module';
 import { GlobalSearchModule } from './global-search/global-search.module';
 import { SharingModule } from './sharing/sharing.module';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SharingModule } from './sharing/sharing.module';
     MemberProfilesModule,
     GlobalSearchModule,
     SharingModule,
+    BillingModule,
        ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'), 
       serveRoot: '/',                        

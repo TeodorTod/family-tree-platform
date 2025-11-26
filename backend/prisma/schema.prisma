@@ -34,16 +34,25 @@ enum ShareRequestStatus {
   REJECTED
 }
 
+enum SubscriptionPlan {
+  SIX_MONTHS
+  ONE_YEAR
+  TWO_YEARS
+}
+
 model User {
-  id          String    @id @default(uuid())
-  email       String    @unique
-  password    String?
-  displayName String?
-  picture     String?
-  provider    String?
-  language    String    @default("bg")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
+  id                   String            @id @default(uuid())
+  email                String            @unique
+  password             String?
+  displayName          String?
+  picture              String?
+  provider             String?
+  language             String            @default("bg")
+  subscriptionPlan     SubscriptionPlan?
+  subscriptionStartAt  DateTime?
+  subscriptionEndAt    DateTime?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime?         @updatedAt
 
   familyMembers          FamilyMember[]
   PasswordResetToken     PasswordResetToken[]

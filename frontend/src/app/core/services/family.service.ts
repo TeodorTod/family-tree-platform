@@ -1,7 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Observable, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  catchError,
+  shareReplay,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import {
   FormBuilder,
@@ -12,6 +20,9 @@ import {
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
+import { ConfirmationService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +30,12 @@ import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
 export class FamilyService {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
+  private translate = inject(TranslateService);
+  private confirmation = inject(ConfirmationService);
+  private router = inject(Router);
   private api = environment.apiUrl;
   private memberByRoleCache = new Map<string, Observable<any>>();
+  private subscriptionLimit$ = new Subject<void>();
 
   private roleKey(role: string) {
     return (role ?? '').toLowerCase();
@@ -33,6 +48,41 @@ export class FamilyService {
     return this.http.get<any>(
       `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`
     );
+  }
+
+  onSubscriptionLimitReached() {
+    return this.subscriptionLimit$.asObservable();
+  }
+
+  private handleSubscriptionLimitError(err: unknown) {
+    if (err instanceof HttpErrorResponse && err.status === 400) {
+      const rawMessage =
+        (err.error?.message?.message as string | undefined) ??
+        (err.error?.message as string | undefined) ??
+        err.message;
+
+      if (
+        rawMessage &&
+        rawMessage.toLowerCase().includes('subscription')
+      ) {
+        this.subscriptionLimit$.next();
+        this.confirmation.confirm({
+          header: this.translate.instant(CONSTANTS.SUBSCRIPTION_LIMIT_TITLE),
+          message: this.translate.instant(CONSTANTS.SUBSCRIPTION_LIMIT_MESSAGE),
+          acceptLabel: this.translate.instant(CONSTANTS.SUBSCRIPTION_LIMIT_CTA),
+          rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
+          rejectVisible: true,
+          acceptButtonStyleClass: 'p-button-primary',
+          rejectButtonStyleClass: 'p-button-secondary',
+          accept: () => {
+            this.router.navigate([
+              CONSTANTS.ROUTES.SETTINGS.SUBSCRIPTION_PLANS,
+            ]);
+          },
+        });
+      }
+    }
+    return throwError(() => err);
   }
 
   createFamilyMemberForm(): FormGroup<{
@@ -269,14 +319,14 @@ export class FamilyService {
     return this.http.post(
       `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}`,
       data
-    );
+    ).pipe(catchError((err) => this.handleSubscriptionLimitError(err)));
   }
 
   upsertFamilyMember(data: FamilyMember) {
     return this.http.post(
       `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/upsert`,
       data
-    );
+    ).pipe(catchError((err) => this.handleSubscriptionLimitError(err)));
   }
 
   getFamilyMemberByRole(role: string) {
@@ -295,7 +345,8 @@ export class FamilyService {
       .post(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`, data)
       .pipe(
         tap(() => this.invalidateRoleCache(role)),
-        switchMap(() => this.fetchByRoleDirect(role))
+        switchMap(() => this.fetchByRoleDirect(role)),
+        catchError((err) => this.handleSubscriptionLimitError(err))
       );
   }
 
@@ -304,7 +355,8 @@ export class FamilyService {
       .put(`${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`, data)
       .pipe(
         tap(() => this.invalidateRoleCache(role)),
-        switchMap(() => this.fetchByRoleDirect(role))
+        switchMap(() => this.fetchByRoleDirect(role)),
+        catchError((err) => this.handleSubscriptionLimitError(err))
       );
   }
 
@@ -316,7 +368,8 @@ export class FamilyService {
       )
       .pipe(
         tap(() => this.invalidateRoleCache(role)),
-        switchMap(() => this.fetchByRoleDirect(role))
+        switchMap(() => this.fetchByRoleDirect(role)),
+        catchError((err) => this.handleSubscriptionLimitError(err))
       );
   }
 

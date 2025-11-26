@@ -1,0 +1,55 @@
+<section class="subscription-step">
+  <header class="subscription-step__intro">
+    <h1>{{ CONSTANTS.ONBOARDING_SUBSCRIPTION_TITLE | translate }}</h1>
+    <p>{{ CONSTANTS.ONBOARDING_SUBSCRIPTION_DESC | translate }}</p>
+  </header>
+
+  <div class="subscription-step__plans">
+    @for (plan of plans; track plan.code) {
+      <article
+        class="plan-card"
+        [class.plan-card--highlight]="plan.highlight"
+      >
+        <h2>{{ plan.titleKey | translate }}</h2>
+        <p class="plan-card__price">
+          {{ currencySymbol() }}{{ plan.priceEur }}
+        </p>
+        <p class="plan-card__per-day">
+          {{
+            CONSTANTS.ONBOARDING_SUBSCRIPTION_PER_DAY | translate
+          }}:
+          {{ currencySymbol() }}{{ perDay(plan) }}
+        </p>
+        <p class="plan-card__duration">
+          {{
+            CONSTANTS.ONBOARDING_SUBSCRIPTION_DURATION | translate
+          }}:
+          {{ plan.durationMonths }}
+          {{ CONSTANTS.ONBOARDING_SUBSCRIPTION_MONTHS | translate }}
+        </p>
+        <button
+          type="button"
+          pButton
+          class="plan-card__action"
+          [disabled]="selecting() === plan.code"
+          (click)="select(plan)"
+        >
+          {{ CONSTANTS.SETTINGS_PLANS_CHOOSE | translate }}
+        </button>
+      </article>
+    }
+  </div>
+
+  <p class="subscription-step__limits">
+    {{ CONSTANTS.ONBOARDING_SUBSCRIPTION_LIMITS | translate }}
+  </p>
+
+  <button
+    type="button"
+    pButton
+    class="subscription-step__skip"
+    (click)="skip()"
+  >
+    {{ CONSTANTS.ONBOARDING_SUBSCRIPTION_SKIP | translate }}
+  </button>
+</section>

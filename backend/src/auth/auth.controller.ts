@@ -144,4 +144,5 @@ export class AuthController {
     await this.authService.deleteAccount(req.user.id);
     return { ok: true };
   }
+
 }

@@ -7,7 +7,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MailerService } from 'src/mailer/mailer.service';
 import * as crypto from 'crypto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-
 type LanguageCode = 'bg' | 'en';
 
 const PASSWORD_ERROR_MESSAGES = {

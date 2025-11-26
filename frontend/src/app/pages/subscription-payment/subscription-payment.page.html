@@ -1,0 +1,80 @@
+<section class="subscription-payment">
+  <button
+    type="button"
+    class="subscription-payment__back"
+    pButton
+    icon="pi pi-arrow-left"
+    [label]="CONSTANTS.SUBSCRIPTION_PAYMENT_BACK | translate"
+    (click)="goBack()"
+  ></button>
+
+  <header class="subscription-payment__header">
+    <h1>{{ CONSTANTS.SUBSCRIPTION_PAYMENT_TITLE | translate }}</h1>
+    <p>
+      {{
+        CONSTANTS.SUBSCRIPTION_PAYMENT_DESC
+          | translate : { plan: planTitle }
+      }}
+    </p>
+  </header>
+
+  @if (plan(); as option) {
+  <div class="subscription-payment__content">
+    <article class="payment-summary">
+      <h2>{{ CONSTANTS.SUBSCRIPTION_PAYMENT_SUMMARY | translate }}</h2>
+      <p class="payment-summary__plan">
+        {{ planTitle }}
+      </p>
+      <p>
+        {{ CONSTANTS.SUBSCRIPTION_PAYMENT_TOTAL | translate }}:
+        <strong>{{ currencySymbol() }}{{ option.priceEur }}</strong>
+      </p>
+      <p>
+        {{ CONSTANTS.SUBSCRIPTION_PAYMENT_PER_DAY | translate }}:
+        {{ currencySymbol() }}{{ perDay(option) }}
+      </p>
+    </article>
+
+    <article class="payment-provider">
+      <header class="payment-provider__header">
+        <h2>{{ CONSTANTS.SUBSCRIPTION_PAYMENT_PROVIDER_TITLE | translate }}</h2>
+        <span class="payment-provider__badge">Stripe</span>
+      </header>
+
+      <p class="payment-provider__lead">
+        {{ CONSTANTS.SUBSCRIPTION_PAYMENT_PROVIDER_NOTE | translate }}
+      </p>
+
+      <ul class="payment-provider__list">
+        <li>
+          {{ CONSTANTS.SUBSCRIPTION_PAYMENT_PROVIDER_SECURE | translate }}
+        </li>
+        <li>
+          {{ CONSTANTS.SUBSCRIPTION_PAYMENT_PROVIDER_SUPPORT | translate }}
+        </li>
+      </ul>
+
+      <button
+        type="button"
+        pButton
+        class="payment-provider__cta"
+        [disabled]="processing()"
+        (click)="completePayment()"
+      >
+        <i class="pi pi-lock" aria-hidden="true"></i>
+        <span>
+          {{ CONSTANTS.SUBSCRIPTION_PAYMENT_REDIRECT | translate }}
+        </span>
+      </button>
+
+      <p class="payment-provider__terms">
+        {{ CONSTANTS.SUBSCRIPTION_PAYMENT_TERMS | translate }}
+      </p>
+    </article>
+  </div>
+  } @else {
+    <p class="subscription-payment__error">
+      {{ CONSTANTS.SUBSCRIPTION_PAYMENT_ERROR | translate }}
+    </p>
+  }
+</section>
