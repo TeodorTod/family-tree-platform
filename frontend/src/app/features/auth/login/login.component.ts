@@ -1,4 +1,12 @@
-import { Component, inject, signal, OnInit, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  OnInit,
+  DestroyRef,
+  ChangeDetectionStrategy,
+  OnDestroy,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -11,7 +19,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Roles } from '../../../shared/enums/roles.enum';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { Lang } from '../../../shared/types/lang.type';
-import { RecaptchaException, RecaptchaService } from '../../../core/services/recaptcha.service';
+import {
+  RecaptchaException,
+  RecaptchaService,
+} from '../../../core/services/recaptcha.service';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -21,7 +32,7 @@ import { switchMap } from 'rxjs';
   styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   CONSTANTS = CONSTANTS;
 
   auth = inject(AuthService);
@@ -87,6 +98,10 @@ export class LoginComponent implements OnInit {
   }
   set dialogVisible(v: boolean) {
     this.showMobileHint.set(v);
+  }
+
+  ngOnDestroy(): void {
+    this.recaptcha.cleanup();
   }
 
   switchLang(code: Lang) {

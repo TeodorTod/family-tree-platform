@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component,
   DestroyRef,
   ChangeDetectionStrategy,
@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  OnDestroy,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
@@ -34,7 +35,7 @@ const MAX_MESSAGE_LEN = 2000;
   styleUrls: ['./contact-us.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactUsComponent {
+export class ContactUsComponent implements OnDestroy {
   CONSTANTS = CONSTANTS;
 
   private title = inject(Title);
@@ -183,7 +184,11 @@ export class ContactUsComponent {
   }
 
   private setPageTitle(): void {
-    const t = this.translate.instant(CONSTANTS.CONTACT_TITLE) + ' • FamilyTree';
+    const t = this.translate.instant(CONSTANTS.CONTACT_TITLE) + ' â€¢ FamilyTree';
     this.title.setTitle(t);
+  }
+
+  ngOnDestroy(): void {
+    this.recaptcha.cleanup();
   }
 }

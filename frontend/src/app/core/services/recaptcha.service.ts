@@ -148,5 +148,18 @@ export class RecaptchaService {
       complete();
     }
   }
-}
 
+  cleanup() {
+    this.scriptLoaded.set(false);
+    this.loadPromise = undefined;
+
+    const badge = document.querySelectorAll('.grecaptcha-badge');
+    badge.forEach((node) => node.remove());
+
+    const script = document.querySelector('script[data-recaptcha="true"]');
+    if (script?.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+    delete window.grecaptcha;
+  }
+}
