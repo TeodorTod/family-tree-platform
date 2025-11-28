@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { SubscriptionPlanCode } from 'src/shared/enums/subscription-plan.enum';
+import { isAdminEmail } from '../shared/constants/admin.constants';
 
 type LanguageCode = 'bg' | 'en';
 
@@ -111,16 +112,22 @@ export class UsersService {
     return this.toPublicUser(updated);
   }
 
-  toPublicUser<T extends { password?: string | null }>(
+  toPublicUser<
+    T extends { password?: string | null; email?: string | null },
+  >(
     user: T | null,
-  ): (Omit<T, 'password'> & { hasPassword: boolean }) | null {
+  ): (Omit<T, 'password'> & { hasPassword: boolean; isAdmin: boolean }) | null {
     if (!user) {
       return null;
     }
-    const { password, ...rest } = user as T & { password?: string | null };
+    const { password, ...rest } = user as T & {
+      password?: string | null;
+      email?: string | null;
+    };
     return {
       ...(rest as Omit<T, 'password'>),
       hasPassword: !!password,
+      isAdmin: isAdminEmail(rest.email),
     };
   }
 

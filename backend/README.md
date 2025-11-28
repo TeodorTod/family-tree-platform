@@ -43,6 +43,16 @@ CONTACT_FORM_RECIPIENT=redacted@example.invalid
 
 `RECAPTCHA_MIN_SCORE` controls the minimum acceptable score for reCAPTCHA v3 (increase it if you see too many false positives). `CONTACT_FORM_RECIPIENT` is the inbox that will receive submissions from the public contact form.
 
+### Admin-only configuration
+
+To keep the privileged admin email out of the repository, create a `.enf` file (git-ignored by default) alongside your `.env` file and add:
+
+```
+ADMIN_EMAIL=redacted@example.invalid
+```
+
+The backend loads `.enf` before `.env`, so you can override the admin identity locally without exposing it in version control.
+
 ## Compile and run the project
 
 ```bash

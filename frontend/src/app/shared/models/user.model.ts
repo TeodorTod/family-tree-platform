@@ -6,6 +6,7 @@ export interface AuthUser {
   email: string;
   createdAt: string;
   language: Lang;
+  isAdmin?: boolean;
   displayName?: string | null;
   provider?: string | null;
   picture?: string | null;

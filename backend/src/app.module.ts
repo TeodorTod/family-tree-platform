@@ -15,10 +15,14 @@ import { GlobalSearchModule } from './global-search/global-search.module';
 import { SharingModule } from './sharing/sharing.module';
 import { BillingModule } from './billing/billing.module';
 import { ContactModule } from './contact/contact.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.enf', '.env'],
+    }),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -30,9 +34,10 @@ import { ContactModule } from './contact/contact.module';
     SharingModule,
     BillingModule,
     ContactModule,
-       ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public'), 
-      serveRoot: '/',                        
+    AdminModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/',
     }),
   ],
   controllers: [AppController],

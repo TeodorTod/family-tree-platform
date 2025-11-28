@@ -33,10 +33,20 @@
             [(ngModel)]="searchText"
             (keyup.enter)="submitSearch()"
           />
-          <button type="button" class="search-btn" (click)="submitSearch()" [attr.aria-label]="CONSTANTS.SEARCH_PLACEHOLDER | translate">
-            <i class="pi pi-arrow-right"></i>
-          </button>
+        <button type="button" class="search-btn" (click)="submitSearch()" [attr.aria-label]="CONSTANTS.SEARCH_PLACEHOLDER | translate">
+          <i class="pi pi-arrow-right"></i>
+        </button>
         </div>
+        @if (canAccessAdmin()) {
+        <button
+          type="button"
+          pButton
+          class="admin-link"
+          icon="pi pi-shield"
+          (click)="goToAdmin()"
+          [label]="CONSTANTS.ADMIN_NAV_LABEL | translate"
+        ></button>
+        }
         <button
           type="button"
           pButton
@@ -176,6 +186,16 @@
         <i class="pi pi-arrow-right"></i>
       </button>
     </div>
+    @if (canAccessAdmin()) {
+    <button
+      type="button"
+      pButton
+      class="mobile-admin-btn"
+      icon="pi pi-shield"
+      (click)="goToAdmin()"
+      [label]="CONSTANTS.ADMIN_NAV_LABEL | translate"
+    ></button>
+    }
     <button
       type="button"
       pButton

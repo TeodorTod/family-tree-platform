@@ -1,0 +1,648 @@
+<div class="admin-dashboard">
+  <section class="page-header">
+    <p class="eyebrow">{{ CONSTANTS.ADMIN_EYEBROW | translate }}</p>
+    <h1>{{ CONSTANTS.ADMIN_TITLE | translate }}</h1>
+    <p class="subtitle">{{ CONSTANTS.ADMIN_SUBTITLE | translate }}</p>
+  </section>
+
+  <section class="admin-stats">
+    <div class="stat-card">
+      <span>{{ CONSTANTS.ADMIN_STATS_USERS | translate }}</span>
+      <strong>{{ totalUsers() | number: '1.0-0' }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>{{ CONSTANTS.ADMIN_STATS_MEMBERS | translate }}</span>
+      <strong>{{ totalMembers() | number: '1.0-0' }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>{{ CONSTANTS.ADMIN_STATS_DATA_RECORDS | translate }}</span>
+      <strong>{{ totalDataRecords() | number: '1.0-0' }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>{{ CONSTANTS.ADMIN_STATS_SELECTED | translate }}</span>
+      <strong>{{ selectedUser()?.memberCount ?? 0 }}</strong>
+      <small class="muted">
+        {{
+          selectedUser()
+            ? (selectedUser()?.displayName || selectedUser()?.email)
+            : (CONSTANTS.ADMIN_STATS_SELECTED_NONE | translate)
+        }}
+      </small>
+      <small class="muted">
+        {{
+          CONSTANTS.ADMIN_STATS_SELECTED_DATA | translate: {
+            value: selectedUser()?.dataRecords ?? 0
+          }
+        }}
+      </small>
+    </div>
+  </section>
+
+  <section class="panel users-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">{{ CONSTANTS.ADMIN_USERS_SECTION | translate }}</p>
+          <h2>{{ CONSTANTS.ADMIN_USERS_SUBTITLE | translate }}</h2>
+        </div>
+        <div class="panel-actions">
+          <button
+            type="button"
+            pButton
+            icon="pi pi-refresh"
+            class="secondary"
+            (click)="refreshUsers()"
+            [disabled]="loadingUsers()"
+            [label]="CONSTANTS.ADMIN_REFRESH | translate"
+          ></button>
+        </div>
+      </div>
+
+      @if (usersError()) {
+      <p-message
+        severity="error"
+        class="mb-3"
+        [text]="usersError() ?? ''"
+      ></p-message>
+      }
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('user')"
+                  [class.sorted]="userSort()?.field === 'user'"
+                  [attr.data-direction]="userSort()?.field === 'user' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_USER | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('language')"
+                  [class.sorted]="userSort()?.field === 'language'"
+                  [attr.data-direction]="userSort()?.field === 'language' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_LANGUAGE | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('memberCount')"
+                  [class.sorted]="userSort()?.field === 'memberCount'"
+                  [attr.data-direction]="userSort()?.field === 'memberCount' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_MEMBERS | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('profileCount')"
+                  [class.sorted]="userSort()?.field === 'profileCount'"
+                  [attr.data-direction]="userSort()?.field === 'profileCount' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_PROFILES | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('dataRecords')"
+                  [class.sorted]="userSort()?.field === 'dataRecords'"
+                  [attr.data-direction]="userSort()?.field === 'dataRecords' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_DATA_USAGE | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('lastMemberChangeAt')"
+                  [class.sorted]="userSort()?.field === 'lastMemberChangeAt'"
+                  [attr.data-direction]="userSort()?.field === 'lastMemberChangeAt' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_LAST_CHANGE | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setUserSort('subscriptionPlan')"
+                  [class.sorted]="userSort()?.field === 'subscriptionPlan'"
+                  [attr.data-direction]="userSort()?.field === 'subscriptionPlan' ? userSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_TABLE_PLAN | translate }}
+                </button>
+              </th>
+              <th></th>
+            </tr>
+            <tr class="filter-row">
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="userFilters().user"
+                  (input)="updateUserFilter('user', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="userFilters().language"
+                  (input)="updateUserFilter('language', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  inputmode="numeric"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_NUMBER_PLACEHOLDER | translate"
+                  [value]="userFilters().members"
+                  (input)="updateUserFilter('members', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  inputmode="numeric"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_NUMBER_PLACEHOLDER | translate"
+                  [value]="userFilters().profiles"
+                  (input)="updateUserFilter('profiles', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  inputmode="numeric"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_NUMBER_PLACEHOLDER | translate"
+                  [value]="userFilters().dataUsage"
+                  (input)="updateUserFilter('dataUsage', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="userFilters().lastChange"
+                  (input)="updateUserFilter('lastChange', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="userFilters().plan"
+                  (input)="updateUserFilter('plan', $any($event.target).value)"
+                />
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loadingUsers()) {
+            <tr>
+              <td colspan="8">
+                <div class="busy-row">
+                  <p-progressSpinner styleClass="inline-spinner"></p-progressSpinner>
+                  <span>{{ CONSTANTS.ADMIN_LOADING | translate }}</span>
+                </div>
+              </td>
+            </tr>
+            } @else if (!processedUsers().length) {
+            <tr>
+              <td colspan="8" class="empty-state">
+                {{ CONSTANTS.ADMIN_USERS_EMPTY | translate }}
+              </td>
+            </tr>
+            } @else {
+            @for (user of pagedUsers(); track user.id) {
+            <tr
+              (click)="selectUser(user.id)"
+              [class.selected]="selectedUserId() === user.id"
+            >
+              <td>
+                <div class="user-cell">
+                  <div class="user-name">
+                    <strong>{{
+                      user.displayName || user.email || (CONSTANTS.ADMIN_UNKNOWN_USER | translate)
+                    }}</strong>
+                    <span class="muted">{{ user.email }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="lang-chip">{{ user.language | uppercase }}</span>
+              </td>
+              <td>
+                <span class="count-chip">{{ user.memberCount }}</span>
+              </td>
+              <td>
+                <span class="count-chip neutral">{{ user.profileCount }}</span>
+              </td>
+              <td>
+                <span class="count-chip accent">{{ user.dataRecords }}</span>
+              </td>
+              <td>
+                @if (user.lastMemberChangeAt) {
+                {{ user.lastMemberChangeAt | date: 'medium' }}
+                } @else {
+                <span class="muted">{{
+                  CONSTANTS.ADMIN_LAST_CHANGE_NEVER | translate
+                }}</span>
+                }
+              </td>
+              <td>
+                <div class="plan-info">
+                  <span class="plan-chip">
+                    {{ planLabelKey(user.subscriptionPlan) | translate }}
+                  </span>
+                  @if (user.subscriptionEndAt) {
+                  <small class="muted">
+                    {{
+                      CONSTANTS.ADMIN_PLAN_EXPIRES | translate: {
+                        date: (user.subscriptionEndAt | date: 'mediumDate')
+                      }
+                    }}
+                  </small>
+                  }
+                </div>
+              </td>
+              <td class="actions-cell">
+                <button
+                  type="button"
+                  pButton
+                  class="ghost"
+                  icon="pi pi-users"
+                  (click)="selectUser(user.id); $event.stopPropagation()"
+                  [label]="CONSTANTS.ADMIN_VIEW_MEMBERS | translate"
+                ></button>
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+        <div class="table-pagination">
+          <div class="page-info">
+            {{
+              CONSTANTS.ADMIN_PAGINATION_PAGE | translate: {
+                current: userPage(),
+                total: userTotalPages()
+              }
+            }}
+          </div>
+          <div class="pagination-controls">
+            <label>
+              {{ CONSTANTS.ADMIN_PAGINATION_ROWS_PER_PAGE | translate }}
+              <select
+                class="filter-input"
+                [value]="userPageSize()"
+                (change)="updateUserPageSize(+($any($event.target).value))"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              class="ghost"
+              (click)="changeUserPage(-1)"
+              [disabled]="userPage() === 1"
+            >
+              {{ CONSTANTS.ADMIN_PAGINATION_PREV | translate }}
+            </button>
+            <button
+              type="button"
+              class="ghost"
+              (click)="changeUserPage(1)"
+              [disabled]="userPage() === userTotalPages()"
+            >
+              {{ CONSTANTS.ADMIN_PAGINATION_NEXT | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <section class="panel members-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">{{ CONSTANTS.ADMIN_MEMBERS_SECTION | translate }}</p>
+          <h2>
+            {{
+              selectedUser()
+                ? (selectedUser()?.displayName || selectedUser()?.email)
+                : (CONSTANTS.ADMIN_SELECT_USER_PROMPT | translate)
+            }}
+          </h2>
+          <p class="subtitle">
+            @if (selectedUser()) {
+            {{
+              CONSTANTS.ADMIN_MEMBERS_SUBTITLE | translate: {
+                count: selectedMembersCount(),
+                owner: selectedUser()?.email,
+                data: selectedMembersDataUsage()
+              }
+            }}
+            } @else {
+            {{ CONSTANTS.ADMIN_MEMBERS_IDLE | translate }}
+            }
+          </p>
+        </div>
+      </div>
+
+      @if (membersError()) {
+      <p-message
+        severity="error"
+        class="mb-3"
+        [text]="membersError() ?? ''"
+      ></p-message>
+      }
+
+      @if (loadingMembers()) {
+      <div class="members-loading">
+        <p-progressSpinner></p-progressSpinner>
+        <p>{{ CONSTANTS.ADMIN_LOADING | translate }}</p>
+      </div>
+      } @else if (!selectedUser()) {
+      <div class="members-empty">
+        {{ CONSTANTS.ADMIN_SELECT_USER_PROMPT | translate }}
+      </div>
+      } @else if (!members().length) {
+      <div class="members-empty">
+        {{ CONSTANTS.ADMIN_MEMBERS_EMPTY | translate }}
+      </div>
+      } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('name')"
+                  [class.sorted]="memberSort()?.field === 'name'"
+                  [attr.data-direction]="memberSort()?.field === 'name' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_NAME | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('role')"
+                  [class.sorted]="memberSort()?.field === 'role'"
+                  [attr.data-direction]="memberSort()?.field === 'role' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_ROLE | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('relation')"
+                  [class.sorted]="memberSort()?.field === 'relation'"
+                  [attr.data-direction]="memberSort()?.field === 'relation' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_RELATION | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('status')"
+                  [class.sorted]="memberSort()?.field === 'status'"
+                  [attr.data-direction]="memberSort()?.field === 'status' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_STATUS | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('dataUsage')"
+                  [class.sorted]="memberSort()?.field === 'dataUsage'"
+                  [attr.data-direction]="memberSort()?.field === 'dataUsage' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_DATA_USAGE | translate }}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  class="sort-btn"
+                  (click)="setMemberSort('lastChange')"
+                  [class.sorted]="memberSort()?.field === 'lastChange'"
+                  [attr.data-direction]="memberSort()?.field === 'lastChange' ? memberSort()?.direction : null"
+                >
+                  {{ CONSTANTS.ADMIN_MEMBER_LAST_CHANGE | translate }}
+                </button>
+              </th>
+            </tr>
+            <tr class="filter-row">
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="memberFilters().name"
+                  (input)="updateMemberFilter('name', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="memberFilters().role"
+                  (input)="updateMemberFilter('role', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="memberFilters().relation"
+                  (input)="updateMemberFilter('relation', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="memberFilters().status"
+                  (input)="updateMemberFilter('status', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  inputmode="numeric"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_NUMBER_PLACEHOLDER | translate"
+                  [value]="memberFilters().dataUsage"
+                  (input)="updateMemberFilter('dataUsage', $any($event.target).value)"
+                />
+              </th>
+              <th>
+                <input
+                  pInputText
+                  class="filter-input"
+                  type="text"
+                  [placeholder]="CONSTANTS.ADMIN_FILTER_PLACEHOLDER | translate"
+                  [value]="memberFilters().lastChange"
+                  (input)="updateMemberFilter('lastChange', $any($event.target).value)"
+                />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (!processedMembers().length) {
+            <tr>
+              <td colspan="6" class="empty-state">
+                {{ CONSTANTS.ADMIN_MEMBERS_EMPTY | translate }}
+              </td>
+            </tr>
+            } @else {
+            @for (member of pagedMembers(); track member.id) {
+            <tr>
+              <td>
+                <div class="user-name">
+                  <strong>
+                    {{
+                      member.firstName
+                        ? (member.firstName + ' ' + (member.lastName || '')).trim()
+                        : member.lastName
+                    }}
+                  </strong>
+                  @if (member.middleName) {
+                  <span class="muted">{{ member.middleName }}</span>
+                  }
+                </div>
+              </td>
+              <td>{{ member.role }}</td>
+              <td>{{ member.relationLabel || '—' }}</td>
+              <td>
+                <span
+                  class="status-chip"
+                  [class.alive]="member.isAlive"
+                  [class.deceased]="!member.isAlive"
+                >
+                  {{
+                    member.isAlive
+                      ? (CONSTANTS.ADMIN_MEMBER_ALIVE | translate)
+                      : (CONSTANTS.ADMIN_MEMBER_DECEASED | translate)
+                  }}
+                </span>
+              </td>
+              <td>
+                <div class="data-usage-cell">
+                  <span class="count-chip accent">{{ member.dataUsage }}</span>
+                  <small
+                    class="profile-flag"
+                    [class.active]="member.hasProfile"
+                  >
+                    {{
+                      member.hasProfile
+                        ? (CONSTANTS.ADMIN_MEMBER_PROFILE_PRESENT | translate)
+                        : (CONSTANTS.ADMIN_MEMBER_PROFILE_MISSING | translate)
+                    }}
+                  </small>
+                </div>
+              </td>
+              <td>
+                {{
+                  (member.updatedAt ?? member.createdAt) | date: 'medium'
+                }}
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+        <div class="table-pagination">
+          <div class="page-info">
+            {{
+              CONSTANTS.ADMIN_PAGINATION_PAGE | translate: {
+                current: membersPage(),
+                total: memberTotalPages()
+              }
+            }}
+          </div>
+          <div class="pagination-controls">
+            <label>
+              {{ CONSTANTS.ADMIN_PAGINATION_ROWS_PER_PAGE | translate }}
+              <select
+                class="filter-input"
+                [value]="membersPageSize()"
+                (change)="updateMemberPageSize(+($any($event.target).value))"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              class="ghost"
+              (click)="changeMemberPage(-1)"
+              [disabled]="membersPage() === 1"
+            >
+              {{ CONSTANTS.ADMIN_PAGINATION_PREV | translate }}
+            </button>
+            <button
+              type="button"
+              class="ghost"
+              (click)="changeMemberPage(1)"
+              [disabled]="membersPage() === memberTotalPages()"
+            >
+              {{ CONSTANTS.ADMIN_PAGINATION_NEXT | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+  </section>
+</div>

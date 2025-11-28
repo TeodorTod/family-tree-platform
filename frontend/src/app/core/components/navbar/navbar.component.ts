@@ -37,6 +37,7 @@ export class NavbarComponent implements OnDestroy {
 
   isLoggedIn = this.auth.getTokenSignal();
   mobileMenuVisible = false;
+  canAccessAdmin = signal(false);
 
   // Language items for split button
   langItems: MenuItem[] = [];
@@ -88,11 +89,13 @@ export class NavbarComponent implements OnDestroy {
       const token = this.isLoggedIn();
       if (token) {
         this.notifications.refresh();
+        this.canAccessAdmin.set(false);
         this.loadProfileDisplayName();
       } else {
         this.notifications.reset();
         this.displayName.set('');
         this.refreshLogoTitle();
+        this.canAccessAdmin.set(false);
       }
     });
 
@@ -251,10 +254,12 @@ export class NavbarComponent implements OnDestroy {
       next: (user) => {
         const name = (user?.displayName ?? '').trim();
         this.displayName.set(name);
+        this.canAccessAdmin.set(!!user?.isAdmin);
         this.refreshLogoTitle();
       },
       error: () => {
         this.displayName.set('');
+        this.canAccessAdmin.set(false);
         this.refreshLogoTitle();
       },
     });
@@ -268,5 +273,10 @@ export class NavbarComponent implements OnDestroy {
         })
       : this.translate.instant(CONSTANTS.COMMON_APP_NAME);
     this.logoTitle.set(translated);
+  }
+
+  goToAdmin() {
+    this.router.navigate([CONSTANTS.ROUTES.ADMIN]);
+    this.mobileMenuVisible = false;
   }
 }
