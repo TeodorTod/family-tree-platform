@@ -234,13 +234,16 @@
   <p-dialog
     [visible]="deleteDialogVisible()"
     [modal]="true"
-    [closable]="false"
+    [closable]="true"
     [style]="{ width: '450px' }"
     (onHide)="closeDeleteDialog()"
+    (visibleChange)="deleteDialogVisible.set($event); deleteError.set(null)"
   >
-    <ng-template pTemplate="header">
+     <ng-template pTemplate="header">
+    <span class="delete-dialog-title">
       {{ CONSTANTS.ACCOUNT_DELETE_DIALOG_TITLE | translate }}
-    </ng-template>
+    </span>
+  </ng-template>
     <p>{{ CONSTANTS.ACCOUNT_DELETE_DIALOG_MESSAGE | translate }}</p>
     <p class="dialog-warning">
       {{ CONSTANTS.ACCOUNT_DELETE_DIALOG_WARNING | translate }}

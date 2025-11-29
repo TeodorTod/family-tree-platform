@@ -1,4 +1,4 @@
-@use '../../../../styles/forms/floating-field' as ff;
+@use "../../../../styles/forms/floating-field" as ff;
 
 .account-settings {
   display: flex;
@@ -10,7 +10,6 @@
 }
 
 @include ff.floating-field();
-
 
 .account-header {
   display: flex;
@@ -258,6 +257,11 @@
       background: #b91c1c;
     }
   }
+}
+
+.delete-dialog-title {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
 }
 
 @media (max-width: 600px) {

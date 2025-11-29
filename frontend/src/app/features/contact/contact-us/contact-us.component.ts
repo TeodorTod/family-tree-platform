@@ -184,7 +184,7 @@ export class ContactUsComponent implements OnDestroy {
   }
 
   private setPageTitle(): void {
-    const t = this.translate.instant(CONSTANTS.CONTACT_TITLE) + ' â€¢ FamilyTree';
+    const t = this.translate.instant(CONSTANTS.CONTACT_TITLE) + ' â€¢ Rodostoria';
     this.title.setTitle(t);
   }
 

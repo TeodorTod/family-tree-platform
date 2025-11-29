@@ -65,7 +65,7 @@ export class CookiePolicyPage {
   readonly header = computed(() => {
     const data = (this.content() ?? {}) as CookieContent;
     const pageTitle = data.TITLE ?? 'Cookie Policy';
-    this.title.setTitle(`${pageTitle} • FamilyTree`);
+    this.title.setTitle(`${pageTitle} • Rodostoria`);
     return {
       title: pageTitle,
       updated: data.UPDATED ?? '',

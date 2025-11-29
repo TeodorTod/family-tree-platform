@@ -1,4 +1,4 @@
-{
+﻿{
   "AUTH": {
     "LOGIN": "Login",
     "LOGOUT": "Logout",
@@ -487,16 +487,16 @@
   },
   "FAQ": {
     "TITLE": "Frequently Asked Questions",
-    "INTRO": "Here are answers to the most common questions about FamilyTree.",
+    "INTRO": "Here are answers to the most common questions about Rodostoria.",
     "Q": {
-      "WHAT_IS_APP": "What is FamilyTree?",
+      "WHAT_IS_APP": "What is Rodostoria?",
       "HOW_ADD_FAMILY": "How do I add my first relatives?",
       "MEDIA_LIMITS": "What are the photo/video limits?",
       "SUBSCRIPTIONS": "What subscriptions do you offer?",
       "PRIVACY": "How do you protect my data?"
     },
     "A": {
-      "WHAT_IS_APP": "FamilyTree is a web app for building interactive family trees with media and stories.",
+      "WHAT_IS_APP": "Rodostoria is a web app for building interactive family trees with media and stories.",
       "HOW_ADD_FAMILY": "After login, you’ll follow forms in this order: You → Mother → Maternal grandparents → Father → Paternal grandparents.",
       "MEDIA_LIMITS": "Free plan: up to 100MB total. Paid plans increase limits depending on tier.",
       "SUBSCRIPTIONS": "We offer Free, Family+, Premium, and Lifetime. See subscription settings for details.",
@@ -555,7 +555,7 @@
   },
   "COOKIE_CONSENT": {
     "TITLE": "We respect your privacy",
-    "MESSAGE": "Essential cookies keep FamilyTree secure and reliable. You can also enable optional cookies that help us improve the experience and tailor offers.",
+    "MESSAGE": "Essential cookies keep Rodostoria secure and reliable. You can also enable optional cookies that help us improve the experience and tailor offers.",
     "MANAGE": "Manage choices",
     "HIDE": "Hide choices",
     "ACCEPT_ALL": "Accept all",
@@ -613,7 +613,7 @@
   "ADMIN": {
     "EYEBROW": "Administrator",
     "TITLE": "Operations overview",
-    "SUBTITLE": "Monitor every FamilyTree account, review member volume per user, and dive into the most recent edits from a single secure surface.",
+    "SUBTITLE": "Monitor every Rodostoria account, review member volume per user, and dive into the most recent edits from a single secure surface.",
     "STATS_USERS": "Total users",
     "STATS_MEMBERS": "Total members",
     "STATS_SELECTED": "Selected account",
@@ -665,17 +665,17 @@
     "PRIVACY": {
       "TITLE": "Privacy Policy",
       "UPDATED": "Last updated: June 24, 2025",
-      "INTRO": "This Privacy Policy explains how FamilyTree collects, uses, shares, and protects the personal data that you add to your family tree or share with other profiles.",
+      "INTRO": "This Privacy Policy explains how Rodostoria collects, uses, shares, and protects the personal data that you add to your family tree or share with other profiles.",
       "SECTIONS": {
         "SUMMARY": {
           "TITLE": "Our privacy commitments",
           "PARAGRAPHS": [
-            "FamilyTree is a direct-to-consumer genealogy platform headquartered in Bulgaria. We comply with the EU General Data Protection Regulation (GDPR), the Bulgarian Personal Data Protection Act (PDPA), and all other local privacy laws that apply to our users.",
+            "Rodostoria is a direct-to-consumer genealogy platform headquartered in Bulgaria. We comply with the EU General Data Protection Regulation (GDPR), the Bulgarian Personal Data Protection Act (PDPA), and all other local privacy laws that apply to our users.",
             "This document covers every point where we handle personal information—from the moment you create an account to the day you delete your tree."
           ],
           "BULLETS": [
             "We never sell or license personal, genetic, or health data to third parties, including insurers, employers, or data brokers.",
-            "We prohibit FamilyTree data from being used by insurance companies or law enforcement unless we must respond to a valid court order.",
+            "We prohibit Rodostoria data from being used by insurance companies or law enforcement unless we must respond to a valid court order.",
             "You can export or delete your account, trees, uploaded media, and sharing permissions at any time. Deletion is permanent and cascades through our backups.",
             "When this policy changes materially we notify you by email or in-product banners and update the date above."
           ]
@@ -683,7 +683,7 @@
         "DATA_COLLECTION": {
           "TITLE": "What information we collect",
           "PARAGRAPHS": [
-            "We only collect the data that is needed to provide FamilyTree and respect your sharing choices.",
+            "We only collect the data that is needed to provide Rodostoria and respect your sharing choices.",
             "Information flows fall into the categories below."
           ],
           "BULLETS": [
@@ -748,7 +748,7 @@
           "PARAGRAPHS": [
             "Data is stored in EU data centers with encrypted backups replicated within the EU/EEA. Access is restricted to vetted employees under confidentiality agreements.",
             "We rely on encryption, access controls, penetration tests, logging, rate limiting, and reCAPTCHA to prevent abuse. No system is perfect, but we monitor continuously and notify you if a breach that meets legal thresholds occurs.",
-            "We retain personal data only as long as necessary to deliver FamilyTree, comply with legal obligations, or resolve disputes. Deleted trees and optional DNA uploads (if ever introduced) are removed from production immediately and from backups within 30 days."
+            "We retain personal data only as long as necessary to deliver Rodostoria, comply with legal obligations, or resolve disputes. Deleted trees and optional DNA uploads (if ever introduced) are removed from production immediately and from backups within 30 days."
           ]
         },
         "YOUR_RIGHTS": {
@@ -773,7 +773,7 @@
           "BULLETS": [
             "Email: redacted@example.invalid or redacted@example.invalid.",
             "Data Protection Officer: redacted@example.invalid.",
-            "Postal: FamilyTree, 15 Ivan Vazov St., 1000 Sofia, Bulgaria.",
+            "Postal: Rodostoria, 15 Ivan Vazov St., 1000 Sofia, Bulgaria.",
             "Supervisory authority: Commission for Personal Data Protection (CPDP), 2 Prof. Tsvetan Lazarov Blvd., 1592 Sofia, Bulgaria, https://example.invalid redacted@example.invalid."
           ]
         }
@@ -782,7 +782,7 @@
     "COOKIES": {
       "TITLE": "Cookie Policy",
       "UPDATED": "Last modified: December 9, 2024",
-      "INTRO": "Cookies and similar technologies help us keep FamilyTree secure, remember your preferences, and understand how the service is used.",
+      "INTRO": "Cookies and similar technologies help us keep Rodostoria secure, remember your preferences, and understand how the service is used.",
       "TABLE_TITLE": "Mandatory cookies we currently use",
       "TABLE_HEADERS": {
         "NAME": "Cookie",
@@ -811,7 +811,7 @@
           ]
         },
         "TYPES": {
-          "TITLE": "Cookie types on FamilyTree",
+          "TITLE": "Cookie types on Rodostoria",
           "PARAGRAPHS": [
             "Right now we only use mandatory cookies. Analytics and advertising cookies are disabled by default; if we ever enable them you will be able to manage consent inside the product."
           ],
@@ -861,73 +861,73 @@
         { "NAME": "__stripe_mid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "1 year" },
         { "NAME": "__stripe_sid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "30 minutes" },
         { "NAME": "_cfuvid", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Vimeo", "DURATION": "Session" },
-        { "NAME": "AccessibilityMenuOpened", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "FamilyTree", "DURATION": "6 hours" },
+        { "NAME": "AccessibilityMenuOpened", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Rodostoria", "DURATION": "6 hours" },
         { "NAME": "AEC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
         { "NAME": "NID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
-        { "NAME": "archived_request", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
+        { "NAME": "archived_request", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
         { "NAME": "aweb-runtime-context", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 year" },
         { "NAME": "AWSALB", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
         { "NAME": "AWSALBCORS", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
         { "NAME": "cdn_bluesnap_700000_ka_ck", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "BlueSnap", "DURATION": "Session" },
-        { "NAME": "cookiePreferences", "PURPOSE": "Stores the consent state you selected.", "PROVIDER": "FamilyTree", "DURATION": "2 years" },
-        { "NAME": "data8", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "data8p2", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "data8pl", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "device_id", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "lid", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "loginEmail", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "data9", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "dserp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "dstaun", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "DMatchesPageSize", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
-        { "NAME": "download_ftb_started", "PURPOSE": "Enables file downloads.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "formMode", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "ftp", "PURPOSE": "Enables file uploads.", "PROVIDER": "FamilyTree", "DURATION": "2 days" },
+        { "NAME": "cookiePreferences", "PURPOSE": "Stores the consent state you selected.", "PROVIDER": "Rodostoria", "DURATION": "2 years" },
+        { "NAME": "data8", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "data8p2", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "data8pl", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "device_id", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "lid", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "loginEmail", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "data9", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "dserp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "dstaun", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "DMatchesPageSize", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
+        { "NAME": "download_ftb_started", "PURPOSE": "Enables file downloads.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "formMode", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "ftp", "PURPOSE": "Enables file uploads.", "PROVIDER": "Rodostoria", "DURATION": "2 days" },
         { "NAME": "G_AUTHUSER_H", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
         { "NAME": "G_ENABLED_IDPS", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
         { "NAME": "g_state", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
         { "NAME": "HSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
         { "NAME": "SSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
-        { "NAME": "is_embed", "PURPOSE": "Supports the mobile and embedded experience.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "isMember", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "was-ever-member", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "WebmasterInFamilyPages", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "just_logged_out", "PURPOSE": "Coordinates login and logout status.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "lang", "PURPOSE": "Preserves the selected language.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "LastVisitedFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "LastVisitedMyFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "LastVisitedSites", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "LVTS", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "mhc_version", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "rpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "lelid", "PURPOSE": "Supports library mode usage.", "PROVIDER": "FamilyTree", "DURATION": "12 hours" },
-        { "NAME": "lels", "PURPOSE": "Supports library mode usage.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "loginRequired", "PURPOSE": "Provides support functionality to users.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "MyHeritageAppIntro", "PURPOSE": "Ensures the correct user experience.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "nd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "2 days" },
-        { "NAME": "ndd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "is_embed", "PURPOSE": "Supports the mobile and embedded experience.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "isMember", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "was-ever-member", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "WebmasterInFamilyPages", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "just_logged_out", "PURPOSE": "Coordinates login and logout status.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "lang", "PURPOSE": "Preserves the selected language.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "LastVisitedFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "LastVisitedMyFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "LastVisitedSites", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "LVTS", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "mhc_version", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "rpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "lelid", "PURPOSE": "Supports library mode usage.", "PROVIDER": "Rodostoria", "DURATION": "12 hours" },
+        { "NAME": "lels", "PURPOSE": "Supports library mode usage.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "loginRequired", "PURPOSE": "Provides support functionality to users.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "MyHeritageAppIntro", "PURPOSE": "Ensures the correct user experience.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "nd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "2 days" },
+        { "NAME": "ndd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
         { "NAME": "nlbi_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
         { "NAME": "incap_ses_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
-        { "NAME": "perm_id", "PURPOSE": "Required for site maintenance.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "perm_id", "PURPOSE": "Required for site maintenance.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
         { "NAME": "PHPSESSID", "PURPOSE": "Used for authentication.", "PROVIDER": "PHP", "DURATION": "Session" },
-        { "NAME": "psa", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "results-ad-hoc-rmsb", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
-        { "NAME": "rmrpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
-        { "NAME": "search_results_info", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "suggestedRelativesPageInformation", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "10 minutes" },
-        { "NAME": "underAgedOnSignup", "PURPOSE": "Prevents registration by minors.", "PROVIDER": "FamilyTree", "DURATION": "1 week" },
-        { "NAME": "user_encryption_key", "PURPOSE": "Provides security protections.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
-        { "NAME": "userTimezone", "PURPOSE": "Saves the current browser time zone.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
-        { "NAME": "uuid", "PURPOSE": "Improves site performance.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "psa", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "results-ad-hoc-rmsb", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
+        { "NAME": "rmrpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
+        { "NAME": "search_results_info", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "suggestedRelativesPageInformation", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "10 minutes" },
+        { "NAME": "underAgedOnSignup", "PURPOSE": "Prevents registration by minors.", "PROVIDER": "Rodostoria", "DURATION": "1 week" },
+        { "NAME": "user_encryption_key", "PURPOSE": "Provides security protections.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
+        { "NAME": "userTimezone", "PURPOSE": "Saves the current browser time zone.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
+        { "NAME": "uuid", "PURPOSE": "Improves site performance.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
         { "NAME": "visid_incap_*", "PURPOSE": "Filters out malicious requests.", "PROVIDER": "Imperva", "DURATION": "1 year" },
         { "NAME": "wp-wpml_current_language", "PURPOSE": "Preserves language preferences.", "PROVIDER": "WordPress", "DURATION": "Session" },
-        { "NAME": "isBlockedByRateLimit", "PURPOSE": "Provides a secure site.", "PROVIDER": "FamilyTree", "DURATION": "24 hours" },
-        { "NAME": "TurnOnAutoRenewDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
-        { "NAME": "TurnOnAutoRenewGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" },
-        { "NAME": "ExtendSubscriptionDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
-        { "NAME": "ExtendSubscriptionGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" },
-        { "NAME": "UpgradeOfferDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
-        { "NAME": "UpgradeOfferGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" }
+        { "NAME": "isBlockedByRateLimit", "PURPOSE": "Provides a secure site.", "PROVIDER": "Rodostoria", "DURATION": "24 hours" },
+        { "NAME": "TurnOnAutoRenewDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
+        { "NAME": "TurnOnAutoRenewGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" },
+        { "NAME": "ExtendSubscriptionDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
+        { "NAME": "ExtendSubscriptionGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" },
+        { "NAME": "UpgradeOfferDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
+        { "NAME": "UpgradeOfferGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" }
       ]
     }
   }

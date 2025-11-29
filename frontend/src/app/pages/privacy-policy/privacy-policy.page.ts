@@ -54,7 +54,7 @@ export class PrivacyPolicyPage {
   readonly header = computed(() => {
     const data = (this.content() ?? {}) as PrivacyContent;
     const pageTitle = data.TITLE ?? 'Privacy Policy';
-    this.title.setTitle(`${pageTitle} • FamilyTree`);
+    this.title.setTitle(`${pageTitle} • Rodostoria`);
     return {
       title: pageTitle,
       updated: data.UPDATED ?? '',

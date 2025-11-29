@@ -5,6 +5,6 @@ export const contactRoutes: Routes = [
   {
     path: '',
     component: ContactUsComponent,
-    title: 'Contact Us • FamilyTree',
+    title: 'Contact Us • Rodostoria',
   },
 ];
