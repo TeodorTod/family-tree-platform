@@ -12,20 +12,35 @@
         pButton
         type="button"
         icon="pi pi-info-circle"
-        target="_blank"
         class="p-button-rounded p-button-text my-icons"
         pTooltip="{{ CONSTANTS.COMMON_FAQ | translate }}"
         tooltipPosition="top"
         [routerLink]="['/faq']"
         aria-label="FAQ"
       ></button>
-      <!-- Future Useful Links -->
-      <!--
-      <a pButton pRipple label="Privacy" class="p-button-text text-sm" routerLink="/privacy"></a>
-      <a pButton pRipple label="Terms" class="p-button-text text-sm" routerLink="/terms"></a>
-      -->
+      <a
+        pButton
+        pRipple
+        class="p-button-rounded p-button-text my-icons"
+        [routerLink]="CONSTANTS.ROUTES.LEGAL.PRIVACY"
+        pTooltip="{{ CONSTANTS.COMMON_PRIVACY_POLICY | translate }}"
+        tooltipPosition="top"
+        aria-label="Privacy Policy"
+      >
+        <i class="pi pi-shield" aria-hidden="true"></i>
+      </a>
+      <a
+        pButton
+        pRipple
+        class="p-button-rounded p-button-text my-icons"
+        [routerLink]="CONSTANTS.ROUTES.LEGAL.COOKIES"
+        pTooltip="{{ CONSTANTS.COMMON_COOKIE_POLICY | translate }}"
+        tooltipPosition="top"
+        aria-label="Cookie Policy"
+      >
+        <span class="cookie-icon" aria-hidden="true"></span>
+      </a>
 
-      <!-- Social Icons -->
       <a
         href="https://example.invalid"
         target="_blank"

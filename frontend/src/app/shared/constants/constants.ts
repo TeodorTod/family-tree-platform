@@ -151,9 +151,14 @@ export class CONSTANTS {
       PATERNAL_GRANDPARENTS: '/onboarding/paternal-grandparents',
       SUBSCRIPTION: '/onboarding/subscription',
     },
-      FAQ: '/faq',
-      ADMIN: '/admin',
-    };
+    CONTACT: '/contact',
+    LEGAL: {
+      PRIVACY: '/privacy',
+      COOKIES: '/cookies',
+    },
+    FAQ: '/faq',
+    ADMIN: '/admin',
+  };
 
   static readonly COMMON_NAME = 'COMMON.NAME';
   static readonly COMMON_YEARS = 'COMMON.YEARS';
@@ -166,6 +171,12 @@ export class CONSTANTS {
   static readonly COMMON_REJECT = 'COMMON.REJECT';
   static readonly COMMON_OWNER = 'COMMON.OWNER';
   static readonly COMMON_OPTIONAL = 'COMMON.OPTIONAL';
+  static readonly COMMON_PRIVACY_POLICY = 'COMMON.PRIVACY_POLICY';
+  static readonly COMMON_COOKIE_POLICY = 'COMMON.COOKIE_POLICY';
+  static readonly COMMON_RIGHTS_RESERVED = 'COMMON.RIGHTS_RESERVED';
+  static readonly COMMON_FOOTER_TAGLINE = 'COMMON.FOOTER_TAGLINE';
+  static readonly COMMON_FOLLOW_US = 'COMMON.FOLLOW_US';
+  static readonly COMMON_LEGAL = 'COMMON.LEGAL';
   static readonly SUBSCRIPTION_PLAN_UPDATED = 'SUBSCRIPTION.PLAN_UPDATED';
   static readonly SUBSCRIPTION_PLAN_ACTIVE = 'SUBSCRIPTION.PLAN_ACTIVE';
   static readonly SUBSCRIPTION_PLAN_UPDATE_ERROR =

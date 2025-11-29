@@ -476,6 +476,12 @@
     "REJECT": "Reject",
     "OWNER": "Owner",
     "OPTIONAL": "Optional",
+    "LEGAL": "Legal",
+    "FOLLOW_US": "Follow us",
+    "FOOTER_TAGLINE": "Private, secure tools for modern family history.",
+    "RIGHTS_RESERVED": "All rights reserved.",
+    "PRIVACY_POLICY": "Privacy Policy",
+    "COOKIE_POLICY": "Cookie Policy",
     "SEND": "Send",
     "CONFIRM": "Confirm"
   },
@@ -515,7 +521,7 @@
   },
   "CONTACT": {
     "TITLE": "Contact Us",
-    "SUBTITLE": "Send us a message — we’ll get back to you as soon as possible.",
+    "SUBTITLE": "Send us a message - we'll get back to you as soon as possible.",
     "CHAR_REMAINING": "characters remaining",
     "CARD": {
       "EMAIL": "Support Email",
@@ -546,6 +552,19 @@
       "SUGGESTION": "Feature Suggestion",
       "OTHER": "Other"
     }
+  },
+  "COOKIE_CONSENT": {
+    "TITLE": "We respect your privacy",
+    "MESSAGE": "Essential cookies keep FamilyTree secure and reliable. You can also enable optional cookies that help us improve the experience and tailor offers.",
+    "MANAGE": "Manage choices",
+    "HIDE": "Hide choices",
+    "ACCEPT_ALL": "Accept all",
+    "ESSENTIAL_ONLY": "Essential only",
+    "SAVE_PREFERENCES": "Save preferences",
+    "ANALYTICS_LABEL": "Analytics",
+    "ANALYTICS_DESC": "Allow aggregated insights so we can understand how features perform.",
+    "MARKETING_LABEL": "Personalization",
+    "MARKETING_DESC": "Use your preferences to show relevant subscription recommendations."
   },
   "SEARCH": {
     "PLACEHOLDER": "Global search...",
@@ -641,5 +660,275 @@
     "LOAD_USERS_ERROR": "Unable to load the admin overview. Please try again.",
     "LOAD_MEMBERS_ERROR": "Unable to load member details. Please try again.",
     "NAV_LABEL": "Admin center"
+  },
+  "LEGAL": {
+    "PRIVACY": {
+      "TITLE": "Privacy Policy",
+      "UPDATED": "Last updated: June 24, 2025",
+      "INTRO": "This Privacy Policy explains how FamilyTree collects, uses, shares, and protects the personal data that you add to your family tree or share with other profiles.",
+      "SECTIONS": {
+        "SUMMARY": {
+          "TITLE": "Our privacy commitments",
+          "PARAGRAPHS": [
+            "FamilyTree is a direct-to-consumer genealogy platform headquartered in Bulgaria. We comply with the EU General Data Protection Regulation (GDPR), the Bulgarian Personal Data Protection Act (PDPA), and all other local privacy laws that apply to our users.",
+            "This document covers every point where we handle personal information—from the moment you create an account to the day you delete your tree."
+          ],
+          "BULLETS": [
+            "We never sell or license personal, genetic, or health data to third parties, including insurers, employers, or data brokers.",
+            "We prohibit FamilyTree data from being used by insurance companies or law enforcement unless we must respond to a valid court order.",
+            "You can export or delete your account, trees, uploaded media, and sharing permissions at any time. Deletion is permanent and cascades through our backups.",
+            "When this policy changes materially we notify you by email or in-product banners and update the date above."
+          ]
+        },
+        "DATA_COLLECTION": {
+          "TITLE": "What information we collect",
+          "PARAGRAPHS": [
+            "We only collect the data that is needed to provide FamilyTree and respect your sharing choices.",
+            "Information flows fall into the categories below."
+          ],
+          "BULLETS": [
+            "Account and contact data: name, email, password hashes, preferred language, billing information for paid plans, and audit timestamps.",
+            "Family-tree content: relatives' names, relationships, dates, life stories, documents, audio notes, photos, videos, and tagging metadata that you add manually or import.",
+            "Visibility choices: whether a relative is marked as living or deceased, the sharing scopes you enable, invitations you send, and consent logs.",
+            "Support and communication data: messages you send to support, survey responses, troubleshooting logs, or call recordings when you opt in.",
+            "Sign-in integrations: tokens we receive from Google or other identity providers when you choose federated login.",
+            "System data: device identifiers, browser information, approximate location derived from IP address, and cookie identifiers needed to secure accounts and detect abuse."
+          ]
+        },
+        "USE_OF_DATA": {
+          "TITLE": "How we use personal data",
+          "PARAGRAPHS": [
+            "We process personal information only for clearly defined purposes."
+          ],
+          "BULLETS": [
+            "Delivering core features such as rendering your tree, syncing edits across devices, sharing deceased relatives with collaborators, importing records, and recommending potential matches.",
+            "Communicating with you about account activity, subscription renewals, feature launches, or policy notices.",
+            "Providing customer support, debugging issues, monitoring for fraud, and performing product analytics that keep the platform reliable.",
+            "Sending optional marketing messages or surveys when you opt in. You can opt out at any time from account settings or the link in each email."
+          ]
+        },
+        "LEGAL_BASES": {
+          "TITLE": "Legal grounds for processing",
+          "PARAGRAPHS": [
+            "Under GDPR we rely on the following lawful bases:"
+          ],
+          "BULLETS": [
+            "Contract: creating your account, delivering subscription benefits, and maintaining your family tree.",
+            "Consent: optional activities such as marketing communications, research participation, or sharing deceased relatives with other profiles.",
+            "Legitimate interests: securing the platform, preventing abuse, developing new features, and maintaining historical accuracy.",
+            "Legal obligation: complying with tax, accounting, anti-fraud, or court orders issued by competent authorities."
+          ]
+        },
+        "DATA_SHARING": {
+          "TITLE": "When we share data",
+          "PARAGRAPHS": [
+            "We do not monetize your data. Sharing is limited to the scenarios below."
+          ],
+          "BULLETS": [
+            "Service providers bound by confidentiality agreements (for example hosting and storage vendors, payment processors such as Stripe or BlueSnap, accessibility partners like Allyable, and security vendors such as Cloudflare, Imperva, or Google reCAPTCHA).",
+            "Family members you explicitly invite and only for the relatives and details you decide to expose.",
+            "Professional advisers or potential acquirers if we enter into a corporate transaction, provided that equivalent protections remain in place.",
+            "Authorities when we must respond to a valid legal process. We scrutinize every request and push back when the scope is unclear or overly broad."
+          ]
+        },
+        "LIVING_RELATIVES": {
+          "TITLE": "Sharing living vs. deceased relatives",
+          "PARAGRAPHS": [
+            "All information about living relatives stays private to your account by default. Living data is hidden from other profiles, exports, discovery features, and search until you explicitly share it.",
+            "When you grant another user access you confirm that you obtained consent from the living individuals (or their guardians) whose data you expose. Deceased relatives can be shared to support research, but you decide which fields are visible."
+          ],
+          "BULLETS": [
+            "Manage per-relative visibility from Settings > Privacy or directly from the member drawer.",
+            "Disable Smart Matches, Record Matches, and discovery of deceased relatives at any time.",
+            "Use the download and delete tools to retrieve or permanently erase your trees, including data shared with other profiles."
+          ]
+        },
+        "SECURITY_RETENTION": {
+          "TITLE": "Security, storage, and retention",
+          "PARAGRAPHS": [
+            "Data is stored in EU data centers with encrypted backups replicated within the EU/EEA. Access is restricted to vetted employees under confidentiality agreements.",
+            "We rely on encryption, access controls, penetration tests, logging, rate limiting, and reCAPTCHA to prevent abuse. No system is perfect, but we monitor continuously and notify you if a breach that meets legal thresholds occurs.",
+            "We retain personal data only as long as necessary to deliver FamilyTree, comply with legal obligations, or resolve disputes. Deleted trees and optional DNA uploads (if ever introduced) are removed from production immediately and from backups within 30 days."
+          ]
+        },
+        "YOUR_RIGHTS": {
+          "TITLE": "Your privacy rights",
+          "PARAGRAPHS": [
+            "Depending on where you live (EU/EEA, UK, US states, Brazil, South Africa, etc.) you may exercise the rights below."
+          ],
+          "BULLETS": [
+            "Access: request a copy of the data we hold about you.",
+            "Rectification: correct inaccurate or incomplete information.",
+            "Portability: export your tree or subscription data in a machine-readable format.",
+            "Objection and restriction: object to processing based on legitimate interests or ask us to limit how we use your data.",
+            "Deletion: permanently delete your account, family trees, DNA kits, and uploaded media from Settings or by contacting us.",
+            "Withdraw consent: change your mind about optional features at any time without affecting processing that already occurred."
+          ]
+        },
+        "CONTACT": {
+          "TITLE": "Contact and complaints",
+          "PARAGRAPHS": [
+            "If you have questions about privacy or wish to exercise your rights, reach out through the channels below. We may ask you to verify your identity before fulfilling the request."
+          ],
+          "BULLETS": [
+            "Email: redacted@example.invalid or redacted@example.invalid.",
+            "Data Protection Officer: redacted@example.invalid.",
+            "Postal: FamilyTree, 15 Ivan Vazov St., 1000 Sofia, Bulgaria.",
+            "Supervisory authority: Commission for Personal Data Protection (CPDP), 2 Prof. Tsvetan Lazarov Blvd., 1592 Sofia, Bulgaria, https://example.invalid redacted@example.invalid."
+          ]
+        }
+      }
+    },
+    "COOKIES": {
+      "TITLE": "Cookie Policy",
+      "UPDATED": "Last modified: December 9, 2024",
+      "INTRO": "Cookies and similar technologies help us keep FamilyTree secure, remember your preferences, and understand how the service is used.",
+      "TABLE_TITLE": "Mandatory cookies we currently use",
+      "TABLE_HEADERS": {
+        "NAME": "Cookie",
+        "PURPOSE": "Purpose",
+        "PROVIDER": "Provider",
+        "DURATION": "Duration"
+      },
+      "SECTIONS": {
+        "OVERVIEW": {
+          "TITLE": "What are cookies and similar technologies?",
+          "PARAGRAPHS": [
+            "Cookies are small text files placed on your browser or device when you visit a website. They contain a unique identifier so the website can recognize your browser from one request to the next.",
+            "We also use pixels (tiny transparent images that measure how you interact with pages or emails), SDKs in our mobile apps, and local storage that lets us save preferences on your device."
+          ]
+        },
+        "USAGE": {
+          "TITLE": "How we use cookies",
+          "PARAGRAPHS": [
+            "Cookies let us differentiate between visitors, keep you signed in, and tailor the experience to your preferences."
+          ],
+          "BULLETS": [
+            "Prevent fraud and secure logins, payments, and file uploads.",
+            "Remember your language, accessibility, and sharing preferences so you do not need to reconfigure them.",
+            "Understand how the website is used to improve navigation and performance.",
+            "Avoid showing the same pop-ups repeatedly and honor the consents you already gave."
+          ]
+        },
+        "TYPES": {
+          "TITLE": "Cookie types on FamilyTree",
+          "PARAGRAPHS": [
+            "Right now we only use mandatory cookies. Analytics and advertising cookies are disabled by default; if we ever enable them you will be able to manage consent inside the product."
+          ],
+          "BULLETS": [
+            "Mandatory (always on): required for security, payments, localization, and remembering your session.",
+            "Analytics (off): would help us measure usage; currently disabled.",
+            "Advertising (off): would personalize offers; currently disabled."
+          ]
+        },
+        "CONTROL": {
+          "TITLE": "How to manage your preferences",
+          "PARAGRAPHS": [
+            "Mandatory cookies do not require consent because the website cannot function without them. You can still manage some signals:"
+          ],
+          "BULLETS": [
+            "Use the in-product \"Cookie preferences\" control to review which essential cookies are set.",
+            "Adjust your browser settings to block or delete cookies. If you block all cookies you may not be able to log in or complete payments.",
+            "Use the opt-out tools provided by Google, Apple, or other identity providers if you linked those accounts."
+          ]
+        },
+        "THIRD_PARTY": {
+          "TITLE": "Third parties",
+          "PARAGRAPHS": [
+            "Some cookies are set by trusted partners who provide payment processing, accessibility services, security, or login integrations."
+          ],
+          "BULLETS": [
+            "Google sets cookies such as AEC, NID, HSID, SSID, and the Secure-1P/3P cookies when you sign in with Google. They help verify your identity and prevent abuse.",
+            "Stripe and BlueSnap set cookies (__stripe_mid, __stripe_sid, cdn_bluesnap_700000_ka_ck) to combat credit card fraud.",
+            "Cloudflare, Vimeo, and Imperva set cookies that filter automated traffic and protect against denial-of-service attacks.",
+            "Allyable powers our accessibility menu, and WordPress sets the wp-wpml_current_language cookie on localized landing pages."
+          ]
+        },
+        "UPDATES": {
+          "TITLE": "Updates to this policy",
+          "PARAGRAPHS": [
+            "We may update this Cookie Policy from time to time. If we make material changes we will post a prominent notice, update the date above, and explain your choices."
+          ]
+        }
+      },
+      "COOKIE_TABLE": [
+        { "NAME": "__cf_bm", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Vimeo", "DURATION": "30 minutes" },
+        { "NAME": "__cfduid", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Cloudflare", "DURATION": "30 days" },
+        { "NAME": "__Secure-1PSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
+        { "NAME": "__Secure-1PSIDCC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
+        { "NAME": "__Secure-3PSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
+        { "NAME": "__Secure-3PSIDCC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
+        { "NAME": "__stripe_mid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "1 year" },
+        { "NAME": "__stripe_sid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "30 minutes" },
+        { "NAME": "_cfuvid", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Vimeo", "DURATION": "Session" },
+        { "NAME": "AccessibilityMenuOpened", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "FamilyTree", "DURATION": "6 hours" },
+        { "NAME": "AEC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
+        { "NAME": "NID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
+        { "NAME": "archived_request", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
+        { "NAME": "aweb-runtime-context", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 year" },
+        { "NAME": "AWSALB", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
+        { "NAME": "AWSALBCORS", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
+        { "NAME": "cdn_bluesnap_700000_ka_ck", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "BlueSnap", "DURATION": "Session" },
+        { "NAME": "cookiePreferences", "PURPOSE": "Stores the consent state you selected.", "PROVIDER": "FamilyTree", "DURATION": "2 years" },
+        { "NAME": "data8", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "data8p2", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "data8pl", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "device_id", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "lid", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "loginEmail", "PURPOSE": "Used for authentication.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "data9", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "dserp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "dstaun", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "DMatchesPageSize", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
+        { "NAME": "download_ftb_started", "PURPOSE": "Enables file downloads.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "formMode", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "ftp", "PURPOSE": "Enables file uploads.", "PROVIDER": "FamilyTree", "DURATION": "2 days" },
+        { "NAME": "G_AUTHUSER_H", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
+        { "NAME": "G_ENABLED_IDPS", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
+        { "NAME": "g_state", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
+        { "NAME": "HSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
+        { "NAME": "SSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
+        { "NAME": "is_embed", "PURPOSE": "Supports the mobile and embedded experience.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "isMember", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "was-ever-member", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "WebmasterInFamilyPages", "PURPOSE": "Determines user type.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "just_logged_out", "PURPOSE": "Coordinates login and logout status.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "lang", "PURPOSE": "Preserves the selected language.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "LastVisitedFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "LastVisitedMyFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "LastVisitedSites", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "LVTS", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "mhc_version", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "rpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "lelid", "PURPOSE": "Supports library mode usage.", "PROVIDER": "FamilyTree", "DURATION": "12 hours" },
+        { "NAME": "lels", "PURPOSE": "Supports library mode usage.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "loginRequired", "PURPOSE": "Provides support functionality to users.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "MyHeritageAppIntro", "PURPOSE": "Ensures the correct user experience.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "nd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "2 days" },
+        { "NAME": "ndd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "nlbi_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
+        { "NAME": "incap_ses_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
+        { "NAME": "perm_id", "PURPOSE": "Required for site maintenance.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "PHPSESSID", "PURPOSE": "Used for authentication.", "PROVIDER": "PHP", "DURATION": "Session" },
+        { "NAME": "psa", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "results-ad-hoc-rmsb", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
+        { "NAME": "rmrpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "FamilyTree", "DURATION": "1 hour" },
+        { "NAME": "search_results_info", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "suggestedRelativesPageInformation", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "10 minutes" },
+        { "NAME": "underAgedOnSignup", "PURPOSE": "Prevents registration by minors.", "PROVIDER": "FamilyTree", "DURATION": "1 week" },
+        { "NAME": "user_encryption_key", "PURPOSE": "Provides security protections.", "PROVIDER": "FamilyTree", "DURATION": "Session" },
+        { "NAME": "userTimezone", "PURPOSE": "Saves the current browser time zone.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "uuid", "PURPOSE": "Improves site performance.", "PROVIDER": "FamilyTree", "DURATION": "1 year" },
+        { "NAME": "visid_incap_*", "PURPOSE": "Filters out malicious requests.", "PROVIDER": "Imperva", "DURATION": "1 year" },
+        { "NAME": "wp-wpml_current_language", "PURPOSE": "Preserves language preferences.", "PROVIDER": "WordPress", "DURATION": "Session" },
+        { "NAME": "isBlockedByRateLimit", "PURPOSE": "Provides a secure site.", "PROVIDER": "FamilyTree", "DURATION": "24 hours" },
+        { "NAME": "TurnOnAutoRenewDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
+        { "NAME": "TurnOnAutoRenewGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" },
+        { "NAME": "ExtendSubscriptionDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
+        { "NAME": "ExtendSubscriptionGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" },
+        { "NAME": "UpgradeOfferDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "1 day" },
+        { "NAME": "UpgradeOfferGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "FamilyTree", "DURATION": "30 days" }
+      ]
+    }
   }
 }

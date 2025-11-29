@@ -40,6 +40,20 @@ export const routes: Routes = [
       import('./features/faq/faq.routes').then((m) => m.default),
   },
   {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./pages/privacy-policy/privacy-policy.page').then(
+        (m) => m.PrivacyPolicyPage,
+      ),
+  },
+  {
+    path: 'cookies',
+    loadComponent: () =>
+      import('./pages/cookie-policy/cookie-policy.page').then(
+        (m) => m.CookiePolicyPage,
+      ),
+  },
+  {
     path: 'subscription/payment',
     loadComponent: () =>
       import('./pages/subscription-payment/subscription-payment.page').then(

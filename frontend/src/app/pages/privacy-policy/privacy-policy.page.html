@@ -1,0 +1,31 @@
+<div class="legal-container">
+  <header class="legal-header">
+    <p class="legal-updated">{{ header().updated }}</p>
+    <h1 class="legal-title">{{ header().title }}</h1>
+    <p class="legal-intro">
+      {{ header().intro }}
+    </p>
+  </header>
+
+  @for (section of sections(); track section.key) {
+    <section class="legal-section" [attr.aria-labelledby]="'section-' + section.key">
+      <h2 class="section-title" [id]="'section-' + section.key">
+        {{ section.title }}
+      </h2>
+
+      @for (paragraph of section.paragraphs; track $index) {
+        <p class="section-paragraph">
+          {{ paragraph }}
+        </p>
+      }
+
+      @if (section.bullets.length) {
+        <ul class="section-list">
+          @for (item of section.bullets; track $index) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

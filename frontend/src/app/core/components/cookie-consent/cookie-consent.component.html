@@ -1,0 +1,57 @@
+@if (visible()) {
+<section class="cookie-banner" role="dialog" aria-live="polite">
+  <div class="banner-content">
+    <div class="banner-text">
+      <p class="banner-title">{{ 'COOKIE_CONSENT.TITLE' | translate }}</p>
+      <p class="banner-message">{{ 'COOKIE_CONSENT.MESSAGE' | translate }}</p>
+    </div>
+    <form class="banner-actions" (submit)="$event.preventDefault()">
+      <button type="button" class="btn secondary" (click)="acceptEssential()">
+        {{ 'COOKIE_CONSENT.ESSENTIAL_ONLY' | translate }}
+      </button>
+      <button type="button" class="btn primary" (click)="acceptAll()">
+        {{ 'COOKIE_CONSENT.ACCEPT_ALL' | translate }}
+      </button>
+      <button type="button" class="btn link" (click)="togglePreferences()">
+        @if (showPreferences()) {
+        {{ 'COOKIE_CONSENT.HIDE' | translate }}
+        } @else {
+        {{ 'COOKIE_CONSENT.MANAGE' | translate }}
+        }
+      </button>
+    </form>
+  </div>
+
+  @if (showPreferences()) {
+  <div class="preferences">
+    <label class="pref-row">
+      <input
+        type="checkbox"
+        [checked]="analytics()"
+        (change)="updateAnalytics($any($event.target).checked)"
+      />
+      <div>
+        <p class="pref-title">{{ 'COOKIE_CONSENT.ANALYTICS_LABEL' | translate }}</p>
+        <p class="pref-desc">{{ 'COOKIE_CONSENT.ANALYTICS_DESC' | translate }}</p>
+      </div>
+    </label>
+    <label class="pref-row">
+      <input
+        type="checkbox"
+        [checked]="marketing()"
+        (change)="updateMarketing($any($event.target).checked)"
+      />
+      <div>
+        <p class="pref-title">{{ 'COOKIE_CONSENT.MARKETING_LABEL' | translate }}</p>
+        <p class="pref-desc">{{ 'COOKIE_CONSENT.MARKETING_DESC' | translate }}</p>
+      </div>
+    </label>
+    <div class="pref-actions">
+      <button type="button" class="btn primary" (click)="savePreferences()">
+        {{ 'COOKIE_CONSENT.SAVE_PREFERENCES' | translate }}
+      </button>
+    </div>
+  </div>
+  }
+</section>
+}
