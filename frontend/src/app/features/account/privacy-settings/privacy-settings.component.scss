@@ -1,0 +1,321 @@
+:host {
+  display: block;
+}
+
+.privacy-settings-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  background: var(--surface-card);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+  margin: 2rem;
+
+  h1 {
+    margin: 0.25rem 0 0.5rem;
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    color: #0f172a;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: #475569;
+    font-size: 1rem;
+  }
+}
+
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem;
+}
+
+.privacy-card {
+  background: var(--surface-card);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &.accent {
+    background: linear-gradient(135deg, #f8fafc, #edf2ff);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  h2 {
+    margin: 0.25rem 0;
+    font-size: 1.25rem;
+    color: #111827;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .card-desc {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+  }
+}
+
+.reset-link {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  align-self: flex-start;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e2e8f0;
+
+  &:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+
+    .label {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .description {
+      margin: 0;
+      color: #475569;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.privacy-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+
+  .primary.p-button {
+    min-width: 180px;
+    background: var(--primary-color);
+    border: none;
+  }
+}
+
+.card-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-meta {
+  font-size: 0.9rem;
+  color: #475569;
+
+  .muted {
+    color: #94a3b8;
+  }
+}
+
+.status-message {
+  margin-top: 0.5rem;
+}
+
+.resource-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .resource-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: #0f172a;
+    border: 1px solid #cbd5f5;
+    border-radius: 1rem;
+    padding: 0.85rem 1rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    font-weight: 600;
+
+    i {
+      color: #2563eb;
+    }
+
+    &:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.support-box {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px dashed rgba(37, 99, 235, 0.4);
+
+  h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+    color: #0f172a;
+  }
+
+  p {
+    margin: 0 0 0.5rem;
+    color: #475569;
+  }
+
+  a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+  }
+}
+
+// Fix InputSwitch visibility - must come before media queries
+:host ::ng-deep .p-inputswitch {
+  width: 3rem !important;
+  height: 1.75rem !important;
+  display: inline-block !important;
+  position: relative !important;
+  
+  .p-inputswitch-slider {
+    background: #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 30px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    transition: background-color 0.2s, border-color 0.2s !important;
+    cursor: pointer !important;
+    
+    &::before {
+      content: '' !important;
+      display: block !important;
+      position: absolute !important;
+      width: 1.25rem !important;
+      height: 1.25rem !important;
+      left: 0.25rem !important;
+      top: 0.25rem !important;
+      background: #64748b !important;
+      border-radius: 50% !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+      transition: left 0.2s ease, background-color 0.2s ease !important;
+      will-change: left !important;
+    }
+  }
+  
+  &.p-inputswitch-checked .p-inputswitch-slider {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    
+    &::before {
+      left: calc(100% - 1.5rem) !important;
+      background: #ffffff !important;
+    }
+  }
+  
+  &.p-disabled .p-inputswitch-slider {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+  }
+
+  &:not(.p-disabled):hover .p-inputswitch-slider {
+    background: #cbd5e1 !important;
+    
+    &::before {
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5) !important;
+    }
+  }
+
+  &.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+    background: var(--primary-color-hover, #3e6f41) !important;
+  }
+  
+  // Force immediate rendering
+  input {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    padding: 1.5rem;
+  }
+
+  .privacy-card {
+    padding: 1.25rem;
+  }
+
+  .toggle-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-actions {
+    justify-content: stretch;
+
+    .primary.p-button {
+      width: 100%;
+    }
+  }
+}

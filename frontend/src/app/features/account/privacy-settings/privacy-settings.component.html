@@ -1,1 +1,202 @@
-<p>privacy-settings works!</p>
+<div class="page-header">
+  <p class="eyebrow">{{ CONSTANTS.AUTH_PRIVACY_SETTINGS | translate }}</p>
+  <h1>{{ CONSTANTS.PRIVACY_PAGE_TITLE | translate }}</h1>
+  <p class="subtitle">{{ CONSTANTS.PRIVACY_PAGE_SUBTITLE | translate }}</p>
+</div>
+
+<div class="privacy-grid">
+  <section class="privacy-card">
+    <div class="card-header">
+      <div>
+        <p class="eyebrow">{{ CONSTANTS.PRIVACY_DEFAULTS_EYEBROW | translate }}</p>
+        <h2>{{ CONSTANTS.PRIVACY_DEFAULTS_TITLE | translate }}</h2>
+        <p class="card-desc">{{ CONSTANTS.PRIVACY_DEFAULTS_DESC | translate }}</p>
+      </div>
+      <button
+        type="button"
+        class="reset-link"
+        (click)="resetPrivacyDefaults()"
+        [disabled]="!defaultsDirty()"
+      >
+        {{ CONSTANTS.PRIVACY_DEFAULTS_RESET | translate }}
+      </button>
+    </div>
+
+    @if (loadingDefaults()) {
+      <div class="card-loading" aria-live="polite">
+        <p-skeleton width="100%" height="2rem"></p-skeleton>
+        <p-skeleton width="80%" height="1.5rem"></p-skeleton>
+      </div>
+    } @else {
+      <form
+        (ngSubmit)="savePrivacyDefaults()"
+        novalidate
+        class="privacy-form"
+      >
+        <div class="toggle-row">
+          <label for="privacy-discovery">
+            <span class="label">
+              {{ CONSTANTS.PRIVACY_DEFAULTS_DISCOVERY | translate }}
+            </span>
+            <span class="description">
+              {{ CONSTANTS.PRIVACY_DEFAULTS_DISCOVERY_DESC | translate }}
+            </span>
+          </label>
+          <p-inputSwitch
+            inputId="privacy-discovery"
+            [ngModel]="privacyValue().allowDeceasedDiscoveryDefault"
+            (ngModelChange)="updatePrivacyDefaults('allowDeceasedDiscoveryDefault', $event)"
+            [ngModelOptions]="{ standalone: true }"
+          ></p-inputSwitch>
+        </div>
+
+        <div class="toggle-row">
+          <label for="privacy-details">
+            <span class="label">
+              {{ CONSTANTS.PRIVACY_DEFAULTS_DETAILS | translate }}
+            </span>
+            <span class="description">
+              {{ CONSTANTS.PRIVACY_DEFAULTS_DETAILS_DESC | translate }}
+            </span>
+          </label>
+          <p-inputSwitch
+            inputId="privacy-details"
+            [ngModel]="privacyValue().allowDeceasedDetailsDefault"
+            (ngModelChange)="updatePrivacyDefaults('allowDeceasedDetailsDefault', $event)"
+            [ngModelOptions]="{ standalone: true }"
+          ></p-inputSwitch>
+        </div>
+
+        <div class="card-actions">
+          <button
+            type="submit"
+            pButton
+            class="primary"
+            [label]="CONSTANTS.COMMON_SAVE | translate"
+            [disabled]="!defaultsDirty() || savingDefaults()"
+            [loading]="savingDefaults()"
+          ></button>
+        </div>
+      </form>
+    }
+
+    @if (defaultsMessage()) {
+      <p-message
+        class="status-message"
+        [severity]="defaultsMessage()?.severity ?? 'info'"
+        [text]="defaultsMessage()?.text ?? ''"
+      ></p-message>
+    }
+  </section>
+
+  <section class="privacy-card">
+    <div class="card-header">
+      <div>
+        <p class="eyebrow">{{ CONSTANTS.PRIVACY_COOKIES_EYEBROW | translate }}</p>
+        <h2>{{ CONSTANTS.PRIVACY_COOKIES_TITLE | translate }}</h2>
+        <p class="card-desc">{{ CONSTANTS.PRIVACY_COOKIES_DESC | translate }}</p>
+      </div>
+    </div>
+
+    <form
+      (ngSubmit)="saveCookiePreferences()"
+      novalidate
+      class="privacy-form"
+    >
+      <div class="toggle-row">
+        <label for="cookie-analytics">
+          <span class="label">
+            {{ CONSTANTS.PRIVACY_COOKIES_ANALYTICS | translate }}
+          </span>
+          <span class="description">
+            {{ CONSTANTS.PRIVACY_COOKIES_ANALYTICS_DESC | translate }}
+          </span>
+        </label>
+        <p-inputSwitch
+          inputId="cookie-analytics"
+          [ngModel]="cookieValue().analytics"
+          (ngModelChange)="updateCookiePreferences('analytics', $event)"
+          [ngModelOptions]="{ standalone: true }"
+        ></p-inputSwitch>
+      </div>
+
+      <div class="toggle-row">
+        <label for="cookie-marketing">
+          <span class="label">
+            {{ CONSTANTS.PRIVACY_COOKIES_MARKETING | translate }}
+          </span>
+          <span class="description">
+            {{ CONSTANTS.PRIVACY_COOKIES_MARKETING_DESC | translate }}
+          </span>
+        </label>
+        <p-inputSwitch
+          inputId="cookie-marketing"
+          [ngModel]="cookieValue().marketing"
+          (ngModelChange)="updateCookiePreferences('marketing', $event)"
+          [ngModelOptions]="{ standalone: true }"
+        ></p-inputSwitch>
+      </div>
+
+      <div class="card-meta">
+        @if (cookieLastUpdated()) {
+          <p>
+            {{
+              CONSTANTS.PRIVACY_COOKIES_UPDATED
+                | translate: { value: (cookieLastUpdated() | date: 'medium') }
+            }}
+          </p>
+        } @else {
+          <p class="muted">
+            {{ CONSTANTS.PRIVACY_COOKIES_NEVER | translate }}
+          </p>
+        }
+      </div>
+
+      <div class="card-actions">
+        <button
+          type="submit"
+          pButton
+          class="primary"
+          [label]="CONSTANTS.PRIVACY_COOKIES_SAVE | translate"
+          [disabled]="cookieSaving() || (!cookieDirty() && hasCookieConsent())"
+          [loading]="cookieSaving()"
+        ></button>
+      </div>
+    </form>
+
+    @if (cookieMessage()) {
+      <p-message
+        class="status-message"
+        [severity]="cookieMessage()?.severity ?? 'info'"
+        [text]="cookieMessage()?.text ?? ''"
+      ></p-message>
+    }
+  </section>
+
+  <section class="privacy-card accent">
+    <div class="card-header">
+      <div>
+        <p class="eyebrow">{{ CONSTANTS.PRIVACY_SHORTCUTS_EYEBROW | translate }}</p>
+        <h2>{{ CONSTANTS.PRIVACY_SHORTCUTS_TITLE | translate }}</h2>
+        <p class="card-desc">{{ CONSTANTS.PRIVACY_SHORTCUTS_DESC | translate }}</p>
+      </div>
+    </div>
+
+    <ul class="resource-links">
+      @for (link of resourceLinks; track link.route) {
+        <li>
+          <a class="resource-link" [routerLink]="link.route">
+            <span>{{ link.labelKey | translate }}</span>
+            <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <div class="support-box">
+      <h3>{{ CONSTANTS.PRIVACY_SHORTCUTS_SUPPORT | translate }}</h3>
+      <p>{{ CONSTANTS.PRIVACY_SHORTCUTS_SUPPORT_DESC | translate }}</p>
+      <a [href]="supportEmailHref">{{ supportEmail }}</a>
+    </div>
+  </section>
+</div>
