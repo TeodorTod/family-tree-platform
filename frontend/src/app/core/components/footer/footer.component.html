@@ -1,9 +1,9 @@
 <p-menubar [model]="[]" class="footer-menubar">
   >
   <ng-template pTemplate="start">
-    <span class="text-sm text-muted"
-      >&copy; {{ currentYear }} Rodostoria. All rights reserved.</span
-    >
+    <span class="text-sm text-muted">
+      &copy; {{ currentYear }} Rodostoria. {{ CONSTANTS.COMMON_RIGHTS_RESERVED | translate }}
+    </span>
   </ng-template>
 
   <ng-template pTemplate="end">

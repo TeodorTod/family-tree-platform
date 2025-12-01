@@ -572,7 +572,8 @@
       "TOPIC_ERR": "Please select a topic.",
       "MESSAGE": "Message",
       "MESSAGE_ERR": "Please enter a message (min. 10 characters).",
-      "CONSENT": "I agree to the processing of my personal data according to the Privacy Policy.",
+      "CONSENT_PREFIX": "I agree to the processing of my personal data according to the",
+      "CONSENT_SUFFIX": ".",
       "SEND": "Send"
     },
     "STATUS": {

@@ -147,7 +147,14 @@
               formControlName="consent"
             ></p-checkbox>
             <label for="consent" class="consent-label">
-              {{ CONSTANTS.CONTACT_CONSENT | translate }}
+              <span>{{ CONSTANTS.CONTACT_CONSENT_PREFIX | translate }}&nbsp;</span>
+              <a
+                class="privacy-link"
+                [routerLink]="CONSTANTS.ROUTES.LEGAL.PRIVACY"
+              >
+                {{ CONSTANTS.COMMON_PRIVACY_POLICY | translate }}
+              </a>
+              <span>{{ CONSTANTS.CONTACT_CONSENT_SUFFIX | translate }}</span>
             </label>
           </div>
 
