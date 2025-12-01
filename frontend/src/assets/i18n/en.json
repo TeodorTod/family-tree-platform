@@ -588,6 +588,12 @@
       "OTHER": "Other"
     }
   },
+  "HOME": {
+    "SOUND": {
+      "MUTE": "Stop music",
+      "PLAY": "Play music"
+    }
+  },
   "COOKIE_CONSENT": {
     "TITLE": "We respect your privacy",
     "MESSAGE": "Essential cookies keep Rodostoria secure and reliable. You can also enable optional cookies that help us improve the experience and tailor offers.",

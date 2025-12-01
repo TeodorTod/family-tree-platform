@@ -315,6 +315,12 @@
   cursor: pointer;
   user-select: none;
   margin: 0;
+
+  .privacy-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: underline;
+  }
 }
 .consent-label:hover {
   color: var(--text-color-secondary);

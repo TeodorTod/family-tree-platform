@@ -31,6 +31,19 @@
     tooltipPosition="left"
   ></button>
 
+  <button
+    pButton
+    [icon]="soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
+    class="p-button-rounded p-button-sm"
+    (click)="toggleAmbientSound()"
+    pTooltip="{{
+      soundPlaying()
+        ? (CONSTANTS.HOME_SOUND_MUTE | translate)
+        : (CONSTANTS.HOME_SOUND_PLAY | translate)
+    }}"
+    tooltipPosition="left"
+  ></button>
+
   <!-- Chart-specific controls (hidden in table view) -->
   @if (!showTableView()) {
 
