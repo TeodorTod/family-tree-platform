@@ -25,6 +25,7 @@ import { BACKGROUND_IMAGES } from '../../shared/constants/background-images';
 import { TreeTableComponent } from './components/tree-table/tree-table.component';
 import jsPDF from 'jspdf';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
+import { AmbientSoundService } from './services/ambient-sound.service';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -47,6 +48,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private sharingApi = inject(SharingApiService);
   router = inject(Router);
+  private ambientSound = inject(AmbientSoundService);
   cy?: cytoscape.Core;
 
   selectedMember = signal<FamilyMember | null>(null);
@@ -68,18 +70,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   bgOffsetX = signal(0);
   bgOffsetY = signal(0);
   showBirthInfo = signal<boolean>(true);
-  soundPlaying = signal(false);
+  readonly soundPlaying = this.ambientSound.playing;
   private exportRebuildTimer: any = null;
   private distanceBoostX = 1.6;
   private distanceBoostY = 1.0;
   private lastPairs: [string, string][] = [];
   private lastMateOf = new Map<string, string>();
-  private ambientAudio: HTMLAudioElement | null = null;
-  private padShiftTimer: any = null;
-  private unlockHandlersAttached = false;
-  private readonly handleAudioUnlock = () => {
-    this.startAmbientSound(true);
-  };
 
   customPhotoUrl =
     localStorage.getItem('familyPhotoUrl') ??
@@ -171,7 +167,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.startAmbientSound();
+    this.ambientSound.play();
   }
 
   private setInitialCircleSizeByWidth(): void {
@@ -1900,95 +1896,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   toggleAmbientSound() {
-    if (this.soundPlaying()) {
-      this.stopAmbientSound();
-    } else {
-      this.startAmbientSound();
-    }
-  }
-
-  private startAmbientSound(fromUserInteraction = false) {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    this.initAmbientAudio();
-    if (!this.ambientAudio) {
-      return;
-    }
-    const attempt = this.ambientAudio.play();
-    if (!attempt) {
-      this.attachAudioUnlockHandlers();
-      return;
-    }
-    attempt
-      .then(() => {
-        this.soundPlaying.set(true);
-        this.detachAudioUnlockHandlers();
-        this.startPadShiftTimer();
-      })
-      .catch(() => {
-        this.soundPlaying.set(false);
-        if (!fromUserInteraction) {
-          this.attachAudioUnlockHandlers();
-        }
-      });
-  }
-
-  private stopAmbientSound() {
-    if (this.ambientAudio) {
-      this.ambientAudio.pause();
-      this.ambientAudio.currentTime = 0;
-    }
-    this.soundPlaying.set(false);
-    this.stopPadShiftTimer();
-  }
-
-  private initAmbientAudio() {
-    if (this.ambientAudio) {
-      return;
-    }
-    const audio = new Audio('assets/i18n/forrest-realms-365891.mp3');
-    audio.loop = true;
-    audio.volume = 0.35;
-    audio.preload = 'auto';
-    this.ambientAudio = audio;
-  }
-
-  private attachAudioUnlockHandlers() {
-    if (this.unlockHandlersAttached || typeof window === 'undefined') {
-      return;
-    }
-    window.addEventListener('pointerdown', this.handleAudioUnlock);
-    window.addEventListener('keydown', this.handleAudioUnlock);
-    this.unlockHandlersAttached = true;
-  }
-
-  private detachAudioUnlockHandlers() {
-    if (!this.unlockHandlersAttached || typeof window === 'undefined') {
-      return;
-    }
-    window.removeEventListener('pointerdown', this.handleAudioUnlock);
-    window.removeEventListener('keydown', this.handleAudioUnlock);
-    this.unlockHandlersAttached = false;
-  }
-
-  private startPadShiftTimer() {
-    this.stopPadShiftTimer();
-    this.padShiftTimer = window.setInterval(() => {
-      if (!this.ambientAudio) {
-        return;
-      }
-      const delta = (Math.random() - 0.5) * 0.04;
-      const next = Math.max(0.25, Math.min(0.45, this.ambientAudio.volume + delta));
-      this.ambientAudio.volume = next;
-    }, 8000);
-  }
-
-  private stopPadShiftTimer() {
-    if (this.padShiftTimer) {
-      clearInterval(this.padShiftTimer);
-      this.padShiftTimer = null;
-    }
+    this.ambientSound.toggle();
   }
 
   ngOnDestroy() {
@@ -1997,12 +1905,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.cy.destroy();
       this.cy = undefined;
     }
-    this.stopAmbientSound();
-    this.detachAudioUnlockHandlers();
-    if (this.ambientAudio) {
-      this.ambientAudio.src = '';
-      this.ambientAudio = null;
-    }
+    this.ambientSound.cleanup();
   }
 }
 
