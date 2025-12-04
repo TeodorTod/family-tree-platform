@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal, DestroyRef } from '@angular/core';
+import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -21,8 +22,34 @@ export class ResetPasswordComponent implements OnInit {
   private auth = inject(AuthService);
   private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
+  private fb = inject(FormBuilder);
 
-  form = this.auth.resetPasswordForm;
+  private readonly passwordsMatchValidator: ValidatorFn = (group: AbstractControl) => {
+    const pass = group.get('password')?.value ?? '';
+    const conf = group.get('confirmPassword')?.value ?? '';
+    if (!pass || !conf) {
+      return null;
+    }
+    return pass === conf ? null : { passwordsMismatch: true };
+  };
+
+  form = this.fb.group(
+    {
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.pattern(/[a-z]/),
+          Validators.pattern(/[A-Z]/),
+          Validators.pattern(/\d/),
+          Validators.pattern(/[^A-Za-z0-9]/),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: this.passwordsMatchValidator }
+  );
   token = '';
   done = signal(false);
   error = signal<string>('');

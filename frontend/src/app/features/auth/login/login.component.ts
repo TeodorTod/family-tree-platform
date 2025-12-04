@@ -1,12 +1,13 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
   inject,
   signal,
-  OnInit,
-  DestroyRef,
-  ChangeDetectionStrategy,
-  OnDestroy,
 } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -35,6 +36,7 @@ import { switchMap } from 'rxjs';
 export class LoginComponent implements OnInit, OnDestroy {
   CONSTANTS = CONSTANTS;
 
+  private fb = inject(FormBuilder);
   auth = inject(AuthService);
   router = inject(Router);
   translate = inject(TranslateService);
@@ -48,7 +50,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   error = signal('');
   showMobileHint = signal(false);
 
-  form = this.auth.loginForm;
+  form = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
   langOptions = [
     { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
     { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },

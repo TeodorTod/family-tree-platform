@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { AuthService } from '../services/auth.service';
@@ -14,9 +15,12 @@ import { CONSTANTS } from '../../../shared/constants/constants';
 export class ForgotPasswordComponent {
   CONSTANTS = CONSTANTS;
 
+  private fb = inject(FormBuilder);
   private auth = inject(AuthService);
 
-  form = this.auth.forgotPasswordForm;
+  form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+  });
   done = signal(false);
   error = signal<string>('');
 

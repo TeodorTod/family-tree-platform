@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
@@ -29,7 +29,33 @@ export class RegisterComponent {
   destroyRef = inject(DestroyRef);
 
   error = signal('');
-  form = this.auth.registerForm;
+  private readonly passwordsMatchValidator: ValidatorFn = (group: AbstractControl) => {
+    const pass = group.get('password')?.value ?? '';
+    const conf = group.get('confirmPassword')?.value ?? '';
+    if (!pass || !conf) {
+      return null;
+    }
+    return pass === conf ? null : { passwordsMismatch: true };
+  };
+
+  form = this.fb.group(
+    {
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.pattern(/[a-z]/),
+          Validators.pattern(/[A-Z]/),
+          Validators.pattern(/\d/),
+          Validators.pattern(/[^A-Za-z0-9]/),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required]],
+    },
+    { validators: this.passwordsMatchValidator }
+  );
   langOptions = [
     { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
     { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },

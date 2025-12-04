@@ -10,19 +10,16 @@ import {
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../imports/shared-primeng-imports';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { Gender } from '../../../shared/enums/gender.enum';
+import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../constants/constants';
 import { FamilyService } from '../../../core/services/family.service';
 import { SharingApiService } from '../../../core/services/sharing-api.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AddRelativeFormGroup } from './add-relative-dialog.types';
 
 @Component({
   selector: 'app-add-relative-dialog',
@@ -43,7 +40,7 @@ export class AddRelativeDialogComponent implements OnInit {
     approvedRequestId?: string;
   }>();
 
-  form!: FormGroup;
+  form!: AddRelativeFormGroup;
   selectedRelation = signal<string | null>(null);
   relationOptions: { label: string; value: string }[] = [];
   CONSTANTS = CONSTANTS;
@@ -76,44 +73,38 @@ export class AddRelativeDialogComponent implements OnInit {
   dobModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
-      value: 'exact' as const,
+      value: BirthDeathDateMode.EXACT,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
-      value: 'year' as const,
+      value: BirthDeathDateMode.YEAR,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
-      value: 'note' as const,
+      value: BirthDeathDateMode.NOTE,
     },
   ];
 
   dodModeOptions = [
     {
       label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
-      value: 'exact' as const,
+      value: BirthDeathDateMode.EXACT,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY),
-      value: 'year' as const,
+      value: BirthDeathDateMode.YEAR,
     },
     {
       label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL),
-      value: 'note' as const,
+      value: BirthDeathDateMode.NOTE,
     },
   ];
 
   ngOnInit(): void {
     const initialClonedId = this.clonedMemberId();
-    this.form = this.familyService.createFamilyMemberForm() as FormGroup<any>;
-    this.form.addControl(
-      'relation',
-      new FormControl<string | null>(null, Validators.required)
-    );
-    this.form.addControl('useImported', new FormControl<boolean>(!!initialClonedId, { nonNullable: true }));
-    this.form.addControl('importedId', new FormControl<string | null>(initialClonedId ?? null));
-    this.showImported.set(!!initialClonedId);
-    this.form.get('useImported')?.valueChanges.subscribe((v) => this.showImported.set(!!v));
+    this.form = this.buildForm(initialClonedId);
+    this.showImported.set(this.form.controls.useImported.value);
+    this.form.controls.useImported.valueChanges.subscribe((v) => this.showImported.set(!!v));
 
     this.familyService
       .onSubscriptionLimitReached()
@@ -199,7 +190,7 @@ export class AddRelativeDialogComponent implements OnInit {
     this.form.patchValue(
       {
         lastName: this.baseMember()?.lastName ?? null,
-        dobMode: 'exact', // exact | year | note (service has validators tied to this)
+        dobMode: BirthDeathDateMode.EXACT,
       },
       { emitEvent: false }
     );
@@ -214,11 +205,11 @@ export class AddRelativeDialogComponent implements OnInit {
         lastName: opt.meta.lastName ?? null,
       };
       if (by != null) {
-        patch.dobMode = 'year';
+        patch.dobMode = BirthDeathDateMode.YEAR;
         patch.dob = new Date(Date.UTC(by, 0, 1));
       }
       if (dy != null) {
-        patch.dodMode = 'year';
+        patch.dodMode = BirthDeathDateMode.YEAR;
         patch.dod = new Date(Date.UTC(dy, 0, 1));
       }
       this.form.patchValue(patch, { emitEvent: false });
@@ -239,6 +230,10 @@ export class AddRelativeDialogComponent implements OnInit {
     const val = this.form.value;
     const clonedId = this.clonedMemberId();
     const selectedImported = val.importedId as string | null;
+    if (!val.relation) {
+      return;
+    }
+
     if (clonedId || selectedImported) {
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const dodPayload = this.familyService.buildDodPayload(this.form);
@@ -273,11 +268,29 @@ export class AddRelativeDialogComponent implements OnInit {
     // Keep some sensible defaults after reset
     this.form.patchValue({
       lastName: this.baseMember()?.lastName ?? null,
-      dobMode: 'exact',
+      dobMode: BirthDeathDateMode.EXACT,
     });
   }
 
   useImported(): boolean {
     return this.showImported();
+  }
+
+  private buildForm(initialClonedId: string | null): AddRelativeFormGroup {
+    const baseForm = this.familyService.createFamilyMemberForm();
+    const form = baseForm as unknown as AddRelativeFormGroup;
+    form.addControl(
+      'relation',
+      new FormControl<string | null>(null, Validators.required),
+    );
+    form.addControl(
+      'useImported',
+      this.fb.nonNullable.control(!!initialClonedId),
+    );
+    form.addControl(
+      'importedId',
+      new FormControl<string | null>(initialClonedId ?? null),
+    );
+    return form;
   }
 }
