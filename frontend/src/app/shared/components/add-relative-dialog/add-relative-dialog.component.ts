@@ -1,12 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
-  inject,
-  signal,
-  OnInit,
   DestroyRef,
+  OnInit,
+  inject,
+  input,
+  output,
+  signal,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../imports/shared-primeng-imports';
@@ -29,13 +29,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './add-relative-dialog.component.html',
   styleUrls: ['./add-relative-dialog.component.scss'],
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRelativeDialogComponent implements OnInit {
-  @Input() baseMember!: FamilyMember;
-  @Input() visible = false;
-  @Input() clonedMemberId: string | null = null;
-  @Output() close = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<{
+  baseMember = input<FamilyMember | null>(null);
+  visible = input(false);
+  clonedMemberId = input<string | null>(null);
+  close = output<void>();
+  saved = output<{
     member?: Partial<FamilyMember>;
     relation: string;
     clonedMemberId?: string;
@@ -103,21 +104,22 @@ export class AddRelativeDialogComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    const initialClonedId = this.clonedMemberId();
     this.form = this.familyService.createFamilyMemberForm() as FormGroup<any>;
     this.form.addControl(
       'relation',
       new FormControl<string | null>(null, Validators.required)
     );
-    this.form.addControl('useImported', new FormControl<boolean>(!!this.clonedMemberId, { nonNullable: true }));
-    this.form.addControl('importedId', new FormControl<string | null>(this.clonedMemberId ?? null));
-    this.showImported.set(!!this.clonedMemberId);
+    this.form.addControl('useImported', new FormControl<boolean>(!!initialClonedId, { nonNullable: true }));
+    this.form.addControl('importedId', new FormControl<string | null>(initialClonedId ?? null));
+    this.showImported.set(!!initialClonedId);
     this.form.get('useImported')?.valueChanges.subscribe((v) => this.showImported.set(!!v));
 
     this.familyService
       .onSubscriptionLimitReached()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        if (this.visible) {
+        if (this.visible()) {
           this.close.emit();
         }
       });
@@ -133,8 +135,8 @@ export class AddRelativeDialogComponent implements OnInit {
       this.importedOptions.set(list);
     });
 
-    if (this.clonedMemberId) {
-      this.family.getFamilyMemberById(this.clonedMemberId).subscribe((m: any) => {
+    if (initialClonedId) {
+      this.family.getFamilyMemberById(initialClonedId).subscribe((m: any) => {
         this.form.patchValue({
           firstName: m?.firstName ?? null,
           middleName: m?.middleName ?? null,
@@ -143,7 +145,7 @@ export class AddRelativeDialogComponent implements OnInit {
       });
       return;
     }
-    const role = this.baseMember?.role ?? '';
+    const role = this.baseMember()?.role ?? '';
     const isDeepOrLateral =
       role.includes('_sister___') || role.includes('_brother___');
 
@@ -196,7 +198,7 @@ export class AddRelativeDialogComponent implements OnInit {
     // Prefill defaults
     this.form.patchValue(
       {
-        lastName: this.baseMember?.lastName ?? null,
+        lastName: this.baseMember()?.lastName ?? null,
         dobMode: 'exact', // exact | year | note (service has validators tied to this)
       },
       { emitEvent: false }
@@ -235,8 +237,9 @@ export class AddRelativeDialogComponent implements OnInit {
   onSave() {
     if (this.form.invalid) return;
     const val = this.form.value;
+    const clonedId = this.clonedMemberId();
     const selectedImported = val.importedId as string | null;
-    if (this.clonedMemberId || selectedImported) {
+    if (clonedId || selectedImported) {
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const dodPayload = this.familyService.buildDodPayload(this.form);
       const member: Partial<FamilyMember> = {
@@ -251,7 +254,7 @@ export class AddRelativeDialogComponent implements OnInit {
         deathYear: dodPayload.deathYear ?? null,
         deathNote: dodPayload.deathNote ?? null,
       } as any;
-      this.saved.emit({ relation: val.relation, clonedMemberId: this.clonedMemberId ?? undefined, approvedRequestId: selectedImported ?? undefined, member });
+      this.saved.emit({ relation: val.relation, clonedMemberId: clonedId ?? undefined, approvedRequestId: selectedImported ?? undefined, member });
     } else {
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const member: Partial<FamilyMember> = {
@@ -269,7 +272,7 @@ export class AddRelativeDialogComponent implements OnInit {
     this.form.reset();
     // Keep some sensible defaults after reset
     this.form.patchValue({
-      lastName: this.baseMember?.lastName ?? null,
+      lastName: this.baseMember()?.lastName ?? null,
       dobMode: 'exact',
     });
   }
