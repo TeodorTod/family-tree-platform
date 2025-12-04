@@ -16,7 +16,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sharing-requests-page',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, AddRelativeDialogComponent],
   templateUrl: './sharing-requests.page.html',
   styleUrls: ['./sharing-requests.page.scss'],

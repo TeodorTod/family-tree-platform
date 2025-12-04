@@ -26,7 +26,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-add-relative-dialog',
-  standalone: true,
   templateUrl: './add-relative-dialog.component.html',
   styleUrls: ['./add-relative-dialog.component.scss'],
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],

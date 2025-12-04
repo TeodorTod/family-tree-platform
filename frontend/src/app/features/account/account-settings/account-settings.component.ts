@@ -27,7 +27,6 @@ import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-account-settings',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './account-settings.component.html',
   styleUrls: ['./account-settings.component.scss'],

@@ -6,7 +6,6 @@ import { CONSTANTS } from '../../shared/constants/constants';
 
 @Component({
   selector: 'app-settings-sharing-page',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './settings-sharing.page.html',
   styleUrls: ['./settings-sharing.page.scss'],

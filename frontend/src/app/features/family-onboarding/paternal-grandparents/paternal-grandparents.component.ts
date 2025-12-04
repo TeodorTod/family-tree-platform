@@ -16,7 +16,6 @@ import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum'
 
 @Component({
   selector: 'app-paternal-grandparents',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './paternal-grandparents.component.html',
   styleUrls: ['./paternal-grandparents.component.scss'],

@@ -35,7 +35,6 @@ import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-member-info',
-  standalone: true,
   imports: [
     ...SHARED_ANGULAR_IMPORTS,
     ...SHARED_PRIMENG_IMPORTS,

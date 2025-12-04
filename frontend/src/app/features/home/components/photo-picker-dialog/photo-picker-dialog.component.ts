@@ -6,7 +6,6 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primen
 
 @Component({
   selector: 'app-photo-picker-dialog',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './photo-picker-dialog.component.html',
   styleUrls: ['./photo-picker-dialog.component.scss'],

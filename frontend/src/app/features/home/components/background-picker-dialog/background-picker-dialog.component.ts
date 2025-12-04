@@ -6,7 +6,6 @@ import { BACKGROUND_IMAGES } from '../../../../shared/constants/background-image
 
 @Component({
   selector: 'app-background-picker-dialog',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './background-picker-dialog.component.html',
   styleUrls: ['./background-picker-dialog.component.scss'],

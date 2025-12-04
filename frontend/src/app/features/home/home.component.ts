@@ -31,7 +31,6 @@ import { AmbientSoundService } from './services/ambient-sound.service';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [
     AddRelativeDialogComponent,
     PhotoPickerDialogComponent,

@@ -12,7 +12,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-cookie-consent',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, TranslateModule],
   templateUrl: './cookie-consent.component.html',
   styleUrl: './cookie-consent.component.scss',

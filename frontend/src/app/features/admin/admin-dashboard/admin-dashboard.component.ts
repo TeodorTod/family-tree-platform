@@ -63,7 +63,6 @@ interface MemberFilters {
 
 @Component({
   selector: 'app-admin-dashboard',
-  standalone: true,
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss'],
