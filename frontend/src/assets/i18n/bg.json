@@ -555,6 +555,11 @@
     "SOUND": {
       "MUTE": "Спри музиката",
       "PLAY": "Пусни музиката"
+    },
+    "EXPORT": {
+      "BACKGROUND": "Фон",
+      "REFRESH_PREVIEW": "Обнови прегледа",
+      "PREPARING": "Подготвяме преглед..."
     }
   },
   "SEARCH": {

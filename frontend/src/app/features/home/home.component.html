@@ -16,7 +16,10 @@
 </div>
 
 <!-- Floating control buttons -->
-<div class="control-panel d-flex flex-column gap-3 mb-3">
+<div
+  class="control-panel d-flex flex-column gap-3 mb-3"
+  [class.table-mode]="showTableView()"
+>
   <!-- Toggle button (always visible) -->
   <button
     pButton
@@ -219,56 +222,90 @@
 } @if (exportMode()) {
 <div class="export-overlay" (click)="$event.stopPropagation()">
   <div class="export-toolbar">
-    <!-- BG pan controls -->
-    <div class="bg-pan-controls">
-      <button
-        pButton
-        icon="pi pi-arrow-up"
-        (click)="nudgeBg(0, -20)"
-        class="p-button-text"
-      ></button>
-      <div class="row">
+    <div class="bg-pan-wrapper">
+      <span class="control-label">
+        {{ CONSTANTS.HOME_EXPORT_BACKGROUND | translate }}
+      </span>
+      <div class="bg-pan-controls">
         <button
           pButton
-          icon="pi pi-arrow-left"
-          (click)="nudgeBg(-20, 0)"
+          icon="pi pi-arrow-up"
+          (click)="nudgeBg(0, -20)"
           class="p-button-text"
+          type="button"
         ></button>
+        <div class="row">
+          <button
+            pButton
+            icon="pi pi-arrow-left"
+            (click)="nudgeBg(-20, 0)"
+            class="p-button-text"
+            type="button"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-refresh"
+            (click)="resetBgOffset()"
+            class="p-button-text"
+            type="button"
+            pTooltip="Reset"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-arrow-right"
+            (click)="nudgeBg(20, 0)"
+            class="p-button-text"
+            type="button"
+          ></button>
+        </div>
         <button
           pButton
-          icon="pi pi-refresh"
-          (click)="resetBgOffset()"
+          icon="pi pi-arrow-down"
+          (click)="nudgeBg(0, 20)"
           class="p-button-text"
-          pTooltip="Reset"
-        ></button>
-        <button
-          pButton
-          icon="pi pi-arrow-right"
-          (click)="nudgeBg(20, 0)"
-          class="p-button-text"
+          type="button"
         ></button>
       </div>
+    </div>
+
+    <div class="export-preview-controls">
       <button
         pButton
-        icon="pi pi-arrow-down"
-        (click)="nudgeBg(0, 20)"
-        class="p-button-text"
+        type="button"
+        icon="pi pi-refresh"
+        [label]="CONSTANTS.HOME_EXPORT_REFRESH | translate"
+        class="p-button-outlined"
+        (click)="refreshExportPreview()"
+        [disabled]="exportBuilding()"
       ></button>
+      @if (exportMeta(); as meta) {
+      <div class="export-meta">
+        {{ meta.width }} x {{ meta.height }} px
+      </div>
+      }
     </div>
 
     <span class="flex-1"></span>
+
+    @if (exportBuilding()) {
+    <span class="export-status">
+      {{ CONSTANTS.HOME_EXPORT_PREPARING | translate }}
+    </span>
+    }
 
     <button
       pButton
       icon="pi pi-download"
       label="PNG"
       (click)="downloadPNG()"
+      [disabled]="!exportDataUrl() || exportBuilding()"
     ></button>
     <button
       pButton
       icon="pi pi-file-pdf"
       label="PDF"
       (click)="downloadPDF()"
+      [disabled]="!exportDataUrl() || exportBuilding()"
     ></button>
     <button
       pButton
@@ -290,6 +327,13 @@
   >
     @if (exportDataUrl()) {
     <img [src]="exportDataUrl()!" alt="Rodostoria Export" />
+    @if (exportMeta(); as meta) {
+    <div class="export-meta-chip">
+      {{ meta.width }} x {{ meta.height }} px
+    </div>
+    }
+    } @else if (exportBuilding()) {
+    <p>{{ CONSTANTS.INFO_IMAGE_GENERATION | translate }}</p>
     } @else {
     <p>{{ CONSTANTS.INFO_IMAGE_GENERATION | translate }}</p>
     }
@@ -301,6 +345,7 @@
 <div class="table-container" [class.full-screen]="showTableView()">
   @if(showTableView()) {
   <app-tree-table
+    [members]="members"
     (addRelative)="openAddDialog($event.role)"
     (editMember)="handleEditFromTable($event)"
   ></app-tree-table>

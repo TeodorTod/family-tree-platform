@@ -592,6 +592,11 @@
     "SOUND": {
       "MUTE": "Stop music",
       "PLAY": "Play music"
+    },
+    "EXPORT": {
+      "BACKGROUND": "Background",
+      "REFRESH_PREVIEW": "Refresh Preview",
+      "PREPARING": "Preparing preview..."
     }
   },
   "COOKIE_CONSENT": {

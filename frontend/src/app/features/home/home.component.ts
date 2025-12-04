@@ -1,11 +1,13 @@
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
-  AfterViewInit,
+  OnDestroy,
   ViewChild,
+  ChangeDetectorRef,
   inject,
   signal,
-  OnDestroy,
 } from '@angular/core';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
@@ -26,6 +28,7 @@ import { TreeTableComponent } from './components/tree-table/tree-table.component
 import jsPDF from 'jspdf';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { AmbientSoundService } from './services/ambient-sound.service';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -39,6 +42,7 @@ import { AmbientSoundService } from './services/ambient-sound.service';
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
   CONSTANTS = CONSTANTS;
@@ -49,6 +53,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private sharingApi = inject(SharingApiService);
   router = inject(Router);
   private ambientSound = inject(AmbientSoundService);
+  private cdr = inject(ChangeDetectorRef);
   cy?: cytoscape.Core;
 
   selectedMember = signal<FamilyMember | null>(null);
@@ -69,9 +74,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   exportPaddingPx = signal(64);
   bgOffsetX = signal(0);
   bgOffsetY = signal(0);
+  exportMeta = signal<{ width: number; height: number } | null>(null);
+  exportBuilding = signal(false);
   showBirthInfo = signal<boolean>(true);
   readonly soundPlaying = this.ambientSound.playing;
-  private exportRebuildTimer: any = null;
+  private exportRebuildTimer: ReturnType<typeof setTimeout> | null = null;
   private distanceBoostX = 1.6;
   private distanceBoostY = 1.0;
   private lastPairs: [string, string][] = [];
@@ -82,15 +89,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
-    // 1) Determine view mode (query > saved > responsive default)
+    // 1) Determine view mode (query > responsive default)
     const viewMode = this.route.snapshot.queryParamMap.get('view');
-    const savedPref = localStorage.getItem('familyViewMode');
     const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
 
     if (viewMode === 'table' || viewMode === 'chart') {
       this.showTableView.set(viewMode === 'table');
-    } else if (savedPref === 'table' || savedPref === 'chart') {
-      this.showTableView.set(savedPref === 'table');
     } else {
       this.showTableView.set(isSmallScreen);
     }
@@ -144,6 +148,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this.familyService.getMyFamily(requestOpts as any).subscribe((members) => {
       this.members = members as FamilyMember[];
+      this.cdr.markForCheck();
 
       // Warn if duplicate roles (can collapse nodes)
       const seen = new Map<string, number>();
@@ -1123,8 +1128,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const isTable = !this.showTableView();
     this.showTableView.set(isTable);
 
-    localStorage.setItem('familyViewMode', isTable ? 'table' : 'chart');
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { view: isTable ? 'table' : 'chart' },
@@ -1219,80 +1222,97 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.exportTight.set(tight);
     this.exportMode.set(true);
     document.body.classList.add('export-mode');
-    this.resetBgOffset();
+    this.exportBuilding.set(false);
+    this.exportMeta.set(null);
+    this.resetBgOffset(true);
     setTimeout(() => this.buildExportImage(true), 0);
   }
 
   closeExportView() {
     this.exportMode.set(false);
     this.exportDataUrl.set(null);
+    this.exportBuilding.set(false);
+    this.exportMeta.set(null);
     document.body.classList.remove('export-mode');
+    this.resetBgOffset(true);
   }
 
-  private async buildExportImage(asSeen: boolean = true) {
+  private async buildExportImage(asSeen = true) {
     if (!this.cy) return;
+    this.exportBuilding.set(true);
+    this.exportMeta.set(null);
 
-    const dpr = window.devicePixelRatio || 2;
+    try {
+      const dpr = window.devicePixelRatio || 2;
+      const pxScale = dpr;
 
-    const cyPngDataUrl = this.cy.png({
-      full: !asSeen ? true : false,
-      scale: dpr,
-      bg: 'transparent',
-    });
+      const cyPngDataUrl = this.cy.png({
+        full: !asSeen ? true : false,
+        scale: pxScale,
+        bg: 'transparent',
+      });
 
-    const [cyImg, bgImg] = await Promise.all([
-      this.loadImage(cyPngDataUrl),
-      this.loadImage(this.backgroundUrl()).catch(() => null),
-    ]);
+      const [cyImg, bgImg] = await Promise.all([
+        this.loadImage(cyPngDataUrl),
+        this.loadImage(this.backgroundUrl()).catch(() => null),
+      ]);
 
-    if (!this.exportTight()) {
+      if (!this.exportTight()) {
+        const padPx = Math.max(0, Math.round(this.exportPaddingPx()));
+        const canvas = document.createElement('canvas');
+        canvas.width = cyImg.width + padPx * 2;
+        canvas.height = cyImg.height + padPx * 2;
+        const ctx = canvas.getContext('2d')!;
+
+        this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
+        ctx.drawImage(cyImg, padPx, padPx);
+        this.exportMeta.set({ width: canvas.width, height: canvas.height });
+        this.exportDataUrl.set(canvas.toDataURL('image/png'));
+        return;
+      }
+
+      const rb = this.cy.elements().renderedBoundingBox();
+      const pad = this.exportPaddingPx();
+      const labelGuard = 18;
+      const totalPad = pad + labelGuard;
+
+      const cropX = Math.max((rb.x1 - totalPad) * pxScale, 0);
+      const cropY = Math.max((rb.y1 - totalPad) * pxScale, 0);
+      const cropW = Math.min(
+        (rb.x2 - rb.x1 + totalPad * 2) * pxScale,
+        cyImg.width - cropX
+      );
+      const cropH = Math.min(
+        (rb.y2 - rb.y1 + totalPad * 2) * pxScale,
+        cyImg.height - cropY
+      );
+
       const canvas = document.createElement('canvas');
-      canvas.width = cyImg.width;
-      canvas.height = cyImg.height;
+      canvas.width = Math.max(1, Math.round(cropW));
+      canvas.height = Math.max(1, Math.round(cropH));
       const ctx = canvas.getContext('2d')!;
 
       this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
-      ctx.drawImage(cyImg, 0, 0);
+
+      ctx.drawImage(
+        cyImg,
+        cropX,
+        cropY,
+        cropW,
+        cropH,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      this.exportMeta.set({ width: canvas.width, height: canvas.height });
       this.exportDataUrl.set(canvas.toDataURL('image/png'));
-      return;
+    } catch (err) {
+      console.error('Failed to build export image', err);
+    } finally {
+      this.exportBuilding.set(false);
     }
-
-    const rb = this.cy.elements().renderedBoundingBox();
-    const pad = this.exportPaddingPx();
-    const labelGuard = 18;
-    const totalPad = pad + labelGuard;
-
-    const cropX = Math.max((rb.x1 - totalPad) * dpr, 0);
-    const cropY = Math.max((rb.y1 - totalPad) * dpr, 0);
-    const cropW = Math.min(
-      (rb.x2 - rb.x1 + totalPad * 2) * dpr,
-      cyImg.width - cropX
-    );
-    const cropH = Math.min(
-      (rb.y2 - rb.y1 + totalPad * 2) * dpr,
-      cyImg.height - cropY
-    );
-
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(cropW));
-    canvas.height = Math.max(1, Math.round(cropH));
-    const ctx = canvas.getContext('2d')!;
-
-    this.drawBackground(ctx, canvas.width, canvas.height, bgImg);
-
-    ctx.drawImage(
-      cyImg,
-      cropX,
-      cropY,
-      cropW,
-      cropH,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-    this.exportDataUrl.set(canvas.toDataURL('image/png'));
   }
 
   private drawBackground(
@@ -1386,10 +1406,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.scheduleExportRebuild();
   }
 
-  resetBgOffset() {
+  resetBgOffset(skipRebuild = false) {
     this.bgOffsetX.set(0);
     this.bgOffsetY.set(0);
-    this.scheduleExportRebuild();
+    if (!skipRebuild) this.scheduleExportRebuild();
+  }
+
+  refreshExportPreview() {
+    this.buildExportImage(true);
   }
 
   private draggingBg = false;
@@ -1439,6 +1463,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.exportRebuildTimer = setTimeout(() => {
       this.buildExportImage(true);
     }, delay);
+  }
+
+  private clamp(value: number, min: number, max: number) {
+    return Math.min(max, Math.max(min, value));
   }
 
   private getBgAlpha(): number {

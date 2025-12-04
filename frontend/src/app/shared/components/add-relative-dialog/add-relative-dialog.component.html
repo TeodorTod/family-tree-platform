@@ -67,21 +67,41 @@
       ></p-select>
     </span>
 
-    <!-- Exact date -->
+    <!-- DOB Inputs -->
     @if (form.value.dobMode === 'exact') {
-    <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
-      <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
-      <p-datepicker
-        formControlName="dob"
-        dateFormat="yy-mm-dd"
-        [showIcon]="true"
-        [iconDisplay]="'input'"
-        appendTo="body"
-        panelStyleClass="calendar-up"
-        class="w-full"
-        [style]="{ width: '100%' }"
-      ></p-datepicker>
-    </div>
+      <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
+        <label>{{ CONSTANTS.INFO_DATE_OF_BIRTH | translate }}</label>
+        <p-datepicker
+          formControlName="dob"
+          dateFormat="yy-mm-dd"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          appendTo="body"
+          panelStyleClass="calendar-up"
+          class="w-full"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+      </div>
+    } @else if (form.value.dobMode === 'year') {
+      <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
+        <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
+        <p-datepicker
+          formControlName="dob"
+          [view]="'year'"
+          [dateFormat]="'yy'"
+          [showIcon]="true"
+          [iconDisplay]="'input'"
+          appendTo="body"
+          panelStyleClass="calendar-up"
+          class="w-full"
+          [style]="{ width: '100%' }"
+        ></p-datepicker>
+      </div>
+    } @else if (form.value.dobMode === 'note') {
+      <div class="floating-field">
+        <input pInputText formControlName="birthNote" placeholder=" " />
+        <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
+      </div>
     }
 
     <div class="d-flex gap-2 align-items-center">
@@ -146,32 +166,6 @@
       </div>
       }
     </div>
-
-    <!-- Year only -->
-    @if (form.value.dobMode === 'year') {
-    <div class="floating-field mb-3" [class.active]="form.get('dob')?.value">
-      <label>{{ CONSTANTS.INFO_DOB_YEAR_ONLY | translate }}</label>
-      <p-datepicker
-        formControlName="dob"
-        [view]="'year'"
-        [dateFormat]="'yy'"
-        [showIcon]="true"
-        [iconDisplay]="'input'"
-        appendTo="body"
-        panelStyleClass="calendar-up"
-        class="w-full"
-        [style]="{ width: '100%' }"
-      ></p-datepicker>
-    </div>
-    }
-
-    <!-- Note -->
-    @if (form.value.dobMode === 'note') {
-    <div class="floating-field">
-      <input pInputText formControlName="birthNote" placeholder=" " />
-      <label>{{ CONSTANTS.INFO_DOB_NOTE_LABEL | translate }}</label>
-    </div>
-    }
 
     <!-- Buttons -->
     <div class="d-flex justify-content-end gap-2 mt-3 f-width">

@@ -29,6 +29,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'tree',
+    redirectTo: '',
+    pathMatch: 'full',
+  },
+  {
     path: 'member',
     loadChildren: () =>
       import('./features/member/member.routes').then((m) => m.memberRoutes),
