@@ -5,9 +5,9 @@ import {
   ElementRef,
   OnDestroy,
   ViewChild,
-  ChangeDetectorRef,
   inject,
   signal,
+  computed,
 } from '@angular/core';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
@@ -28,6 +28,7 @@ import { TreeTableComponent } from './components/tree-table/tree-table.component
 import jsPDF from 'jspdf';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { AmbientSoundService } from './services/ambient-sound.service';
+import { PlatformStorageService } from '../../core/services/platform-storage.service';
 
 @Component({
   selector: 'app-home',
@@ -52,12 +53,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private sharingApi = inject(SharingApiService);
   router = inject(Router);
   private ambientSound = inject(AmbientSoundService);
-  private cdr = inject(ChangeDetectorRef);
+  private platformStorage = inject(PlatformStorageService);
   cy?: cytoscape.Core;
 
   selectedMember = signal<FamilyMember | null>(null);
   showAddDialog = signal(false);
-  members: FamilyMember[] = [];
+  private readonly membersState = signal<FamilyMember[]>([]);
+  readonly members = computed(() => this.membersState());
   showConnections = signal(false);
   backgroundIndex = signal(0);
   backgroundOpacityValue = 0.6;
@@ -84,13 +86,15 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private lastMateOf = new Map<string, string>();
 
   customPhotoUrl =
-    localStorage.getItem('familyPhotoUrl') ??
+    this.platformStorage.getItem('familyPhotoUrl') ??
     'assets/images/user-image/user.svg';
 
   ngAfterViewInit(): void {
     // 1) Determine view mode (query > responsive default)
     const viewMode = this.route.snapshot.queryParamMap.get('view');
-    const isSmallScreen = window.matchMedia('(max-width: 900px)').matches;
+    const isSmallScreen = this.platformStorage.matchMedia(
+      '(max-width: 900px)'
+    );
 
     if (viewMode === 'table' || viewMode === 'chart') {
       this.showTableView.set(viewMode === 'table');
@@ -99,10 +103,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
 
     // 2) Persisted toggles / selections
-    const savedBirth = localStorage.getItem('showBirthInfo');
+    const savedBirth = this.platformStorage.getItem('showBirthInfo');
     if (savedBirth !== null) this.showBirthInfo.set(savedBirth === '1');
 
-    const savedBg = localStorage.getItem('selectedBackground');
+    const savedBg = this.platformStorage.getItem('selectedBackground');
     if (savedBg && this.backgroundImages.includes(savedBg)) {
       this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
     } else {
@@ -113,7 +117,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
 
     // Optionally respect saved circle size (if present), else compute responsive default
-    const savedSizeRaw = localStorage.getItem('familyCircleSize');
+    const savedSizeRaw = this.platformStorage.getItem('familyCircleSize');
     if (savedSizeRaw && !Number.isNaN(+savedSizeRaw)) {
       this.circleSizeValue = Math.max(40, Math.min(120, +savedSizeRaw));
       this.circleSize.set(this.circleSizeValue);
@@ -122,6 +126,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.setInitialCircleSizeByWidth();
       requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
     }
+
+    this.hydratePersistedPreferencesFromBrowser();
 
     // 4) Load family + render
     const isTableNow = this.showTableView();
@@ -146,13 +152,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       };
 
     this.familyService.getMyFamily(requestOpts as any).subscribe((members) => {
-      this.members = members as FamilyMember[];
-      this.cdr.markForCheck();
+      const next = members as FamilyMember[];
+      this.membersState.set(next);
 
       // Warn if duplicate roles (can collapse nodes)
       const seen = new Map<string, number>();
       const dups: string[] = [];
-      for (const m of this.members) {
+      for (const m of next) {
         const count = (seen.get(m.role) ?? 0) + 1;
         seen.set(m.role, count);
         if (count === 2) dups.push(m.role);
@@ -165,7 +171,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       }
 
       if (!this.showTableView()) {
-        this.renderGraph(this.members);
+        this.renderGraph(next);
         this.toggleEdgeVisibility();
         this.updateCircleSize(); // sync node sizes with current slider/saved value
       }
@@ -175,6 +181,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   private setInitialCircleSizeByWidth(): void {
+    if (!this.platformStorage.isBrowserEnvironment()) {
+      return;
+    }
     setTimeout(() => {
       const w = Math.max(
         window.innerWidth || 0,
@@ -186,7 +195,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
       this.circleSizeValue = next;
       this.circleSize.set(next);
-      localStorage.setItem('familyCircleSize', String(next));
+      this.platformStorage.setItem('familyCircleSize', String(next));
 
       if (this.cy) this.updateCircleSize();
     }, 0);
@@ -213,7 +222,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   handlePhotoSelection(photoUrl: string) {
-    localStorage.setItem('familyPhotoUrl', photoUrl);
+    this.platformStorage.setItem('familyPhotoUrl', photoUrl);
     this.customPhotoUrl = photoUrl;
 
     if (!this.cy) return;
@@ -896,7 +905,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       ensureCloned((newId) => {
         if (!newId) return; // safety
         const prefix = `${base.role}_${event.relation}`;
-        const existing = this.members.filter(
+        const existing = this.members().filter(
           (m) => m.role === prefix || m.role.startsWith(`${prefix}_`)
         );
         let newRole = prefix;
@@ -930,7 +939,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
                         this.showAddDialog.set(false);
                         this.selectedMember.set(null);
                         this.familyService.getMyFamily().subscribe((members) => {
-                          this.members = members as any;
+                          this.membersState.set(members as FamilyMember[]);
                           this.renderGraph(members as FamilyMember[]);
                         });
                       });
@@ -938,7 +947,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
                     this.showAddDialog.set(false);
                     this.selectedMember.set(null);
                     this.familyService.getMyFamily().subscribe((members) => {
-                      this.members = members as any;
+                      this.membersState.set(members as FamilyMember[]);
                       this.renderGraph(members as FamilyMember[]);
                     });
                   }
@@ -965,7 +974,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
 
     const prefix = `${base.role}_${event.relation}`;
-    const existing = this.members.filter(
+    const existing = this.members().filter(
       (m) => m.role === prefix || m.role.startsWith(`${prefix}_`)
     );
 
@@ -1043,7 +1052,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
           this.showAddDialog.set(false);
           this.selectedMember.set(null);
           this.familyService.getMyFamily().subscribe((members) => {
-            this.members = members as any;
+            this.membersState.set(members as FamilyMember[]);
             this.renderGraph(members as FamilyMember[]);
           });
         },
@@ -1054,8 +1063,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   openAddDialog(role: string | undefined | null) {
-    if (!role || !this.members.length) return;
-    const member = this.members.find((m) => m.role === role);
+    const currentMembers = this.members();
+    if (!role || currentMembers.length === 0) return;
+    const member = currentMembers.find((m) => m.role === role);
     if (member) {
       this.selectedMember.set(member);
       this.showAddDialog.set(true);
@@ -1067,7 +1077,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const hovered = this.hoveredNode();
     if (!hovered) return;
 
-    const member = this.members.find((m) => m.role === hovered.id);
+    const member = this.members().find((m) => m.role === hovered.id);
     if (member) {
       this.router.navigate([CONSTANTS.ROUTES.MEMBER, member.role], {
         queryParams: { view: this.showTableView() ? 'table' : 'chart' },
@@ -1136,7 +1146,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (!isTable) {
       setTimeout(() => {
         if (!this.cy) {
-          this.renderGraph(this.members);
+          this.renderGraph(this.members());
         } else {
           this.cy?.resize().fit();
         }
@@ -1153,7 +1163,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   updateCircleSize() {
     this.circleSize.set(this.circleSizeValue);
-    localStorage.setItem('familyCircleSize', this.circleSizeValue.toString());
+    this.platformStorage.setItem(
+      'familyCircleSize',
+      this.circleSizeValue.toString()
+    );
 
     if (!this.cy) return;
 
@@ -1487,7 +1500,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (!this.cy) return;
     this.cy.nodes().forEach((node) => {
       const role = node.id();
-      const m = this.members.find((mm) => mm.role === role);
+      const m = this.members().find((mm) => mm.role === role);
       if (m) node.data('label', this.computeNodeLabel(m));
     });
     this.cy.style().update();
@@ -1496,8 +1509,42 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   toggleBirthInfo() {
     const next = !this.showBirthInfo();
     this.showBirthInfo.set(next);
-    localStorage.setItem('showBirthInfo', next ? '1' : '0');
+    this.platformStorage.setItem('showBirthInfo', next ? '1' : '0');
     this.refreshNodeLabels();
+  }
+
+  private hydratePersistedPreferencesFromBrowser() {
+    if (!this.platformStorage.isBrowserEnvironment()) {
+      return;
+    }
+
+    const birth = this.platformStorage.getItemFromStorage('showBirthInfo');
+    if (birth !== null) {
+      this.showBirthInfo.set(birth === '1');
+    }
+
+    const savedBg = this.platformStorage.getItemFromStorage(
+      'selectedBackground'
+    );
+    if (savedBg && this.backgroundImages.includes(savedBg)) {
+      this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
+    }
+
+    const savedSizeRaw = this.platformStorage.getItemFromStorage(
+      'familyCircleSize'
+    );
+    if (savedSizeRaw && !Number.isNaN(+savedSizeRaw)) {
+      const next = Math.max(40, Math.min(120, +savedSizeRaw));
+      this.circleSizeValue = next;
+      this.circleSize.set(next);
+    }
+
+    const savedPhoto = this.platformStorage.getItemFromStorage(
+      'familyPhotoUrl'
+    );
+    if (savedPhoto) {
+      this.customPhotoUrl = savedPhoto;
+    }
   }
 
   private collectPartnerPairs(members: FamilyMember[]): [string, string][] {
