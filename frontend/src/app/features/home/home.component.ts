@@ -78,6 +78,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   exportMeta = signal<{ width: number; height: number } | null>(null);
   exportBuilding = signal(false);
   showBirthInfo = signal<boolean>(true);
+  soundConsent = signal(false);
   readonly soundPlaying = this.ambientSound.playing;
   private exportRebuildTimer: ReturnType<typeof setTimeout> | null = null;
   private distanceBoostX = 1.6;
@@ -102,30 +103,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.showTableView.set(isSmallScreen);
     }
 
-    // 2) Persisted toggles / selections
-    const savedBirth = this.platformStorage.getItem('showBirthInfo');
-    if (savedBirth !== null) this.showBirthInfo.set(savedBirth === '1');
-
-    const savedBg = this.platformStorage.getItem('selectedBackground');
-    if (savedBg && this.backgroundImages.includes(savedBg)) {
-      this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
-    } else {
-      this.backgroundIndex.set(0);
-    }
-
     // Ensure overlay is in sync
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
 
-    // Optionally respect saved circle size (if present), else compute responsive default
-    const savedSizeRaw = this.platformStorage.getItem('familyCircleSize');
-    if (savedSizeRaw && !Number.isNaN(+savedSizeRaw)) {
-      this.circleSizeValue = Math.max(40, Math.min(120, +savedSizeRaw));
-      this.circleSize.set(this.circleSizeValue);
-    } else {
-      // 3) Initial sizing (run twice to catch container sizing after render)
-      this.setInitialCircleSizeByWidth();
-      requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
-    }
+    this.hydratePersistedPreferencesFromBrowser();
 
     this.hydratePersistedPreferencesFromBrowser();
 
@@ -176,8 +157,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         this.updateCircleSize(); // sync node sizes with current slider/saved value
       }
     });
-
-    this.ambientSound.play();
   }
 
   private setInitialCircleSizeByWidth(): void {
@@ -1528,8 +1507,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     );
     if (savedBg && this.backgroundImages.includes(savedBg)) {
       this.backgroundIndex.set(this.backgroundImages.indexOf(savedBg));
+    } else {
+      this.backgroundIndex.set(0);
     }
 
+    let circlePreferenceApplied = false;
     const savedSizeRaw = this.platformStorage.getItemFromStorage(
       'familyCircleSize'
     );
@@ -1537,6 +1519,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       const next = Math.max(40, Math.min(120, +savedSizeRaw));
       this.circleSizeValue = next;
       this.circleSize.set(next);
+      circlePreferenceApplied = true;
+    }
+    if (!circlePreferenceApplied) {
+      this.setInitialCircleSizeByWidth();
+      if (this.platformStorage.isBrowserEnvironment()) {
+        requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
+      }
     }
 
     const savedPhoto = this.platformStorage.getItemFromStorage(
@@ -1544,6 +1533,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     );
     if (savedPhoto) {
       this.customPhotoUrl = savedPhoto;
+    }
+
+    const soundConsent = this.platformStorage.getItemFromStorage(
+      'ambientSoundConsent'
+    );
+    if (soundConsent === '1') {
+      this.soundConsent.set(true);
+      this.ambientSound.play();
     }
   }
 
@@ -1970,7 +1967,20 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   toggleAmbientSound() {
+    if (!this.soundConsent()) {
+      this.enableAmbientSound();
+      return;
+    }
     this.ambientSound.toggle();
+  }
+
+  private enableAmbientSound() {
+    if (this.soundConsent()) {
+      return;
+    }
+    this.soundConsent.set(true);
+    this.platformStorage.setItem('ambientSoundConsent', '1');
+    this.ambientSound.play(true);
   }
 
   ngOnDestroy() {

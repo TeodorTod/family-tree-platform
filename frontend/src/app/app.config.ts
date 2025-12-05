@@ -13,6 +13,7 @@ import {
   provideHttpClient,
   HttpBackend,
   withInterceptorsFromDi,
+  withFetch,
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import {
@@ -35,7 +36,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
@@ -44,7 +45,6 @@ export const appConfig: ApplicationConfig = {
       translation: PRIMENG_BG,
     }),
 
-    provideHttpClient(withInterceptorsFromDi()),
     ...(TranslateModule.forRoot({
       defaultLanguage: 'bg',
       loader: {
@@ -58,7 +58,6 @@ export const appConfig: ApplicationConfig = {
       inject(LanguageService).init();
       return appInitializerFactory(inject(TranslateService))();
     }),
-    provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     ConfirmationService,
     MessageService,

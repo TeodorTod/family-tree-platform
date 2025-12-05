@@ -277,20 +277,10 @@ export class AddRelativeDialogComponent implements OnInit {
   }
 
   private buildForm(initialClonedId: string | null): AddRelativeFormGroup {
-    const baseForm = this.familyService.createFamilyMemberForm();
-    const form = baseForm as unknown as AddRelativeFormGroup;
-    form.addControl(
-      'relation',
-      new FormControl<string | null>(null, Validators.required),
-    );
-    form.addControl(
-      'useImported',
-      this.fb.nonNullable.control(!!initialClonedId),
-    );
-    form.addControl(
-      'importedId',
-      new FormControl<string | null>(initialClonedId ?? null),
-    );
-    return form;
+    return this.familyService.createFamilyMemberForm({
+      relation: new FormControl<string | null>(null, Validators.required),
+      useImported: this.fb.nonNullable.control(!!initialClonedId),
+      importedId: new FormControl<string | null>(initialClonedId ?? null),
+    });
   }
 }

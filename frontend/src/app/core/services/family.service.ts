@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import {
-  FormBuilder,
+  AbstractControl,
   FormControl,
   FormGroup,
   Validators,
@@ -23,13 +23,13 @@ import { BirthDeathDateMode } from '../../shared/enums/birth-death-date.enum';
 import { ConfirmationService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { FamilyMemberFormControls } from '../../shared/types/forms/family-member-form.types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FamilyService {
   private http = inject(HttpClient);
-  private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
   private confirmation = inject(ConfirmationService);
   private router = inject(Router);
@@ -85,36 +85,20 @@ export class FamilyService {
     return throwError(() => err);
   }
 
-  createFamilyMemberForm(): FormGroup<{
-    firstName: FormControl<string | null>;
-    middleName: FormControl<string | null>;
-    lastName: FormControl<string | null>;
-    gender: FormControl<string | null>;
-
-    dobMode: FormControl<BirthDeathDateMode>;
-    dob: FormControl<Date | null>;
-    birthYear: FormControl<number | null>;
-    birthYearDate: FormControl<Date | null>;
-    birthNote: FormControl<string | null>;
-
-    // death
-    dodMode: FormControl<BirthDeathDateMode>;
-    dod: FormControl<Date | null>;
-    deathYear: FormControl<number | null>;
-    deathYearDate: FormControl<Date | null>;
-    deathNote: FormControl<string | null>;
-
-    isAlive: FormControl<boolean | null>;
-    translatedRole: FormControl<string | null>;
-    partnerStatus: FormControl<PartnerStatus | null>;
-  }> {
-    const fg = this.fb.group({
+  createFamilyMemberForm<
+    TExtraControls extends Record<string, AbstractControl<any, any>> = Record<
+      never,
+      never
+    >
+  >(
+    extraControls?: TExtraControls
+  ): FormGroup<FamilyMemberFormControls & TExtraControls> {
+    const baseControls: FamilyMemberFormControls = {
       firstName: new FormControl<string | null>(null, Validators.required),
       middleName: new FormControl<string | null>(null),
       lastName: new FormControl<string | null>(null, Validators.required),
       gender: new FormControl<string | null>(null),
 
-      // birth
       dobMode: new FormControl<BirthDeathDateMode>(BirthDeathDateMode.EXACT, {
         nonNullable: true,
       }),
@@ -123,7 +107,6 @@ export class FamilyService {
       birthYearDate: new FormControl<Date | null>(null),
       birthNote: new FormControl<string | null>(null),
 
-      // death
       dodMode: new FormControl<BirthDeathDateMode>(BirthDeathDateMode.EXACT, {
         nonNullable: true,
       }),
@@ -135,13 +118,20 @@ export class FamilyService {
       isAlive: new FormControl<boolean | null>(true, Validators.required),
       translatedRole: new FormControl<string | null>(null),
       partnerStatus: new FormControl<PartnerStatus | null>(null),
+    };
+
+    const fg = new FormGroup<FamilyMemberFormControls & TExtraControls>({
+      ...(baseControls as FamilyMemberFormControls & TExtraControls),
+      ...(extraControls ?? ({} as TExtraControls)),
     });
 
-    fg.get('dobMode')!.valueChanges.subscribe((mode) => {
-      const dob = fg.get('dob')!;
-      const by = fg.get('birthYear')!;
-      const byDate = fg.get('birthYearDate')!;
-      const bn = fg.get('birthNote')!;
+    const controls = fg.controls;
+
+    controls.dobMode.valueChanges.subscribe((mode) => {
+      const dob = controls.dob;
+      const by = controls.birthYear;
+      const byDate = controls.birthYearDate;
+      const bn = controls.birthNote;
 
       dob.clearValidators();
       by.clearValidators();
@@ -167,18 +157,18 @@ export class FamilyService {
       bn.updateValueAndValidity({ emitEvent: false });
     });
 
-    fg.get('birthYearDate')!.valueChanges.subscribe((d: Date | null) => {
-      fg.get('birthYear')!.setValue(d ? d.getFullYear() : null, {
+    controls.birthYearDate.valueChanges.subscribe((d: Date | null) => {
+      controls.birthYear.setValue(d ? d.getFullYear() : null, {
         emitEvent: false,
       });
     });
 
     const applyDodMode = () => {
-      const mode = fg.get('dodMode')!.value;
-      const dod = fg.get('dod')!;
-      const dy = fg.get('deathYear')!;
-      const dyDate = fg.get('deathYearDate')!;
-      const dn = fg.get('deathNote')!;
+      const mode = controls.dodMode.value;
+      const dod = controls.dod;
+      const dy = controls.deathYear;
+      const dyDate = controls.deathYearDate;
+      const dn = controls.deathNote;
 
       dod.clearValidators();
       dy.clearValidators();
@@ -204,28 +194,23 @@ export class FamilyService {
       dn.updateValueAndValidity({ emitEvent: false });
     };
 
-    fg.get('dodMode')!.valueChanges.subscribe(() => applyDodMode());
+    controls.dodMode.valueChanges.subscribe(() => applyDodMode());
 
-    fg.get('deathYearDate')!.valueChanges.subscribe((d: Date | null) => {
-      fg.get('deathYear')!.setValue(d ? d.getFullYear() : null, {
+    controls.deathYearDate.valueChanges.subscribe((d: Date | null) => {
+      controls.deathYear.setValue(d ? d.getFullYear() : null, {
         emitEvent: false,
       });
     });
 
-    fg.get('isAlive')!.valueChanges.subscribe((alive) => {
+    controls.isAlive.valueChanges.subscribe((alive) => {
       if (alive) {
-        fg.patchValue(
-          {
-            dod: null,
-            deathYear: null,
-            deathYearDate: null,
-            deathNote: null,
-          },
-          { emitEvent: false }
-        );
-      } else {
-        applyDodMode();
+        controls.dod.setValue(null, { emitEvent: false });
+        controls.deathYear.setValue(null, { emitEvent: false });
+        controls.deathYearDate.setValue(null, { emitEvent: false });
+        controls.deathNote.setValue(null, { emitEvent: false });
+        return;
       }
+      applyDodMode();
     });
 
     return fg;

@@ -13,6 +13,7 @@ import { forkJoin, of, switchMap } from 'rxjs';
 import { PartnerStatus } from '../../../shared/enums/partner-status.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum';
+import { FamilyMemberFormGroup } from '../../../shared/types/forms/family-member-form.types';
 
 @Component({
   selector: 'app-paternal-grandparents',
@@ -92,7 +93,7 @@ export class PaternalGrandparentsComponent implements OnInit {
 
   private loadMember(
     role: Roles,
-    form: ReturnType<FamilyService['createFamilyMemberForm']>,
+    form: FamilyMemberFormGroup,
     photoSignal: ReturnType<typeof signal<string | null>>,
     existenceFlag: 'grandmotherExists' | 'grandfatherExists'
   ) {
