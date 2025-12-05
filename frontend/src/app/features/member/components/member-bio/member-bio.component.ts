@@ -4,6 +4,8 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  ViewChild,
+  AfterViewInit,
   inject,
   signal,
 } from '@angular/core';
@@ -15,6 +17,7 @@ import { v4 as uuid } from 'uuid';
 
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { Editor } from 'primeng/editor';
 
 import { MediaService } from '../../../../core/services/media.service';
 import { MemberNote } from '../../../../shared/models/member-note.model';
@@ -30,7 +33,9 @@ type QuillInstance = any;
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],
 })
-export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
+export class MemberBioComponent
+  implements OnInit, OnChanges, AfterViewInit, UnsavedAware
+{
   @Input({ required: true }) role!: string;
   @Input() memberId: string | null = null;
   @Input() profile: MemberProfile | null = null;
@@ -38,6 +43,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
   private mediaApi = inject(MediaService);
   private confirm = inject(ConfirmationService);
   private translateService = inject(TranslateService);
+  @ViewChild('bioEditor') private bioEditor?: Editor;
 
   CONSTANTS = CONSTANTS;
 
@@ -57,6 +63,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
 
   private mainQuill?: QuillInstance;
   private noteQuill?: QuillInstance;
+  private pendingBioHtml: string | null = null;
 
   ngOnInit(): void {
     this.hydrateFromInputs();
@@ -68,6 +75,10 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     }
   }
 
+  ngAfterViewInit(): void {
+    queueMicrotask(() => this.initializeEditor());
+  }
+
   private snapshotInitial(): void {
     this.initialBioHtml = this.form.controls.bioHtml.value;
     this.initialNotesJson = JSON.stringify(this.notes());
@@ -75,9 +86,9 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
 
   private hydrateFromInputs(): void {
     const bio = this.profile?.bio ?? '';
-    if (this.form.controls.bioHtml.value !== bio) {
-      this.form.controls.bioHtml.setValue(bio, { emitEvent: false });
-    }
+    this.form.controls.bioHtml.setValue(bio, { emitEvent: false });
+    this.pendingBioHtml = bio;
+    this.applyBioToEditorIfReady();
 
     if (Array.isArray(this.profile?.notes)) {
       const mapped = (this.profile!.notes as any[]).map((x) => ({
@@ -181,6 +192,7 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
     if (!q) return;
     this.mainQuill = q;
     this.attachImageHandler(q, false);
+    this.applyBioToEditorIfReady();
   }
 
   onNoteEditorInit(ev: any) {
@@ -255,5 +267,27 @@ export class MemberBioComponent implements OnInit, OnChanges, UnsavedAware {
 
   setNoteHtml(v: string) {
     this.noteHtml.set(v);
+  }
+
+  private applyBioToEditorIfReady() {
+    if (!this.mainQuill || this.pendingBioHtml === null) {
+      return;
+    }
+    const html = this.pendingBioHtml ?? '';
+    if (html) {
+      this.mainQuill.clipboard.dangerouslyPasteHTML(html, 'silent');
+    } else {
+      this.mainQuill.setText('', 'silent');
+    }
+    this.pendingBioHtml = null;
+  }
+
+  private initializeEditor() {
+    if (this.mainQuill || !this.bioEditor?.quill) {
+      return;
+    }
+    this.mainQuill = this.bioEditor.quill;
+    this.attachImageHandler(this.mainQuill, false);
+    this.applyBioToEditorIfReady();
   }
 }
