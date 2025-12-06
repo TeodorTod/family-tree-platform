@@ -249,7 +249,7 @@ floating-field.relation-section {
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
     }
 
-    &.p-button-secondary {
+    &.back-btn {
       background: transparent;
       color: var(--text-color-secondary, #6b7280);
       border-color: var(--border-color, #e1e5e9);
@@ -261,13 +261,23 @@ floating-field.relation-section {
       }
     }
 
-    &.p-button-danger {
+    &.delete-btn {
       background: #dc2626;
       border-color: #dc2626;
 
       &:hover {
         background: #b91c1c;
         border-color: #b91c1c;
+      }
+    }
+    &.save-btn {
+      background: #2d4c2f;
+      border-color: #2d4c2f;
+      color: #ffffff;
+
+      &:hover {
+        background: #21361f;
+        border-color: #21361f;
       }
     }
   }

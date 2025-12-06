@@ -29,8 +29,9 @@ import MyPreset from '../theme/mypreset';
 import { AuthInterceptor } from './features/auth/interceptors/auth.interceptor';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
-import { PRIMENG_BG } from '../assets/i18n/primeng-bg';
 import { LanguageService } from '../assets/i18n/language.service';
+import { PRIMENG_BG } from '../assets/i18n/primeng-bg';
+import { PrimeNgLanguageService } from './core/services/primeng-language.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -56,6 +57,7 @@ export const appConfig: ApplicationConfig = {
 
     provideAppInitializer(() => {
       inject(LanguageService).init();
+      inject(PrimeNgLanguageService);
       return appInitializerFactory(inject(TranslateService))();
     }),
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },

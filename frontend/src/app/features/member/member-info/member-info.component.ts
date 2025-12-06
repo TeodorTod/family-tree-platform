@@ -75,6 +75,8 @@ export class MemberInfoComponent implements OnInit {
 
   member$!: Observable<any>;
   profile$!: Observable<MemberProfile | null>;
+  private translatedRoleAuto = true;
+  private lastDefaultTranslatedRole = '';
 
   private readonly statusKeyByEnum: Record<PartnerStatus, string> = {
     [PartnerStatus.MARRIED]: CONSTANTS.PARTNER_STATUS_MARRIED,
@@ -154,6 +156,12 @@ export class MemberInfoComponent implements OnInit {
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
     this.form = this.familyService.createFamilyMemberForm();
+    this.trackTranslatedRoleChanges();
+    this.translate.onLangChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateTranslatedRoleDefaultOnLangChange();
+      });
 
     this.member$ = this.familyService.getFamilyMemberByRole(this.role).pipe(
       tap((member) => {
@@ -171,10 +179,7 @@ export class MemberInfoComponent implements OnInit {
             { emitEvent: false }
           );
           if (!this.hasConstant(this.role)) {
-            this.form.patchValue(
-              { translatedRole: this.defaultGenericForRole() },
-              { emitEvent: false }
-            );
+            this.applyDefaultTranslatedRole();
           }
           this.partnerMember = null;
           this.originalPartnerStatus = null;
@@ -187,7 +192,7 @@ export class MemberInfoComponent implements OnInit {
             isAlive: true,
             translatedRole: this.hasConstant(this.role)
               ? null
-              : this.defaultGenericForRole(),
+              : this.setDefaultTranslatedRoleSnapshot(),
             dob: null,
             birthYear: null,
             birthNote: null,
@@ -235,7 +240,7 @@ export class MemberInfoComponent implements OnInit {
               member.translatedRole ??
               (this.hasConstant(this.role)
                 ? null
-                : this.defaultGenericForRole()),
+                : this.setDefaultTranslatedRoleSnapshot()),
 
             // birth
             dob: converted.dob ?? null,
@@ -256,6 +261,8 @@ export class MemberInfoComponent implements OnInit {
           },
           { emitEvent: false }
         );
+        this.translatedRoleAuto = !member?.translatedRole;
+
         if (member.partnerId) {
           this.familyService
             .getFamilyMemberById(member.partnerId)
@@ -662,9 +669,15 @@ export class MemberInfoComponent implements OnInit {
     if (this.hasConstant(this.role)) return;
     const ctrl = this.form.get('translatedRole');
     const current = (ctrl?.value ?? '').toString().trim();
+    this.lastDefaultTranslatedRole = this.defaultGenericForRole();
+
     if (!current) {
-      ctrl?.setValue(this.defaultGenericForRole(), { emitEvent: false });
+      this.translatedRoleAuto = true;
+      ctrl?.setValue(this.lastDefaultTranslatedRole, { emitEvent: false });
+      return;
     }
+
+    this.translatedRoleAuto = current === this.lastDefaultTranslatedRole;
   }
 
   private isUnsavedAware(x: unknown): x is UnsavedAware {
@@ -737,5 +750,43 @@ export class MemberInfoComponent implements OnInit {
   }
   private childMarkSaved(ref?: TabRef<any>): void {
     ref?.markSaved?.();
+  }
+
+  private trackTranslatedRoleChanges() {
+    const ctrl = this.form.get('translatedRole');
+    ctrl?.valueChanges
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const typed = (value ?? '').toString().trim();
+        this.translatedRoleAuto =
+          !typed || typed === this.lastDefaultTranslatedRole;
+      });
+  }
+
+  private applyDefaultTranslatedRole() {
+    if (this.hasConstant(this.role)) {
+      return;
+    }
+    const ctrl = this.form.get('translatedRole');
+    if (!ctrl) {
+      return;
+    }
+    const next = this.defaultGenericForRole();
+    this.lastDefaultTranslatedRole = next;
+    ctrl.setValue(next, { emitEvent: false });
+    this.translatedRoleAuto = true;
+  }
+
+  private setDefaultTranslatedRoleSnapshot() {
+    const value = this.defaultGenericForRole();
+    this.lastDefaultTranslatedRole = value;
+    return value;
+  }
+
+  private updateTranslatedRoleDefaultOnLangChange() {
+    this.lastDefaultTranslatedRole = this.defaultGenericForRole();
+    if (!this.hasConstant(this.role) && this.translatedRoleAuto) {
+      this.applyDefaultTranslatedRole();
+    }
   }
 }

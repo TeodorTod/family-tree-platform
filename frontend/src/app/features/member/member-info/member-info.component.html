@@ -403,14 +403,14 @@
         pButton
         type="button"
         label="{{ CONSTANTS.INFO_BACK | translate }}"
-        class="p-button-secondary"
+        class="p-button back-btn"
         (click)="cancel()"
         icon="pi pi-arrow-left"
       ></button>
       <button
         pButton
         type="button"
-        class="p-button-danger"
+        class="p-button delete-btn"
         [disabled]="role === ROLES.OWNER"
         label="{{ CONSTANTS.INFO_DELETE_MEMBER | translate }}"
         (click)="confirmDelete()"
@@ -421,6 +421,7 @@
         type="submit"
         label="{{ CONSTANTS.INFO_SAVE | translate }}"
         icon="pi pi-save"
+        class="p-button save-btn"
       ></button>
     </div>
   </form>

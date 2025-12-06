@@ -29,6 +29,7 @@ export class NavbarComponent implements OnDestroy {
   private router = inject(Router);
   private translate = inject(TranslateService);
   private lang = inject(LanguageService);
+  private langSignal = this.lang.currentSignal();
   private notifications = inject(SharingNotificationsService);
   private currentPath = signal(this.router.url || '/');
 
@@ -106,30 +107,22 @@ export class NavbarComponent implements OnDestroy {
         }
       })
     );
+
+    effect(
+      () => {
+        const lang = this.langSignal();
+        this.currentLangLabel = this.lang.nativeLabel(lang);
+        this.langItems = this.lang.availableLanguages().map((code) => ({
+          label: this.lang.nativeLabel(code),
+          icon: 'pi pi-globe',
+          command: () => this.switchLang(code),
+        }));
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   private updateLabels() {
-    // Update language items
-    const currentLang = this.lang.current();
-    this.currentLangLabel =
-      currentLang === 'bg'
-        ? this.translate.instant(CONSTANTS.COMMON_LANG_BG)
-        : this.translate.instant(CONSTANTS.COMMON_LANG_EN);
-
-    this.langItems = [
-      {
-        label: this.translate.instant(CONSTANTS.COMMON_LANG_BG),
-        icon: 'pi pi-globe',
-        command: () => this.switchLang('bg'),
-      },
-       { separator: true },
-      {
-        label: this.translate.instant(CONSTANTS.COMMON_LANG_EN),
-        icon: 'pi pi-globe',
-        command: () => this.switchLang('en'),
-      },
-    ];
-
     // Update settings items
     this.currentSettingsLabel = this.translate.instant(
       CONSTANTS.COMMON_SETTINGS

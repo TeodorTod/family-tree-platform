@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, Signal, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -25,6 +25,7 @@ export class RegisterComponent {
   router = inject(Router);
   translate = inject(TranslateService);
   lang = inject(LanguageService);
+  private langSignal = this.lang.currentSignal();
 
   destroyRef = inject(DestroyRef);
 
@@ -56,15 +57,9 @@ export class RegisterComponent {
     },
     { validators: this.passwordsMatchValidator }
   );
-  private langKeys: string[] = ['COMMON.LANG_BG', 'COMMON.LANG_EN'];
-  private langLabels = this.createLanguageLabelSignal();
-  langOptions = computed(() => {
-    const labels = this.langLabels();
-    return [
-      { label: labels['COMMON.LANG_BG'], value: 'bg' as Lang },
-      { label: labels['COMMON.LANG_EN'], value: 'en' as Lang },
-    ];
-  });
+  langOptions = this.lang
+    .availableLanguages()
+    .map((code) => ({ label: this.lang.nativeLabel(code), value: code }));
   currentLang: Lang = this.lang.current();
   rules = {
     lower: false,
@@ -83,6 +78,13 @@ export class RegisterComponent {
         this.updateRuleStates((v ?? '') as string);
       });
     this.updateRuleStates((ctrl?.value ?? '') as string);
+
+    effect(
+      () => {
+        this.currentLang = this.langSignal();
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   private updateRuleStates(v: string) {
@@ -108,23 +110,6 @@ export class RegisterComponent {
 
   switchLang(code: Lang) {
     this.lang.use(code);
-  }
-
-  private instantLabels() {
-    return this.langKeys.reduce<Record<string, string>>((acc, key) => {
-      acc[key] = this.translate.instant(key);
-      return acc;
-    }, {});
-  }
-
-  private createLanguageLabelSignal(): Signal<Record<string, string>> {
-    const initial = this.instantLabels();
-    const labels = signal(initial);
-    this.translate
-      .stream(this.langKeys)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => labels.set(value as Record<string, string>));
-    return labels.asReadonly();
   }
 
   register() {
