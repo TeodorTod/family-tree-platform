@@ -25,8 +25,12 @@
       @if (isLoggedIn()) {
       <div class="nav-desktop">
         <div class="search-infield">
+          <label class="sr-only" for="navbarSearchInput">
+            {{ CONSTANTS.SEARCH_PLACEHOLDER | translate }}
+          </label>
           <i class="pi pi-search"></i>
           <input
+            id="navbarSearchInput"
             pInputText
             type="text"
             [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate"
@@ -174,8 +178,12 @@
     @if (isLoggedIn()) {
           <!-- Mobile Search Box -->
     <div class="search-infield mobile-search">
+      <label class="sr-only" for="navbarMobileSearchInput">
+        {{ CONSTANTS.SEARCH_PLACEHOLDER | translate }}
+      </label>
       <i class="pi pi-search"></i>
       <input
+        id="navbarMobileSearchInput"
         pInputText
         type="text"
         [placeholder]="CONSTANTS.SEARCH_PLACEHOLDER | translate"
