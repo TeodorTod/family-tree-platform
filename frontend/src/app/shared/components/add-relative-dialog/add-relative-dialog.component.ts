@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  computed,
   inject,
   input,
   output,
@@ -18,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../constants/constants';
 import { FamilyService } from '../../../core/services/family.service';
 import { SharingApiService } from '../../../core/services/sharing-api.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AddRelativeFormGroup } from './add-relative-dialog.types';
 
 @Component({
@@ -42,7 +43,6 @@ export class AddRelativeDialogComponent implements OnInit {
 
   form!: AddRelativeFormGroup;
   selectedRelation = signal<string | null>(null);
-  relationOptions: { label: string; value: string }[] = [];
   CONSTANTS = CONSTANTS;
 
   private fb = inject(FormBuilder);
@@ -54,51 +54,112 @@ export class AddRelativeDialogComponent implements OnInit {
   importedOptions = signal<{ label: string; value: string; meta: { firstName?: string; lastName?: string; birthYear?: number | null; deathYear?: number | null } }[]>([]);
   showImported = signal(false);
 
-  genderOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.GENDER_MALE),
-      value: Gender.MALE,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.GENDER_FEMALE),
-      value: Gender.FEMALE,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.GENDER_OTHER),
-      value: Gender.OTHER,
-    },
-  ];
+  private genderLabels = this.createLabelSignal([
+    CONSTANTS.GENDER_MALE,
+    CONSTANTS.GENDER_FEMALE,
+    CONSTANTS.GENDER_OTHER,
+  ]);
+  genderOptions = computed(() => {
+    const labels = this.genderLabels();
+    return [
+      { label: labels[CONSTANTS.GENDER_MALE], value: Gender.MALE },
+      { label: labels[CONSTANTS.GENDER_FEMALE], value: Gender.FEMALE },
+      { label: labels[CONSTANTS.GENDER_OTHER], value: Gender.OTHER },
+    ];
+  });
 
-  // For the DOB mode dropdown
-  dobModeOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_BIRTH),
-      value: BirthDeathDateMode.EXACT,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_YEAR_ONLY),
-      value: BirthDeathDateMode.YEAR,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOB_NOTE_LABEL),
-      value: BirthDeathDateMode.NOTE,
-    },
-  ];
+  private dobLabels = this.createLabelSignal([
+    CONSTANTS.INFO_DATE_OF_BIRTH,
+    CONSTANTS.INFO_DOB_YEAR_ONLY,
+    CONSTANTS.INFO_DOB_NOTE_LABEL,
+  ]);
+  dobModeOptions = computed(() => {
+    const labels = this.dobLabels();
+    return [
+      {
+        label: labels[CONSTANTS.INFO_DATE_OF_BIRTH],
+        value: BirthDeathDateMode.EXACT,
+      },
+      {
+        label: labels[CONSTANTS.INFO_DOB_YEAR_ONLY],
+        value: BirthDeathDateMode.YEAR,
+      },
+      {
+        label: labels[CONSTANTS.INFO_DOB_NOTE_LABEL],
+        value: BirthDeathDateMode.NOTE,
+      },
+    ];
+  });
 
-  dodModeOptions = [
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DATE_OF_DEATH),
-      value: BirthDeathDateMode.EXACT,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOD_YEAR_ONLY),
-      value: BirthDeathDateMode.YEAR,
-    },
-    {
-      label: this.translate.instant(CONSTANTS.INFO_DOD_NOTE_LABEL),
-      value: BirthDeathDateMode.NOTE,
-    },
-  ];
+  private dodLabels = this.createLabelSignal([
+    CONSTANTS.INFO_DATE_OF_DEATH,
+    CONSTANTS.INFO_DOD_YEAR_ONLY,
+    CONSTANTS.INFO_DOD_NOTE_LABEL,
+  ]);
+  dodModeOptions = computed(() => {
+    const labels = this.dodLabels();
+    return [
+      {
+        label: labels[CONSTANTS.INFO_DATE_OF_DEATH],
+        value: BirthDeathDateMode.EXACT,
+      },
+      {
+        label: labels[CONSTANTS.INFO_DOD_YEAR_ONLY],
+        value: BirthDeathDateMode.YEAR,
+      },
+      {
+        label: labels[CONSTANTS.INFO_DOD_NOTE_LABEL],
+        value: BirthDeathDateMode.NOTE,
+      },
+    ];
+  });
+
+  private relationLabels = this.createLabelSignal([
+    CONSTANTS.RELATION_MOTHER,
+    CONSTANTS.RELATION_FATHER,
+    CONSTANTS.RELATION_BROTHER,
+    CONSTANTS.RELATION_SISTER,
+    CONSTANTS.RELATION_PARTNER,
+    CONSTANTS.RELATION_SON,
+    CONSTANTS.RELATION_DAUGHTER,
+  ]);
+  relationOptions = computed(() => {
+    const labels = this.relationLabels();
+    const role = this.baseMember()?.role ?? '';
+    const isDeepOrLateral =
+      role.includes('_sister___') || role.includes('_brother___');
+    const options = [
+      {
+        label: labels[CONSTANTS.RELATION_MOTHER],
+        value: 'mother',
+      },
+      {
+        label: labels[CONSTANTS.RELATION_FATHER],
+        value: 'father',
+      },
+      {
+        label: labels[CONSTANTS.RELATION_BROTHER],
+        value: 'brother',
+      },
+      {
+        label: labels[CONSTANTS.RELATION_SISTER],
+        value: 'sister',
+      },
+      {
+        label: labels[CONSTANTS.RELATION_PARTNER],
+        value: 'partner',
+      },
+      { label: labels[CONSTANTS.RELATION_SON], value: 'son' },
+      {
+        label: labels[CONSTANTS.RELATION_DAUGHTER],
+        value: 'daughter',
+      },
+    ];
+    return options.filter(
+      (opt) =>
+        !(isDeepOrLateral && (opt.value === 'mother' || opt.value === 'father'))
+    );
+  });
 
   ngOnInit(): void {
     const initialClonedId = this.clonedMemberId();
@@ -136,56 +197,6 @@ export class AddRelativeDialogComponent implements OnInit {
       });
       return;
     }
-    const role = this.baseMember()?.role ?? '';
-    const isDeepOrLateral =
-      role.includes('_sister___') || role.includes('_brother___');
-
-    this.relationOptions = [
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_MOTHER),
-        value: 'mother',
-      },
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_FATHER),
-        value: 'father',
-      },
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_BROTHER),
-        value: 'brother',
-      },
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_SISTER),
-        value: 'sister',
-      },
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_PARTNER),
-        value: 'partner',
-      },
-      { label: this.translate.instant(CONSTANTS.RELATION_SON), value: 'son' },
-      {
-        label: this.translate.instant(CONSTANTS.RELATION_DAUGHTER),
-        value: 'daughter',
-      },
-    ].filter(
-      (opt) =>
-        !(isDeepOrLateral && (opt.value === 'mother' || opt.value === 'father'))
-    );
-
-    this.genderOptions = [
-      {
-        label: this.translate.instant(CONSTANTS.GENDER_MALE),
-        value: Gender.MALE,
-      },
-      {
-        label: this.translate.instant(CONSTANTS.GENDER_FEMALE),
-        value: Gender.FEMALE,
-      },
-      {
-        label: this.translate.instant(CONSTANTS.GENDER_OTHER),
-        value: Gender.OTHER,
-      },
-    ];
-
     // Prefill defaults
     this.form.patchValue(
       {
@@ -223,6 +234,12 @@ export class AddRelativeDialogComponent implements OnInit {
 
   onCancel() {
     this.close.emit();
+  }
+
+  onVisibleChange(next: boolean) {
+    if (!next) {
+      this.onCancel();
+    }
   }
 
   onSave() {
@@ -282,5 +299,22 @@ export class AddRelativeDialogComponent implements OnInit {
       useImported: this.fb.nonNullable.control(!!initialClonedId),
       importedId: new FormControl<string | null>(initialClonedId ?? null),
     });
+  }
+
+  private createLabelSignal(keys: string[]) {
+    const initial = this.instantLabelRecord(keys);
+    const labels = signal(initial);
+    this.translate
+      .stream(keys)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => labels.set(value as Record<string, string>));
+    return labels.asReadonly();
+  }
+
+  private instantLabelRecord(keys: string[]) {
+    return keys.reduce<Record<string, string>>((acc, key) => {
+      acc[key] = this.translate.instant(key);
+      return acc;
+    }, {});
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Signal, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -56,10 +56,15 @@ export class RegisterComponent {
     },
     { validators: this.passwordsMatchValidator }
   );
-  langOptions = [
-    { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' as Lang },
-    { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' as Lang },
-  ];
+  private langKeys: string[] = ['COMMON.LANG_BG', 'COMMON.LANG_EN'];
+  private langLabels = this.createLanguageLabelSignal();
+  langOptions = computed(() => {
+    const labels = this.langLabels();
+    return [
+      { label: labels['COMMON.LANG_BG'], value: 'bg' as Lang },
+      { label: labels['COMMON.LANG_EN'], value: 'en' as Lang },
+    ];
+  });
   currentLang: Lang = this.lang.current();
   rules = {
     lower: false,
@@ -103,10 +108,23 @@ export class RegisterComponent {
 
   switchLang(code: Lang) {
     this.lang.use(code);
-    this.langOptions = [
-      { label: this.translate.instant('COMMON.LANG_BG'), value: 'bg' },
-      { label: this.translate.instant('COMMON.LANG_EN'), value: 'en' },
-    ];
+  }
+
+  private instantLabels() {
+    return this.langKeys.reduce<Record<string, string>>((acc, key) => {
+      acc[key] = this.translate.instant(key);
+      return acc;
+    }, {});
+  }
+
+  private createLanguageLabelSignal(): Signal<Record<string, string>> {
+    const initial = this.instantLabels();
+    const labels = signal(initial);
+    this.translate
+      .stream(this.langKeys)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => labels.set(value as Record<string, string>));
+    return labels.asReadonly();
   }
 
   register() {

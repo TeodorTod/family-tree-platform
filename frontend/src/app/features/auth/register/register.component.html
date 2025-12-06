@@ -18,7 +18,7 @@
           CONSTANTS.COMMON_LANGUAGE | translate
         }}</span>
         <p-select
-          [options]="langOptions"
+          [options]="langOptions()"
           [(ngModel)]="currentLang"
           (ngModelChange)="switchLang($event)"
           styleClass="lang-select"

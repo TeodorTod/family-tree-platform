@@ -3,7 +3,7 @@
   [modal]="true"
   [style]="{ width: '400px' }"
   [closable]="true"
-  (onHide)="onCancel()"
+  (visibleChange)="onVisibleChange($event)"
   [header]="CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate"
 >
   <form
@@ -29,7 +29,7 @@
     <!-- Relation -->
     <p-select
       formControlName="relation"
-      [options]="relationOptions"
+      [options]="relationOptions()"
       optionLabel="label"
       optionValue="value"
       [placeholder]="CONSTANTS.RELATION_CHOOSE_RELATION | translate"
@@ -60,7 +60,7 @@
       <p-select
         inputId="dobMode"
         formControlName="dobMode"
-        [options]="dobModeOptions"
+        [options]="dobModeOptions()"
         optionLabel="label"
         optionValue="value"
         class="w-full"
@@ -115,7 +115,7 @@
         <p-select
           inputId="dodMode"
           formControlName="dodMode"
-          [options]="dodModeOptions"
+          [options]="dodModeOptions()"
           optionLabel="label"
           optionValue="value"
           class="w-full"
