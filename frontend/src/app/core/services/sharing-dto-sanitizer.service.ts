@@ -23,7 +23,7 @@ export interface SanitizedShareTargetDto {
 
 export interface SanitizedShareRequestDto {
   id: string;
-  status: ShareRequestStatus | string;
+  status: ShareRequestStatus;
   target: SanitizedShareTargetDto;
 }
 
@@ -39,8 +39,8 @@ export class SharingDtoSanitizerService {
       .filter((req): req is SanitizedShareRequestDto => req !== null);
   }
 
-  private transformRequest(item: ShareRequestDto | null | undefined): SanitizedShareRequestDto | null {
-    if (!item) {
+  private transformRequest(item: unknown): SanitizedShareRequestDto | null {
+    if (!this.isShareRequestDto(item)) {
       return null;
     }
 
@@ -60,6 +60,18 @@ export class SharingDtoSanitizerService {
     return { id, status, target };
   }
 
+  private isShareRequestDto(value: unknown): value is ShareRequestDto {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const dto = value as Record<string, unknown>;
+    const target = dto['target'];
+    if (target && (typeof target !== 'object' || Array.isArray(target))) {
+      return false;
+    }
+    return true;
+  }
+
   private sanitizeId(value: unknown): string | null {
     if (typeof value !== 'string') {
       return null;
@@ -68,7 +80,7 @@ export class SharingDtoSanitizerService {
     return trimmed.length ? trimmed : null;
   }
 
-  private sanitizeStatus(value: unknown): ShareRequestStatus | string {
+  private sanitizeStatus(value: unknown): ShareRequestStatus {
     if (
       value === ShareRequestStatus.Pending ||
       value === ShareRequestStatus.Approved ||
@@ -76,9 +88,19 @@ export class SharingDtoSanitizerService {
     ) {
       return value;
     }
+
     if (typeof value === 'string') {
-      return value.trim();
+      const normalized = value.trim().toUpperCase();
+      switch (normalized) {
+        case ShareRequestStatus.Pending:
+          return ShareRequestStatus.Pending;
+        case ShareRequestStatus.Approved:
+          return ShareRequestStatus.Approved;
+        case ShareRequestStatus.Rejected:
+          return ShareRequestStatus.Rejected;
+      }
     }
+
     return ShareRequestStatus.Pending;
   }
 
