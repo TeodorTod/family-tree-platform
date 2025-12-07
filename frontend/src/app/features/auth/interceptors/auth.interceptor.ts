@@ -9,16 +9,18 @@ import {
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { TokenStorageService } from '../services/token-storage.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private router = inject(Router);
+  private tokenStorage = inject(TokenStorageService);
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('token');
+    const token = this.tokenStorage.getToken();
 
     const authReq = token
       ? req.clone({
@@ -31,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(authReq).pipe(
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 401) {
-          localStorage.removeItem('token');
+          this.tokenStorage.clear();
 
           this.router.navigate(['/auth/login']);
         }

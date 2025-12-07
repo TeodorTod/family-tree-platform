@@ -65,8 +65,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const token = new URLSearchParams(window.location.search).get('token');
     if (token) {
-      localStorage.setItem('token', token);
-      this.auth.getTokenSignal().set(token);
+      this.auth.setToken(token);
       const pendingLang = sessionStorage.getItem(
         this.pendingLangKey
       ) as Lang | null;

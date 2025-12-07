@@ -6,12 +6,14 @@ import { LoginResponse } from '../../../shared/models/login-response.model';
 import { RegisterRequest } from '../../../shared/models/register-request.model';
 import { Lang } from '../../../shared/types/lang.type';
 import { AuthUser } from '../../../shared/models/user.model';
+import { TokenStorageService } from './token-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private tokenStorage = inject(TokenStorageService);
 
-  private token = signal<string | null>(localStorage.getItem('token'));
+  private token = signal<string | null>(this.tokenStorage.getToken());
   private profileRefresh$ = new Subject<void>();
 
   login(
@@ -40,10 +42,8 @@ export class AuthService {
 
       .pipe(
         tap((res) => {
-          const lang = (res.user?.language as Lang | undefined) ?? 'bg';
-          localStorage.setItem('lang', lang);
           this.token.set(res.access_token);
-          localStorage.setItem('token', res.access_token);
+          this.tokenStorage.setToken(res.access_token);
         })
       );
   }
@@ -78,7 +78,7 @@ export class AuthService {
 
   logout() {
     this.token.set(null);
-    localStorage.removeItem('token');
+    this.tokenStorage.clear();
   }
 
   getTokenSignal() {
@@ -113,5 +113,10 @@ export class AuthService {
 
   refreshProfile() {
     this.profileRefresh$.next();
+  }
+
+  setToken(token: string | null) {
+    this.token.set(token);
+    this.tokenStorage.setToken(token);
   }
 }

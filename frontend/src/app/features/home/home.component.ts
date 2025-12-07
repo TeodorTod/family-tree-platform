@@ -67,7 +67,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   showPhotoPickerDialog = signal(false);
   showBackgroundDialog = signal(false);
   showTableView = signal(false);
-  circleSizeValue = 60;
+  circleSizeValue = 80;
   circleSize = signal(this.circleSizeValue);
   exportMode = signal(false);
   exportDataUrl = signal<string | null>(null);
@@ -168,7 +168,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         window.innerWidth || 0,
         this.cyRef?.nativeElement?.clientWidth || 0
       );
-      const next = w <= 1024 ? 30 : 60;
+      const next = w <= 1024 ? 30 : 80;
 
       if (this.circleSizeValue === next) return;
 
@@ -530,7 +530,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    const partnerGap = Math.max(this.circleSize(), 60);
+    const partnerGap = Math.max(this.circleSize(), 80);
     const pairs = this.collectPartnerPairs(members);
     this.lastPairs = pairs;
 

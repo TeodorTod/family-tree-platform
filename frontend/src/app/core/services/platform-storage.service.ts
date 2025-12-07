@@ -19,6 +19,34 @@ export class PlatformStorageService {
     window.localStorage.setItem(key, value);
   }
 
+  removeItem(key: string) {
+    if (!this.isBrowserEnvironment()) {
+      return;
+    }
+    window.localStorage.removeItem(key);
+  }
+
+  getSessionItem(key: string, fallback: string | null = null) {
+    if (!this.isBrowserEnvironment()) {
+      return fallback;
+    }
+    return window.sessionStorage.getItem(key) ?? fallback;
+  }
+
+  setSessionItem(key: string, value: string) {
+    if (!this.isBrowserEnvironment()) {
+      return;
+    }
+    window.sessionStorage.setItem(key, value);
+  }
+
+  removeSessionItem(key: string) {
+    if (!this.isBrowserEnvironment()) {
+      return;
+    }
+    window.sessionStorage.removeItem(key);
+  }
+
   matchMedia(query: string, fallback = false) {
     if (!this.isBrowserEnvironment()) {
       return fallback;
