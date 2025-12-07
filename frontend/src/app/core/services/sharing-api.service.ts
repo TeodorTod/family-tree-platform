@@ -2,9 +2,10 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 import {
   SanitizedShareRequestDto,
+  ShareRequestDto,
   SharingDtoSanitizerService,
 } from './sharing-dto-sanitizer.service';
 
@@ -32,6 +33,11 @@ export interface UpsertMemberConsentDto {
   allowDetails: boolean;
 }
 
+export interface MemberConsentDto extends UpsertMemberConsentDto {
+  firstName: string;
+  lastName: string;
+}
+
 export interface CreateShareRequestDto {
   targetMemberId: string;
   message?: string;
@@ -48,6 +54,16 @@ export class SharingApiService {
   private http = inject(HttpClient);
   private api = environment.apiUrl;
   private sanitizer = inject(SharingDtoSanitizerService);
+  private readonly mySettingsSignal = signal<UpdateUserSettingsDto | null>(null);
+  readonly mySettings = this.mySettingsSignal.asReadonly();
+  private readonly myMembersConsentSignal = signal<MemberConsentDto[]>([]);
+  readonly myMembersConsent = this.myMembersConsentSignal.asReadonly();
+  private readonly outgoingRequestsSignal = signal<SanitizedShareRequestDto[]>([]);
+  readonly outgoingRequests = this.outgoingRequestsSignal.asReadonly();
+  private readonly incomingRequestsSignal = signal<SanitizedShareRequestDto[]>([]);
+  readonly incomingRequests = this.incomingRequestsSignal.asReadonly();
+  private readonly requestCountersSignal = signal<ShareRequestCounters | null>(null);
+  readonly requestCounters = this.requestCountersSignal.asReadonly();
 
   searchDeceased(q?: string, page = 0, size = 20) {
     const params: any = {};
@@ -58,15 +74,21 @@ export class SharingApiService {
   }
 
   getMySettings() {
-    return this.http.get<UpdateUserSettingsDto>(`${this.api}/sharing/my-settings`);
+    return this.http.get<UpdateUserSettingsDto>(`${this.api}/sharing/my-settings`).pipe(
+      tap((settings) => this.mySettingsSignal.set(settings)),
+    );
   }
 
   updateMySettings(dto: UpdateUserSettingsDto) {
-    return this.http.put<UpdateUserSettingsDto>(`${this.api}/sharing/my-settings`, dto);
+    return this.http.put<UpdateUserSettingsDto>(`${this.api}/sharing/my-settings`, dto).pipe(
+      tap((settings) => this.mySettingsSignal.set(settings)),
+    );
   }
 
   getMyMembersConsent() {
-    return this.http.get<({ memberId: string; firstName: string; lastName: string } & UpsertMemberConsentDto)[]>(`${this.api}/sharing/my-members-consent`);
+    return this.http
+      .get<MemberConsentDto[]>(`${this.api}/sharing/my-members-consent`)
+      .pipe(tap((consents) => this.myMembersConsentSignal.set(consents)));
   }
 
   upsertMyMembersConsent(items: UpsertMemberConsentDto[]) {
@@ -78,13 +100,21 @@ export class SharingApiService {
   }
 
   getIncomingRequests() {
-    return this.http.get<any[]>(`${this.api}/sharing/requests/incoming`);
+    return this.http
+      .get<ShareRequestDto[]>(`${this.api}/sharing/requests/incoming`)
+      .pipe(
+        map((res) => this.sanitizer.sanitizeRequests(res)),
+        tap((requests) => this.incomingRequestsSignal.set(requests)),
+      );
   }
 
   getOutgoingRequests() {
     return this.http
-      .get<any[]>(`${this.api}/sharing/requests/outgoing`)
-      .pipe(map((res) => this.sanitizer.sanitizeApprovedRequests(res)));
+      .get<ShareRequestDto[]>(`${this.api}/sharing/requests/outgoing`)
+      .pipe(
+        map((res) => this.sanitizer.sanitizeRequests(res)),
+        tap((requests) => this.outgoingRequestsSignal.set(requests)),
+      );
   }
 
   decideRequest(id: string, status: 'APPROVED' | 'REJECTED') {
@@ -104,6 +134,8 @@ export class SharingApiService {
   }
 
   getRequestCounters() {
-    return this.http.get<ShareRequestCounters>(`${this.api}/sharing/requests/counters`);
+    return this.http.get<ShareRequestCounters>(`${this.api}/sharing/requests/counters`).pipe(
+      tap((counters) => this.requestCountersSignal.set(counters)),
+    );
   }
 }

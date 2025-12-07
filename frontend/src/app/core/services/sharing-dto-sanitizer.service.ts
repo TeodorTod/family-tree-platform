@@ -1,6 +1,19 @@
 import { Injectable } from '@angular/core';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
 
+export interface ShareRequestTargetDto {
+  firstName?: string | null;
+  lastName?: string | null;
+  birthYear?: number | string | null;
+  deathYear?: number | string | null;
+}
+
+export interface ShareRequestDto {
+  id?: string | null;
+  status?: ShareRequestStatus | string | null;
+  target?: ShareRequestTargetDto | null;
+}
+
 export interface SanitizedShareTargetDto {
   firstName: string | null;
   lastName: string | null;
@@ -16,7 +29,7 @@ export interface SanitizedShareRequestDto {
 
 @Injectable({ providedIn: 'root' })
 export class SharingDtoSanitizerService {
-  sanitizeApprovedRequests(payload: unknown): SanitizedShareRequestDto[] {
+  sanitizeRequests(payload: ShareRequestDto[] | unknown): SanitizedShareRequestDto[] {
     if (!Array.isArray(payload)) {
       return [];
     }
@@ -26,18 +39,22 @@ export class SharingDtoSanitizerService {
       .filter((req): req is SanitizedShareRequestDto => req !== null);
   }
 
-  private transformRequest(item: any): SanitizedShareRequestDto | null {
-    const id = this.sanitizeId(item?.id);
+  private transformRequest(item: ShareRequestDto | null | undefined): SanitizedShareRequestDto | null {
+    if (!item) {
+      return null;
+    }
+
+    const id = this.sanitizeId(item.id);
     if (!id) {
       return null;
     }
 
-    const status = this.sanitizeStatus(item?.status);
+    const status = this.sanitizeStatus(item.status);
     const target = {
-      firstName: this.sanitizeText(item?.target?.firstName),
-      lastName: this.sanitizeText(item?.target?.lastName),
-      birthYear: this.sanitizeYear(item?.target?.birthYear),
-      deathYear: this.sanitizeYear(item?.target?.deathYear),
+      firstName: this.sanitizeText(item.target?.firstName),
+      lastName: this.sanitizeText(item.target?.lastName),
+      birthYear: this.sanitizeYear(item.target?.birthYear),
+      deathYear: this.sanitizeYear(item.target?.deathYear),
     };
 
     return { id, status, target };
