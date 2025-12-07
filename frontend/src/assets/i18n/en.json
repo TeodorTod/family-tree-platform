@@ -643,7 +643,9 @@
     "CONFIRM_APPROVE_TITLE": "Confirm Approval",
     "CONFIRM_APPROVE_MESSAGE": "Are you sure you want to approve access to {{target}}?",
     "CONFIRM_REJECT_TITLE": "Confirm Rejection",
-    "CONFIRM_REJECT_MESSAGE": "Are you sure you want to reject the request for {{target}}?"
+    "CONFIRM_REJECT_MESSAGE": "Are you sure you want to reject the request for {{target}}?",
+    "CONFIRM_IMPORT_TITLE": "Use shared relative data?",
+    "CONFIRM_IMPORT_MESSAGE": "We sanitize shared details before importing them into your tree. Confirm to copy the person shown below."
   },
   "ONBOARDING": {
     "SUBSCRIPTION": {

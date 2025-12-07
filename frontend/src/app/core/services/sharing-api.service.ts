@@ -2,6 +2,11 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
+import { map } from 'rxjs';
+import {
+  SanitizedShareRequestDto,
+  SharingDtoSanitizerService,
+} from './sharing-dto-sanitizer.service';
 
 export interface SearchResultDto {
   id: string;
@@ -42,6 +47,7 @@ export interface ShareRequestCounters {
 export class SharingApiService {
   private http = inject(HttpClient);
   private api = environment.apiUrl;
+  private sanitizer = inject(SharingDtoSanitizerService);
 
   searchDeceased(q?: string, page = 0, size = 20) {
     const params: any = {};
@@ -76,7 +82,9 @@ export class SharingApiService {
   }
 
   getOutgoingRequests() {
-    return this.http.get<any[]>(`${this.api}/sharing/requests/outgoing`);
+    return this.http
+      .get<any[]>(`${this.api}/sharing/requests/outgoing`)
+      .pipe(map((res) => this.sanitizer.sanitizeApprovedRequests(res)));
   }
 
   decideRequest(id: string, status: 'APPROVED' | 'REJECTED') {

@@ -19,8 +19,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../constants/constants';
 import { FamilyService } from '../../../core/services/family.service';
 import { SharingApiService } from '../../../core/services/sharing-api.service';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { AddRelativeFormGroup } from './add-relative-dialog.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  AddRelativeFormGroup,
+  AddRelativeImportedOption,
+} from './add-relative-dialog.types';
+import { ShareRequestStatus } from '../../enums/share-request-status.enum';
 
 @Component({
   selector: 'app-add-relative-dialog',
@@ -51,7 +55,7 @@ export class AddRelativeDialogComponent implements OnInit {
   private family = inject(FamilyService);
   private sharing = inject(SharingApiService);
   private destroyRef = inject(DestroyRef);
-  importedOptions = signal<{ label: string; value: string; meta: { firstName?: string; lastName?: string; birthYear?: number | null; deathYear?: number | null } }[]>([]);
+  importedOptions = signal<AddRelativeImportedOption[]>([]);
   showImported = signal(false);
 
   private genderLabels = this.createLabelSignal([
@@ -165,7 +169,9 @@ export class AddRelativeDialogComponent implements OnInit {
     const initialClonedId = this.clonedMemberId();
     this.form = this.buildForm(initialClonedId);
     this.showImported.set(this.form.controls.useImported.value);
-    this.form.controls.useImported.valueChanges.subscribe((v) => this.showImported.set(!!v));
+    this.form.controls.useImported.valueChanges.subscribe((v) =>
+      this.showImported.set(!!v)
+    );
 
     this.familyService
       .onSubscriptionLimitReached()
@@ -177,14 +183,16 @@ export class AddRelativeDialogComponent implements OnInit {
       });
 
     this.sharing.getOutgoingRequests().subscribe((reqs) => {
-      const list = (reqs || [])
-        .filter((r: any) => r.status === 'APPROVED')
-        .map((r: any) => ({
-          label: `${r.target?.firstName ?? ''} ${r.target?.lastName ?? ''}`.trim(),
+      const options: AddRelativeImportedOption[] = (reqs || [])
+        .filter((r) => r.status === ShareRequestStatus.Approved)
+        .map((r) => ({
+          label: `${r.target.firstName ?? ''} ${
+            r.target.lastName ?? ''
+          }`.trim(),
           value: r.id,
-          meta: { firstName: r.target?.firstName, lastName: r.target?.lastName, birthYear: r.target?.birthYear ?? null, deathYear: r.target?.deathYear ?? null },
+          meta: r.target,
         }));
-      this.importedOptions.set(list);
+      this.importedOptions.set(options);
     });
 
     if (initialClonedId) {
@@ -266,7 +274,12 @@ export class AddRelativeDialogComponent implements OnInit {
         deathYear: dodPayload.deathYear ?? null,
         deathNote: dodPayload.deathNote ?? null,
       } as any;
-      this.saved.emit({ relation: val.relation, clonedMemberId: clonedId ?? undefined, approvedRequestId: selectedImported ?? undefined, member });
+      this.saved.emit({
+        relation: val.relation,
+        clonedMemberId: clonedId ?? undefined,
+        approvedRequestId: selectedImported ?? undefined,
+        member,
+      });
     } else {
       const dobPayload = this.familyService.buildDobPayload(this.form);
       const member: Partial<FamilyMember> = {

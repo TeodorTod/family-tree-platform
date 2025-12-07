@@ -593,7 +593,9 @@
     "CONFIRM_APPROVE_TITLE": "Потвърдете одобрението",
     "CONFIRM_APPROVE_MESSAGE": "Сигурни ли сте, че искате да одобрите достъпа до {{target}}?",
     "CONFIRM_REJECT_TITLE": "Потвърдете отказа",
-    "CONFIRM_REJECT_MESSAGE": "Сигурни ли сте, че искате да откажете заявката за {{target}}?"
+    "CONFIRM_REJECT_MESSAGE": "Сигурни ли сте, че искате да откажете заявката за {{target}}?",
+    "CONFIRM_IMPORT_TITLE": "Да използвам ли споделените данни?",
+    "CONFIRM_IMPORT_MESSAGE": "Почистихме споделената информация, преди да я добавите в дървото. Потвърдете, за да копирате показаните детайли."
   },
   "SUBSCRIPTION": {
     "PLAN_UPDATED": "Абонаментът е активиран",
