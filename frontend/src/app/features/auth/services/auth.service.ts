@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Subject, tap } from 'rxjs';
@@ -77,8 +77,7 @@ export class AuthService {
   }
 
   logout() {
-    this.token.set(null);
-    this.tokenStorage.clear();
+    this.setToken(null);
   }
 
   getTokenSignal() {
@@ -90,7 +89,7 @@ export class AuthService {
   }
 
   isLoggedInSignal() {
-    return signal(() => this.token() !== null);
+    return computed(() => this.token() !== null);
   }
 
   requestPasswordReset(email: string) {
