@@ -512,6 +512,7 @@
     "OPTIONAL": "Optional",
     "LEGAL": "Legal",
     "FOLLOW_US": "Follow us",
+    "SUPPORT_US": "Support Us",
     "FOOTER_TAGLINE": "Private, secure tools for modern family history.",
     "RIGHTS_RESERVED": "All rights reserved.",
     "PRIVACY_POLICY": "Privacy Policy",
@@ -531,7 +532,7 @@
     },
     "A": {
       "WHAT_IS_APP": "Rodostoria is a web app for building interactive family trees with media and stories.",
-      "HOW_ADD_FAMILY": "After login, you’ll follow forms in this order: You → Mother → Maternal grandparents → Father → Paternal grandparents.",
+      "HOW_ADD_FAMILY": "After login, you’ll follow forms in this order: You ? Mother ? Maternal grandparents ? Father ? Paternal grandparents.",
       "MEDIA_LIMITS": "Free plan: up to 100MB total. Paid plans increase limits depending on tier.",
       "SUBSCRIPTIONS": "We offer Free, Family+, Premium, and Lifetime. See subscription settings for details.",
       "PRIVACY": "We store data securely, use encryption, and give you control over tree visibility."
@@ -598,6 +599,35 @@
       "REFRESH_PREVIEW": "Refresh Preview",
       "PREPARING": "Preparing preview..."
     }
+  },
+  "SUPPORT": {
+    "TITLE": "Support Rodostoria",
+    "INTRO": "Rodostoria is independent and community funded. Every contribution keeps the platform human, private, and sustainable.",
+    "MISSION": "The platform is dedicated to preserving family memory and spirit, recording stories, voices, and traditions that might otherwise be forgotten.",
+    "VALUES": "We invest in research, storytelling tools, and privacy-first infrastructure so every family can protect its heritage.",
+    "DONATION_TEXT": "To help the platform grow you can make a voluntary donation of any amount — funds go directly to development, hosting, and community support.",
+    "HOW_TITLE": "Your donation helps us:",
+    "REASONS": {
+      "PRESERVE": "Digitize, organize, and protect precious family history in one secure place.",
+      "FUTURE": "Develop new storytelling features, mobile experiences, and accessibility improvements.",
+      "COMMUNITY": "Provide resources to families who need guidance on documenting their roots."
+    },
+    "CONTACT": "Email us at {{email}} to receive bank details or discuss partnership donations.",
+    "EMAIL_CTA": "Contact us about a donation",
+    "THANK_YOU": "Thank you for keeping Rodostoria alive for future generations.",
+    "DONATION_TITLE": "Make a donation",
+    "DONATION_LEAD": "Enter an amount and we will redirect you to a secure checkout hosted by Stripe.",
+    "AMOUNT_LABEL": "Custom amount",
+    "MESSAGE_LABEL": "Share a note (optional)",
+    "MESSAGE_PLACEHOLDER": "Tell us how your contribution should be used",
+    "AMOUNT_MIN": "Minimum donation is €{{value}}.",
+    "DONATION_SUBMIT": "Donate securely",
+    "DONATION_PROVIDER_NOTE": "Stripe encrypts your payment details. Rodostoria never stores card information.",
+    "DONATION_ERROR": "Unable to start the donation",
+    "STRIPE_MISSING": "Stripe is not configured yet. Please contact redacted@example.invalid.",
+    "DONATION_SUCCESS": "Donation completed successfully",
+    "DONATION_CANCELED": "Donation canceled",
+    "DONATION_RETRY": "You can try again anytime from this page."
   },
   "COOKIE_CONSENT": {
     "TITLE": "We respect your privacy",
@@ -980,3 +1010,4 @@
     }
   }
 }
+

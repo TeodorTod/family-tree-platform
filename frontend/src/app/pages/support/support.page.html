@@ -1,0 +1,111 @@
+<section class="support-page">
+  <header class="support-page__header">
+    <h1>{{ CONSTANTS.SUPPORT_TITLE | translate }}</h1>
+    <p>{{ CONSTANTS.SUPPORT_INTRO | translate }}</p>
+  </header>
+
+  <article class="support-page__card">
+    <p>{{ CONSTANTS.SUPPORT_MISSION | translate }}</p>
+    <p>{{ CONSTANTS.SUPPORT_VALUES | translate }}</p>
+    <p>{{ CONSTANTS.SUPPORT_DONATION_TEXT | translate }}</p>
+  </article>
+
+  <section class="support-page__donation">
+    <h2>{{ CONSTANTS.SUPPORT_DONATION_TITLE | translate }}</h2>
+    <p class="support-page__donation-lead">
+      {{ CONSTANTS.SUPPORT_DONATION_LEAD | translate }}
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="donate()">
+      <div class="support-page__presets">
+        @for (value of presetAmounts(); track value) {
+          <button
+            type="button"
+            class="support-page__preset"
+            [class.support-page__preset--active]="form.controls.amount.value === value"
+            (click)="selectPreset(value)"
+            [disabled]="processing()"
+          >
+            <span>{{ currencySymbol() }}{{ value }}</span>
+          </button>
+        }
+      </div>
+
+      <label class="support-page__amount">
+        <span>{{ CONSTANTS.SUPPORT_AMOUNT_LABEL | translate }}</span>
+        <div class="support-page__amount-input">
+          <span aria-hidden="true">{{ currencySymbol() }}</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            min="{{ minAmount }}"
+            step="1"
+            formControlName="amount"
+            [disabled]="processing()"
+            aria-describedby="amount-error"
+          />
+        </div>
+        @if (showAmountError()) {
+          <small id="amount-error" class="support-page__error">
+            {{ CONSTANTS.SUPPORT_AMOUNT_MIN | translate : { value: minAmount } }}
+          </small>
+        }
+      </label>
+
+      <label class="support-page__message">
+        <span>{{ CONSTANTS.SUPPORT_MESSAGE_LABEL | translate }}</span>
+        <textarea
+          pInputTextarea
+          rows="3"
+          formControlName="message"
+          [disabled]="processing()"
+          [placeholder]="CONSTANTS.SUPPORT_MESSAGE_PLACEHOLDER | translate"
+        ></textarea>
+      </label>
+
+      <button
+        type="submit"
+        pButton
+        class="support-page__submit"
+        [disabled]="processing() || form.invalid"
+      >
+        <i class="pi pi-lock" aria-hidden="true"></i>
+        <span>{{ CONSTANTS.SUPPORT_DONATION_SUBMIT | translate }}</span>
+      </button>
+
+      <p class="support-page__provider-note">
+        {{ CONSTANTS.SUPPORT_DONATION_PROVIDER_NOTE | translate }}
+      </p>
+    </form>
+  </section>
+
+  <section class="support-page__reasons">
+    <h2>{{ CONSTANTS.SUPPORT_HOW_TITLE | translate }}</h2>
+    <ul>
+      @for (reason of reasons(); track reason) {
+        <li>
+          <i class="pi pi-check" aria-hidden="true"></i>
+          <span>{{ reason | translate }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <div class="support-page__cta">
+    <p>
+      {{ CONSTANTS.SUPPORT_CONTACT | translate : { email: supportEmail } }}
+    </p>
+    <button
+      type="button"
+      pButton
+      class="support-page__cta-button"
+      icon="pi pi-envelope"
+      (click)="openDonationEmail()"
+    >
+      {{ CONSTANTS.SUPPORT_EMAIL_CTA | translate }}
+    </button>
+    <p class="support-page__thanks">
+      {{ CONSTANTS.SUPPORT_THANK_YOU | translate }}
+    </p>
+  </div>
+</section>

@@ -45,6 +45,11 @@ export const routes: Routes = [
       import('./features/faq/faq.routes').then((m) => m.default),
   },
   {
+    path: 'support',
+    loadComponent: () =>
+      import('./pages/support/support.page').then((m) => m.SupportPage),
+  },
+  {
     path: 'privacy',
     loadComponent: () =>
       import('./pages/privacy-policy/privacy-policy.page').then(

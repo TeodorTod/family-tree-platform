@@ -11,6 +11,16 @@
       <button
         pButton
         type="button"
+        icon="pi pi-heart"
+        class="p-button-rounded p-button-text my-icons"
+        pTooltip="{{ CONSTANTS.COMMON_SUPPORT_US | translate }}"
+        tooltipPosition="top"
+        [routerLink]="[CONSTANTS.ROUTES.SUPPORT]"
+        [attr.aria-label]="CONSTANTS.COMMON_SUPPORT_US | translate"
+      ></button>
+      <button
+        pButton
+        type="button"
         icon="pi pi-info-circle"
         class="p-button-rounded p-button-text my-icons"
         pTooltip="{{ CONSTANTS.COMMON_FAQ | translate }}"
