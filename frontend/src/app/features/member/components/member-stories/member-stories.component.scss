@@ -65,7 +65,7 @@
 
   // Responsive textarea sizing
   textarea {
-    min-height: 180px; // Base minimum height
+    min-height: 180px; 
     resize: vertical;
 
     @media (min-width: 768px) {
