@@ -79,12 +79,9 @@ export class RegisterComponent {
       });
     this.updateRuleStates((ctrl?.value ?? '') as string);
 
-    effect(
-      () => {
-        this.currentLang = this.langSignal();
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      this.currentLang = this.langSignal();
+    });
   }
 
   private updateRuleStates(v: string) {

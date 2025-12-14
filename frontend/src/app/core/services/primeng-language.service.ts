@@ -18,17 +18,14 @@ export class PrimeNgLanguageService {
   private langSignal = this.language.currentSignal();
 
   constructor() {
-    effect(
-      () => {
-        const lang = this.langSignal();
-        const dict = PRIMENG_MAP[lang];
-        if (!dict) {
-          return;
-        }
-        this.applyTranslation(dict);
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const lang = this.langSignal();
+      const dict = PRIMENG_MAP[lang];
+      if (!dict) {
+        return;
+      }
+      this.applyTranslation(dict);
+    });
   }
 
   private applyTranslation(dict: Partial<Translation>) {

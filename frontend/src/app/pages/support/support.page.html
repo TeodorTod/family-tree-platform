@@ -41,7 +41,6 @@
             min="{{ minAmount }}"
             step="1"
             formControlName="amount"
-            [disabled]="processing()"
             aria-describedby="amount-error"
           />
         </div>
@@ -58,7 +57,6 @@
           pInputTextarea
           rows="3"
           formControlName="message"
-          [disabled]="processing()"
           [placeholder]="CONSTANTS.SUPPORT_MESSAGE_PLACEHOLDER | translate"
         ></textarea>
       </label>

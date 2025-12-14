@@ -108,18 +108,15 @@ export class NavbarComponent implements OnDestroy {
       })
     );
 
-    effect(
-      () => {
-        const lang = this.langSignal();
-        this.currentLangLabel = this.lang.nativeLabel(lang);
-        this.langItems = this.lang.availableLanguages().map((code) => ({
-          label: this.lang.nativeLabel(code),
-          icon: 'pi pi-globe',
-          command: () => this.switchLang(code),
-        }));
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const lang = this.langSignal();
+      this.currentLangLabel = this.lang.nativeLabel(lang);
+      this.langItems = this.lang.availableLanguages().map((code) => ({
+        label: this.lang.nativeLabel(code),
+        icon: 'pi pi-globe',
+        command: () => this.switchLang(code),
+      }));
+    });
   }
 
   private updateLabels() {

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -62,6 +63,14 @@ export class SupportPage {
     CONSTANTS.SUPPORT_REASON_FUTURE,
     CONSTANTS.SUPPORT_REASON_COMMUNITY,
   ]);
+  private readonly syncFormDisabled = effect(() => {
+    const busy = this.processing();
+    if (busy) {
+      this.form.disable({ emitEvent: false });
+    } else {
+      this.form.enable({ emitEvent: false });
+    }
+  });
 
   constructor() {
     this.handleStatus(this.route.snapshot.queryParamMap.get('status'));
