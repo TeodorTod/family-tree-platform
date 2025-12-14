@@ -12,7 +12,7 @@
     "PASSWORDS_NOT_MATCH": "Passwords do not match",
     "REGISTER_FAILED": "Registration was not successful",
     "LOGIN_FAILED": "Login was not successful",
-    "NO_ACCOUNT": "Don't have an account?",
+    "NO_ACCOUNT": "Don\u0027t have an account?",
     "REGISTER_NOW": "Register now",
     "GOOGLE_LOGIN": "Login with Google",
     "SETTINGS": "Settings",
@@ -50,16 +50,16 @@
     "MEMBER_SINCE": "Member since",
     "LAST_UPDATED": "Last updated",
     "SIGNIN_METHOD": "Sign-in method",
-    "SIGNIN_METHOD_LOCAL": "Email & password",
+    "SIGNIN_METHOD_LOCAL": "Email \u0026 password",
     "SIGNIN_METHOD_GOOGLE": "Google account",
     "SAVE_PROFILE": "Save profile",
     "PROFILE_UPDATED": "Profile updated successfully.",
-    "PROFILE_UPDATE_ERROR": "We couldn't save your profile. Please try again.",
+    "PROFILE_UPDATE_ERROR": "We couldn\u0027t save your profile. Please try again.",
     "SECTION_LANGUAGE": "Language",
     "SECTION_LANGUAGE_DESC": "Select the language used across the product and in notification emails.",
     "SAVE_LANGUAGE": "Update language",
     "LANGUAGE_UPDATED": "Language preference saved.",
-    "LANGUAGE_UPDATE_ERROR": "We couldn't update your language preference. Please try again.",
+    "LANGUAGE_UPDATE_ERROR": "We couldn\u0027t update your language preference. Please try again.",
     "SECTION_SECURITY": "Security",
     "SECTION_SECURITY_DESC": "Change your password to keep your account protected.",
     "CURRENT_PASSWORD": "Current password",
@@ -67,7 +67,7 @@
     "CONFIRM_NEW_PASSWORD": "Confirm new password",
     "SAVE_PASSWORD": "Update password",
     "PASSWORD_UPDATED": "Password updated successfully.",
-    "PASSWORD_UPDATE_ERROR": "We couldn't update your password. Check the values and try again.",
+    "PASSWORD_UPDATE_ERROR": "We couldn\u0027t update your password. Check the values and try again.",
     "PASSWORD_UNAVAILABLE_TITLE": "Password managed by Google",
     "PASSWORD_UNAVAILABLE_DESC": "This account uses Google Sign-In. To change your password, update it from your Google Account.",
     "DELETE_TITLE": "Delete account",
@@ -78,7 +78,7 @@
     "DELETE_DIALOG_WARNING": "This cannot be undone. Are you sure you want to continue?",
     "DELETE_CONFIRM": "Yes, delete my account",
     "DELETE_CANCEL": "Keep account",
-    "DELETE_ERROR": "We couldn't delete your account. Please try again."
+    "DELETE_ERROR": "We couldn\u0027t delete your account. Please try again."
   },
   "PRIVACY_SETTINGS": {
     "PAGE_TITLE": "Privacy controls",
@@ -104,7 +104,7 @@
     "COOKIES_MARKETING_DESC": "Use your preferences to show relevant subscription prompts and product tips.",
     "COOKIES_SAVE": "Save preferences",
     "COOKIES_SUCCESS": "Cookie preferences saved.",
-    "COOKIES_ERROR": "We couldn't save your cookie preferences. Please try again.",
+    "COOKIES_ERROR": "We couldn\u0027t save your cookie preferences. Please try again.",
     "SHORTCUTS_EYEBROW": "Data rights",
     "SHORTCUTS_TITLE": "Need something else?",
     "SHORTCUTS_DESC": "Use the quick links below for detailed explanations or to manage advanced privacy controls.",
@@ -117,11 +117,12 @@
   "SUBSCRIPTION": {
     "PLAN_UPDATED": "Subscription activated",
     "PLAN_ACTIVE": "{{plan}} is now active.",
-    "PLAN_UPDATE_ERROR": "We couldn't update your subscription. Please try again.",
+    "PLAN_UPDATE_ERROR": "We couldn\u0027t update your subscription. Please try again.",
     "SETTINGS_TITLE": "Subscription plan",
     "CURRENT_PLAN": "Current plan",
-    "NO_PLAN": "No active plan. You're on the free tier.",
+    "NO_PLAN": "No active plan. You\u0027re on the free tier.",
     "EXPIRES_ON": "Renews on",
+    "SETTINGS_RENEWAL": "Billing renews automatically on {{date}} unless you cancel first.",
     "CHANGE_PLAN": "Explore plans",
     "LIMITS": "Free accounts can add up to 10 members and cannot upload photos or videos.",
     "PAYMENT_TITLE": "Complete your subscription",
@@ -133,18 +134,18 @@
     "PAYMENT_CARD_NAME": "Name on card",
     "PAYMENT_CARD_NUMBER": "Card number",
     "PAYMENT_EXPIRY": "Expiration",
-      "PAYMENT_CVC": "CVC",
-      "PAYMENT_SUBMIT": "Pay and activate",
-      "PAYMENT_PROVIDER_TITLE": "Secure checkout",
-      "PAYMENT_PROVIDER_NOTE": "You will be redirected to Stripe to complete your purchase. We never store your card details.",
-      "PAYMENT_PROVIDER_SECURE": "Stripe encrypts and processes your payment information.",
-      "PAYMENT_PROVIDER_SUPPORT": "Automatic receipts and support via email for every plan.",
-      "PAYMENT_REDIRECT": "Continue to secure checkout",
-      "PAYMENT_NOT_CONFIGURED": "Payments are temporarily unavailable. Please reach out to support.",
-      "PAYMENT_CANCELED": "Payment canceled",
-      "PAYMENT_RETRY": "You can try again whenever you're ready.",
-      "PAYMENT_SUCCESS": "Payment completed",
-      "PAYMENT_ERROR": "We couldn't process your payment. Please try again.",
+    "PAYMENT_CVC": "CVC",
+    "PAYMENT_SUBMIT": "Pay and activate",
+    "PAYMENT_PROVIDER_TITLE": "Secure checkout",
+    "PAYMENT_PROVIDER_NOTE": "You will be redirected to Stripe to complete your purchase. We never store your card details.",
+    "PAYMENT_PROVIDER_SECURE": "Stripe encrypts and processes your payment information.",
+    "PAYMENT_PROVIDER_SUPPORT": "Automatic receipts and support via email for every plan.",
+    "PAYMENT_REDIRECT": "Continue to secure checkout",
+    "PAYMENT_NOT_CONFIGURED": "Payments are temporarily unavailable. Please reach out to support.",
+    "PAYMENT_CANCELED": "Payment canceled",
+    "PAYMENT_RETRY": "You can try again whenever you\u0027re ready.",
+    "PAYMENT_SUCCESS": "Payment completed",
+    "PAYMENT_ERROR": "We couldn\u0027t process your payment. Please try again.",
     "PAYMENT_TERMS": "By continuing you agree to the Terms of Service and recurring billing.",
     "PAYMENT_BACK": "Back to plans",
     "LIMIT_TITLE": "Subscription required",
@@ -155,7 +156,7 @@
     "OWNER": "Your Data",
     "MOTHER": "Data for Your Mother",
     "FATHER": "Data for Your Father",
-    "FATHER_PARENTS": "Data for Your Father's Parents",
+    "FATHER_PARENTS": "Data for Your Father\u0027s Parents",
     "FIRST_NAME": "First Name",
     "MIDDLE_NAME": "Middle Name",
     "LAST_NAME": "Last Name",
@@ -166,8 +167,8 @@
     "FORWARD": "Forward",
     "BACK": "Back",
     "IS_ALIVE": "Is Alive?",
-    "MATERNAL_GRANDPARENTS": "Data for Your Mother's Parents",
-    "PATERNAL_GRANDPARENTS": "Data for Your Father's Parents",
+    "MATERNAL_GRANDPARENTS": "Data for Your Mother\u0027s Parents",
+    "PATERNAL_GRANDPARENTS": "Data for Your Father\u0027s Parents",
     "MATERNAL_GRANDMOTHER": "Data for Your Grandmother",
     "MATERNAL_GRANDFATHER": "Data for Your Grandfather",
     "SAVE": "Save",
@@ -210,8 +211,8 @@
     "SAVED": "Saved",
     "SAVE_FAILED": "Save Failed",
     "PARTNER_INFO": "Partner Information",
-    "PARTNER_FIRST_NAME": "Partner's First Name",
-    "PARTNER_LAST_NAME": "Partner's Last Name",
+    "PARTNER_FIRST_NAME": "Partner\u0027s First Name",
+    "PARTNER_LAST_NAME": "Partner\u0027s Last Name",
     "PARTNER_STATUS": "Relationship Status",
     "UNSAVED_TITLE": "Unsaved Changes",
     "UNSAVED_MESSAGE": "You have unsaved changes. Are you sure you want to leave the page?",
@@ -497,7 +498,7 @@
     "CONTACT_US": "Contact Us",
     "VALIDATION": "Validation",
     "ERROR": "Error",
-    "RECAPTCHA_FAILED": "Please verify that you're not a robot before continuing.",
+    "RECAPTCHA_FAILED": "Please verify that you\u0027re not a robot before continuing.",
     "RECAPTCHA_NOTICE": "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.",
     "NAME": "Name",
     "YEARS": "Years",
@@ -526,16 +527,26 @@
     "Q": {
       "WHAT_IS_APP": "What is Rodostoria?",
       "HOW_ADD_FAMILY": "How do I add my first relatives?",
-      "MEDIA_LIMITS": "What are the photo/video limits?",
+      "MEDIA_LIMITS": "How can I collaborate with relatives?",
       "SUBSCRIPTIONS": "What subscriptions do you offer?",
-      "PRIVACY": "How do you protect my data?"
+      "PRIVACY": "How do you protect my data?",
+      "MEMBERS_MANAGE": "How do I add, edit, or remove members later?",
+      "GLOBAL_SEARCH": "How does global search work?",
+      "SHARING_SETTINGS": "How do sharing defaults and overrides work?",
+      "SHARING_REQUESTS": "How do sharing requests work?",
+      "GDPR": "Why can I share only deceased relatives?"
     },
     "A": {
-      "WHAT_IS_APP": "Rodostoria is a web app for building interactive family trees with media and stories.",
-      "HOW_ADD_FAMILY": "After login, you’ll follow forms in this order: You ? Mother ? Maternal grandparents ? Father ? Paternal grandparents.",
-      "MEDIA_LIMITS": "Free plan: up to 100MB total. Paid plans increase limits depending on tier.",
-      "SUBSCRIPTIONS": "We offer Free, Family+, Premium, and Lifetime. See subscription settings for details.",
-      "PRIVACY": "We store data securely, use encryption, and give you control over tree visibility."
+      "WHAT_IS_APP": "Rodostoria is a privacy-first genealogy workspace that lets you capture biographies, media, and achievements for every relative. You control who can see each profile and keep everything synchronized across devices.",
+      "HOW_ADD_FAMILY": "When you create an account we guide you through the core branches: you, parents, and grandparents. After onboarding you can open any card in the tree, use the drawer to add parents, partners, or children, and enrich each tab (Stories, Media, Career, etc.) with details.",
+      "MEDIA_LIMITS": "You can invite relatives from Settings → Sharing or directly from a member card. Choose whether collaborators can only view deceased relatives or whether they can edit specific sections. Each invitation creates a consent log entry, and you can revoke access instantly from the Sharing page.",
+      "SUBSCRIPTIONS": "Rodostoria offers Starter (Free) plus paid Family+, Premium, and Lifetime tiers. Starter costs 0 EUR, supports up to 10 relatives, and keeps text tabs open while photo/video uploads stay locked. All paid plans include the same benefits—unlimited members, media uploads, advanced sharing controls, and priority support—only the billing term changes (6 months, 12 months, or 24 months). You can compare and upgrade anytime from Settings ? Subscription Plans.",
+      "PRIVACY": "All data is encrypted in transit and at rest, hosted in the EU, and backed up daily. You decide whether relatives are marked as living or deceased, who can discover them, and you can delete or export your tree at any time.",
+      "MEMBERS_MANAGE": "Open any member card from the tree or the table view, click “Edit member”, and update biographies, relationships, or media. You can re-order spouses, merge duplicates, or delete a profile (with undo confirmation) directly from the drawer. Every save is versioned so the timeline shows who changed what.",
+      "GLOBAL_SEARCH": "Global search indexes only the metadata that each owner allowed for discovery. Results show deceased relatives marked as discoverable. If you see a lock icon, you can submit a sharing request; otherwise you can import the profile into your tree with attribution.",
+      "SHARING_SETTINGS": "Go to Settings ? Sharing to define the default visibility for all deceased relatives (discovery + details) and override specific members. Each toggle writes a consent log so you can demonstrate GDPR compliance. Use the per-member table to grant exceptions for sensitive ancestors.",
+      "SHARING_REQUESTS": "From any public profile select “Request access”. The owner receives it in Sharing ? Requests where they can approve, reject, or expire the request. Approved access shows only the deceased relatives and the fields the owner allowed.",
+      "GDPR": "Rodostoria is built for GDPR. Only deceased relatives can be shared because European privacy law treats living-person data as sensitive. Living relatives stay visible only to the tree owner (and invited collaborators) so you can collaborate responsibly."
     }
   },
   "SETTINGS": {
@@ -544,19 +555,31 @@
     "PLANS_BEST": "Most popular",
     "PLANS_PRICE_PER_DAY": "/day",
     "PLANS_TOTAL": "Total: {{value}}",
-    "PLANS_NOTES": "All prices are in EUR. Per-day = total ÷ days (6m: 182, 1y: 365, 2y: 730).",
-    "PLANS_PERKS_TITLE": "Included",
-    "PLANS_PERK_FEATURES": "Full access to features",
-    "PLANS_PERK_BACKUP": "Secure cloud backup",
-    "PLANS_PERK_SUPPORT": "Priority support",
+    "PLANS_NOTES": "Starter (0 EUR) offers text-only access for up to 10 relatives. Paid plans unlock unlimited members, media uploads, and advanced sharing. Per-day = total / days (6m: 182, 1y: 365, 2y: 730).",
+    "PLANS_PERKS_TITLE": "What you get",
     "PLANS_CHOOSE": "Choose plan",
-    "PLAN_6M": "6 months",
-    "PLAN_1Y": "1 year",
-    "PLAN_2Y": "2 years"
+    "PLANS_INCLUDED": "Included",
+    "PLAN_FREE": "Starter (Free)",
+    "PLAN_FREE_DESC": "Document small family trees with full text sections and GDPR-safe storage.",
+    "PLAN_FREE_DURATION": "Always-on, text-only workspace",
+    "PLAN_FREE.FEATURE_MEMBERS": "Up to 10 relatives in your tree",
+    "PLAN_FREE.FEATURE_SECTIONS": "General info, Biography, Stories, Achievements, Favorites, Personal tabs available",
+    "PLAN_FREE.FEATURE_NO_MEDIA": "Photo/video uploads disabled (text-only)",
+    "PLAN_FREE.FEATURE_SECURITY": "Hosted in the EU with GDPR-compliant retention",
+    "PLAN_6M": "Family+ (6 months)",
+    "PLAN_6M_DESC": "Full Rodostoria toolkit billed every 6 months.",
+    "PLAN_PAID.FEATURE_MEMBERS": "Unlimited members and full editing access",
+    "PLAN_PAID.FEATURE_MEDIA": "Photo/video uploads plus all media tools unlocked",
+    "PLAN_PAID.FEATURE_SHARING": "Advanced sharing approvals with GDPR logging",
+    "PLAN_PAID.FEATURE_SUPPORT": "Priority support and roadmap updates",
+    "PLAN_1Y": "Premium (1 year)",
+    "PLAN_1Y_DESC": "Full Rodostoria toolkit billed annually.",
+    "PLAN_2Y": "Lifetime (2 years)",
+    "PLAN_2Y_DESC": "Full Rodostoria toolkit billed every two years (best value)."
   },
   "CONTACT": {
     "TITLE": "Contact Us",
-    "SUBTITLE": "Send us a message - we'll get back to you as soon as possible.",
+    "SUBTITLE": "Send us a message - we\u0027ll get back to you as soon as possible.",
     "CHAR_REMAINING": "characters remaining",
     "CARD": {
       "EMAIL": "Support Email",
@@ -584,7 +607,7 @@
     },
     "TOPICS": {
       "SUPPORT": "Technical Support",
-      "BILLING": "Billing & Subscriptions",
+      "BILLING": "Billing \u0026 Subscriptions",
       "SUGGESTION": "Feature Suggestion",
       "OTHER": "Other"
     }
@@ -766,7 +789,7 @@
           ],
           "BULLETS": [
             "Account and contact data: name, email, password hashes, preferred language, billing information for paid plans, and audit timestamps.",
-            "Family-tree content: relatives' names, relationships, dates, life stories, documents, audio notes, photos, videos, and tagging metadata that you add manually or import.",
+            "Family-tree content: relatives\u0027 names, relationships, dates, life stories, documents, audio notes, photos, videos, and tagging metadata that you add manually or import.",
             "Visibility choices: whether a relative is marked as living or deceased, the sharing scopes you enable, invitations you send, and consent logs.",
             "Support and communication data: messages you send to support, survey responses, troubleshooting logs, or call recordings when you opt in.",
             "Sign-in integrations: tokens we receive from Google or other identity providers when you choose federated login.",
@@ -816,7 +839,7 @@
             "When you grant another user access you confirm that you obtained consent from the living individuals (or their guardians) whose data you expose. Deceased relatives can be shared to support research, but you decide which fields are visible."
           ],
           "BULLETS": [
-            "Manage per-relative visibility from Settings > Privacy or directly from the member drawer.",
+            "Manage per-relative visibility from Settings \u003e Privacy or directly from the member drawer.",
             "Disable Smart Matches, Record Matches, and discovery of deceased relatives at any time.",
             "Use the download and delete tools to retrieve or permanently erase your trees, including data shared with other profiles."
           ]
@@ -930,84 +953,463 @@
         }
       },
       "COOKIE_TABLE": [
-        { "NAME": "__cf_bm", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Vimeo", "DURATION": "30 minutes" },
-        { "NAME": "__cfduid", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Cloudflare", "DURATION": "30 days" },
-        { "NAME": "__Secure-1PSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
-        { "NAME": "__Secure-1PSIDCC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
-        { "NAME": "__Secure-3PSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
-        { "NAME": "__Secure-3PSIDCC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Up to 2 years" },
-        { "NAME": "__stripe_mid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "1 year" },
-        { "NAME": "__stripe_sid", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "Stripe", "DURATION": "30 minutes" },
-        { "NAME": "_cfuvid", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Vimeo", "DURATION": "Session" },
-        { "NAME": "AccessibilityMenuOpened", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Rodostoria", "DURATION": "6 hours" },
-        { "NAME": "AEC", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
-        { "NAME": "NID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "6 months" },
-        { "NAME": "archived_request", "PURPOSE": "Used to read and filter requests from bots.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
-        { "NAME": "aweb-runtime-context", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 year" },
-        { "NAME": "AWSALB", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
-        { "NAME": "AWSALBCORS", "PURPOSE": "Enables the accessibility functionality.", "PROVIDER": "Allyable", "DURATION": "1 week" },
-        { "NAME": "cdn_bluesnap_700000_ka_ck", "PURPOSE": "Used to prevent credit card fraud.", "PROVIDER": "BlueSnap", "DURATION": "Session" },
-        { "NAME": "cookiePreferences", "PURPOSE": "Stores the consent state you selected.", "PROVIDER": "Rodostoria", "DURATION": "2 years" },
-        { "NAME": "data8", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "data8p2", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "data8pl", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "device_id", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "lid", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "loginEmail", "PURPOSE": "Used for authentication.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "data9", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "dserp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "dstaun", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "DMatchesPageSize", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
-        { "NAME": "download_ftb_started", "PURPOSE": "Enables file downloads.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "formMode", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "ftp", "PURPOSE": "Enables file uploads.", "PROVIDER": "Rodostoria", "DURATION": "2 days" },
-        { "NAME": "G_AUTHUSER_H", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
-        { "NAME": "G_ENABLED_IDPS", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
-        { "NAME": "g_state", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "Persistent" },
-        { "NAME": "HSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
-        { "NAME": "SSID", "PURPOSE": "Set when you sign up or log in with your Google account.", "PROVIDER": "Google", "DURATION": "2 years" },
-        { "NAME": "is_embed", "PURPOSE": "Supports the mobile and embedded experience.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "isMember", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "was-ever-member", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "WebmasterInFamilyPages", "PURPOSE": "Determines user type.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "just_logged_out", "PURPOSE": "Coordinates login and logout status.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "lang", "PURPOSE": "Preserves the selected language.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "LastVisitedFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "LastVisitedMyFamilySite", "PURPOSE": "Routes you to the correct family site.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "LastVisitedSites", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "LVTS", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "mhc_version", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "rpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "lelid", "PURPOSE": "Supports library mode usage.", "PROVIDER": "Rodostoria", "DURATION": "12 hours" },
-        { "NAME": "lels", "PURPOSE": "Supports library mode usage.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "loginRequired", "PURPOSE": "Provides support functionality to users.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "MyHeritageAppIntro", "PURPOSE": "Ensures the correct user experience.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "nd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "2 days" },
-        { "NAME": "ndd", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "nlbi_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
-        { "NAME": "incap_ses_*", "PURPOSE": "Provides a secure site.", "PROVIDER": "Imperva", "DURATION": "Session" },
-        { "NAME": "perm_id", "PURPOSE": "Required for site maintenance.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "PHPSESSID", "PURPOSE": "Used for authentication.", "PROVIDER": "PHP", "DURATION": "Session" },
-        { "NAME": "psa", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "results-ad-hoc-rmsb", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
-        { "NAME": "rmrpp", "PURPOSE": "Stores user preferences.", "PROVIDER": "Rodostoria", "DURATION": "1 hour" },
-        { "NAME": "search_results_info", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "suggestedRelativesPageInformation", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "10 minutes" },
-        { "NAME": "underAgedOnSignup", "PURPOSE": "Prevents registration by minors.", "PROVIDER": "Rodostoria", "DURATION": "1 week" },
-        { "NAME": "user_encryption_key", "PURPOSE": "Provides security protections.", "PROVIDER": "Rodostoria", "DURATION": "Session" },
-        { "NAME": "userTimezone", "PURPOSE": "Saves the current browser time zone.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "uuid", "PURPOSE": "Improves site performance.", "PROVIDER": "Rodostoria", "DURATION": "1 year" },
-        { "NAME": "visid_incap_*", "PURPOSE": "Filters out malicious requests.", "PROVIDER": "Imperva", "DURATION": "1 year" },
-        { "NAME": "wp-wpml_current_language", "PURPOSE": "Preserves language preferences.", "PROVIDER": "WordPress", "DURATION": "Session" },
-        { "NAME": "isBlockedByRateLimit", "PURPOSE": "Provides a secure site.", "PROVIDER": "Rodostoria", "DURATION": "24 hours" },
-        { "NAME": "TurnOnAutoRenewDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
-        { "NAME": "TurnOnAutoRenewGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" },
-        { "NAME": "ExtendSubscriptionDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
-        { "NAME": "ExtendSubscriptionGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" },
-        { "NAME": "UpgradeOfferDailyVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "1 day" },
-        { "NAME": "UpgradeOfferGeneralVisits", "PURPOSE": "Controls basic site functions.", "PROVIDER": "Rodostoria", "DURATION": "30 days" }
+        {
+          "NAME": "__cf_bm",
+          "PURPOSE": "Used to read and filter requests from bots.",
+          "PROVIDER": "Vimeo",
+          "DURATION": "30 minutes"
+        },
+        {
+          "NAME": "__cfduid",
+          "PURPOSE": "Used to read and filter requests from bots.",
+          "PROVIDER": "Cloudflare",
+          "DURATION": "30 days"
+        },
+        {
+          "NAME": "__Secure-1PSID",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Up to 2 years"
+        },
+        {
+          "NAME": "__Secure-1PSIDCC",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Up to 2 years"
+        },
+        {
+          "NAME": "__Secure-3PSID",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Up to 2 years"
+        },
+        {
+          "NAME": "__Secure-3PSIDCC",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Up to 2 years"
+        },
+        {
+          "NAME": "__stripe_mid",
+          "PURPOSE": "Used to prevent credit card fraud.",
+          "PROVIDER": "Stripe",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "__stripe_sid",
+          "PURPOSE": "Used to prevent credit card fraud.",
+          "PROVIDER": "Stripe",
+          "DURATION": "30 minutes"
+        },
+        {
+          "NAME": "_cfuvid",
+          "PURPOSE": "Used to read and filter requests from bots.",
+          "PROVIDER": "Vimeo",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "AccessibilityMenuOpened",
+          "PURPOSE": "Enables the accessibility functionality.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "6 hours"
+        },
+        {
+          "NAME": "AEC",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "6 months"
+        },
+        {
+          "NAME": "NID",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "6 months"
+        },
+        {
+          "NAME": "archived_request",
+          "PURPOSE": "Used to read and filter requests from bots.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 hour"
+        },
+        {
+          "NAME": "aweb-runtime-context",
+          "PURPOSE": "Enables the accessibility functionality.",
+          "PROVIDER": "Allyable",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "AWSALB",
+          "PURPOSE": "Enables the accessibility functionality.",
+          "PROVIDER": "Allyable",
+          "DURATION": "1 week"
+        },
+        {
+          "NAME": "AWSALBCORS",
+          "PURPOSE": "Enables the accessibility functionality.",
+          "PROVIDER": "Allyable",
+          "DURATION": "1 week"
+        },
+        {
+          "NAME": "cdn_bluesnap_700000_ka_ck",
+          "PURPOSE": "Used to prevent credit card fraud.",
+          "PROVIDER": "BlueSnap",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "cookiePreferences",
+          "PURPOSE": "Stores the consent state you selected.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "2 years"
+        },
+        {
+          "NAME": "data8",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "data8p2",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "data8pl",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "device_id",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "lid",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "loginEmail",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "data9",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "dserp",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "dstaun",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "DMatchesPageSize",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 hour"
+        },
+        {
+          "NAME": "download_ftb_started",
+          "PURPOSE": "Enables file downloads.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "formMode",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "ftp",
+          "PURPOSE": "Enables file uploads.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "2 days"
+        },
+        {
+          "NAME": "G_AUTHUSER_H",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Persistent"
+        },
+        {
+          "NAME": "G_ENABLED_IDPS",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Persistent"
+        },
+        {
+          "NAME": "g_state",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "Persistent"
+        },
+        {
+          "NAME": "HSID",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "2 years"
+        },
+        {
+          "NAME": "SSID",
+          "PURPOSE": "Set when you sign up or log in with your Google account.",
+          "PROVIDER": "Google",
+          "DURATION": "2 years"
+        },
+        {
+          "NAME": "is_embed",
+          "PURPOSE": "Supports the mobile and embedded experience.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "isMember",
+          "PURPOSE": "Determines user type.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "was-ever-member",
+          "PURPOSE": "Determines user type.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "WebmasterInFamilyPages",
+          "PURPOSE": "Determines user type.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "just_logged_out",
+          "PURPOSE": "Coordinates login and logout status.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "lang",
+          "PURPOSE": "Preserves the selected language.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "LastVisitedFamilySite",
+          "PURPOSE": "Routes you to the correct family site.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "LastVisitedMyFamilySite",
+          "PURPOSE": "Routes you to the correct family site.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "LastVisitedSites",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "LVTS",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "mhc_version",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "rpp",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "lelid",
+          "PURPOSE": "Supports library mode usage.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "12 hours"
+        },
+        {
+          "NAME": "lels",
+          "PURPOSE": "Supports library mode usage.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "loginRequired",
+          "PURPOSE": "Provides support functionality to users.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "MyHeritageAppIntro",
+          "PURPOSE": "Ensures the correct user experience.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "nd",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "2 days"
+        },
+        {
+          "NAME": "ndd",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "nlbi_*",
+          "PURPOSE": "Provides a secure site.",
+          "PROVIDER": "Imperva",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "incap_ses_*",
+          "PURPOSE": "Provides a secure site.",
+          "PROVIDER": "Imperva",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "perm_id",
+          "PURPOSE": "Required for site maintenance.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "PHPSESSID",
+          "PURPOSE": "Used for authentication.",
+          "PROVIDER": "PHP",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "psa",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "results-ad-hoc-rmsb",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 hour"
+        },
+        {
+          "NAME": "rmrpp",
+          "PURPOSE": "Stores user preferences.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 hour"
+        },
+        {
+          "NAME": "search_results_info",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "suggestedRelativesPageInformation",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "10 minutes"
+        },
+        {
+          "NAME": "underAgedOnSignup",
+          "PURPOSE": "Prevents registration by minors.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 week"
+        },
+        {
+          "NAME": "user_encryption_key",
+          "PURPOSE": "Provides security protections.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "userTimezone",
+          "PURPOSE": "Saves the current browser time zone.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "uuid",
+          "PURPOSE": "Improves site performance.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "visid_incap_*",
+          "PURPOSE": "Filters out malicious requests.",
+          "PROVIDER": "Imperva",
+          "DURATION": "1 year"
+        },
+        {
+          "NAME": "wp-wpml_current_language",
+          "PURPOSE": "Preserves language preferences.",
+          "PROVIDER": "WordPress",
+          "DURATION": "Session"
+        },
+        {
+          "NAME": "isBlockedByRateLimit",
+          "PURPOSE": "Provides a secure site.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "24 hours"
+        },
+        {
+          "NAME": "TurnOnAutoRenewDailyVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 day"
+        },
+        {
+          "NAME": "TurnOnAutoRenewGeneralVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "30 days"
+        },
+        {
+          "NAME": "ExtendSubscriptionDailyVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 day"
+        },
+        {
+          "NAME": "ExtendSubscriptionGeneralVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "30 days"
+        },
+        {
+          "NAME": "UpgradeOfferDailyVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "1 day"
+        },
+        {
+          "NAME": "UpgradeOfferGeneralVisits",
+          "PURPOSE": "Controls basic site functions.",
+          "PROVIDER": "Rodostoria",
+          "DURATION": "30 days"
+        }
       ]
     }
   }
 }
-

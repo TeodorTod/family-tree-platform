@@ -29,5 +29,22 @@ export class FaqPageComponent {
       aKey: CONSTANTS.FAQ_A_SUBSCRIPTIONS,
     },
     { qKey: CONSTANTS.FAQ_Q_PRIVACY, aKey: CONSTANTS.FAQ_A_PRIVACY },
+    {
+      qKey: CONSTANTS.FAQ_Q_MEMBERS_MANAGE,
+      aKey: CONSTANTS.FAQ_A_MEMBERS_MANAGE,
+    },
+    {
+      qKey: CONSTANTS.FAQ_Q_GLOBAL_SEARCH,
+      aKey: CONSTANTS.FAQ_A_GLOBAL_SEARCH,
+    },
+    {
+      qKey: CONSTANTS.FAQ_Q_SHARING_SETTINGS,
+      aKey: CONSTANTS.FAQ_A_SHARING_SETTINGS,
+    },
+    {
+      qKey: CONSTANTS.FAQ_Q_SHARING_REQUESTS,
+      aKey: CONSTANTS.FAQ_A_SHARING_REQUESTS,
+    },
+    { qKey: CONSTANTS.FAQ_Q_GDPR, aKey: CONSTANTS.FAQ_A_GDPR },
   ]);
 }

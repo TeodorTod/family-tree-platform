@@ -39,6 +39,11 @@ export class SubscriptionPlanComponent {
       return;
     }
 
+    if (plan.requiresCheckout === false) {
+      this.skip();
+      return;
+    }
+
     this.selecting.set(plan.code);
     void this.router
       .navigate([CONSTANTS.ROUTES.SUBSCRIPTION.PAYMENT], {
@@ -55,6 +60,9 @@ export class SubscriptionPlanComponent {
   }
 
   perDay(plan: SubscriptionPlanOption) {
+    if (!plan.durationDays) {
+      return '0.00';
+    }
     return (plan.priceEur / plan.durationDays).toFixed(2);
   }
 

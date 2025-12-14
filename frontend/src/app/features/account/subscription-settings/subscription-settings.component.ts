@@ -30,6 +30,7 @@ export class SubscriptionSettingsComponent {
   private account = inject(AccountService);
   private destroyRef = inject(DestroyRef);
   private translate = inject(TranslateService);
+  private readonly dayMs = 24 * 60 * 60 * 1000;
 
   readonly CONSTANTS = CONSTANTS;
   readonly profile = signal<AuthUser | null>(null);
@@ -50,5 +51,28 @@ export class SubscriptionSettingsComponent {
         complete: () => this.isLoading.set(false),
         error: () => this.isLoading.set(false),
       });
+  }
+
+  renewalDate(user: AuthUser | null) {
+    if (!user) {
+      return null;
+    }
+    if (user.subscriptionEndAt) {
+      return new Date(user.subscriptionEndAt);
+    }
+    if (!user.subscriptionPlan || !user.subscriptionStartAt) {
+      return null;
+    }
+    const option = SUBSCRIPTION_PLAN_OPTION_MAP.get(
+      user.subscriptionPlan as SubscriptionPlanCode,
+    );
+    if (!option || !option.durationDays) {
+      return null;
+    }
+    const start = new Date(user.subscriptionStartAt);
+    if (Number.isNaN(start.getTime())) {
+      return null;
+    }
+    return new Date(start.getTime() + option.durationDays * this.dayMs);
   }
 }

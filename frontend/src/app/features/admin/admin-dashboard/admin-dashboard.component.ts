@@ -168,6 +168,7 @@ export class AdminDashboardComponent implements OnInit {
   });
 
   private readonly planKeyMap: Record<SubscriptionPlanCode, string> = {
+    FREE: CONSTANTS.SETTINGS_PLAN_FREE,
     SIX_MONTHS: CONSTANTS.SETTINGS_PLAN_6M,
     ONE_YEAR: CONSTANTS.SETTINGS_PLAN_1Y,
     TWO_YEARS: CONSTANTS.SETTINGS_PLAN_2Y,

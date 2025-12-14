@@ -8,6 +8,39 @@
     </div>
   </p-header>
 
+  @if (!loadingProfile()) {
+    @if (profile(); as user) {
+      <div class="current-plan-banner">
+        @if (user.subscriptionPlan) {
+          <div>
+            <p class="current-plan-banner__title">
+              {{ CONSTANTS.SUBSCRIPTION_SETTINGS_CURRENT | translate }}
+              <strong>{{ currentPlanLabel() }}</strong>
+            </p>
+            @if (currentPlanEndDate(); as endDate) {
+              <p>
+                {{
+                  CONSTANTS.SUBSCRIPTION_SETTINGS_EXPIRES | translate
+                }}
+                {{ endDate | date: 'longDate' }}
+              </p>
+              <p class="current-plan-banner__renew">
+                {{
+                  CONSTANTS.SUBSCRIPTION_SETTINGS_RENEWAL
+                    | translate : { date: (endDate | date: 'longDate') }
+                }}
+              </p>
+            }
+          </div>
+        } @else {
+          <p class="current-plan-banner__title">
+            {{ CONSTANTS.SUBSCRIPTION_SETTINGS_NONE | translate }}
+          </p>
+        }
+      </div>
+    }
+  }
+
   <div class="plans-container">
     @for (p of plans; track p.code) {
     <article
@@ -22,13 +55,18 @@
       }
 
       <div class="plan-title">{{ p.titleKey | translate }}</div>
+      <p class="plan-description">
+        {{ p.descriptionKey | translate }}
+      </p>
 
-      <div class="price-per-day">
-        {{ currencySymbol() }}{{ perDayStr(p) }}
-        <span class="per-day">
-          {{ CONSTANTS.SETTINGS_PLANS_PRICE_PER_DAY | translate }}
-        </span>
-      </div>
+      @if (p.priceEur > 0 && p.durationDays > 0) {
+        <div class="price-per-day">
+          {{ currencySymbol() }}{{ perDayStr(p) }}
+          <span class="per-day">
+            {{ CONSTANTS.SETTINGS_PLANS_PRICE_PER_DAY | translate }}
+          </span>
+        </div>
+      }
 
       <div class="price-total">
         {{
@@ -36,31 +74,39 @@
             | translate : { value: totalStr(p) }
         }}
       </div>
+      @if (p.durationMonths > 0) {
+        <div class="plan-duration">
+          {{ p.durationMonths }}
+          {{ CONSTANTS.ONBOARDING_SUBSCRIPTION_MONTHS | translate }}
+        </div>
+      } @else if (p.durationLabelKey) {
+        <div class="plan-duration">
+          {{ p.durationLabelKey | translate }}
+        </div>
+      }
 
       <div class="perks-title">
         {{ CONSTANTS.SETTINGS_PLANS_PERKS_TITLE | translate }}
       </div>
       <ul class="plan-perks">
-        <li>
-          <i class="pi pi-check"></i>
-          {{ CONSTANTS.SETTINGS_PLANS_PERK_FEATURES | translate }}
-        </li>
-        <li>
-          <i class="pi pi-check"></i>
-          {{ CONSTANTS.SETTINGS_PLANS_PERK_BACKUP | translate }}
-        </li>
-        <li>
-          <i class="pi pi-check"></i>
-          {{ CONSTANTS.SETTINGS_PLANS_PERK_SUPPORT | translate }}
-        </li>
+        @for (feature of p.features; track feature) {
+          <li>
+            <i class="pi pi-check"></i>
+            {{ feature | translate }}
+          </li>
+        }
       </ul>
 
       <button
         pButton
         class="choose-btn"
-        [label]="CONSTANTS.SETTINGS_PLANS_CHOOSE | translate"
+        [label]="
+          (p.requiresCheckout === false
+            ? CONSTANTS.SETTINGS_PLANS_INCLUDED
+            : CONSTANTS.SETTINGS_PLANS_CHOOSE) | translate
+        "
         icon="pi pi-check"
-        [disabled]="!!isNavigating()"
+        [disabled]="!!isNavigating() || p.requiresCheckout === false"
         (click)="select(p)"
       ></button>
     </article>

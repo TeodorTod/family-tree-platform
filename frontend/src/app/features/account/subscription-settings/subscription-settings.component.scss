@@ -27,11 +27,23 @@
     margin-bottom: 0.5rem;
   }
 
+  &__renewal-note {
+    color: var(--surface-600);
+    margin-top: 0.25rem;
+  }
+
   &__inactive {
     color: var(--surface-600);
   }
 
   &__cta {
     align-self: flex-start;
+    text-decoration: none;
+
+    &:hover,
+    &:focus,
+    &:active {
+      text-decoration: none;
+    }
   }
 }

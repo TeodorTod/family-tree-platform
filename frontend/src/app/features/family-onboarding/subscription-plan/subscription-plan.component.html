@@ -11,6 +11,10 @@
         [class.plan-card--highlight]="plan.highlight"
       >
         <h2>{{ plan.titleKey | translate }}</h2>
+        <p class="plan-card__description">
+          {{ plan.descriptionKey | translate }}
+        </p>
+        @if (plan.priceEur > 0) {
         <p class="plan-card__price">
           {{ currencySymbol() }}{{ plan.priceEur }}
         </p>
@@ -20,6 +24,12 @@
           }}:
           {{ currencySymbol() }}{{ perDay(plan) }}
         </p>
+        } @else {
+        <p class="plan-card__price">
+          {{ CONSTANTS.SETTINGS_PLANS_INCLUDED | translate }}
+        </p>
+        }
+        @if (plan.durationMonths > 0) {
         <p class="plan-card__duration">
           {{
             CONSTANTS.ONBOARDING_SUBSCRIPTION_DURATION | translate
@@ -27,14 +37,32 @@
           {{ plan.durationMonths }}
           {{ CONSTANTS.ONBOARDING_SUBSCRIPTION_MONTHS | translate }}
         </p>
+        } @else if (plan.durationLabelKey) {
+        <p class="plan-card__duration">
+          {{ plan.durationLabelKey | translate }}
+        </p>
+        }
+        <ul class="plan-card__features">
+          @for (feature of plan.features; track feature) {
+            <li>
+              <i class="pi pi-check" aria-hidden="true"></i>
+              {{ feature | translate }}
+            </li>
+          }
+        </ul>
         <button
           type="button"
           pButton
           class="plan-card__action"
-          [disabled]="selecting() === plan.code"
+          [disabled]="plan.requiresCheckout !== false && selecting() === plan.code"
           (click)="select(plan)"
         >
-          {{ CONSTANTS.SETTINGS_PLANS_CHOOSE | translate }}
+          {{
+            (plan.requiresCheckout === false
+              ? CONSTANTS.SETTINGS_PLANS_INCLUDED
+              : CONSTANTS.SETTINGS_PLANS_CHOOSE)
+              | translate
+          }}
         </button>
       </article>
     }

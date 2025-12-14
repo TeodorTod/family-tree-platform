@@ -15,10 +15,25 @@
               {{ CONSTANTS.SUBSCRIPTION_SETTINGS_CURRENT | translate }}
               <strong>{{ planLabel() }}</strong>
             </p>
-            <p>
-              {{ CONSTANTS.SUBSCRIPTION_SETTINGS_EXPIRES | translate }}
-              {{ user.subscriptionEndAt | date: 'longDate' }}
-            </p>
+            @if (renewalDate(user); as endDate) {
+              <p>
+                {{ CONSTANTS.SUBSCRIPTION_SETTINGS_EXPIRES | translate }}
+                {{ endDate | date: 'longDate' }}
+              </p>
+              <p class="subscription-settings__renewal-note">
+                {{
+                  CONSTANTS.SUBSCRIPTION_SETTINGS_RENEWAL
+                    | translate : { date: (endDate | date: 'longDate') }
+                }}
+              </p>
+            } @else {
+              <p class="subscription-settings__renewal-note">
+                {{
+                  CONSTANTS.SUBSCRIPTION_SETTINGS_RENEWAL
+                    | translate : { date: '—' }
+                }}
+              </p>
+            }
           </div>
         } @else {
           <div class="subscription-settings__inactive">
