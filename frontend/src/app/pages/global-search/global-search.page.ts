@@ -214,7 +214,7 @@ export class GlobalSearchPage implements OnInit {
   }
 
   statusSeverity(status?: ShareRequestStatus | null) {
-    if (!status) return 'warning';
+    if (!status) return 'warn';
     if (status === ShareRequestStatus.Approved) return 'success';
     if (status === ShareRequestStatus.Rejected) return 'danger';
     return 'info';

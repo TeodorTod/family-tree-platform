@@ -42,12 +42,12 @@
               {{ CONSTANTS.PRIVACY_DEFAULTS_DISCOVERY_DESC | translate }}
             </span>
           </label>
-          <p-inputSwitch
+          <p-toggleSwitch
             inputId="privacy-discovery"
             [ngModel]="privacyValue().allowDeceasedDiscoveryDefault"
             (ngModelChange)="updatePrivacyDefaults('allowDeceasedDiscoveryDefault', $event)"
             [ngModelOptions]="{ standalone: true }"
-          ></p-inputSwitch>
+          ></p-toggleSwitch>
         </div>
 
         <div class="toggle-row">
@@ -59,12 +59,12 @@
               {{ CONSTANTS.PRIVACY_DEFAULTS_DETAILS_DESC | translate }}
             </span>
           </label>
-          <p-inputSwitch
+          <p-toggleSwitch
             inputId="privacy-details"
             [ngModel]="privacyValue().allowDeceasedDetailsDefault"
             (ngModelChange)="updatePrivacyDefaults('allowDeceasedDetailsDefault', $event)"
             [ngModelOptions]="{ standalone: true }"
-          ></p-inputSwitch>
+          ></p-toggleSwitch>
         </div>
 
         <div class="card-actions">
@@ -112,12 +112,12 @@
             {{ CONSTANTS.PRIVACY_COOKIES_ANALYTICS_DESC | translate }}
           </span>
         </label>
-        <p-inputSwitch
+        <p-toggleSwitch
           inputId="cookie-analytics"
           [ngModel]="cookieValue().analytics"
           (ngModelChange)="updateCookiePreferences('analytics', $event)"
           [ngModelOptions]="{ standalone: true }"
-        ></p-inputSwitch>
+        ></p-toggleSwitch>
       </div>
 
       <div class="toggle-row">
@@ -129,12 +129,12 @@
             {{ CONSTANTS.PRIVACY_COOKIES_MARKETING_DESC | translate }}
           </span>
         </label>
-        <p-inputSwitch
+        <p-toggleSwitch
           inputId="cookie-marketing"
           [ngModel]="cookieValue().marketing"
           (ngModelChange)="updateCookiePreferences('marketing', $event)"
           [ngModelOptions]="{ standalone: true }"
-        ></p-inputSwitch>
+        ></p-toggleSwitch>
       </div>
 
       <div class="card-meta">

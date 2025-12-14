@@ -472,11 +472,11 @@ body {
 }
 
 @media (max-width: 768px) {
-  .md\\:hidden {
+  .md-hidden {
     display: block !important;
   }
 
-  .md\\:flex {
+  .md-flex {
     display: none !important;
   }
 }

@@ -84,7 +84,7 @@ export class SharingRequestsPage implements OnInit {
     this.notifications.refresh();
   }
 
-  onTabChange(value: ShareRequestTab | string | number) {
+  onTabChange(value: ShareRequestTab | string | number | undefined) {
     const nextTab = this.toTab(value);
     this.activeTab.set(nextTab);
     this.notifications.markTabViewed(nextTab);
@@ -217,7 +217,7 @@ export class SharingRequestsPage implements OnInit {
     });
   }
 
-  private toTab(value: ShareRequestTab | string | number) {
+  private toTab(value: ShareRequestTab | string | number | null | undefined) {
     if (value === ShareRequestTab.Outgoing || value === 'outgoing') {
       return ShareRequestTab.Outgoing;
     }

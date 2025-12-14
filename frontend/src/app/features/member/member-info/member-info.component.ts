@@ -312,9 +312,10 @@ export class MemberInfoComponent implements OnInit {
     return this.getTranslatedRoleLabel();
   }
 
-  onTabIndexChange(val: number | string) {
-    const n = typeof val === 'string' ? Number(val) : val;
-    this.activeIndex.set(Number.isFinite(n) ? n : 0);
+  onTabIndexChange(val: number | string | undefined) {
+    const resolved = val ?? this.TAB.GENERAL;
+    const n = typeof resolved === 'string' ? Number(resolved) : resolved;
+    this.activeIndex.set(Number.isFinite(n) ? n : this.TAB.GENERAL);
   }
 
   private normalizeForComparison(input: any): any {

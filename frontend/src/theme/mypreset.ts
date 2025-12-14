@@ -20,7 +20,7 @@ const MyPreset = definePreset(Aura, {
       light: {
         primary: {
           color: '#2d4c2f',
-          inverseColor: '#ffffff',
+          contrastColor: '#ffffff',
           hoverColor: '#3e6f41',
           activeColor: '#1e2f1d'
         },
@@ -34,7 +34,7 @@ const MyPreset = definePreset(Aura, {
       dark: {
         primary: {
           color: '#f5c842',
-          inverseColor: '#2d4c2f',
+          contrastColor: '#2d4c2f',
           hoverColor: '#f9d95c',
           activeColor: '#eec51c'
         },

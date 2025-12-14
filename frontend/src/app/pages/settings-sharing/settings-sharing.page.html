@@ -4,11 +4,11 @@
   <div class="section">
     <h3>{{ CONSTANTS.SHARING_DEFAULTS | translate }}</h3>
     <div class="field">
-      <p-inputSwitch [ngModel]="settings().allowDeceasedDiscoveryDefault" (ngModelChange)="onDiscoveryDefaultChange($event)"></p-inputSwitch>
+      <p-toggleSwitch [ngModel]="settings().allowDeceasedDiscoveryDefault" (ngModelChange)="onDiscoveryDefaultChange($event)"></p-toggleSwitch>
       <label>{{ CONSTANTS.SHARING_ALLOW_DISCOVERY_DEFAULT | translate }}</label>
     </div>
     <div class="field">
-      <p-inputSwitch [ngModel]="settings().allowDeceasedDetailsDefault" (ngModelChange)="onDetailsDefaultChange($event)"></p-inputSwitch>
+      <p-toggleSwitch [ngModel]="settings().allowDeceasedDetailsDefault" (ngModelChange)="onDetailsDefaultChange($event)"></p-toggleSwitch>
       <label>{{ CONSTANTS.SHARING_ALLOW_DETAILS_DEFAULT | translate }}</label>
     </div>
     <button pButton label="{{ CONSTANTS.COMMON_SAVE | translate }}" (click)="saveSettings()"></button>
