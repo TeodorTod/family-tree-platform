@@ -1,4 +1,11 @@
 ﻿{
+  "SEO": {
+    "TITLE": "Rodostoria • Digital Family Tree",
+    "DESCRIPTION": "Rodostoria is a digital family tree for preserving stories, records, and memories in one secure place.",
+    "SHARE_TITLE": "Rodostoria • Digital Family Tree",
+    "SHARE_DESCRIPTION": "Celebrate your roots and collaborate with relatives through Rodostoria, the secure digital family tree.",
+    "APP_NAME": "Rodostoria"
+  },
   "AUTH": {
     "LOGIN": "Login",
     "LOGOUT": "Logout",
