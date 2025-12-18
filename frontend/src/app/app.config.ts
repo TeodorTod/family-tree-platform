@@ -19,6 +19,7 @@ import {
 import {
   TranslateLoader,
   TranslateModule,
+  TranslateParser,
   TranslateService,
 } from '@ngx-translate/core';
 import {
@@ -32,6 +33,7 @@ import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { LanguageService } from '../assets/i18n/language.service';
 import { PRIMENG_BG } from '../assets/i18n/primeng-bg';
 import { PrimeNgLanguageService } from './core/services/primeng-language.service';
+import { IcuTranslateParser } from './shared/utils/icu-translate.parser';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -52,6 +54,10 @@ export const appConfig: ApplicationConfig = {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
         deps: [HttpBackend],
+      },
+      parser: {
+        provide: TranslateParser,
+        useClass: IcuTranslateParser,
       },
     }).providers ?? []),
 
