@@ -4,7 +4,6 @@ import {
   provideZoneChangeDetection,
   inject,
 } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { provideRouter } from '@angular/router';
 
@@ -40,7 +39,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
-    provideAnimationsAsync(),
     providePrimeNG({
       theme: {
         preset: MyPreset,
