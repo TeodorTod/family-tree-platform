@@ -29,6 +29,7 @@ import jsPDF from 'jspdf';
 import { PartnerStatus } from '../../shared/enums/partner-status.enum';
 import { AmbientSoundService } from './services/ambient-sound.service';
 import { PlatformStorageService } from '../../core/services/platform-storage.service';
+import { HomeControlPanelComponent } from './components/home-control-panel/home-control-panel.component';
 
 @Component({
   selector: 'app-home',
@@ -36,6 +37,7 @@ import { PlatformStorageService } from '../../core/services/platform-storage.ser
     AddRelativeDialogComponent,
     PhotoPickerDialogComponent,
     BackgroundPickerDialogComponent,
+    HomeControlPanelComponent,
     TreeTableComponent,
     ...SHARED_ANGULAR_IMPORTS,
     ...SHARED_PRIMENG_IMPORTS,

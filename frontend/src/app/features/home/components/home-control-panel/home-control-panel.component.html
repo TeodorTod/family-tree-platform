@@ -1,0 +1,146 @@
+<!-- Toggle between chart/table -->
+<button
+  pButton
+  [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
+  class="p-button-rounded p-button-sm"
+  (click)="viewToggled.emit()"
+  pTooltip="{{
+    showTableView()
+      ? (constants.INFO_SHOW_CHART | translate)
+      : (constants.INFO_SHOW_TABLE | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
+<!-- Ambient sound -->
+<button
+  pButton
+  [icon]="soundConsent() && soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
+  class="p-button-rounded p-button-sm"
+  (click)="soundToggled.emit()"
+  pTooltip="{{
+    soundConsent()
+      ? (soundPlaying()
+          ? (constants.HOME_SOUND_MUTE | translate)
+          : (constants.HOME_SOUND_PLAY | translate))
+      : (constants.HOME_SOUND_PLAY | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
+@if (!showTableView()) {
+<!-- Export -->
+<button
+  pButton
+  icon="pi pi-print"
+  class="p-button-rounded p-button-sm"
+  (click)="exportRequested.emit()"
+  pTooltip="{{ constants.INFO_FOR_PRINT | translate }}"
+  tooltipPosition="left"
+></button>
+
+<!-- Zoom -->
+<button
+  pButton
+  icon="pi pi-search-plus"
+  class="p-button-rounded p-button-sm"
+  (click)="zoomInRequested.emit()"
+  pTooltip="{{ constants.INFO_ZOOM_IN | translate }}"
+  tooltipPosition="left"
+></button>
+
+<button
+  pButton
+  icon="pi pi-search-minus"
+  class="p-button-rounded p-button-sm"
+  (click)="zoomOutRequested.emit()"
+  pTooltip="{{ constants.INFO_ZOOM_OUT | translate }}"
+  tooltipPosition="left"
+></button>
+
+<!-- Background / photo -->
+<button
+  pButton
+  icon="pi pi-image"
+  class="p-button-rounded p-button-sm"
+  (click)="backgroundDialogRequested.emit()"
+  pTooltip="{{ constants.INFO_CHANGE_BG | translate }}"
+  tooltipPosition="right"
+></button>
+
+<button
+  pButton
+  icon="pi pi-camera"
+  class="p-button-rounded p-button-sm"
+  (click)="photoDialogRequested.emit()"
+  pTooltip="{{ constants.INFO_CHANGE_PROFILE_IMAGE | translate }}"
+  tooltipPosition="right"
+></button>
+
+<!-- Connections toggle -->
+<button
+  pButton
+  type="button"
+  [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
+  class="p-button-rounded p-button-sm"
+  (click)="connectionsToggled.emit()"
+  pTooltip="{{
+    showConnections()
+      ? (constants.INFO_HIDE_LINKS | translate)
+      : (constants.INFO_SHOW_LINKS | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
+<!-- Birth info toggle -->
+<button
+  pButton
+  icon="pi pi-calendar"
+  class="p-button-rounded p-button-sm"
+  [class.p-button-outlined]="!showBirthInfo()"
+  (click)="birthInfoToggled.emit()"
+  pTooltip="{{
+    showBirthInfo()
+      ? (constants.INFO_HIDE_BIRTH_DATE | translate)
+      : (constants.INFO_SHOW_BIRTH_DATE | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
+<!-- Sliders -->
+<div class="slider-block">
+  <div
+    class="slider-row slider-first"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <p-slider
+      class="slider"
+      [ngModel]="circleSizeValue()"
+      (ngModelChange)="circleSizeChanged.emit($event)"
+      [min]="40"
+      [max]="120"
+      [step]="5"
+      pTooltip="{{ constants.INFO_CHANGE_NODE_SIZE | translate }}"
+      tooltipPosition="top"
+    ></p-slider>
+  </div>
+
+  <div
+    class="slider-row slider-second"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <p-slider
+      class="slider"
+      [ngModel]="backgroundOpacityValue()"
+      (ngModelChange)="backgroundOpacityChanged.emit($event)"
+      [min]="0.1"
+      [max]="1"
+      [step]="0.05"
+      pTooltip="{{ constants.INFO_CHANGE_OPACITY | translate }}"
+      tooltipPosition="top"
+    ></p-slider>
+  </div>
+</div>
+}

@@ -4,6 +4,7 @@
   [modal]="true"
   [style]="{ width: '30rem' }"
   (onHide)="cancel()"
+  (visibleChange)="close.emit()"
 >
   <div class="background-grid">
     @for (bg of backgroundImages; track bg) {

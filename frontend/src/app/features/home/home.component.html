@@ -15,155 +15,28 @@
   <div #cy class="cy-container"></div>
 </div>
 
-<!-- Floating control buttons -->
-<div
+<app-home-control-panel
   class="control-panel d-flex flex-column gap-3 mb-3"
   [class.table-mode]="showTableView()"
->
-  <!-- Toggle button (always visible) -->
-  <button
-    pButton
-    [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
-    class="p-button-rounded p-button-sm"
-    (click)="toggleView()"
-    pTooltip="{{
-      showTableView()
-        ? (CONSTANTS.INFO_SHOW_CHART | translate)
-        : (CONSTANTS.INFO_SHOW_TABLE | translate)
-    }}"
-    tooltipPosition="left"
-  ></button>
-
-  <button
-    pButton
-    [icon]="soundConsent() && soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
-    class="p-button-rounded p-button-sm"
-    (click)="toggleAmbientSound()"
-    pTooltip="{{
-      soundConsent()
-        ? (soundPlaying()
-            ? (CONSTANTS.HOME_SOUND_MUTE | translate)
-            : (CONSTANTS.HOME_SOUND_PLAY | translate))
-        : (CONSTANTS.HOME_SOUND_PLAY | translate)
-    }}"
-    tooltipPosition="left"
-  ></button>
-
-  <!-- Chart-specific controls (hidden in table view) -->
-  @if (!showTableView()) {
-
-  <button
-    pButton
-    icon="pi pi-print"
-    class="p-button-rounded p-button-sm"
-    (click)="openExportView()"
-    pTooltip="{{ CONSTANTS.INFO_FOR_PRINT | translate }}"
-    tooltipPosition="left"
-  ></button>
-  <!-- Zoom In -->
-  <button
-    pButton
-    icon="pi pi-search-plus"
-    class="p-button-rounded p-button-sm"
-    (click)="zoomIn()"
-    pTooltip="{{ CONSTANTS.INFO_ZOOM_IN | translate }}"
-    tooltipPosition="left"
-  ></button>
-
-  <!-- Zoom Out -->
-  <button
-    pButton
-    icon="pi pi-search-minus"
-    class="p-button-rounded p-button-sm"
-    (click)="zoomOut()"
-    pTooltip="{{ CONSTANTS.INFO_ZOOM_OUT | translate }}"
-    tooltipPosition="left"
-  ></button>
-
-  <!-- Background Picker -->
-  <button
-    pButton
-    icon="pi pi-image"
-    class="p-button-rounded p-button-sm"
-    (click)="openBackgroundDialog()"
-    pTooltip="{{ CONSTANTS.INFO_CHANGE_BG | translate }}"
-    tooltipPosition="right"
-  ></button>
-
-  <!-- Photo Picker -->
-  <button
-    pButton
-    icon="pi pi-camera"
-    class="p-button-rounded p-button-sm"
-    (click)="openPhotoPickerDialog()"
-    pTooltip="{{ CONSTANTS.INFO_CHANGE_PROFILE_IMAGE | translate }}"
-    tooltipPosition="right"
-  ></button>
-
-  <!-- Toggle Links -->
-  <button
-    pButton
-    type="button"
-    [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
-    class="p-button-rounded p-button-sm"
-    (click)="toggleConnections()"
-    pTooltip="{{
-      showConnections()
-        ? (CONSTANTS.INFO_HIDE_LINKS | translate)
-        : (CONSTANTS.INFO_SHOW_LINKS | translate)
-    }}"
-    tooltipPosition="left"
-  ></button>
-
-  <button
-    pButton
-    icon="pi pi-calendar"
-    class="p-button-rounded p-button-sm"
-    [class.p-button-outlined]="!showBirthInfo()"
-    (click)="toggleBirthInfo()"
-    pTooltip="{{
-      showBirthInfo()
-        ? (CONSTANTS.INFO_HIDE_BIRTH_DATE | translate)
-        : (CONSTANTS.INFO_SHOW_BIRTH_DATE | translate)
-    }}"
-    tooltipPosition="left"
-  ></button>
-
-  @if (!showTableView()) {
-  <div
-    class="sliders-row"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <!-- Circle size -->
-    <p-slider
-      class="slider"
-      [ngModel]="circleSizeValue"
-      (ngModelChange)="circleSizeValue = $event; updateCircleSize()"
-      [min]="40"
-      [max]="120"
-      [step]="5"
-      pTooltip="{{ CONSTANTS.INFO_CHANGE_NODE_SIZE | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-
-    <!-- Opacity -->
-    <i class="pi pi-adjust ml-4 mr-2"></i>
-    <p-slider
-      class="slider"
-      [ngModel]="backgroundOpacityValue"
-      (ngModelChange)="
-        backgroundOpacityValue = $event; updateBackgroundOpacity()
-      "
-      [min]="0.1"
-      [max]="1"
-      [step]="0.1"
-      pTooltip="{{ CONSTANTS.INFO_CHANGE_OPACITY | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
-  } }
-</div>
+  [showTableView]="showTableView()"
+  [soundConsent]="soundConsent()"
+  [soundPlaying]="soundPlaying()"
+  [showConnections]="showConnections()"
+  [showBirthInfo]="showBirthInfo()"
+  [circleSizeValue]="circleSizeValue"
+  [backgroundOpacityValue]="backgroundOpacityValue"
+  (viewToggled)="toggleView()"
+  (soundToggled)="toggleAmbientSound()"
+  (exportRequested)="openExportView()"
+  (zoomInRequested)="zoomIn()"
+  (zoomOutRequested)="zoomOut()"
+  (backgroundDialogRequested)="openBackgroundDialog()"
+  (photoDialogRequested)="openPhotoPickerDialog()"
+  (connectionsToggled)="toggleConnections()"
+  (birthInfoToggled)="toggleBirthInfo()"
+  (circleSizeChanged)="circleSizeValue = $event; updateCircleSize()"
+  (backgroundOpacityChanged)="backgroundOpacityValue = $event; updateBackgroundOpacity()"
+/>
 
 <!-- Add Relative Dialog -->
 @if (showAddDialog()) {

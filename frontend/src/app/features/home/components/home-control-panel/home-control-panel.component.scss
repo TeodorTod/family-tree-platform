@@ -1,0 +1,33 @@
+.control-panel {
+  position: fixed;
+  right: 1rem;
+  top: 6rem;
+  z-index: 10;
+
+  &.table-mode {
+    top: 4.5rem;
+  }
+}
+
+.slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  width: 150px;
+  align-self: flex-end;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+}
+
+.slider-first {
+  margin-bottom: 0.8rem;
+}
+
+.slider {
+  flex: 1;
+  min-width: 0;
+}
