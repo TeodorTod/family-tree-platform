@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, output } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
 import { CONSTANTS } from '../../../../shared/constants/constants';
@@ -12,9 +12,9 @@ import { BACKGROUND_IMAGES } from '../../../../shared/constants/background-image
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BackgroundPickerDialogComponent {
-  @Input() visible = false;
-  @Output() close = new EventEmitter<void>();
-  @Output() backgroundSelected = new EventEmitter<string>();
+  visible = input(false);
+  close = output<void>();
+  backgroundSelected = output<string>();
 
   CONSTANTS = CONSTANTS;
 
@@ -27,10 +27,13 @@ export class BackgroundPickerDialogComponent {
   }
 
   save() {
-    if (this.selectedBg) {
-      localStorage.setItem('selectedBackground', this.selectedBg);
-      this.backgroundSelected.emit(this.selectedBg);
+    const bg = this.selectedBg;
+    if (!bg) {
+      this.close.emit();
+      return;
     }
+    localStorage.setItem('selectedBackground', bg);
+    this.backgroundSelected.emit(bg);
     this.close.emit();
   }
 

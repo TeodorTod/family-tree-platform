@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input, output } from '@angular/core';
 import { FamilyMember } from '../../../../shared/models/family-member.model';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
@@ -16,20 +16,15 @@ export class TreeTableComponent {
   CONSTANTS = CONSTANTS;
   private translate = inject(TranslateService);
 
-  private _members: FamilyMember[] = [];
-  @Input() set members(value: FamilyMember[]) {
-    this._members = value ?? [];
-    this.totalRecords = this._members.length;
-  }
-  get members() {
-    return this._members;
-  }
+  members = input<FamilyMember[], FamilyMember[] | null>([], {
+    transform: (value: FamilyMember[] | null | undefined) => value ?? [],
+  });
 
   totalRecords = 0;
   rowsPerPageOptions = [5, 10, 20, 50];
 
-  @Output() addRelative = new EventEmitter<FamilyMember>();
-  @Output() editMember = new EventEmitter<FamilyMember>();
+  addRelative = output<FamilyMember>();
+  editMember = output<FamilyMember>();
 
   getRoleDisplay(m: FamilyMember): string {
     if (m.translatedRole && m.translatedRole.trim()) {

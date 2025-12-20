@@ -41,14 +41,14 @@
     #imgUpload
     name="files"
     [customUpload]="true"
-    [auto]="uploadMode === 'onSave'"
+    [auto]="uploadMode() === 'onSave'"
     (uploadHandler)="onUploadImages($event)"
     (onRemove)="onRemove($event)"
     (onClear)="onClear()"
     accept="image/*"
     [multiple]="true"
     [maxFileSize]="25 * 1024 * 1024"
-    [showUploadButton]="uploadMode === 'immediate'"
+    [showUploadButton]="uploadMode() === 'immediate'"
     [chooseLabel]="CONSTANTS.MEDIA_CHOOSE | translate"
     [uploadLabel]="CONSTANTS.MEDIA_UPLOAD | translate"
   >
@@ -87,7 +87,7 @@
   }
 </div>
 
-@if (uploadMode === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
+@if (uploadMode() === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
 <div class="pending">
   @if (pendingUploadsCount) {
   <span
@@ -162,8 +162,8 @@
     accept="video/*,.mkv"
     [multiple]="true"
     [maxFileSize]="2 * 1024 * 1024 * 1024"
-    [auto]="uploadMode === 'onSave'"
-    [showUploadButton]="uploadMode === 'immediate'"
+    [auto]="uploadMode() === 'onSave'"
+    [showUploadButton]="uploadMode() === 'immediate'"
     [chooseLabel]="CONSTANTS.MEDIA_CHOOSE | translate"
     [uploadLabel]="CONSTANTS.MEDIA_UPLOAD | translate"
   >
@@ -203,7 +203,7 @@
   }
 </div>
 
-@if (uploadMode === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
+@if (uploadMode() === 'onSave' && (pendingUploadsCount || pendingDeletesCount)) {
 <div class="pending">
   @if (pendingUploadsCount) {
   <span

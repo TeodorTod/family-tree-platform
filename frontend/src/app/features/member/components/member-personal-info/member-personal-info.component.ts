@@ -1,12 +1,12 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  Input,
   OnInit,
   OnChanges,
   SimpleChanges,
   signal,
   inject,
+  input,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
@@ -27,7 +27,7 @@ import { SmokingStatus } from '../../../../shared/enums/smoking-status.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberPersonalInfoComponent implements OnInit, OnChanges {
-  @Input({ required: true }) role!: string;
+  role = input.required<string>();
 
   private profileSvc = inject(MemberProfileService);
 
@@ -51,9 +51,10 @@ export class MemberPersonalInfoComponent implements OnInit, OnChanges {
   }
 
   private hydrate() {
-    if (!this.role) return;
+    const role = this.role();
+    if (!role) return;
     this.profileSvc
-      .getProfileByRole(this.role)
+      .getProfileByRole(role)
       .pipe(
         take(1),
         switchMap((p) => of(p?.personalInfo ?? null))

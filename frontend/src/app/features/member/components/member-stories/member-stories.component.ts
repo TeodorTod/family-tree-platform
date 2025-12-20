@@ -1,12 +1,13 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  Input,
   OnInit,
   OnChanges,
   SimpleChanges,
   inject,
   signal,
+  input,
+  output,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
@@ -33,9 +34,9 @@ import { MemberProfileService } from '../../../../core/services/member-profile.s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberStoriesComponent implements OnInit, OnChanges, UnsavedAware {
-  @Input({ required: true }) role!: string;
-  @Input() memberId: string | null = null;
-  @Input() profile: MemberProfile | null = null;
+  role = input.required<string>();
+  memberId = input<string | null>(null);
+  profile = input<MemberProfile | null>(null);
 
   CONSTANTS = CONSTANTS;
 
@@ -102,7 +103,7 @@ export class MemberStoriesComponent implements OnInit, OnChanges, UnsavedAware {
   }
 
   private hydrateFromProfile() {
-    const raw = (this.profile?.stories ?? []) as any[];
+    const raw = (this.profile()?.stories ?? []) as any[];
     const normalized: StoryItem[] = (Array.isArray(raw) ? raw : []).map(
       (s) => ({
         id: s.id ?? uuid(),

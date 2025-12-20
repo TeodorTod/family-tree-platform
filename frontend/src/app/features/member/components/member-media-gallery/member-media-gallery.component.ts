@@ -1,12 +1,14 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  Input,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   inject,
   signal,
   DestroyRef,
   ViewChild,
+  input,
 } from '@angular/core';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
@@ -25,22 +27,14 @@ import { lastValueFrom } from 'rxjs';
   styleUrls: ['./member-media-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MemberMediaGalleryComponent implements OnInit {
+export class MemberMediaGalleryComponent implements OnInit, OnChanges {
   private _memberId: string | null = null;
 
   @ViewChild('imgUpload') imgUpload?: FileUpload;
 
-  @Input({ required: true }) role!: string;
-  @Input() uploadMode: 'immediate' | 'onSave' = 'immediate';
-  @Input()
-  set memberId(value: string | null) {
-    const changed = value !== this._memberId;
-    this._memberId = value;
-    if (changed && this._memberId) this.load();
-  }
-  get memberId(): string | null {
-    return this._memberId;
-  }
+  role = input.required<string>();
+  uploadMode = input<'immediate' | 'onSave'>('immediate');
+  memberId = input<string | null>(null);
 
   private media = inject(MediaService);
   private destroyRef = inject(DestroyRef);
@@ -94,9 +88,18 @@ export class MemberMediaGalleryComponent implements OnInit {
     return this.stagedDeletes.size;
   }
 
+  ngOnChanges(_: SimpleChanges): void {
+    const value = this.memberId();
+    const changed = value !== this._memberId;
+    this._memberId = value;
+    if (changed && this._memberId) {
+      this.load();
+    }
+  }
+
   public hasUnsavedChanges(): boolean {
     return (
-      this.uploadMode === 'onSave' &&
+      this.uploadMode() === 'onSave' &&
       (this.stagedFiles.length > 0 || this.stagedDeletes.size > 0)
     );
   }
@@ -125,7 +128,8 @@ export class MemberMediaGalleryComponent implements OnInit {
 
   /** Apply uploads + deletions together on Save */
   public async flushPendingChanges(): Promise<void> {
-    if (this.uploadMode !== 'onSave' || !this.memberId) return;
+    const memberId = this.memberId();
+    if (this.uploadMode() !== 'onSave' || !memberId) return;
 
     const files = [...this.stagedFiles];
     const deleteKeys = [...this.stagedDeletes];
@@ -146,7 +150,7 @@ export class MemberMediaGalleryComponent implements OnInit {
         );
 
         await lastValueFrom(
-          this.media.deleteManyForMember(this.memberId!, urlsToDelete)
+          this.media.deleteManyForMember(memberId, urlsToDelete)
         );
 
         const del = new Set(deleteKeys);
@@ -161,7 +165,7 @@ export class MemberMediaGalleryComponent implements OnInit {
 
       if (files.length) {
         await lastValueFrom(
-          this.media.uploadManyForMember(this.memberId!, files)
+          this.media.uploadManyForMember(memberId, files)
         );
         this.imgUpload?.clear();
       }
@@ -176,10 +180,11 @@ export class MemberMediaGalleryComponent implements OnInit {
   }
 
   load() {
-    if (!this.memberId) return;
+    const memberId = this.memberId();
+    if (!memberId) return;
     this.loading.set(true);
     this.media
-      .listByMember(this.memberId)
+      .listByMember(memberId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (items) => {
@@ -200,10 +205,11 @@ export class MemberMediaGalleryComponent implements OnInit {
   }
 
   async onUploadImages(event: any) {
-    if (!this.memberId) return;
+    const memberId = this.memberId();
+    if (!memberId) return;
     const files: File[] = event.files ?? [];
 
-    if (this.uploadMode === 'onSave') {
+    if (this.uploadMode() === 'onSave') {
       let added = 0;
       for (const f of files) {
         const k = this.key(f);
@@ -223,7 +229,7 @@ export class MemberMediaGalleryComponent implements OnInit {
     }
 
     try {
-      await lastValueFrom(this.media.uploadManyForMember(this.memberId, files));
+      await lastValueFrom(this.media.uploadManyForMember(memberId, files));
       this.imgUpload?.clear();
       this.messages.add({
         severity: 'success',
@@ -241,10 +247,11 @@ export class MemberMediaGalleryComponent implements OnInit {
   }
 
   async onUploadVideos(event: any) {
-    if (!this.memberId) return;
+    const memberId = this.memberId();
+    if (!memberId) return;
     const files: File[] = event.files ?? [];
 
-    if (this.uploadMode === 'onSave') {
+    if (this.uploadMode() === 'onSave') {
       this.stagedFiles.push(...files);
       this.messages.add({
         severity: 'info',
@@ -255,7 +262,7 @@ export class MemberMediaGalleryComponent implements OnInit {
     }
 
     try {
-      await lastValueFrom(this.media.uploadManyForMember(this.memberId, files));
+      await lastValueFrom(this.media.uploadManyForMember(memberId, files));
       this.messages.add({
         severity: 'success',
         summary: 'OK',
