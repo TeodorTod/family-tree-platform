@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import {
   InterpolateFunction,
   TranslateDefaultParser,
@@ -13,6 +14,9 @@ interface ParsedIcuExpression {
   body: string;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class IcuTranslateParser extends TranslateDefaultParser {
   private pluralRulesCache = new Map<string, Intl.PluralRules>();
 
@@ -173,7 +177,7 @@ export class IcuTranslateParser extends TranslateDefaultParser {
     const raw = this.resolveValue(params, variable);
     const str = raw === undefined || raw === null ? '' : String(raw);
     const template = cases[str] ?? cases['other'] ?? '';
-      return this.interpolate(template, params);
+    return this.interpolate(template, params);
   }
 
   private extractCases(body: string): Record<string, string> {

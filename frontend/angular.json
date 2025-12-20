@@ -29,6 +29,11 @@
                 "input": "public"
               },
               {
+                "glob": "manifest.webmanifest",
+                "input": "src",
+                "output": ""
+              },
+              {
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"

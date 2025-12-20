@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
 import { provideRouter } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { routes } from './app.routes';
 import {
@@ -37,6 +38,7 @@ import { IcuTranslateParser } from './shared/utils/icu-translate.parser';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideAnimationsAsync(),
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
     providePrimeNG({
