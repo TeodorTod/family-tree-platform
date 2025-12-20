@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   inject,
@@ -22,6 +23,7 @@ import { lastValueFrom } from 'rxjs';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-media-gallery.component.html',
   styleUrls: ['./member-media-gallery.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberMediaGalleryComponent implements OnInit {
   private _memberId: string | null = null;
@@ -281,7 +283,10 @@ export class MemberMediaGalleryComponent implements OnInit {
   }
 
   onClear() {
-    this.imgUpload?.clear();
+    this.stagedFiles = [];
+    this.stagedKeys.clear();
+    this.stagedDeletes.clear();
+    this.stagedDeleteUrls.clear();
   }
 
   removeImage(item: MediaItem) {

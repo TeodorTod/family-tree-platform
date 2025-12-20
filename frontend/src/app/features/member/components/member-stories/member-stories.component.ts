@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   OnChanges,
@@ -29,6 +30,7 @@ import { MemberProfileService } from '../../../../core/services/member-profile.s
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-stories.component.html',
   styleUrls: ['./member-stories.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberStoriesComponent implements OnInit, OnChanges, UnsavedAware {
   @Input({ required: true }) role!: string;

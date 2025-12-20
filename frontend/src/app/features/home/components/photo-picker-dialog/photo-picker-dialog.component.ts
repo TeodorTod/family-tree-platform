@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
@@ -9,6 +9,7 @@ import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primen
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './photo-picker-dialog.component.html',
   styleUrls: ['./photo-picker-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PhotoPickerDialogComponent {
   @Input() visible: boolean = false;

@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   OnInit,
   ViewChild,
   inject,
@@ -48,6 +49,7 @@ import { Roles } from '../../../shared/enums/roles.enum';
   ],
   templateUrl: './member-info.component.html',
   styleUrls: ['./member-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberInfoComponent implements OnInit {
   private route = inject(ActivatedRoute);

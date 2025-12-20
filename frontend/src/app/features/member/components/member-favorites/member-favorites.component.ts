@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   OnChanges,
@@ -24,6 +25,7 @@ import { UnsavedAware } from '../../../../shared/interfaces/unsaved-aware';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-favorites.component.html',
   styleUrls: ['./member-favorites.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberFavoritesComponent
   implements OnInit, OnChanges, UnsavedAware

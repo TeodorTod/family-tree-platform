@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
@@ -17,6 +17,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, AddRelativeDialogComponent],
   templateUrl: './global-search.page.html',
   styleUrls: ['./global-search.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalSearchPage implements OnInit {
   CONSTANTS = CONSTANTS;

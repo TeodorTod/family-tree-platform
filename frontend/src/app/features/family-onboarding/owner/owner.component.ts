@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
@@ -17,6 +17,7 @@ import { environment } from '../../../../environments/environment';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './owner.component.html',
   styleUrl: './owner.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OwnerComponent implements OnInit {
   CONSTANTS = CONSTANTS;

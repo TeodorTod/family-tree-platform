@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyService } from '../../../core/services/family.service';
@@ -18,6 +18,7 @@ import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum'
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './mother.component.html',
   styleUrls: ['./mother.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MotherComponent implements OnInit {
   CONSTANTS = CONSTANTS;

@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 
 import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../../shared/constants/constants';
@@ -12,6 +12,7 @@ type FaqItem = { qKey: string; aKey: string };
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './faq-page.component.html',
   styleUrls: ['./faq-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FaqPageComponent {
   CONSTANTS = CONSTANTS;

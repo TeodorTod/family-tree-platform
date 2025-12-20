@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   OnChanges,
@@ -23,6 +24,7 @@ import { SmokingStatus } from '../../../../shared/enums/smoking-status.enum';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-personal-info.component.html',
   styleUrls: ['./member-personal-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberPersonalInfoComponent implements OnInit, OnChanges {
   @Input({ required: true }) role!: string;

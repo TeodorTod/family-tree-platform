@@ -7,11 +7,13 @@ import { RegisterRequest } from '../../../shared/models/register-request.model';
 import { Lang } from '../../../shared/types/lang.type';
 import { AuthUser } from '../../../shared/models/user.model';
 import { TokenStorageService } from './token-storage.service';
+import { PlatformStorageService } from '../../../core/services/platform-storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private tokenStorage = inject(TokenStorageService);
+  private platformStorage = inject(PlatformStorageService);
 
   private token = signal<string | null>(this.tokenStorage.getToken());
   private profileRefresh$ = new Subject<void>();
@@ -44,6 +46,7 @@ export class AuthService {
         tap((res) => {
           this.token.set(res.access_token);
           this.tokenStorage.setToken(res.access_token);
+          this.platformStorage.removeSessionItem('ambientSoundPlayedSession');
         })
       );
   }
@@ -78,6 +81,7 @@ export class AuthService {
 
   logout() {
     this.setToken(null);
+    this.platformStorage.removeSessionItem('ambientSoundPlayedSession');
   }
 
   getTokenSignal() {

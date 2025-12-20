@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   OnChanges,
@@ -32,6 +33,7 @@ type QuillInstance = any;
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberBioComponent
   implements OnInit, OnChanges, AfterViewInit, UnsavedAware

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { FamilyMember } from '../../../../shared/models/family-member.model';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './tree-table.component.html',
   styleUrl: './tree-table.component.scss',
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeTableComponent {
   CONSTANTS = CONSTANTS;

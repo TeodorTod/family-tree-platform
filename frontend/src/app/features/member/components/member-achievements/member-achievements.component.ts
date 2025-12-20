@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   OnChanges,
@@ -28,6 +29,7 @@ import { ConfirmationService } from 'primeng/api';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-achievements.component.html',
   styleUrls: ['./member-achievements.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberAchievementsComponent
   implements OnInit, OnChanges, UnsavedAware

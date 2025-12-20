@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   OnInit,
   DestroyRef,
@@ -27,6 +28,7 @@ import { WorkForm } from '../../../../shared/types/work-form.type';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './member-career.component.html',
   styleUrls: ['./member-career.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberCareerComponent implements OnInit, UnsavedAware {
   @Input({ required: true }) role!: string;

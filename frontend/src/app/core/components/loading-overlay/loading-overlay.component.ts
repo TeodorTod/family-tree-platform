@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LoadingService } from '../../services/loading.service';
 import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
 import { AsyncPipe } from '@angular/common';
@@ -8,6 +8,7 @@ import { AsyncPipe } from '@angular/common';
   imports: [...SHARED_PRIMENG_IMPORTS, AsyncPipe, ],
   templateUrl: './loading-overlay.component.html',
   styleUrl: './loading-overlay.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingOverlayComponent {
   private loading = inject(LoadingService);

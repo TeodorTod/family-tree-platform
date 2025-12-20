@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
 import { SharingApiService, UpsertMemberConsentDto, UpdateUserSettingsDto } from '../../core/services/sharing-api.service';
@@ -9,6 +9,7 @@ import { CONSTANTS } from '../../shared/constants/constants';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './settings-sharing.page.html',
   styleUrls: ['./settings-sharing.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsSharingPage implements OnInit {
   CONSTANTS = CONSTANTS;

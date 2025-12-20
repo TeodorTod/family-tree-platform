@@ -54,6 +54,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   router = inject(Router);
   private ambientSound = inject(AmbientSoundService);
   private platformStorage = inject(PlatformStorageService);
+  private readonly soundSessionKey = 'ambientSoundPlayedSession';
   cy?: cytoscape.Core;
 
   selectedMember = signal<FamilyMember | null>(null);
@@ -1540,7 +1541,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     );
     if (soundConsent === '1') {
       this.soundConsent.set(true);
-      this.ambientSound.play();
+      const playedThisSession = this.platformStorage.getSessionItem(
+        this.soundSessionKey
+      );
+      if (playedThisSession !== '1') {
+        this.platformStorage.setSessionItem(this.soundSessionKey, '1');
+        this.ambientSound.play();
+      }
     }
   }
 
@@ -1980,6 +1987,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
     this.soundConsent.set(true);
     this.platformStorage.setItem('ambientSoundConsent', '1');
+    this.platformStorage.setSessionItem(this.soundSessionKey, '1');
     this.ambientSound.play(true);
   }
 

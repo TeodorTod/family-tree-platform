@@ -1,5 +1,6 @@
 ﻿import {
   Component,
+  ChangeDetectionStrategy,
   DestroyRef,
   OnInit,
   computed,
@@ -30,6 +31,7 @@ import { AuthService } from '../../auth/services/auth.service';
   imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
   templateUrl: './account-settings.component.html',
   styleUrls: ['./account-settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountSettingsComponent implements OnInit {
   CONSTANTS = CONSTANTS;
