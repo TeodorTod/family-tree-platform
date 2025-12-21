@@ -107,14 +107,20 @@ export class PrivacySettingsComponent {
     {
       labelKey: CONSTANTS.PRIVACY_SHORTCUTS_POLICY,
       route: CONSTANTS.ROUTES.LEGAL.PRIVACY,
+      kind: 'privacy' as const,
+      icon: 'pi-shield',
     },
     {
       labelKey: CONSTANTS.PRIVACY_SHORTCUTS_COOKIES,
       route: CONSTANTS.ROUTES.LEGAL.COOKIES,
+      kind: 'cookies' as const,
+      icon: 'pi-cookie',
     },
     {
       labelKey: CONSTANTS.PRIVACY_SHORTCUTS_SHARING,
       route: CONSTANTS.ROUTES.SETTINGS.SHARING,
+      kind: 'sharing' as const,
+      icon: 'pi-share-alt',
     },
   ] as const;
 

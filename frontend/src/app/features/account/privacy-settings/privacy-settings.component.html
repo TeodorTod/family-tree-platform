@@ -185,8 +185,17 @@
     <ul class="resource-links">
       @for (link of resourceLinks; track link.route) {
         <li>
-          <a class="resource-link" [routerLink]="link.route">
-            <span>{{ link.labelKey | translate }}</span>
+          <a
+            class="resource-link"
+            [routerLink]="link.route"
+            [class.privacy-link]="link.kind === 'privacy'"
+            [class.cookies-link]="link.kind === 'cookies'"
+            [class.sharing-link]="link.kind === 'sharing'"
+          >
+            <span class="link-main">
+              <i class="pi link-icon {{ link.icon }}" aria-hidden="true"></i>
+              <span>{{ link.labelKey | translate }}</span>
+            </span>
             <i class="pi pi-arrow-right" aria-hidden="true"></i>
           </a>
         </li>

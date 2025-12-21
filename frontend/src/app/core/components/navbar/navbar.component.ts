@@ -134,7 +134,7 @@ export class NavbarComponent implements OnDestroy {
       { separator: true },
       {
         label: this.translate.instant(CONSTANTS.SHARING_SETTINGS_TITLE),
-        icon: 'pi pi-shield',
+        icon: 'pi pi-share-alt',
         command: () => {
           this.router.navigate([CONSTANTS.ROUTES.SETTINGS.SHARING]);
           this.mobileMenuVisible = false;
