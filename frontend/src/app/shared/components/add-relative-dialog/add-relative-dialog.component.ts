@@ -169,9 +169,9 @@ export class AddRelativeDialogComponent implements OnInit {
     const initialClonedId = this.clonedMemberId();
     this.form = this.buildForm(initialClonedId);
     this.showImported.set(this.form.controls.useImported.value);
-    this.form.controls.useImported.valueChanges.subscribe((v) =>
-      this.showImported.set(!!v)
-    );
+    this.form.controls.useImported.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((v) => this.showImported.set(!!v));
 
     this.familyService
       .onSubscriptionLimitReached()
@@ -182,27 +182,33 @@ export class AddRelativeDialogComponent implements OnInit {
         }
       });
 
-    this.sharing.getOutgoingRequests().subscribe((reqs) => {
-      const options: AddRelativeImportedOption[] = (reqs || [])
-        .filter((r) => r.status === ShareRequestStatus.Approved)
-        .map((r) => ({
-          label: `${r.target.firstName ?? ''} ${
-            r.target.lastName ?? ''
-          }`.trim(),
-          value: r.id,
-          meta: r.target,
-        }));
-      this.importedOptions.set(options);
-    });
+    this.sharing
+      .getOutgoingRequests()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((reqs) => {
+        const options: AddRelativeImportedOption[] = (reqs || [])
+          .filter((r) => r.status === ShareRequestStatus.Approved)
+          .map((r) => ({
+            label: `${r.target.firstName ?? ''} ${
+              r.target.lastName ?? ''
+            }`.trim(),
+            value: r.id,
+            meta: r.target,
+          }));
+        this.importedOptions.set(options);
+      });
 
     if (initialClonedId) {
-      this.family.getFamilyMemberById(initialClonedId).subscribe((m: any) => {
-        this.form.patchValue({
-          firstName: m?.firstName ?? null,
-          middleName: m?.middleName ?? null,
-          lastName: m?.lastName ?? null,
+      this.family
+        .getFamilyMemberById(initialClonedId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((m: any) => {
+          this.form.patchValue({
+            firstName: m?.firstName ?? null,
+            middleName: m?.middleName ?? null,
+            lastName: m?.lastName ?? null,
+          });
         });
-      });
       return;
     }
     // Prefill defaults
@@ -214,25 +220,28 @@ export class AddRelativeDialogComponent implements OnInit {
       { emitEvent: false }
     );
 
-    this.form.get('importedId')?.valueChanges.subscribe((id) => {
-      const opt = this.importedOptions().find((o) => o.value === id);
-      if (!opt) return;
-      const by = opt.meta.birthYear ?? null;
-      const dy = opt.meta.deathYear ?? null;
-      const patch: any = {
-        firstName: opt.meta.firstName ?? null,
-        lastName: opt.meta.lastName ?? null,
-      };
-      if (by != null) {
-        patch.dobMode = BirthDeathDateMode.YEAR;
-        patch.dob = new Date(Date.UTC(by, 0, 1));
-      }
-      if (dy != null) {
-        patch.dodMode = BirthDeathDateMode.YEAR;
-        patch.dod = new Date(Date.UTC(dy, 0, 1));
-      }
-      this.form.patchValue(patch, { emitEvent: false });
-    });
+    this.form
+      .get('importedId')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((id) => {
+        const opt = this.importedOptions().find((o) => o.value === id);
+        if (!opt) return;
+        const by = opt.meta.birthYear ?? null;
+        const dy = opt.meta.deathYear ?? null;
+        const patch: any = {
+          firstName: opt.meta.firstName ?? null,
+          lastName: opt.meta.lastName ?? null,
+        };
+        if (by != null) {
+          patch.dobMode = BirthDeathDateMode.YEAR;
+          patch.dob = new Date(Date.UTC(by, 0, 1));
+        }
+        if (dy != null) {
+          patch.dodMode = BirthDeathDateMode.YEAR;
+          patch.dod = new Date(Date.UTC(dy, 0, 1));
+        }
+        this.form.patchValue(patch, { emitEvent: false });
+      });
   }
 
   onDobYearPicked(d: Date) {
@@ -306,14 +315,6 @@ export class AddRelativeDialogComponent implements OnInit {
     return this.showImported();
   }
 
-  private buildForm(initialClonedId: string | null): AddRelativeFormGroup {
-    return this.familyService.createFamilyMemberForm({
-      relation: new FormControl<string | null>(null, Validators.required),
-      useImported: this.fb.nonNullable.control(!!initialClonedId),
-      importedId: new FormControl<string | null>(initialClonedId ?? null),
-    });
-  }
-
   private createLabelSignal(keys: string[]) {
     const initial = this.instantLabelRecord(keys);
     const labels = signal(initial);
@@ -329,5 +330,16 @@ export class AddRelativeDialogComponent implements OnInit {
       acc[key] = this.translate.instant(key);
       return acc;
     }, {});
+  }
+
+  private buildForm(initialClonedId: string | null): AddRelativeFormGroup {
+    return this.familyService.createFamilyMemberForm({
+      destroyRef: this.destroyRef,
+      extraControls: {
+        relation: new FormControl<string | null>(null, Validators.required),
+        useImported: this.fb.nonNullable.control(!!initialClonedId),
+        importedId: new FormControl<string | null>(initialClonedId ?? null),
+      },
+    });
   }
 }

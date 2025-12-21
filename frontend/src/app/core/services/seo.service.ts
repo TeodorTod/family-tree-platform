@@ -1,8 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Injectable, inject } from '@angular/core';
+import { EffectRef, Injectable, Injector, Signal, effect, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
 
 type SeoKey =
   | 'SEO.TITLE'
@@ -24,14 +25,40 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly title = inject(Title);
   private readonly translate = inject(TranslateService);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
+  private readonly defaults: Record<SeoKey, string> = {
+    'SEO.TITLE': 'Rodostoria',
+    'SEO.DESCRIPTION': 'Rodostoria helps families preserve their history.',
+    'SEO.SHARE_TITLE': 'Rodostoria',
+    'SEO.SHARE_DESCRIPTION': 'Rodostoria helps families preserve their history.',
+    'SEO.APP_NAME': 'Rodostoria',
+  };
+  private translations?: Signal<Record<SeoKey, string>>;
+  private applyEffect?: EffectRef;
 
   init(): void {
-    this.translate
-      .stream(SEO_KEYS)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((translations) => this.applySeoTags(translations));
+    if (this.translations) {
+      return;
+    }
+
+    const initial = {
+      ...this.defaults,
+      ...(this.translate.instant(SEO_KEYS) as Record<SeoKey, string>),
+    };
+
+    this.translations = toSignal(
+      this.translate.stream(SEO_KEYS) as Observable<Record<SeoKey, string>>,
+      {
+        injector: this.injector,
+        initialValue: initial,
+      }
+    );
+
+    this.applyEffect = effect(
+      () => this.applySeoTags(this.translations!()),
+      { injector: this.injector }
+    );
   }
 
   private applySeoTags(translations: Record<SeoKey, string>): void {

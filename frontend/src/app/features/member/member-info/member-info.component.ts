@@ -157,7 +157,9 @@ export class MemberInfoComponent implements OnInit {
 
   ngOnInit() {
     this.role = this.route.snapshot.paramMap.get('role')!;
-    this.form = this.familyService.createFamilyMemberForm();
+    this.form = this.familyService.createFamilyMemberForm({
+      destroyRef: this.destroyRef,
+    });
     this.trackTranslatedRoleChanges();
     this.translate.onLangChange
       .pipe(takeUntilDestroyed(this.destroyRef))

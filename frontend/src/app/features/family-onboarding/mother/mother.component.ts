@@ -32,7 +32,9 @@ export class MotherComponent implements OnInit {
   hasExistingRecord = false;
   apiUrl = environment.apiUrl;
 
-  form = this.familyService.createFamilyMemberForm();
+  form = this.familyService.createFamilyMemberForm({
+    destroyRef: this.destroyRef,
+  });
 
   // Dropdown options
   dobModeOptions: Array<{ label: string; value: BirthDeathDateMode }> = [

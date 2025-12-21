@@ -35,7 +35,9 @@ export class FatherComponent implements OnInit {
   photoUrl = signal<string | null>(null);
   hasExistingRecord = false;
 
-  form = this.familyService.createFamilyMemberForm();
+  form = this.familyService.createFamilyMemberForm({
+    destroyRef: this.destroyRef,
+  });
 
   // Modes
   dobModeOptions = [

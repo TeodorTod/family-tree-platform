@@ -36,8 +36,12 @@ export class PaternalGrandparentsComponent implements OnInit {
   grandmotherPhotoUrl = signal<string | null>(null);
   grandfatherPhotoUrl = signal<string | null>(null);
 
-  grandmotherForm = this.familyService.createFamilyMemberForm();
-  grandfatherForm = this.familyService.createFamilyMemberForm();
+  grandmotherForm = this.familyService.createFamilyMemberForm({
+    destroyRef: this.destroyRef,
+  });
+  grandfatherForm = this.familyService.createFamilyMemberForm({
+    destroyRef: this.destroyRef,
+  });
 
   grandmotherExists = false;
   grandfatherExists = false;

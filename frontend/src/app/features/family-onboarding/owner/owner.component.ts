@@ -46,7 +46,9 @@ export class OwnerComponent implements OnInit {
     },
   ];
 
-  form = this.familyService.createFamilyMemberForm();
+  form = this.familyService.createFamilyMemberForm({
+    destroyRef: this.destroyRef,
+  });
 
   ngOnInit(): void {
     this.familyService

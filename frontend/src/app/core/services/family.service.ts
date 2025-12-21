@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   Observable,
@@ -24,6 +24,7 @@ import { ConfirmationService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { FamilyMemberFormControls } from '../../shared/types/forms/family-member-form.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -90,9 +91,11 @@ export class FamilyService {
       never,
       never
     >
-  >(
-    extraControls?: TExtraControls
-  ): FormGroup<FamilyMemberFormControls & TExtraControls> {
+  >(options: {
+    destroyRef: DestroyRef;
+    extraControls?: TExtraControls;
+  }): FormGroup<FamilyMemberFormControls & TExtraControls> {
+    const { destroyRef, extraControls } = options;
     const baseControls: FamilyMemberFormControls = {
       firstName: new FormControl<string | null>(null, Validators.required),
       middleName: new FormControl<string | null>(null),
@@ -127,7 +130,10 @@ export class FamilyService {
 
     const controls = fg.controls;
 
-    controls.dobMode.valueChanges.subscribe((mode) => {
+    const withTeardown = <T>(source: Observable<T>) =>
+      source.pipe(takeUntilDestroyed(destroyRef));
+
+    withTeardown(controls.dobMode.valueChanges).subscribe((mode) => {
       const dob = controls.dob;
       const by = controls.birthYear;
       const byDate = controls.birthYearDate;
@@ -157,7 +163,7 @@ export class FamilyService {
       bn.updateValueAndValidity({ emitEvent: false });
     });
 
-    controls.birthYearDate.valueChanges.subscribe((d: Date | null) => {
+    withTeardown(controls.birthYearDate.valueChanges).subscribe((d: Date | null) => {
       controls.birthYear.setValue(d ? d.getFullYear() : null, {
         emitEvent: false,
       });
@@ -194,15 +200,15 @@ export class FamilyService {
       dn.updateValueAndValidity({ emitEvent: false });
     };
 
-    controls.dodMode.valueChanges.subscribe(() => applyDodMode());
+    withTeardown(controls.dodMode.valueChanges).subscribe(() => applyDodMode());
 
-    controls.deathYearDate.valueChanges.subscribe((d: Date | null) => {
+    withTeardown(controls.deathYearDate.valueChanges).subscribe((d: Date | null) => {
       controls.deathYear.setValue(d ? d.getFullYear() : null, {
         emitEvent: false,
       });
     });
 
-    controls.isAlive.valueChanges.subscribe((alive) => {
+    withTeardown(controls.isAlive.valueChanges).subscribe((alive) => {
       if (alive) {
         controls.dod.setValue(null, { emitEvent: false });
         controls.deathYear.setValue(null, { emitEvent: false });

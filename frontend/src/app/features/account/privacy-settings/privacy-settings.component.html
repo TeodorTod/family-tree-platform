@@ -193,7 +193,11 @@
             [class.sharing-link]="link.kind === 'sharing'"
           >
             <span class="link-main">
-              <i class="pi link-icon {{ link.icon }}" aria-hidden="true"></i>
+              @if (link.kind === 'cookies') {
+                <span class="link-icon cookie-icon" aria-hidden="true"></span>
+              } @else {
+                <i class="pi link-icon {{ link.icon }}" aria-hidden="true"></i>
+              }
               <span>{{ link.labelKey | translate }}</span>
             </span>
             <i class="pi pi-arrow-right" aria-hidden="true"></i>
