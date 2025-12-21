@@ -401,10 +401,23 @@
   } /* Title full width */
 
   .story-head {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .story-head .left {
     align-items: flex-start;
-    .right {
-      padding-right: 0;
-    }
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .story-head .right {
+    padding-right: 0;
+    gap: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 }
 

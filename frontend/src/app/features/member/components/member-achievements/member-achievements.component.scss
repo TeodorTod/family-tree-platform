@@ -370,6 +370,7 @@ p-select {
     margin-top: 0.5rem;
     padding-right: 0;
     gap: 0.25rem;
+    justify-content: space-between;
   }
   :host
     ::ng-deep
