@@ -5,9 +5,8 @@
       pButton
       type="button"
       class="seg-btn"
-      [ngClass]="
-        section() !== 'education' ? 'p-button-outlined p-button-secondary' : ''
-      "
+      [class.p-button-outlined]="section() !== 'education'"
+      [class.p-button-secondary]="section() !== 'education'"
       icon="pi pi-book"
       (click)="showEducation()"
     >
@@ -19,9 +18,8 @@
       pButton
       type="button"
       class="seg-btn"
-      [ngClass]="
-        section() !== 'work' ? 'p-button-outlined p-button-secondary' : ''
-      "
+      [class.p-button-outlined]="section() !== 'work'"
+      [class.p-button-secondary]="section() !== 'work'"
       icon="pi pi-briefcase"
       (click)="showWork()"
     >

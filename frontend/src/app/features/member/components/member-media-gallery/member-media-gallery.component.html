@@ -4,9 +4,8 @@
       pButton
       type="button"
       class="seg-btn"
-      [ngClass]="
-        section() !== 'images' ? 'p-button-outlined p-button-secondary' : ''
-      "
+      [class.p-button-outlined]="section() !== 'images'"
+      [class.p-button-secondary]="section() !== 'images'"
       icon="pi pi-image"
       (click)="showImages()"
     >
@@ -20,9 +19,8 @@
       pButton
       type="button"
       class="seg-btn"
-      [ngClass]="
-        section() !== 'videos' ? 'p-button-outlined p-button-secondary' : ''
-      "
+      [class.p-button-outlined]="section() !== 'videos'"
+      [class.p-button-secondary]="section() !== 'videos'"
       icon="pi pi-video"
       (click)="showVideos()"
     >
