@@ -113,14 +113,6 @@
           <i class="pi pi-globe"></i>
           <span>{{ currentLangLabel }}</span>
         </button>
-
-        <button
-          pButton
-          label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
-          icon="pi pi-sign-out"
-          class="p-button-text logout-btn"
-          (click)="logout()"
-        ></button>
       </div>
       } @else {
       <div class="nav-desktop">
@@ -267,14 +259,6 @@
     >
       <i class="pi pi-chevron-down dropdown-icon"></i>
     </button>
-
-    <button
-      pButton
-      label="{{ CONSTANTS.AUTH_LOGOUT | translate }}"
-      icon="pi pi-sign-out"
-      class="mobile-logout-btn"
-      (click)="logout()"
-    ></button>
     } @else {
     <!-- Mobile Language Menu Button -->
     <p-menu

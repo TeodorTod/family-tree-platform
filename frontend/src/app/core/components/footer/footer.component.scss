@@ -17,9 +17,15 @@
     font-size: 1rem;
   }
 
+.text-muted {
+  color: #777;
+}
+
+@media (max-width: 600px) {
   .text-muted {
-    color: #777;
+    display: none;
   }
+}
 }
 
 .my-icons {

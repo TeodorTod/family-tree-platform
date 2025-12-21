@@ -187,6 +187,14 @@ export class NavbarComponent implements OnDestroy {
           this.mobileMenuVisible = false;
         },
       },
+      { separator: true },
+      {
+        label: this.translate.instant(CONSTANTS.AUTH_LOGOUT),
+        icon: 'pi pi-sign-out',
+        command: () => {
+          this.logout();
+        },
+      },
     ];
 
     this.refreshLogoTitle();

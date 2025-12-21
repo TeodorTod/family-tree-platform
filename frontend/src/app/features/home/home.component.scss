@@ -69,7 +69,7 @@
 
 .node-actions {
   position: absolute;
-  transform: translate(-50%, -20%);
+  transform: translate(-50%, -8%);
   display: flex;
   gap: 0.5rem;
   z-index: 9999;
@@ -168,7 +168,7 @@
   }
 
   .node-actions {
-    transform: translate(-50%, -15%);
+    transform: translate(-50%, -4%);
     gap: 0.25rem;
 
     :host ::ng-deep .p-button.p-button-rounded {
