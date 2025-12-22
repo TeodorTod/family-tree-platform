@@ -3,12 +3,10 @@
   <!-- Overlay: controls only background color & its opacity -->
   <div
     class="bg-overlay"
-    [ngStyle]="{
-      'background-image': 'url(' + backgroundUrl() + ')',
-      'background-size': 'cover',
-      'background-position': 'center',
-      opacity: backgroundOpacity()
-    }"
+    [style.backgroundImage]="'url(' + backgroundUrl() + ')'"
+    [style.backgroundSize]="'cover'"
+    [style.backgroundPosition]="'center'"
+    [style.opacity]="backgroundOpacity()"
   ></div>
 
   <!-- Actual Cytoscape canvas -->
@@ -71,10 +69,12 @@
 <div
   class="node-actions"
   (click)="handleActionClick($event)"
-  [ngStyle]="{
-    top: hoveredNode()?.y + 'px',
-    left: hoveredNode()?.x + 'px'
-  }"
+  [style.top.px]="hoveredNode()?.y"
+  [style.left.px]="hoveredNode()?.x"
+  tabindex="0"
+  role="group"
+  (keydown.enter)="handleActionClick($event)"
+  (keydown.space)="handleActionClick($event)"
 >
   <button
     pButton

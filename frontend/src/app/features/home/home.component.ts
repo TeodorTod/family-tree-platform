@@ -1067,8 +1067,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  handleActionClick(event: MouseEvent) {
+  handleActionClick(event: Event) {
     event.stopPropagation();
+    if (event instanceof KeyboardEvent && (event.key === ' ' || event.key === 'Spacebar')) {
+      event.preventDefault();
+    }
   }
 
   toggleConnections() {

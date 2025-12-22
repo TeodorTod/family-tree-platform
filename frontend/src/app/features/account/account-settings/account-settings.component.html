@@ -45,11 +45,11 @@
         <div class="meta-row">
           <span>
             {{ CONSTANTS.ACCOUNT_MEMBER_SINCE | translate }}:
-            <strong>{{ user()?.createdAt | date: 'longDate' }}</strong>
+            <strong>{{ formatLocalDate(user()?.createdAt, 'long') }}</strong>
           </span>
           <span>
             {{ CONSTANTS.ACCOUNT_LAST_UPDATED | translate }}:
-            <strong>{{ (user()?.updatedAt || user()?.createdAt) | date: 'medium' }}</strong>
+            <strong>{{ formatLocalDate(user()?.updatedAt || user()?.createdAt, 'medium') }}</strong>
           </span>
         </div>
 

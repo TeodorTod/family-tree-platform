@@ -145,6 +145,21 @@ export class AccountSettingsComponent implements OnInit {
       });
   }
 
+  formatLocalDate(
+    value: string | Date | null | undefined,
+    style: 'long' | 'medium' = 'long'
+  ): string {
+    if (!value) return '—';
+    const date = typeof value === 'string' ? new Date(value) : value;
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '—';
+    const locale = this.languageControl.value || this.translate.currentLang || 'en';
+    const options: Intl.DateTimeFormatOptions =
+      style === 'long'
+        ? { dateStyle: 'long' }
+        : { dateStyle: 'medium', timeStyle: 'medium' };
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  }
+
   get providerLabelKey() {
     return this.user()?.provider === 'google'
       ? CONSTANTS.ACCOUNT_SIGNIN_METHOD_GOOGLE
