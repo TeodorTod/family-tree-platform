@@ -16,7 +16,10 @@ export function appInitializerFactory(
   translate: TranslateService
 ): () => Promise<void> {
   return () => {
-    const stored = localStorage.getItem('lang') as Lang | null;
+    const stored =
+      typeof window !== 'undefined'
+        ? (localStorage.getItem('lang') as Lang | null)
+        : null;
     const current = translate.currentLang as Lang | undefined;
     const lang = (SUPPORTED.includes(current as Lang)
       ? current

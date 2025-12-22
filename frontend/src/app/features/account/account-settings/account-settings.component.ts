@@ -25,6 +25,8 @@ import { Lang } from '../../../shared/types/lang.type';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../auth/services/auth.service';
+import { FamilyService } from '../../../core/services/family.service';
+import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-account-settings',
@@ -43,6 +45,7 @@ export class AccountSettingsComponent implements OnInit {
   private auth = inject(AuthService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private familyService = inject(FamilyService);
 
   user = signal<AuthUser | null>(null);
   loadingProfile = signal(true);
@@ -62,6 +65,7 @@ export class AccountSettingsComponent implements OnInit {
   deleteDialogVisible = signal(false);
   deleteLoading = signal(false);
   deleteError = signal<string | null>(null);
+  ownerName = signal<string>('');
 
   private readonly passwordErrorMap: Record<string, string> = {
     'Current password is incorrect': CONSTANTS.AUTH_ERROR_CURRENT_PASSWORD,
@@ -112,7 +116,13 @@ export class AccountSettingsComponent implements OnInit {
 
   initials = computed(() => {
     const user = this.user();
-    const text = (user?.displayName || user?.email || '').trim();
+    const fallbackOwner = this.ownerName().trim();
+    const text = (
+      user?.displayName ||
+      fallbackOwner ||
+      user?.email ||
+      ''
+    ).trim();
     if (!text) return '?';
     const parts = text.split(/\s+/).filter(Boolean);
     return parts
@@ -133,6 +143,7 @@ export class AccountSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.refreshLangOptions();
     this.loadProfile();
+    this.loadOwnerName();
 
     this.translate.onLangChange
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -411,5 +422,30 @@ export class AccountSettingsComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  private loadOwnerName(): void {
+    this.familyService
+      .getFamilyMemberByRole(Roles.OWNER)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((owner) => {
+        const fallback = [owner?.firstName, owner?.lastName]
+          .filter((v) => !!(v && `${v}`.trim()))
+          .join(' ')
+          .trim();
+        this.ownerName.set(fallback);
+
+        const current = (this.profileForm.get('displayName')?.value ?? '')
+          .toString()
+          .trim();
+        if (!current && fallback) {
+          this.profileForm.patchValue(
+            { displayName: fallback },
+            { emitEvent: false }
+          );
+          this.profileForm.markAsPristine();
+          this.profileForm.markAsUntouched();
+        }
+      });
   }
 }

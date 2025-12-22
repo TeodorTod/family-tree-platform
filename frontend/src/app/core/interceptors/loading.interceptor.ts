@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 export class LoadingInterceptor implements HttpInterceptor {
   private loading = inject(LoadingService);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept<T>(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
     const isApi = req.url.startsWith(environment.apiUrl);
 
     const skip = req.headers.has('X-Skip-Spinner');
