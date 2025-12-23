@@ -496,49 +496,76 @@ export class FamilyMembersService {
   }
 
   async deleteByRole(userId: string, role: string) {
-    const existing = await this.prisma.familyMember.findFirst({
-      where: { userId, role: role.toLowerCase() },
-      select: { id: true, role: true },
+    const normalized = role.toLowerCase();
+    const targets = await this.getDeletionTargets(userId, normalized, role);
+    const ids = targets.map((m) => m.id);
+
+    await this.prisma.$transaction(async (tx) => {
+      // clear partner references pointing to any of the targets
+      await tx.familyMember.updateMany({
+        where: { partnerId: { in: ids } },
+        data: { partnerId: null, partnerStatus: null },
+      });
+
+      // delete relationships, profiles, media, and members
+      await tx.relationship.deleteMany({
+        where: { OR: [{ fromMemberId: { in: ids } }, { toMemberId: { in: ids } }] },
+      });
+      await tx.memberProfile.deleteMany({ where: { memberId: { in: ids } } });
+      await tx.media.deleteMany({ where: { memberId: { in: ids } } });
+      await tx.familyMember.deleteMany({ where: { id: { in: ids } } });
     });
-    if (!existing) throw new NotFoundException(`No member with role ${role}`);
-    if (existing.role === 'owner') {
+
+    return {
+      ok: true,
+      deletedCount: ids.length,
+      deletedRoles: targets.map((t) => t.role),
+      deletedMembers: targets.map((t) => ({
+        role: t.role,
+        firstName: t.firstName,
+        lastName: t.lastName,
+        fullName: [t.firstName, t.lastName].filter(Boolean).join(' ').trim(),
+      })),
+    };
+  }
+
+  async deletionImpact(userId: string, role: string) {
+    const normalized = role.toLowerCase();
+    const targets = await this.getDeletionTargets(userId, normalized, role);
+    return {
+      ok: true,
+      count: targets.length,
+      roles: targets.map((t) => t.role),
+      members: targets.map((t) => ({
+        role: t.role,
+        firstName: t.firstName,
+        lastName: t.lastName,
+        fullName: [t.firstName, t.lastName].filter(Boolean).join(' ').trim(),
+      })),
+    };
+  }
+
+  private async getDeletionTargets(
+    userId: string,
+    normalizedRole: string,
+    originalRole: string
+  ) {
+    const targets = await this.prisma.familyMember.findMany({
+      where: {
+        userId,
+        OR: [
+          { role: normalizedRole },
+          { role: { startsWith: `${normalizedRole}_` } },
+        ],
+      },
+      select: { id: true, role: true, firstName: true, lastName: true },
+    });
+
+    if (!targets.length) throw new NotFoundException(`No member with role ${originalRole}`);
+    if (targets.some((m) => m.role === 'owner')) {
       throw new BadRequestException('Owner cannot be deleted.');
     }
-
-    const memberId = existing.id;
-
-    try {
-      await this.prisma.$transaction(async (tx) => {
-        await tx.familyMember.updateMany({
-          where: { partnerId: memberId },
-          data: { partnerStatus: null },
-        });
-
-        await tx.familyMember.delete({ where: { id: memberId } });
-      });
-
-      return { ok: true };
-    } catch (e: any) {
-      if (e?.code !== 'P2003') throw e;
-
-      await this.prisma.$transaction(async (tx) => {
-        await tx.familyMember.updateMany({
-          where: { partnerId: memberId },
-          data: { partnerId: null, partnerStatus: null },
-        });
-
-        await tx.relationship.deleteMany({
-          where: { OR: [{ fromMemberId: memberId }, { toMemberId: memberId }] },
-        });
-
-        await tx.memberProfile.deleteMany({ where: { memberId } });
-        await tx.media.deleteMany({ where: { memberId } });
-
-        await tx.familyMember.delete({ where: { id: memberId } });
-      });
-
-      return { ok: true, fallback: true };
-    }
+    return targets;
   }
 
   async getFamilyMemberById(userId: string, id: string, q?: GetMyTreeQuery) {

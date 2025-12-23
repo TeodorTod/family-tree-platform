@@ -58,6 +58,12 @@ body {
   overflow: hidden;
 }
 
+/* Keep confirm dialogs compact */
+.p-confirm-dialog {
+  max-width: 520px !important;
+  width: 90vw !important;
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;

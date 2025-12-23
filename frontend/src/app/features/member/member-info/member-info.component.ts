@@ -630,18 +630,59 @@ export class MemberInfoComponent implements OnInit {
   confirmDelete() {
     if (this.role === Roles.OWNER) return;
 
-    this.confirm.confirm({
-      header: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_TITLE),
-      message: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_MESSAGE),
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: this.translate.instant(CONSTANTS.INFO_DELETE),
-      rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
-      acceptButtonStyleClass: 'p-button-danger',
-      rejectButtonStyleClass: 'p-button-secondary',
+    this.familyService
+      .getDeleteImpact(this.role)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (impact) => {
+          const names =
+            impact.members?.length
+              ? impact.members
+                  .filter((m) => m.role !== this.role) // exclude the member itself
+                  .map(
+                    (m) =>
+                      (m.fullName && m.fullName.trim()) ||
+                      [m.firstName, m.lastName].filter(Boolean).join(' ').trim() ||
+                      m.role
+                  )
+                  .filter(Boolean)
+              : [];
 
-      defaultFocus: 'reject',
-      accept: () => this.deleteMember(),
-    });
+          const detail =
+            names.length > 0
+              ? `<div>${this.translate.instant(CONSTANTS.INFO_DELETE_DEPENDENTS)}</div><ul class="delete-impact-list">${names
+                  .map((n) => `<li>${this.escapeHtml(n)}</li>`)
+                  .join('')}</ul>`
+              : '';
+
+          this.confirm.confirm({
+            header: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_TITLE),
+            message: detail
+              ? `${this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_MESSAGE)}<br/><br/>${detail}`
+              : this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_MESSAGE),
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: this.translate.instant(CONSTANTS.INFO_DELETE),
+            rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
+            acceptButtonStyleClass: 'p-button-danger',
+            rejectButtonStyleClass: 'p-button-secondary',
+            defaultFocus: 'reject',
+            accept: () => this.deleteMember(),
+          });
+        },
+        error: () => {
+          this.confirm.confirm({
+            header: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_TITLE),
+            message: this.translate.instant(CONSTANTS.INFO_CONFIRM_DELETE_MESSAGE),
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: this.translate.instant(CONSTANTS.INFO_DELETE),
+            rejectLabel: this.translate.instant(CONSTANTS.INFO_CANCEL),
+            acceptButtonStyleClass: 'p-button-danger',
+            rejectButtonStyleClass: 'p-button-secondary',
+            defaultFocus: 'reject',
+            accept: () => this.deleteMember(),
+          });
+        },
+      });
   }
 
   private deleteMember() {
@@ -793,5 +834,14 @@ export class MemberInfoComponent implements OnInit {
     if (!this.hasConstant(this.role) && this.translatedRoleAuto) {
       this.applyDefaultTranslatedRole();
     }
+  }
+
+  private escapeHtml(input: string): string {
+    return input
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 }

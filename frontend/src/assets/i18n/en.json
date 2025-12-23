@@ -208,6 +208,7 @@
     "DELETE_MEMBER": "Delete Member",
     "CONFIRM_DELETE_TITLE": "Confirm Deletion",
     "CONFIRM_DELETE_MESSAGE": "Are you sure you want to delete this family member?",
+    "DELETE_DEPENDENTS": "The following related members will also be deleted:",
     "DELETE": "Delete",
     "SUCCESS": "Successful",
     "UNSUCCESSFUL": "Unsuccessful",

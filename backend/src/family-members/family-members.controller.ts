@@ -100,9 +100,15 @@ export class FamilyMembersController {
     return this.familyService.updateFamilyMemberByRole(userId, role, dto);
   }
 
-@Delete(':role')
-async deleteByRole(@Req() req: any, @Param('role') role: string) {
-  const userId = req.user.sub;
-  return this.familyService.deleteByRole(userId, role);
-}
+  @Delete(':role')
+  async deleteByRole(@Req() req: any, @Param('role') role: string) {
+    const userId = req.user.sub;
+    return this.familyService.deleteByRole(userId, role);
+  }
+
+  @Get(':role/delete-impact')
+  async deleteImpact(@Req() req: any, @Param('role') role: string) {
+    const userId = req.user.sub;
+    return this.familyService.deletionImpact(userId, role);
+  }
 }

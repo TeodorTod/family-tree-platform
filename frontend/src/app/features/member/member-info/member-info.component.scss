@@ -349,15 +349,38 @@ floating-field.relation-section {
   .p-tabview .p-tabview-nav .p-tabview-nav-btn:hover {
     background: #f2f4f7 !important;
     color: #111827 !important;
-  }
+}
 
-  /* Disabled arrows */
-  :host ::ng-deep
-  .p-tabs .p-tablist .p-tabs-scrollbutton.p-disabled,
-  .p-tabview .p-tabview-nav .p-tabview-nav-btn.p-disabled {
-    background: #ffffff !important;
-    color: #9ca3af !important;
-    opacity: 0.7 !important;
-  }
+/* Disabled arrows */
+:host ::ng-deep
+.p-tabs .p-tablist .p-tabs-scrollbutton.p-disabled,
+.p-tabview .p-tabview-nav .p-tabview-nav-btn.p-disabled {
+  background: #ffffff !important;
+  color: #9ca3af !important;
+  opacity: 0.7 !important;
+}
+
+.narrow-confirm {
+  max-width: 520px !important;
+  width: 90vw !important;
+}
+
+:host ::ng-deep .p-confirm-dialog .p-dialog-content {
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep .delete-impact-list {
+  padding-left: 1.1rem;
+  margin: 0;
+  list-style: disc;
+}
+:host ::ng-deep .delete-impact-list li {
+  margin: 0.15rem 0;
+}
+
+:host ::ng-deep .p-confirm-dialog {
+  max-width: 520px;
+  width: 90vw;
+}
 }
 

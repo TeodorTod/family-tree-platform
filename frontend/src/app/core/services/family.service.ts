@@ -366,10 +366,26 @@ export class FamilyService {
 
   deleteMemberByRole(role: string) {
     return this.http
-      .delete<{ ok: boolean }>(
+      .delete<{
+        ok: boolean;
+        deletedCount?: number;
+        deletedRoles?: string[];
+        deletedMembers?: Array<{ role: string; firstName?: string; lastName?: string; fullName?: string }>;
+      }>(
         `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`
       )
       .pipe(tap(() => this.invalidateRoleCache(role)));
+  }
+
+  getDeleteImpact(role: string) {
+    return this.http.get<{
+      ok: boolean;
+      count: number;
+      roles: string[];
+      members?: Array<{ role: string; firstName?: string; lastName?: string; fullName?: string }>;
+    }>(
+      `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}/delete-impact`
+    );
   }
 
   uploadPhoto(file: File) {
