@@ -25,6 +25,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { FamilyMemberFormControls } from '../../shared/types/forms/family-member-form.types';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +35,7 @@ export class FamilyService {
   private translate = inject(TranslateService);
   private confirmation = inject(ConfirmationService);
   private router = inject(Router);
+  private messageService = inject(MessageService);
   private api = environment.apiUrl;
   private memberByRoleCache = new Map<string, Observable<any>>();
   private subscriptionLimit$ = new Subject<void>();
@@ -56,6 +58,7 @@ export class FamilyService {
   }
 
   private handleSubscriptionLimitError(err: unknown) {
+    this.handleParentConstraintError(err);
     if (err instanceof HttpErrorResponse && err.status === 400) {
       const rawMessage =
         (err.error?.message?.message as string | undefined) ??
@@ -375,6 +378,44 @@ export class FamilyService {
         `${this.api}/${CONSTANTS.ROUTES.FAMILY_MEMBERS}/${role}`
       )
       .pipe(tap(() => this.invalidateRoleCache(role)));
+  }
+
+  private handleParentConstraintError(err: unknown) {
+    if (!(err instanceof HttpErrorResponse)) return;
+    if (err.status !== 400) return;
+
+    const raw =
+      (err.error?.message?.message as string | undefined) ??
+      (err.error?.message as string | undefined) ??
+      err.message;
+
+    if (!raw) return;
+
+    const lower = raw.toLowerCase();
+    const isMother =
+      lower.includes('mother') && !lower.includes('grandfather') && !lower.includes('grandmother');
+    const isFather =
+      lower.includes('father') && !lower.includes('grandfather') && !lower.includes('grandmother');
+
+    if (!(isMother || isFather)) return;
+
+    const nameMatch = raw.match(/\"([^\"]+)\"/);
+    const childName =
+      nameMatch?.[1] ||
+      this.translate.instant(CONSTANTS.COMMON_MEMBER).toLowerCase();
+
+    const detail = this.translate.instant(
+      isMother
+        ? CONSTANTS.ERROR_PARENT_EXISTS_MOTHER
+        : CONSTANTS.ERROR_PARENT_EXISTS_FATHER,
+      { name: childName }
+    );
+
+    this.messageService.add({
+      severity: 'error',
+      summary: this.translate.instant(CONSTANTS.COMMON_ERROR),
+      detail,
+    });
   }
 
   getDeleteImpact(role: string) {

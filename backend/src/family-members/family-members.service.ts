@@ -109,6 +109,9 @@ export class FamilyMembersService {
 
     const dobPayload = this.normalizeDobPayload(dto);
     const dodPayload = this.normalizeDodPayload(dto);
+    const normalizedRole = dto.role.toLowerCase();
+
+    await this.ensureSingleParent(userId, normalizedRole);
 
     const created = await this.prisma.familyMember.create({
       data: {
@@ -121,7 +124,7 @@ export class FamilyMembersService {
         ...dodPayload,
         isAlive: dto.isAlive,
         photoUrl: dto.photoUrl,
-        role: dto.role.toLowerCase(),
+        role: normalizedRole,
         relationLabel: dto.relationLabel ?? undefined,
         translatedRole: dto.translatedRole ?? undefined,
         partnerId: dto.partnerId ?? undefined,
@@ -173,6 +176,7 @@ export class FamilyMembersService {
     if (!target) throw new NotFoundException('Member not found');
     const role = newRole.toLowerCase();
     if (role === 'owner') throw new BadRequestException('Cannot assign owner');
+    await this.ensureSingleParent(userId, role, memberId);
     const exists = await this.prisma.familyMember.findFirst({ where: { userId, role } });
     if (exists && exists.id !== memberId) throw new BadRequestException('Role already exists');
     return this.prisma.familyMember.update({ where: { id: memberId }, data: { role } });
@@ -238,7 +242,47 @@ export class FamilyMembersService {
     });
   }
 
-  async createRelationship(dto: CreateRelationshipDto) {
+  async createRelationship(userId: string, dto: CreateRelationshipDto) {
+    if (dto.type === 'parent') {
+      const [parent, child] = await Promise.all([
+        this.prisma.familyMember.findFirst({
+          where: { id: dto.fromMemberId, userId },
+          select: { id: true, role: true, firstName: true, lastName: true },
+        }),
+        this.prisma.familyMember.findFirst({
+          where: { id: dto.toMemberId, userId },
+          select: { id: true, role: true, firstName: true, lastName: true },
+        }),
+      ]);
+
+      if (!parent || !child) {
+        throw new NotFoundException('Parent or child not found for this user');
+      }
+
+      const { relationType } = this.parseRole(parent.role);
+      if (relationType === 'mother' || relationType === 'father') {
+        const existingParents = await this.prisma.relationship.findMany({
+          where: { toMemberId: child.id, type: 'parent' },
+          include: { fromMember: { select: { role: true } } },
+        });
+
+        const conflict = existingParents.some((rel) => {
+          const relType = this.parseRole(rel.fromMember.role).relationType;
+          return relType === relationType;
+        });
+
+        if (conflict) {
+          const childName = [child.firstName, child.lastName]
+            .filter(Boolean)
+            .join(' ')
+            .trim();
+          throw new BadRequestException(
+            `Member "${childName || 'child'}" already has a ${relationType}. Only one ${relationType} is allowed.`,
+          );
+        }
+      }
+    }
+
     return this.prisma.relationship.create({
       data: {
         fromMemberId: dto.fromMemberId,
@@ -543,6 +587,92 @@ export class FamilyMembersService {
         fullName: [t.firstName, t.lastName].filter(Boolean).join(' ').trim(),
       })),
     };
+  }
+
+  private parseRole(role: string): {
+    base: string;
+    relationType: string;
+    suffix: string;
+  } {
+    const parts = role.split('_');
+    let suffix = '';
+    if (parts.length > 1 && /^\d+$/.test(parts[parts.length - 1])) {
+      suffix = parts.pop()!;
+    }
+    const relationType = parts.length > 0 ? parts[parts.length - 1] : '';
+    const base = parts.slice(0, -1).join('_');
+    return { base, relationType, suffix };
+  }
+
+  private async ensureSingleParent(
+    userId: string,
+    role: string,
+    excludeId?: string,
+  ) {
+    const { base, relationType } = this.parseRole(role);
+    if (relationType !== 'father' && relationType !== 'mother') return;
+
+    const prefix = base ? `${base}_${relationType}` : relationType;
+
+    const canonicalParentRole =
+      base === 'father'
+        ? relationType === 'mother'
+          ? 'paternal_grandmother'
+          : 'paternal_grandfather'
+        : base === 'mother'
+          ? relationType === 'mother'
+            ? 'maternal_grandmother'
+            : 'maternal_grandfather'
+          : null;
+
+    if (canonicalParentRole) {
+      const canonicalExists = await this.prisma.familyMember.findFirst({
+        where: {
+          userId,
+          role: canonicalParentRole,
+          ...(excludeId ? { id: { not: excludeId } } : {}),
+        },
+      });
+      if (canonicalExists) {
+        const child =
+          base &&
+          (await this.prisma.familyMember.findFirst({
+            where: { userId, role: base },
+          }));
+
+        const childName = child
+          ? [child.firstName, child.lastName].filter(Boolean).join(' ').trim()
+          : base || 'this member';
+
+        throw new BadRequestException(
+          `Member "${childName}" already has a ${relationType}. Only one ${relationType} is allowed.`,
+        );
+      }
+    }
+
+    const existing = await this.prisma.familyMember.findFirst({
+      where: {
+        userId,
+        role: { startsWith: prefix },
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+    });
+
+    if (existing) {
+      const child =
+        base &&
+        (await this.prisma.familyMember.findFirst({
+          where: { userId, role: base },
+        }));
+
+      const childName = child
+        ? [child.firstName, child.lastName].filter(Boolean).join(' ').trim()
+        : base || 'this member';
+
+      throw new BadRequestException(
+        `Member "${childName}" already has a ${relationType}. Only one ${relationType} is allowed.`,
+      );
+    }
   }
 
   private async getDeletionTargets(

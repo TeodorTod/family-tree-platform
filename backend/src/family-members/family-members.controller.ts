@@ -37,7 +37,7 @@ export class FamilyMembersController {
 
   @Post('relationships')
   createRelationship(@Body() dto: CreateRelationshipDto, @Req() req: any) {
-    return this.familyService.createRelationship(dto);
+    return this.familyService.createRelationship(req.user.sub, dto);
   }
 
   @Get('my-tree-paged')

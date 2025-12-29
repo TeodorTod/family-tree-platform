@@ -236,6 +236,7 @@
     [modal]="true"
     [closable]="true"
     [style]="{ width: '450px' }"
+    [focusOnShow]="false"
     (onHide)="closeDeleteDialog()"
     (visibleChange)="deleteDialogVisible.set($event); deleteError.set(null)"
   >
