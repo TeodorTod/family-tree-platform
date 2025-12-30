@@ -1,59 +1,56 @@
-# Frontend
+# FamilyTreeApp Frontend
 
-This project was generated using [Angular CLI](https://example.invalid version 19.2.15.
+Angular UI for FamilyTreeApp. It provides the family tree experience, onboarding, member profiles, sharing, subscriptions, and admin tools.
 
-## Development server
+## Highlights
 
-To start a local development server, run:
+- Interactive family tree visualization
+- Family onboarding and relationship management
+- Member profiles, stories, favorites, achievements, media
+- Global search and sharing requests
+- Subscription and account settings
+- Contact and support pages
+- Multi-language UI
 
-```bash
-ng serve
-```
+## Tech stack
 
-Once the server is running, open your browser and navigate to `https://example.invalid The application will automatically reload whenever you modify any of the source files.
+- Angular 20
+- PrimeNG UI and PrimeIcons
+- ngx-translate for i18n
+- Cytoscape for tree visualization
+- Stripe.js for billing
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Setup
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Update `frontend/src/environments/environment.ts`:
 
-## Running unit tests
+```
+apiUrl: 'https://example.invalid',
+stripePublishableKey: 'REDACTED_CLIENT_KEY',
+recaptchaSiteKey: 'your_site_key'
+```
 
-To execute unit tests with the [Karma](https://example.invalid test runner, use the following command:
+## Run
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+Navigate to `https://example.invalid
 
-For end-to-end (e2e) testing, run:
+## Build
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Tests
 
-## Additional Resources
+```bash
+npm run test
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://example.invalid page.
