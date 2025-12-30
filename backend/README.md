@@ -1,6 +1,6 @@
-# FamilyTreeApp Backend
+# Rodostoria Backend
 
-NestJS API for FamilyTreeApp. It handles authentication, member profiles, family relationships, media, sharing, billing, and admin workflows.
+NestJS API for Rodostoria. It handles authentication, member profiles, family relationships, media, sharing, billing, and admin workflows.
 
 ## Key capabilities
 

@@ -1,6 +1,6 @@
-# FamilyTreeApp Frontend
+# Rodostoria Frontend
 
-Angular UI for FamilyTreeApp. It provides the family tree experience, onboarding, member profiles, sharing, subscriptions, and admin tools.
+Angular UI for Rodostoria. It provides the family tree experience, onboarding, member profiles, sharing, subscriptions, and admin tools.
 
 ## Highlights
 

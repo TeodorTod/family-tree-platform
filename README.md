@@ -1,6 +1,6 @@
-# FamilyTreeApp
+# Rodostoria
 
-FamilyTreeApp is a full-stack family tree and genealogy platform for building, exploring, and sharing family histories. It includes a rich Angular front end, a NestJS API, and media storage for photos and stories.
+Rodostoria is a full-stack family tree and genealogy platform for building, exploring, and sharing family histories. It includes a rich Angular front end, a NestJS API, and media storage for photos and stories.
 
 ## Features
 
