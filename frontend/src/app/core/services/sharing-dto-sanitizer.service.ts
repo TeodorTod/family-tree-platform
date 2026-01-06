@@ -6,11 +6,26 @@ export interface ShareRequestTargetDto {
   lastName?: string | null;
   birthYear?: number | string | null;
   deathYear?: number | string | null;
+  user?: ShareRequestUserDto | null;
+}
+
+export interface ShareRequestUserDto {
+  displayName?: string | null;
+  familyMembers?: ShareRequestFamilyMemberDto[] | null;
+}
+
+export interface ShareRequestFamilyMemberDto {
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 export interface ShareRequestDto {
   id?: string | null;
   status?: ShareRequestStatus | string | null;
+  targetMemberId?: string | null;
+  message?: string | null;
+  createdAt?: string | null;
+  requester?: ShareRequestUserDto | null;
   target?: ShareRequestTargetDto | null;
 }
 
@@ -19,11 +34,26 @@ export interface SanitizedShareTargetDto {
   lastName: string | null;
   birthYear: number | null;
   deathYear: number | null;
+  user: SanitizedShareRequestUserDto | null;
+}
+
+export interface SanitizedShareRequestUserDto {
+  displayName: string | null;
+  familyMembers: SanitizedShareRequestFamilyMemberDto[];
+}
+
+export interface SanitizedShareRequestFamilyMemberDto {
+  firstName: string | null;
+  lastName: string | null;
 }
 
 export interface SanitizedShareRequestDto {
   id: string;
   status: ShareRequestStatus;
+  targetMemberId: string | null;
+  message: string | null;
+  createdAt: string | null;
+  requester: SanitizedShareRequestUserDto | null;
   target: SanitizedShareTargetDto;
 }
 
@@ -55,9 +85,18 @@ export class SharingDtoSanitizerService {
       lastName: this.sanitizeText(item.target?.lastName),
       birthYear: this.sanitizeYear(item.target?.birthYear),
       deathYear: this.sanitizeYear(item.target?.deathYear),
+      user: this.sanitizeUser(item.target?.user),
     };
 
-    return { id, status, target };
+    return {
+      id,
+      status,
+      targetMemberId: this.sanitizeId(item.targetMemberId),
+      message: this.sanitizeText(item.message),
+      createdAt: this.sanitizeDate(item.createdAt),
+      requester: this.sanitizeUser(item.requester),
+      target,
+    };
   }
 
   private isShareRequestDto(value: unknown): value is ShareRequestDto {
@@ -127,5 +166,38 @@ export class SharingDtoSanitizerService {
       return null;
     }
     return rounded;
+  }
+
+  private sanitizeDate(value: unknown): string | null {
+    if (typeof value !== 'string') {
+      return null;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    return Number.isNaN(Date.parse(trimmed)) ? null : trimmed;
+  }
+
+  private sanitizeUser(value: unknown): SanitizedShareRequestUserDto | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return null;
+    }
+    const dto = value as ShareRequestUserDto;
+    const familyMembers = Array.isArray(dto.familyMembers)
+      ? dto.familyMembers
+      : [];
+
+    const sanitizedMembers = familyMembers
+      .map((member) => ({
+        firstName: this.sanitizeText(member?.firstName),
+        lastName: this.sanitizeText(member?.lastName),
+      }))
+      .filter((member) => member.firstName || member.lastName);
+
+    return {
+      displayName: this.sanitizeText(dto.displayName),
+      familyMembers: sanitizedMembers,
+    };
   }
 }

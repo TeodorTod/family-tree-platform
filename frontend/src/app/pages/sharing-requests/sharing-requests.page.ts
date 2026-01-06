@@ -13,6 +13,8 @@ import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum
 import { ShareRequestTab } from '../../shared/enums/share-request-tab.enum';
 import { ConfirmationService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
+import { FamilyMember } from '../../shared/models/family-member.model';
+import { SanitizedShareRequestDto } from '../../core/services/sharing-dto-sanitizer.service';
 
 @Component({
   selector: 'app-sharing-requests-page',
@@ -54,7 +56,7 @@ export class SharingRequestsPage implements OnInit {
     if (value.length <= 20) {
       return value || '-';
     }
-    return `${value.slice(0, 20)}…`;
+    return `${value.slice(0, 20)}...`;
   }
 
   statusLabelKeyFor(status?: ShareRequestStatus | string | null) {
@@ -66,11 +68,11 @@ export class SharingRequestsPage implements OnInit {
   }
 
   activeTab = signal<ShareRequestTab>(ShareRequestTab.Incoming);
-  incoming = signal<any[]>([]);
-  outgoing = signal<any[]>([]);
+  incoming = signal<SanitizedShareRequestDto[]>([]);
+  outgoing = signal<SanitizedShareRequestDto[]>([]);
 
   showAddDialog = signal(false);
-  baseOwner: any = null;
+  baseOwner: (Partial<FamilyMember> & { id: string; role: string }) | null = null;
   clonedMemberId: string | null = null;
 
   ngOnInit(): void {
@@ -103,7 +105,10 @@ export class SharingRequestsPage implements OnInit {
     });
   }
 
-  confirmDecision(row: any, status: ShareRequestStatus.Approved | ShareRequestStatus.Rejected) {
+  confirmDecision(
+    row: SanitizedShareRequestDto,
+    status: ShareRequestStatus.Approved | ShareRequestStatus.Rejected,
+  ) {
     const isApprove = status === ShareRequestStatus.Approved;
     const headerKey = isApprove ? CONSTANTS.SHARING_CONFIRM_APPROVE_TITLE : CONSTANTS.SHARING_CONFIRM_REJECT_TITLE;
     const messageKey = isApprove ? CONSTANTS.SHARING_CONFIRM_APPROVE_MESSAGE : CONSTANTS.SHARING_CONFIRM_REJECT_MESSAGE;
@@ -123,12 +128,15 @@ export class SharingRequestsPage implements OnInit {
     });
   }
 
-  importApproved(row: any) {
-    this.family.getFamilyMemberByRole('owner').subscribe((owner) => {
-      this.baseOwner = owner;
-      this.family.getMyFamily().subscribe((members) => {
-        const match = (members as any[]).find((m) => (m as any).copiedFromMemberId === row.targetMemberId);
-        if (match) {
+  importApproved(row: SanitizedShareRequestDto) {
+    this.family.getFamilyMemberByRole('owner').subscribe((owner: Partial<FamilyMember>) => {
+      if (!owner?.id || !owner?.role) {
+        return;
+      }
+      this.baseOwner = { ...owner, id: owner.id, role: owner.role };
+      this.family.getMyFamily().subscribe((members: Array<Partial<FamilyMember> & { copiedFromMemberId?: string | null }>) => {
+        const match = (members || []).find((m) => m.copiedFromMemberId === row.targetMemberId);
+        if (match?.id) {
           this.clonedMemberId = match.id;
           this.showAddDialog.set(true);
         }
@@ -136,8 +144,14 @@ export class SharingRequestsPage implements OnInit {
     });
   }
 
-  handleDialogSaved(event: { relation: string; clonedMemberId?: string; approvedRequestId?: string; member?: any }) {
-    if (!this.baseOwner || (!event?.clonedMemberId && !event?.approvedRequestId)) {
+  handleDialogSaved(event: {
+    relation: string;
+    clonedMemberId?: string;
+    approvedRequestId?: string;
+    member?: Partial<FamilyMember>;
+  }) {
+    const baseOwner = this.baseOwner;
+    if (!baseOwner || (!event?.clonedMemberId && !event?.approvedRequestId)) {
       this.showAddDialog.set(false);
       this.clonedMemberId = null;
       return;
@@ -150,43 +164,44 @@ export class SharingRequestsPage implements OnInit {
         ? 'sibling'
         : 'parent';
 
-    const updateThen = (newId: string) => this.family.getMyFamily().subscribe((members: any[]) => {
-      const prefix = `${this.baseOwner.role}_${event.relation}`;
-      const existing = (members || []).filter((m) => m.role === prefix || m.role?.startsWith(`${prefix}_`));
-      let newRole = prefix;
-      if (existing.length > 0) {
-        const suffixes = existing
-          .map((m) => {
-            if (m.role === prefix) return 1;
-            const match = String(m.role).match(new RegExp(`${prefix}_(\\\d+)$`));
-            return match ? parseInt(match[1], 10) : 0;
-          })
-          .filter((x) => Number.isFinite(x));
-        const max = suffixes.length > 0 ? Math.max(...suffixes) : 1;
-        newRole = `${prefix}_${max + 1}`;
-      }
-      this.family.assignRole(newId, newRole).subscribe(() => {
-        this.family
-          .createRelationship({
-            fromMemberId: this.baseOwner.id,
-            toMemberId: newId,
-            type: relationshipType,
-          })
-          .subscribe(() => {
-            if (event.relation === 'partner') {
-              this.family
-                .setPartner(this.baseOwner.id, newId, PartnerStatus.UNKNOWN)
-                .subscribe(() => {
-                  this.showAddDialog.set(false);
-                  this.clonedMemberId = null;
-                });
-            } else {
-              this.showAddDialog.set(false);
-              this.clonedMemberId = null;
-            }
-          });
+    const updateThen = (newId: string) =>
+      this.family.getMyFamily().subscribe((members: Partial<FamilyMember>[]) => {
+        const prefix = `${baseOwner.role}_${event.relation}`;
+        const existing = (members || []).filter((m) => m.role === prefix || m.role?.startsWith(`${prefix}_`));
+        let newRole = prefix;
+        if (existing.length > 0) {
+          const suffixes = existing
+            .map((m) => {
+              if (m.role === prefix) return 1;
+              const match = String(m.role).match(new RegExp(`${prefix}_(\\\d+)$`));
+              return match ? parseInt(match[1], 10) : 0;
+            })
+            .filter((x) => Number.isFinite(x));
+          const max = suffixes.length > 0 ? Math.max(...suffixes) : 1;
+          newRole = `${prefix}_${max + 1}`;
+        }
+        this.family.assignRole(newId, newRole).subscribe(() => {
+          this.family
+            .createRelationship({
+              fromMemberId: baseOwner.id,
+              toMemberId: newId,
+              type: relationshipType,
+            })
+            .subscribe(() => {
+              if (event.relation === 'partner') {
+                this.family
+                  .setPartner(baseOwner.id, newId, PartnerStatus.UNKNOWN)
+                  .subscribe(() => {
+                    this.showAddDialog.set(false);
+                    this.clonedMemberId = null;
+                  });
+              } else {
+                this.showAddDialog.set(false);
+                this.clonedMemberId = null;
+              }
+            });
+        });
       });
-    });
 
     const ensureCloned = (cb: (id: string) => void) => {
       if (event.clonedMemberId) return cb(event.clonedMemberId);
@@ -194,10 +209,11 @@ export class SharingRequestsPage implements OnInit {
     };
 
     ensureCloned((newId) => {
-      if (event.member) {
-        this.family.getFamilyMemberById(newId).subscribe((m: any) => {
+      const member = event.member;
+      if (member) {
+        this.family.getFamilyMemberById(newId).subscribe((m: Partial<FamilyMember>) => {
           if (m?.role) {
-            this.family.updateMemberByRole(m.role, event.member).subscribe(() => updateThen(newId));
+            this.family.updateMemberByRole(m.role, member).subscribe(() => updateThen(newId));
           } else {
             updateThen(newId);
           }
@@ -224,3 +240,5 @@ export class SharingRequestsPage implements OnInit {
     return ShareRequestTab.Incoming;
   }
 }
+
+

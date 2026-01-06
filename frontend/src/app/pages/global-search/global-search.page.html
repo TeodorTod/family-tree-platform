@@ -53,7 +53,7 @@
     [closable]="true"
     [focusOnShow]="false"
     appendTo="body"
-    (onHide)="cancelRequestDialog()"
+    (visibleChange)="onRequestDialogVisibleChange($event)"
     [header]="CONSTANTS.SEARCH_REQUEST_ACCESS | translate"
   >
     <div class="d-flex flex-column gap-2">

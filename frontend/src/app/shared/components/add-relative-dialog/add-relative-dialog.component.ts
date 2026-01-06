@@ -34,7 +34,7 @@ import { ShareRequestStatus } from '../../enums/share-request-status.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRelativeDialogComponent implements OnInit {
-  baseMember = input<FamilyMember | null>(null);
+  baseMember = input<Partial<FamilyMember> | null>(null);
   visible = input(false);
   clonedMemberId = input<string | null>(null);
   close = output<void>();

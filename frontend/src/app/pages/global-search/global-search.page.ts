@@ -86,6 +86,12 @@ export class GlobalSearchPage implements OnInit {
     this.msgDraft.set('');
   }
 
+  onRequestDialogVisibleChange(visible: boolean) {
+    if (!visible) {
+      this.cancelRequestDialog();
+    }
+  }
+
   confirmRequestDialog() {
     if (!this.selectedTarget) return;
     const raw = this.msgDraft();
