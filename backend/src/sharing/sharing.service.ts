@@ -168,7 +168,9 @@ export class SharingService {
             firstName: true,
             lastName: true,
             userId: true,
+            dob: true,
             birthYear: true,
+            dod: true,
             deathYear: true,
             user: {
               select: {

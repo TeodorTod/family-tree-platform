@@ -4,7 +4,9 @@ import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum
 export interface ShareRequestTargetDto {
   firstName?: string | null;
   lastName?: string | null;
+  dob?: string | null;
   birthYear?: number | string | null;
+  dod?: string | null;
   deathYear?: number | string | null;
   user?: ShareRequestUserDto | null;
 }
@@ -32,7 +34,9 @@ export interface ShareRequestDto {
 export interface SanitizedShareTargetDto {
   firstName: string | null;
   lastName: string | null;
+  dob: string | null;
   birthYear: number | null;
+  dod: string | null;
   deathYear: number | null;
   user: SanitizedShareRequestUserDto | null;
 }
@@ -83,7 +87,9 @@ export class SharingDtoSanitizerService {
     const target = {
       firstName: this.sanitizeText(item.target?.firstName),
       lastName: this.sanitizeText(item.target?.lastName),
+      dob: this.sanitizeDate(item.target?.dob),
       birthYear: this.sanitizeYear(item.target?.birthYear),
+      dod: this.sanitizeDate(item.target?.dod),
       deathYear: this.sanitizeYear(item.target?.deathYear),
       user: this.sanitizeUser(item.target?.user),
     };

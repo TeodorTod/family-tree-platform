@@ -23,6 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AddRelativeFormGroup,
   AddRelativeImportedOption,
+  ImportedPatchSource,
 } from './add-relative-dialog.types';
 import { ShareRequestStatus } from '../../enums/share-request-status.enum';
 
@@ -202,12 +203,19 @@ export class AddRelativeDialogComponent implements OnInit {
       this.family
         .getFamilyMemberById(initialClonedId)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((m: any) => {
-          this.form.patchValue({
-            firstName: m?.firstName ?? null,
-            middleName: m?.middleName ?? null,
-            lastName: m?.lastName ?? null,
+        .subscribe((member: Partial<FamilyMember>) => {
+          const patch = this.buildImportedPatch({
+            firstName: member.firstName ?? null,
+            middleName: member.middleName ?? null,
+            lastName: member.lastName ?? null,
+            dob: member.dob ?? null,
+            birthYear: member.birthYear ?? null,
+            birthNote: member.birthNote ?? null,
+            dod: member.dod ?? null,
+            deathYear: member.deathYear ?? null,
+            deathNote: member.deathNote ?? null,
           });
+          this.form.patchValue(patch, { emitEvent: false });
         });
       return;
     }
@@ -226,20 +234,14 @@ export class AddRelativeDialogComponent implements OnInit {
       .subscribe((id) => {
         const opt = this.importedOptions().find((o) => o.value === id);
         if (!opt) return;
-        const by = opt.meta.birthYear ?? null;
-        const dy = opt.meta.deathYear ?? null;
-        const patch: any = {
+        const patch = this.buildImportedPatch({
           firstName: opt.meta.firstName ?? null,
           lastName: opt.meta.lastName ?? null,
-        };
-        if (by != null) {
-          patch.dobMode = BirthDeathDateMode.YEAR;
-          patch.dob = new Date(Date.UTC(by, 0, 1));
-        }
-        if (dy != null) {
-          patch.dodMode = BirthDeathDateMode.YEAR;
-          patch.dod = new Date(Date.UTC(dy, 0, 1));
-        }
+          dob: opt.meta.dob ?? null,
+          birthYear: opt.meta.birthYear ?? null,
+          dod: opt.meta.dod ?? null,
+          deathYear: opt.meta.deathYear ?? null,
+        });
         this.form.patchValue(patch, { emitEvent: false });
       });
   }
@@ -282,7 +284,7 @@ export class AddRelativeDialogComponent implements OnInit {
         dod: dodPayload.dod ? new Date(dodPayload.dod) : null,
         deathYear: dodPayload.deathYear ?? null,
         deathNote: dodPayload.deathNote ?? null,
-      } as any;
+      };
       this.saved.emit({
         relation: val.relation,
         clonedMemberId: clonedId ?? undefined,
@@ -313,6 +315,104 @@ export class AddRelativeDialogComponent implements OnInit {
 
   useImported(): boolean {
     return this.showImported();
+  }
+
+  private buildImportedPatch(
+    source: ImportedPatchSource
+  ): Partial<AddRelativeFormGroup['value']> {
+    return {
+      firstName: source.firstName ?? null,
+      middleName: source.middleName ?? null,
+      lastName: source.lastName ?? null,
+      isAlive: false,
+      ...this.buildBirthPatch(source),
+      ...this.buildDeathPatch(source),
+    };
+  }
+
+  private buildBirthPatch(
+    source: ImportedPatchSource
+  ): Partial<AddRelativeFormGroup['value']> {
+    const dob = this.toDate(source.dob);
+    const birthYear = this.toYear(source.birthYear);
+    const birthNote = (source.birthNote ?? '').trim();
+
+    if (dob) {
+      return {
+        dobMode: BirthDeathDateMode.EXACT,
+        dob,
+        birthYear: null,
+        birthNote: null,
+      };
+    }
+
+    if (birthYear !== null) {
+      return {
+        dobMode: BirthDeathDateMode.YEAR,
+        dob: new Date(Date.UTC(birthYear, 0, 1)),
+        birthYear,
+        birthNote: null,
+      };
+    }
+
+    if (birthNote) {
+      return {
+        dobMode: BirthDeathDateMode.NOTE,
+        dob: null,
+        birthYear: null,
+        birthNote,
+      };
+    }
+
+    return { dob: null, birthYear: null, birthNote: null };
+  }
+
+  private buildDeathPatch(
+    source: ImportedPatchSource
+  ): Partial<AddRelativeFormGroup['value']> {
+    const dod = this.toDate(source.dod);
+    const deathYear = this.toYear(source.deathYear);
+    const deathNote = (source.deathNote ?? '').trim();
+
+    if (dod) {
+      return {
+        dodMode: BirthDeathDateMode.EXACT,
+        dod,
+        deathYear: null,
+        deathNote: null,
+      };
+    }
+
+    if (deathYear !== null) {
+      return {
+        dodMode: BirthDeathDateMode.YEAR,
+        dod: new Date(Date.UTC(deathYear, 0, 1)),
+        deathYear,
+        deathNote: null,
+      };
+    }
+
+    if (deathNote) {
+      return {
+        dodMode: BirthDeathDateMode.NOTE,
+        dod: null,
+        deathYear: null,
+        deathNote,
+      };
+    }
+
+    return { dod: null, deathYear: null, deathNote: null };
+  }
+
+  private toDate(value: string | Date | null | undefined): Date | null {
+    if (!value) return null;
+    const date = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  private toYear(value: number | null | undefined): number | null {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+    return Math.trunc(value);
   }
 
   private createLabelSignal(keys: string[]) {

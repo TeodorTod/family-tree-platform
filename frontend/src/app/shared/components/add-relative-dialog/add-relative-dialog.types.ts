@@ -21,3 +21,15 @@ export type AddRelativeImportedOption = {
   value: string;
   meta: SanitizedShareTargetDto;
 };
+
+export type ImportedPatchSource = {
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
+  dob?: string | Date | null;
+  birthYear?: number | null;
+  birthNote?: string | null;
+  dod?: string | Date | null;
+  deathYear?: number | null;
+  deathNote?: string | null;
+};
