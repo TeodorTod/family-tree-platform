@@ -1540,20 +1540,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     return Math.max(0, Math.min(1, as01));
   }
 
+  private computeNameLabel(m: FamilyMember): string {
+    const first = (m.firstName ?? '').trim();
+    const last = (m.lastName ?? '').trim();
+    if (first && last) return `${first}\n${last}`;
+    return first || last;
+  }
+
   private computeNodeLabel(m: FamilyMember): string {
-    const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ');
-    if (!this.showBirthInfo()) return fullName;
+    const nameLabel = this.computeNameLabel(m);
+    if (!this.showBirthInfo()) return nameLabel;
 
     const birth = this.birthLabel(m);
-    if (!birth) return fullName;
+    if (!birth) return nameLabel;
 
     if (!m.isAlive) {
       const death = this.deathLabel(m);
       const life = death ? `${birth}-${death}` : birth;
-      return `${fullName}\n${life}`;
+      return `${nameLabel}\n${life}`;
     }
 
-    return `${fullName}\n${birth}`;
+    return `${nameLabel}\n${birth}`;
   }
 
   private refreshNodeLabels() {
