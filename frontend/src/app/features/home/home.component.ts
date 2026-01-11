@@ -128,6 +128,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
           'dob',
           'birthYear',
           'birthNote',
+          'dod',
+          'deathYear',
+          'deathNote',
+          'isAlive',
           'photoUrl',
           'partnerId',
           'partnerStatus',
@@ -238,9 +242,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const H = container.clientHeight;
     const isMobile = W < 1400;
 
-    const nodeSize = this.circleSize();
-    const minSpacing = nodeSize + 10;
-    const partnerSpacing = minSpacing;
+      const nodeSize = this.circleSize();
+      const labelPad = this.showBirthInfo() ? nodeSize * 0.6 : 0;
+      const minSpacing = nodeSize + 10 + labelPad;
+      const partnerSpacing = minSpacing;
+      const labelMaxWidth = nodeSize * (this.showBirthInfo() ? 2.4 : 1.6);
     const shiftH = isMobile ? W * 0.1 : 100;
 
     let maternalGP = members
@@ -607,14 +613,17 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     const owner = posMap.get(Roles.OWNER);
     const anchorX = owner?.x ?? W / 2;
-    const anchorY = owner?.y ?? tierYs.owner;
-    this.boostPosMap(
-      posMap,
-      anchorX,
-      anchorY,
-      this.distanceBoostX,
-      this.distanceBoostY
-    );
+      const anchorY = owner?.y ?? tierYs.owner;
+      const yBoost = this.showBirthInfo()
+        ? this.distanceBoostY + 0.35
+        : this.distanceBoostY;
+      this.boostPosMap(
+        posMap,
+        anchorX,
+        anchorY,
+        this.distanceBoostX,
+        yBoost
+      );
 
     members.forEach((m) => {
       const pos = posMap.get(m.role);
@@ -772,14 +781,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       style: [
         {
           selector: 'node',
-          style: {
-            label: 'data(label)',
-            'text-wrap': 'wrap',
-            'text-max-width': '80px',
-            'text-valign': 'bottom',
-            'text-halign': 'center',
-            'font-size': isMobile ? '11px' : '14px',
-            'font-family': 'Inter, system-ui, sans-serif',
+            style: {
+              label: 'data(label)',
+              'text-wrap': 'wrap',
+              'text-max-width': `${labelMaxWidth}px`,
+              'text-valign': 'bottom',
+              'text-halign': 'center',
+              'text-margin-y': 4,
+              'line-height': 1.2,
+              'font-size': isMobile ? '11px' : '14px',
+              'font-family': 'Inter, system-ui, sans-serif',
             'background-image': 'data(photo)',
             'background-fit': 'cover',
             width: `${this.circleSize()}px`,
@@ -853,6 +864,18 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }
     if (m.birthYear != null) return String(m.birthYear);
     if (m.birthNote) return m.birthNote;
+    return '';
+  }
+
+  private deathLabel(m: FamilyMember): string {
+    if (m.dod) {
+      const d = typeof m.dod === 'string' ? new Date(m.dod) : m.dod;
+      const y =
+        d instanceof Date && !isNaN(d.getTime()) ? d.getFullYear() : NaN;
+      if (Number.isFinite(y)) return String(y);
+    }
+    if (m.deathYear != null) return String(m.deathYear);
+    if (m.deathNote) return m.deathNote;
     return '';
   }
 
@@ -1155,17 +1178,19 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     if (!this.cy) return;
 
-    this.cy.nodes().forEach((node) => {
-      node.style({
-        width: `${this.circleSizeValue}px`,
-        height: `${this.circleSizeValue}px`,
-        'font-size': `${Math.max(
-          8,
-          Math.min(16, this.circleSizeValue * 0.15)
-        )}px`,
-        'text-max-width': `${this.circleSizeValue * 1.2}px`,
+      this.cy.nodes().forEach((node) => {
+        node.style({
+          width: `${this.circleSizeValue}px`,
+          height: `${this.circleSizeValue}px`,
+          'font-size': `${Math.max(
+            8,
+            Math.min(16, this.circleSizeValue * 0.15)
+          )}px`,
+          'text-max-width': `${
+            this.circleSizeValue * (this.showBirthInfo() ? 2.4 : 1.6)
+          }px`,
+        });
       });
-    });
 
     this.cy.nodes().forEach((node) => {
       const pos = node.position();
@@ -1477,8 +1502,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const fullName = [m.firstName, m.lastName].filter(Boolean).join(' ');
     if (!this.showBirthInfo()) return fullName;
 
-    const yr = this.birthLabel(m);
-    return yr ? `${fullName}\n${yr}` : fullName;
+    const birth = this.birthLabel(m);
+    if (!birth) return fullName;
+
+    if (!m.isAlive) {
+      const death = this.deathLabel(m);
+      const life = death ? `${birth}-${death}` : birth;
+      return `${fullName}\n${life}`;
+    }
+
+    return `${fullName}\n${birth}`;
   }
 
   private refreshNodeLabels() {
