@@ -19,6 +19,7 @@ export class HomeControlPanelComponent {
   showConnections = input(false);
   showBirthInfo = input(true);
   circleSizeValue = input(80);
+  textSizeValue = input(14);
   backgroundOpacityValue = input(0.6);
 
   viewToggled = output<void>();
@@ -31,5 +32,6 @@ export class HomeControlPanelComponent {
   connectionsToggled = output<void>();
   birthInfoToggled = output<void>();
   circleSizeChanged = output<number>();
+  textSizeChanged = output<number>();
   backgroundOpacityChanged = output<number>();
 }

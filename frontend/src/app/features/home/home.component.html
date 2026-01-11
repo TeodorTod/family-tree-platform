@@ -22,6 +22,7 @@
   [showConnections]="showConnections()"
   [showBirthInfo]="showBirthInfo()"
   [circleSizeValue]="circleSizeValue"
+  [textSizeValue]="textSizeValue"
   [backgroundOpacityValue]="backgroundOpacityValue"
   (viewToggled)="toggleView()"
   (soundToggled)="toggleAmbientSound()"
@@ -33,6 +34,7 @@
   (connectionsToggled)="toggleConnections()"
   (birthInfoToggled)="toggleBirthInfo()"
   (circleSizeChanged)="circleSizeValue = $event; updateCircleSize()"
+  (textSizeChanged)="textSizeValue = $event; updateTextSize()"
   (backgroundOpacityChanged)="backgroundOpacityValue = $event; updateBackgroundOpacity()"
 />
 

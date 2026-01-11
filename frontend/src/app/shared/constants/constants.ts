@@ -420,6 +420,7 @@ export class CONSTANTS {
   static readonly INFO_SHOW_CHART = 'INFO.SHOW_CHART';
   static readonly INFO_SHOW_TABLE = 'INFO.SHOW_TABLE';
   static readonly INFO_CHANGE_NODE_SIZE = 'INFO.CHANGE_NODE_SIZE';
+  static readonly INFO_CHANGE_TEXT_SIZE = 'INFO.CHANGE_TEXT_SIZE';
   static readonly INFO_FOR_PRINT = 'INFO.FOR_PRINT';
   static readonly INFO_IMAGE_GENERATION = 'INFO.IMAGE_GENERATION';
   static readonly INFO_RELATION_LABEL = 'INFO.RELATION_LABEL';

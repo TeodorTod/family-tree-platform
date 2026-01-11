@@ -72,6 +72,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   showTableView = signal(false);
   circleSizeValue = 80;
   circleSize = signal(this.circleSizeValue);
+  textSizeValue = 14;
+  textSize = signal(this.textSizeValue);
   exportMode = signal(false);
   exportDataUrl = signal<string | null>(null);
   exportTight = signal(false);
@@ -88,6 +90,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private distanceBoostY = 1.0;
   private lastPairs: [string, string][] = [];
   private lastMateOf = new Map<string, string>();
+  private readonly textSizeMin = 8;
+  private readonly textSizeMax = 24;
 
   customPhotoUrl =
     this.platformStorage.getItem('familyPhotoUrl') ??
@@ -187,6 +191,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     }, 0);
   }
 
+  private setInitialTextSizeByWidth(): void {
+    if (!this.platformStorage.isBrowserEnvironment()) {
+      return;
+    }
+    setTimeout(() => {
+      const w = Math.max(
+        window.innerWidth || 0,
+        this.cyRef?.nativeElement?.clientWidth || 0
+      );
+      const next = w <= 1024 ? 11 : 14;
+
+      if (this.textSizeValue === next) return;
+
+      this.textSizeValue = next;
+      this.textSize.set(next);
+      this.platformStorage.setItem('familyTextSize', String(next));
+
+      if (this.cy) this.updateTextSize();
+    }, 0);
+  }
+
   zoomIn(): void {
     if (this.cy) {
       const newZoom = this.cy.zoom() * 1.2;
@@ -242,11 +267,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const H = container.clientHeight;
     const isMobile = W < 1400;
 
-      const nodeSize = this.circleSize();
-      const labelPad = this.showBirthInfo() ? nodeSize * 0.6 : 0;
-      const minSpacing = nodeSize + 10 + labelPad;
-      const partnerSpacing = minSpacing;
-      const labelMaxWidth = nodeSize * (this.showBirthInfo() ? 2.4 : 1.6);
+    const nodeSize = this.circleSize();
+    const textSize = this.textSize();
+    const labelPad = this.showBirthInfo() ? nodeSize * 0.6 : 0;
+    const minSpacing = nodeSize + 10 + labelPad;
+    const partnerSpacing = minSpacing;
+    const labelMaxWidth = nodeSize * (this.showBirthInfo() ? 2.4 : 1.6);
     const shiftH = isMobile ? W * 0.1 : 100;
 
     let maternalGP = members
@@ -789,7 +815,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
               'text-halign': 'center',
               'text-margin-y': 4,
               'line-height': 1.2,
-              'font-size': isMobile ? '11px' : '14px',
+              'font-size': `${textSize}px`,
               'font-family': 'Inter, system-ui, sans-serif',
             'background-image': 'data(photo)',
             'background-fit': 'cover',
@@ -1178,19 +1204,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     if (!this.cy) return;
 
-      this.cy.nodes().forEach((node) => {
-        node.style({
-          width: `${this.circleSizeValue}px`,
-          height: `${this.circleSizeValue}px`,
-          'font-size': `${Math.max(
-            8,
-            Math.min(16, this.circleSizeValue * 0.15)
-          )}px`,
-          'text-max-width': `${
-            this.circleSizeValue * (this.showBirthInfo() ? 2.4 : 1.6)
-          }px`,
-        });
+    this.cy.nodes().forEach((node) => {
+      node.style({
+        width: `${this.circleSizeValue}px`,
+        height: `${this.circleSizeValue}px`,
+        'font-size': `${this.textSizeValue}px`,
+        'text-max-width': `${
+          this.circleSizeValue * (this.showBirthInfo() ? 2.4 : 1.6)
+        }px`,
       });
+    });
 
     this.cy.nodes().forEach((node) => {
       const pos = node.position();
@@ -1238,6 +1261,25 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this.cy.style().update();
     this.cy.fit();
+  }
+
+  updateTextSize() {
+    const clamped = this.clamp(
+      this.textSizeValue,
+      this.textSizeMin,
+      this.textSizeMax
+    );
+    this.textSizeValue = clamped;
+    this.textSize.set(clamped);
+    this.platformStorage.setItem('familyTextSize', clamped.toString());
+
+    if (!this.cy) return;
+
+    this.cy.nodes().forEach((node) => {
+      node.style({ 'font-size': `${clamped}px` });
+    });
+
+    this.cy.style().update();
   }
 
   openExportView(tight = false) {
@@ -1564,6 +1606,23 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.setInitialCircleSizeByWidth();
       if (this.platformStorage.isBrowserEnvironment()) {
         requestAnimationFrame(() => this.setInitialCircleSizeByWidth());
+      }
+    }
+
+    let textPreferenceApplied = false;
+    const savedTextRaw = this.platformStorage.getItemFromStorage(
+      'familyTextSize'
+    );
+    if (savedTextRaw && !Number.isNaN(+savedTextRaw)) {
+      const next = this.clamp(+savedTextRaw, this.textSizeMin, this.textSizeMax);
+      this.textSizeValue = next;
+      this.textSize.set(next);
+      textPreferenceApplied = true;
+    }
+    if (!textPreferenceApplied) {
+      this.setInitialTextSizeByWidth();
+      if (this.platformStorage.isBrowserEnvironment()) {
+        requestAnimationFrame(() => this.setInitialTextSizeByWidth());
       }
     }
 

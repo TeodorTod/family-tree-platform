@@ -133,6 +133,23 @@
   >
     <p-slider
       class="slider"
+      [ngModel]="textSizeValue()"
+      (ngModelChange)="textSizeChanged.emit($event)"
+      [min]="8"
+      [max]="24"
+      [step]="1"
+      pTooltip="{{ constants.INFO_CHANGE_TEXT_SIZE | translate }}"
+      tooltipPosition="top"
+    ></p-slider>
+  </div>
+
+  <div
+    class="slider-row slider-third"
+    (mousedown)="$event.stopPropagation()"
+    (touchstart)="$event.stopPropagation()"
+  >
+    <p-slider
+      class="slider"
       [ngModel]="backgroundOpacityValue()"
       (ngModelChange)="backgroundOpacityChanged.emit($event)"
       [min]="0.1"
