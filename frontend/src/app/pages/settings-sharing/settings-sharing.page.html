@@ -1,5 +1,16 @@
 <div class="settings-sharing">
-  <h2>{{ CONSTANTS.SHARING_SETTINGS_TITLE | translate }}</h2>
+  <div class="page-header">
+    <h2>{{ CONSTANTS.SHARING_SETTINGS_TITLE | translate }}</h2>
+    <button
+      type="button"
+      class="info-button"
+      [pTooltip]="CONSTANTS.SHARING_INFO_TOOLTIP | translate"
+      tooltipPosition="right"
+      [attr.aria-label]="CONSTANTS.SHARING_INFO_ARIA | translate"
+    >
+      <i class="pi pi-info-circle" aria-hidden="true"></i>
+    </button>
+  </div>
 
   <div class="section">
     <h3>{{ CONSTANTS.SHARING_DEFAULTS | translate }}</h3>

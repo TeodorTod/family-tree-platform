@@ -1,6 +1,20 @@
 .settings-sharing {
   padding: 1rem;
 }
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-color-secondary);
+  cursor: help;
+  padding: 0;
+}
 .section { margin-bottom: 1.5rem; }
 .field { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
-

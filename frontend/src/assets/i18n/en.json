@@ -712,7 +712,9 @@
     "CONFIRM_REJECT_TITLE": "Confirm Rejection",
     "CONFIRM_REJECT_MESSAGE": "Are you sure you want to reject the request for {{target}}?",
     "CONFIRM_IMPORT_TITLE": "Use shared relative data?",
-    "CONFIRM_IMPORT_MESSAGE": "We sanitize shared details before importing them into your tree. Confirm to copy the person shown below."
+    "CONFIRM_IMPORT_MESSAGE": "We sanitize shared details before importing them into your tree. Confirm to copy the person shown below.",
+    "INFO_TOOLTIP": "Control member sharing: defaults apply to all deceased members, and the table lets you set per-member overrides. Requests are managed from the Sharing Requests menu.",
+    "INFO_ARIA": "Sharing settings info"
   },
   "ONBOARDING": {
     "SUBSCRIPTION": {
