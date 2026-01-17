@@ -1,5 +1,6 @@
 import { Lang } from '../../../shared/types/lang.type';
 import { SubscriptionPlanCode } from '../../../shared/types/subscription-plan.type';
+import { SubscriptionSource } from '../../../shared/types/subscription-source.type';
 
 export interface AdminUserSummary {
   id: string;
@@ -11,6 +12,9 @@ export interface AdminUserSummary {
   subscriptionPlan: SubscriptionPlanCode | null;
   subscriptionStartAt: string | null;
   subscriptionEndAt: string | null;
+  subscriptionSource: SubscriptionSource | null;
+  isAdmin: boolean;
+  allowAdminSupportAccess: boolean;
   memberCount: number;
   profileCount: number;
   dataRecords: number;

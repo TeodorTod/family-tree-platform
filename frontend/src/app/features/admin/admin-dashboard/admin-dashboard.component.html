@@ -292,6 +292,11 @@
                     }}
                   </small>
                   }
+                  @if (user.subscriptionPlan) {
+                  <small class="muted subscription-source">
+                    {{ sourceLabelKey(user.subscriptionSource) | translate }}
+                  </small>
+                  }
                 </div>
               </td>
               <td class="actions-cell">
@@ -369,7 +374,7 @@
             {{
               CONSTANTS.ADMIN_MEMBERS_SUBTITLE | translate: {
                 count: selectedMembersCount(),
-                owner: selectedUser()?.email,
+                owner: selectedUser()?.email ?? selectedUser()?.displayName ?? '',
                 data: selectedMembersDataUsage()
               }
             }}
@@ -378,6 +383,40 @@
             }
           </p>
         </div>
+        <div class="panel-actions subscription-actions">
+          <div class="subscription-control">
+            <label class="subscription-label">
+              {{ CONSTANTS.ADMIN_SUBSCRIPTION_ASSIGN | translate }}
+            </label>
+            <div class="subscription-field">
+              <p-select
+                [options]="planOptions"
+                [ngModel]="selectedPlan()"
+                (ngModelChange)="selectedPlan.set($event)"
+                [disabled]="!selectedUser() || subscriptionActionLoading()"
+                optionLabel="labelKey"
+                optionValue="value"
+                styleClass="subscription-select"
+              >
+                <ng-template pTemplate="selectedItem" let-opt>
+                  <span>{{ opt?.labelKey | translate }}</span>
+                </ng-template>
+                <ng-template pTemplate="item" let-opt>
+                  <span>{{ opt.labelKey | translate }}</span>
+                </ng-template>
+              </p-select>
+              <button
+                type="button"
+                pButton
+                class="secondary subscription-apply"
+                icon="pi pi-check"
+                (click)="applySubscriptionPlan()"
+                [disabled]="!selectedUser() || !selectedPlan() || subscriptionActionLoading()"
+                [label]="CONSTANTS.ADMIN_SUBSCRIPTION_APPLY | translate"
+              ></button>
+            </div>
+          </div>
+        </div>
       </div>
 
       @if (membersError()) {
@@ -385,6 +424,22 @@
         severity="error"
         class="mb-3"
         [text]="membersError() ?? ''"
+      ></p-message>
+      }
+
+      @if (subscriptionActionError()) {
+      <p-message
+        severity="error"
+        class="mb-3"
+        [text]="subscriptionActionError() ?? ''"
+      ></p-message>
+      }
+
+      @if (subscriptionActionSuccess()) {
+      <p-message
+        severity="success"
+        class="mb-3"
+        [text]="subscriptionActionSuccess() ?? ''"
       ></p-message>
       }
 
@@ -397,7 +452,7 @@
       <div class="members-empty">
         {{ CONSTANTS.ADMIN_SELECT_USER_PROMPT | translate }}
       </div>
-      } @else if (!members().length) {
+      } @else if (!members().length && !membersError()) {
       <div class="members-empty">
         {{ CONSTANTS.ADMIN_MEMBERS_EMPTY | translate }}
       </div>

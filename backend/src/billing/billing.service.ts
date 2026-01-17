@@ -10,6 +10,7 @@ import {
   SUBSCRIPTION_PLAN,
   SubscriptionPlanCode,
 } from 'src/shared/enums/subscription-plan.enum';
+import { SUBSCRIPTION_SOURCE } from 'src/shared/enums/subscription-source.enum';
 import { UsersService } from 'src/users/users.service';
 
 type PlanMap = Map<SubscriptionPlanCode, string>;
@@ -254,7 +255,13 @@ export class BillingService {
       const start = new Date(period.current_period_start * 1000);
       const end = new Date(period.current_period_end * 1000);
 
-      await this.users.updateSubscription(userId, plan, start, end);
+      await this.users.updateSubscription(
+        userId,
+        plan,
+        start,
+        end,
+        SUBSCRIPTION_SOURCE.PAID,
+      );
       this.logger.log(
         `Subscription for user ${userId} updated to ${plan}`,
       );

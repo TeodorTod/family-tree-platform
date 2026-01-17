@@ -24,6 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 type PrivacyDefaultsFormValue = {
   allowDeceasedDiscoveryDefault: boolean;
   allowDeceasedDetailsDefault: boolean;
+  allowAdminSupportAccess: boolean;
 };
 
 type CookieFormValue = CookieConsentPreferences;
@@ -51,6 +52,7 @@ export class PrivacySettingsComponent {
   readonly privacyValue = signal<PrivacyDefaultsFormValue>({
     allowDeceasedDiscoveryDefault: false,
     allowDeceasedDetailsDefault: false,
+    allowAdminSupportAccess: false,
   });
   readonly cookieValue = signal<CookieFormValue>({
     analytics: true,
@@ -263,6 +265,7 @@ export class PrivacySettingsComponent {
     return {
       allowDeceasedDiscoveryDefault: !!value?.allowDeceasedDiscoveryDefault,
       allowDeceasedDetailsDefault: !!value?.allowDeceasedDetailsDefault,
+      allowAdminSupportAccess: !!value?.allowAdminSupportAccess,
     };
   }
 

@@ -19,6 +19,7 @@ import {
   AdminUserSummary,
 } from '../models/admin.models';
 import { SubscriptionPlanCode } from '../../../shared/types/subscription-plan.type';
+import { SubscriptionSource } from '../../../shared/types/subscription-source.type';
 
 type SortDirection = 'asc' | 'desc';
 type UserSortField =
@@ -82,6 +83,10 @@ export class AdminDashboardComponent implements OnInit {
   readonly usersError = signal<string | null>(null);
   readonly membersError = signal<string | null>(null);
   readonly selectedUserId = signal<string | null>(null);
+  readonly selectedPlan = signal<SubscriptionPlanCode | null>(null);
+  readonly subscriptionActionLoading = signal(false);
+  readonly subscriptionActionError = signal<string | null>(null);
+  readonly subscriptionActionSuccess = signal<string | null>(null);
 
   private readonly defaultUserFilters: UserFilters = {
     user: '',
@@ -174,12 +179,40 @@ export class AdminDashboardComponent implements OnInit {
     TWO_YEARS: CONSTANTS.SETTINGS_PLAN_2Y,
   };
 
+  private readonly sourceKeyMap: Record<SubscriptionSource, string> = {
+    ADMIN: CONSTANTS.ADMIN_SUBSCRIPTION_SOURCE_ADMIN,
+    PAID: CONSTANTS.ADMIN_SUBSCRIPTION_SOURCE_PAID,
+  };
+
+  readonly planOptions = [
+    {
+      value: 'SIX_MONTHS' as SubscriptionPlanCode,
+      labelKey: CONSTANTS.SETTINGS_PLAN_6M,
+    },
+    {
+      value: 'ONE_YEAR' as SubscriptionPlanCode,
+      labelKey: CONSTANTS.SETTINGS_PLAN_1Y,
+    },
+    {
+      value: 'TWO_YEARS' as SubscriptionPlanCode,
+      labelKey: CONSTANTS.SETTINGS_PLAN_2Y,
+    },
+  ];
+
   readonly selectedUser = computed(() => {
     const selectedId = this.selectedUserId();
     if (!selectedId) {
       return null;
     }
     return this.users().find((user) => user.id === selectedId) ?? null;
+  });
+
+  readonly selectedUserAllowsAdminAccess = computed(() => {
+    const user = this.selectedUser();
+    if (!user) {
+      return false;
+    }
+    return user.isAdmin || user.allowAdminSupportAccess;
   });
 
   readonly totalUsers = computed(() => this.users().length);
@@ -213,6 +246,13 @@ export class AdminDashboardComponent implements OnInit {
         this.membersPage.set(total);
       }
     });
+
+    effect(() => {
+      const user = this.selectedUser();
+      this.selectedPlan.set(user?.subscriptionPlan ?? null);
+      this.subscriptionActionError.set(null);
+      this.subscriptionActionSuccess.set(null);
+    });
   }
 
   ngOnInit() {
@@ -237,6 +277,13 @@ export class AdminDashboardComponent implements OnInit {
       return CONSTANTS.SUBSCRIPTION_SETTINGS_NONE;
     }
     return this.planKeyMap[code] ?? CONSTANTS.SUBSCRIPTION_SETTINGS_NONE;
+  }
+
+  sourceLabelKey(source: SubscriptionSource | null) {
+    if (!source) {
+      return CONSTANTS.ADMIN_SUBSCRIPTION_SOURCE_UNKNOWN;
+    }
+    return this.sourceKeyMap[source] ?? CONSTANTS.ADMIN_SUBSCRIPTION_SOURCE_UNKNOWN;
   }
 
   setUserSort(field: UserSortField) {
@@ -307,6 +354,35 @@ export class AdminDashboardComponent implements OnInit {
     this.membersPage.set(1);
   }
 
+  applySubscriptionPlan() {
+    const userId = this.selectedUserId();
+    const plan = this.selectedPlan();
+    if (!userId || !plan) {
+      return;
+    }
+    this.subscriptionActionLoading.set(true);
+    this.subscriptionActionError.set(null);
+    this.subscriptionActionSuccess.set(null);
+    this.adminService
+      .updateUserSubscription(userId, plan)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.subscriptionActionLoading.set(false);
+          this.subscriptionActionSuccess.set(
+            this.translate.instant(CONSTANTS.ADMIN_SUBSCRIPTION_UPDATED),
+          );
+          this.loadUsers();
+        },
+        error: (err) => {
+          this.subscriptionActionLoading.set(false);
+          this.subscriptionActionError.set(
+            this.resolveError(err, CONSTANTS.ADMIN_SUBSCRIPTION_UPDATE_ERROR),
+          );
+        },
+      });
+  }
+
   private loadUsers() {
     this.loadingUsers.set(true);
     this.usersError.set(null);
@@ -342,6 +418,17 @@ export class AdminDashboardComponent implements OnInit {
 
   private loadMembers(userId: string) {
     if (!userId) {
+      return;
+    }
+    const selected = this.users().find((user) => user.id === userId);
+    const canAccess =
+      selected?.isAdmin || selected?.allowAdminSupportAccess || false;
+    if (selected && !canAccess) {
+      this.members.set([]);
+      this.loadingMembers.set(false);
+      this.membersError.set(
+        this.translate.instant(CONSTANTS.ADMIN_MEMBERS_ACCESS_DENIED),
+      );
       return;
     }
     this.loadingMembers.set(true);

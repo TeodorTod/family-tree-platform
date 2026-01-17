@@ -5,6 +5,7 @@ import {
   AdminMemberDetail,
   AdminUserSummary,
 } from '../models/admin.models';
+import { SubscriptionPlanCode } from '../../../shared/types/subscription-plan.type';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -20,6 +21,14 @@ export class AdminService {
   getMembers(userId: string) {
     return this.http.get<AdminMemberDetail[]>(
       `${this.baseUrl}/users/${userId}/members`,
+      { withCredentials: true },
+    );
+  }
+
+  updateUserSubscription(userId: string, plan: SubscriptionPlanCode) {
+    return this.http.patch<AdminUserSummary>(
+      `${this.baseUrl}/users/${userId}/subscription`,
+      { plan },
       { withCredentials: true },
     );
   }

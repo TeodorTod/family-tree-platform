@@ -8,5 +8,8 @@ export class UpdateUserSettingsDto {
   @IsOptional()
   @IsBoolean()
   allowDeceasedDetailsDefault?: boolean;
-}
 
+  @IsOptional()
+  @IsBoolean()
+  allowAdminSupportAccess?: boolean;
+}

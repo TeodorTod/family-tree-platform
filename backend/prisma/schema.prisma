@@ -39,6 +39,11 @@ enum SubscriptionPlan {
   TWO_YEARS
 }
 
+enum SubscriptionSource {
+  PAID
+  ADMIN
+}
+
 model User {
   id                   String            @id @default(uuid())
   email                String            @unique
@@ -50,6 +55,7 @@ model User {
   subscriptionPlan     SubscriptionPlan?
   subscriptionStartAt  DateTime?
   subscriptionEndAt    DateTime?
+  subscriptionSource   SubscriptionSource?
   createdAt            DateTime          @default(now())
   updatedAt            DateTime?         @updatedAt
 
@@ -186,6 +192,7 @@ model UserSettings {
   userId                        String    @unique
   allowDeceasedDiscoveryDefault Boolean   @default(true)
   allowDeceasedDetailsDefault   Boolean   @default(false)
+  allowAdminSupportAccess       Boolean   @default(false)
   createdAt                     DateTime  @default(now())
   updatedAt                     DateTime? @updatedAt
 

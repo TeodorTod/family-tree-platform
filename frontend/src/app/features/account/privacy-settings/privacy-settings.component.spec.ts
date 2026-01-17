@@ -42,12 +42,14 @@ describe('PrivacySettingsComponent', () => {
       of({
         allowDeceasedDiscoveryDefault: true,
         allowDeceasedDetailsDefault: true,
+        allowAdminSupportAccess: false,
       }),
     );
     sharingApi.updateMySettings.and.returnValue(
       of({
         allowDeceasedDiscoveryDefault: true,
         allowDeceasedDetailsDefault: true,
+        allowAdminSupportAccess: false,
       }),
     );
 
@@ -73,12 +75,14 @@ describe('PrivacySettingsComponent', () => {
   it('should save privacy defaults when values change', () => {
     component.updatePrivacyDefaults('allowDeceasedDiscoveryDefault', false);
     component.updatePrivacyDefaults('allowDeceasedDetailsDefault', false);
+    component.updatePrivacyDefaults('allowAdminSupportAccess', true);
 
     component.savePrivacyDefaults();
 
     expect(sharingApi.updateMySettings).toHaveBeenCalledWith({
       allowDeceasedDiscoveryDefault: false,
       allowDeceasedDetailsDefault: false,
+      allowAdminSupportAccess: true,
     });
   });
 

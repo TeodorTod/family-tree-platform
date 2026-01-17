@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { SubscriptionPlanCode } from 'src/shared/enums/subscription-plan.enum';
+import {
+  SubscriptionSource,
+  SUBSCRIPTION_SOURCE,
+} from 'src/shared/enums/subscription-source.enum';
 import { isAdminEmail } from '../shared/constants/admin.constants';
 
 type LanguageCode = 'bg' | 'en';
@@ -100,6 +104,7 @@ export class UsersService {
     plan: SubscriptionPlanCode,
     startAt: Date,
     endAt: Date,
+    source: SubscriptionSource = SUBSCRIPTION_SOURCE.PAID,
   ) {
     const updated = await this.prisma.user.update({
       where: { id: userId },
@@ -107,6 +112,7 @@ export class UsersService {
         subscriptionPlan: plan,
         subscriptionStartAt: startAt,
         subscriptionEndAt: endAt,
+        subscriptionSource: source,
       },
     });
     return this.toPublicUser(updated);

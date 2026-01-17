@@ -67,6 +67,23 @@
           ></p-toggleSwitch>
         </div>
 
+        <div class="toggle-row">
+          <label for="privacy-admin-access">
+            <span class="label">
+              {{ CONSTANTS.PRIVACY_ADMIN_ACCESS | translate }}
+            </span>
+            <span class="description">
+              {{ CONSTANTS.PRIVACY_ADMIN_ACCESS_DESC | translate }}
+            </span>
+          </label>
+          <p-toggleSwitch
+            inputId="privacy-admin-access"
+            [ngModel]="privacyValue().allowAdminSupportAccess"
+            (ngModelChange)="updatePrivacyDefaults('allowAdminSupportAccess', $event)"
+            [ngModelOptions]="{ standalone: true }"
+          ></p-toggleSwitch>
+        </div>
+
         <div class="card-actions">
           <button
             type="submit"

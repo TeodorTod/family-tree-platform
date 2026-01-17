@@ -107,6 +107,58 @@
   }
 }
 
+.subscription-actions {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.subscription-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  max-width: 520px;
+
+  .subscription-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+}
+
+.subscription-select {
+  width: 100%;
+}
+
+.subscription-field {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(170px, auto);
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+
+  ::ng-deep .p-select {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  ::ng-deep .p-select-label {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.subscription-apply {
+  white-space: nowrap;
+  height: 2.75rem;
+  min-width: 170px;
+  padding-inline: 1.1rem;
+  width: 100%;
+}
+
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -338,6 +390,11 @@
   }
 }
 
+.subscription-source {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .muted {
   color: #6b7280;
 }
@@ -401,5 +458,24 @@
   .user-cell {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .subscription-actions {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .subscription-field {
+    grid-template-columns: 1fr;
+  }
+
+  .subscription-apply {
+    width: 100%;
+  }
+
+  .subscription-control {
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 100%;
   }
 }

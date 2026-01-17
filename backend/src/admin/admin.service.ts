@@ -1,5 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { isAdminEmail } from '../shared/constants/admin.constants';
+import {
+  SUBSCRIPTION_PLAN_DURATIONS,
+  SubscriptionPlanCode,
+} from 'src/shared/enums/subscription-plan.enum';
+import { SUBSCRIPTION_SOURCE } from 'src/shared/enums/subscription-source.enum';
 
 @Injectable()
 export class AdminService {
@@ -19,6 +25,12 @@ export class AdminService {
           subscriptionPlan: true,
           subscriptionStartAt: true,
           subscriptionEndAt: true,
+          subscriptionSource: true,
+          userSettings: {
+            select: {
+              allowAdminSupportAccess: true,
+            },
+          },
         },
       }),
       this.prisma.familyMember.groupBy({
@@ -61,12 +73,15 @@ export class AdminService {
       });
     }
 
-    return users.map((user) => {
+    return users.map(({ userSettings, ...user }) => {
       const stats = statsMap.get(user.id);
       const memberCount = stats?.count ?? 0;
       const profileCount = profileCountMap.get(user.id) ?? 0;
       return {
         ...user,
+        isAdmin: isAdminEmail(user.email),
+        allowAdminSupportAccess:
+          userSettings?.allowAdminSupportAccess ?? false,
         memberCount,
         profileCount,
         dataRecords: memberCount + profileCount,
@@ -76,6 +91,21 @@ export class AdminService {
   }
 
   async getUserMembers(userId: string) {
+    const [user, settings] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true },
+      }),
+      this.prisma.userSettings.findUnique({
+        where: { userId },
+        select: { allowAdminSupportAccess: true },
+      }),
+    ]);
+    if (!settings?.allowAdminSupportAccess && !isAdminEmail(user?.email)) {
+      throw new ForbiddenException(
+        'Admin support access is disabled for this account.',
+      );
+    }
     const members = await this.prisma.familyMember.findMany({
       where: { userId },
       orderBy: [
@@ -106,5 +136,34 @@ export class AdminService {
       hasProfile: !!profile,
       dataUsage: 1 + (profile ? 1 : 0),
     }));
+  }
+
+  async updateUserSubscription(userId: string, plan: SubscriptionPlanCode) {
+    const startAt = new Date();
+    const months = SUBSCRIPTION_PLAN_DURATIONS[plan];
+    const endAt = new Date(startAt);
+    endAt.setMonth(endAt.getMonth() + months);
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionPlan: plan,
+        subscriptionStartAt: startAt,
+        subscriptionEndAt: endAt,
+        subscriptionSource: SUBSCRIPTION_SOURCE.ADMIN,
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+        updatedAt: true,
+        language: true,
+        subscriptionPlan: true,
+        subscriptionStartAt: true,
+        subscriptionEndAt: true,
+        subscriptionSource: true,
+      },
+    });
   }
 }

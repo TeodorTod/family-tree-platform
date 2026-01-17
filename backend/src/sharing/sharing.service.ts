@@ -16,6 +16,7 @@ export class SharingService {
     return {
       allowDeceasedDiscoveryDefault: s?.allowDeceasedDiscoveryDefault ?? true,
       allowDeceasedDetailsDefault: s?.allowDeceasedDetailsDefault ?? false,
+      allowAdminSupportAccess: s?.allowAdminSupportAccess ?? false,
     };
   }
 
@@ -27,12 +28,14 @@ export class SharingService {
           dto.allowDeceasedDiscoveryDefault ?? undefined,
         allowDeceasedDetailsDefault:
           dto.allowDeceasedDetailsDefault ?? undefined,
+        allowAdminSupportAccess: dto.allowAdminSupportAccess ?? undefined,
       },
       create: {
         userId,
         allowDeceasedDiscoveryDefault:
           dto.allowDeceasedDiscoveryDefault ?? true,
         allowDeceasedDetailsDefault: dto.allowDeceasedDetailsDefault ?? false,
+        allowAdminSupportAccess: dto.allowAdminSupportAccess ?? false,
       },
     });
     return this.getMySettings(userId);

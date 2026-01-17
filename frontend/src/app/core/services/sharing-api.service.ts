@@ -25,6 +25,7 @@ export interface SearchResultDto {
 export interface UpdateUserSettingsDto {
   allowDeceasedDiscoveryDefault?: boolean;
   allowDeceasedDetailsDefault?: boolean;
+  allowAdminSupportAccess?: boolean;
 }
 
 export interface UpsertMemberConsentDto {
