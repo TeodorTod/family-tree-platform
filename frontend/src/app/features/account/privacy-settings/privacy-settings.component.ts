@@ -9,7 +9,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { MessageModule } from 'primeng/message';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import {
   SharingApiService,
@@ -31,7 +34,13 @@ type CookieFormValue = CookieConsentPreferences;
 
 @Component({
   selector: 'app-privacy-settings',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    SkeletonModule,
+    ToggleSwitchModule,
+    MessageModule,
+    ButtonModule,
+  ],
   templateUrl: './privacy-settings.component.html',
   styleUrls: ['./privacy-settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

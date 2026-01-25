@@ -17,7 +17,13 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
+import { SelectModule } from 'primeng/select';
+import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from '../services/account.service';
 import { AuthUser } from '../../../shared/models/user.model';
 import { CONSTANTS } from '../../../shared/constants/constants';
@@ -30,7 +36,16 @@ import { Roles } from '../../../shared/enums/roles.enum';
 
 @Component({
   selector: 'app-account-settings',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    InputTextModule,
+    MessageModule,
+    ButtonModule,
+    SelectModule,
+    PasswordModule,
+    TooltipModule,
+    DialogModule,
+  ],
   templateUrl: './account-settings.component.html',
   styleUrls: ['./account-settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,7 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FileUploadModule } from 'primeng/fileupload';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { FamilyService } from '../../../core/services/family.service';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyMember } from '../../../shared/models/family-member.model';
@@ -14,7 +18,14 @@ import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-owner',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    InputTextModule,
+    SelectModule,
+    DatePickerModule,
+    FileUploadModule,
+    ButtonModule,
+  ],
   templateUrl: './owner.component.html',
   styleUrl: './owner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,7 +11,14 @@ import {
 import { v4 as uuid } from 'uuid';
 import { FormGroup } from '@angular/forms';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
 import { AchievementItem } from '../../../../shared/models/achievement-item.model';
@@ -26,7 +33,17 @@ import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-member-achievements',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    CardModule,
+    InputTextModule,
+    SelectModule,
+    DatePickerModule,
+    ButtonModule,
+    AccordionModule,
+    TagModule,
+    TooltipModule,
+  ],
   templateUrl: './member-achievements.component.html',
   styleUrls: ['./member-achievements.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

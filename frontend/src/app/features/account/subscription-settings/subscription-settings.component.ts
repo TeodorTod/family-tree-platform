@@ -7,7 +7,8 @@ import {
   signal,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { AccountService } from '../services/account.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,7 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-subscription-settings',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, ButtonModule, SkeletonModule],
   templateUrl: './subscription-settings.component.html',
   styleUrl: './subscription-settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

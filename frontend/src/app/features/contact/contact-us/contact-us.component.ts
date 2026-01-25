@@ -14,7 +14,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { ContactService } from './contact.service';
 import { startWith, switchMap, finalize } from 'rxjs';
 import {
@@ -30,7 +37,17 @@ const MAX_MESSAGE_LEN = 2000;
 
 @Component({
   selector: 'app-contact-us',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    FieldsetModule,
+    CardModule,
+    InputTextModule,
+    MessageModule,
+    SelectModule,
+    TextareaModule,
+    CheckboxModule,
+    ButtonModule,
+  ],
   templateUrl: './contact-us.component.html',
   styleUrls: ['./contact-us.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

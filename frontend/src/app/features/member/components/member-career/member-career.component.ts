@@ -9,7 +9,14 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectButton } from 'primeng/selectbutton';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { v4 as uuid } from 'uuid';
@@ -25,7 +32,17 @@ import { WorkForm } from '../../../../shared/types/work-form.type';
 
 @Component({
   selector: 'app-member-career',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    SelectButton,
+    DatePickerModule,
+    TableModule,
+    TagModule,
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   templateUrl: './member-career.component.html',
   styleUrls: ['./member-career.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

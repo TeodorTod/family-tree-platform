@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, input, output } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { BACKGROUND_IMAGES } from '../../../../shared/constants/background-images';
 
 @Component({
   selector: 'app-background-picker-dialog',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, DialogModule, ButtonModule],
   templateUrl: './background-picker-dialog.component.html',
   styleUrls: ['./background-picker-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

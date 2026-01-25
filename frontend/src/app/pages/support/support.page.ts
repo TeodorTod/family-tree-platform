@@ -9,7 +9,8 @@ import {
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { TextareaModule } from 'primeng/textarea';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { SupportApiService } from '../../core/services/support-api.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,7 +28,7 @@ type StripeDonationClient = StripeClient & {
 
 @Component({
   selector: 'app-support-page',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, ButtonModule, TextareaModule],
   templateUrl: './support.page.html',
   styleUrls: ['./support.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

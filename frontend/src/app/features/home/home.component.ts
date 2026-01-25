@@ -18,7 +18,8 @@ import { Observable, switchMap } from 'rxjs';
 import { SharingApiService } from '../../core/services/sharing-api.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { Roles } from '../../shared/enums/roles.enum';
 import { PhotoPickerDialogComponent } from './components/photo-picker-dialog/photo-picker-dialog.component';
@@ -40,7 +41,8 @@ import { HomeControlPanelComponent } from './components/home-control-panel/home-
     HomeControlPanelComponent,
     TreeTableComponent,
     ...SHARED_ANGULAR_IMPORTS,
-    ...SHARED_PRIMENG_IMPORTS,
+    ButtonModule,
+    TooltipModule,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],

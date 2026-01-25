@@ -13,7 +13,17 @@ import { FormBuilder } from '@angular/forms';
 import { v4 as uuid } from 'uuid';
 
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { AccordionModule } from 'primeng/accordion';
+import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectModule } from 'primeng/select';
+import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { FamilyService } from '../../../../core/services/family.service';
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
@@ -28,7 +38,20 @@ import { MemberProfileService } from '../../../../core/services/member-profile.s
 
 @Component({
   selector: 'app-member-stories',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    CardModule,
+    InputTextModule,
+    SelectModule,
+    DatePickerModule,
+    MultiSelectModule,
+    TextareaModule,
+    ButtonModule,
+    AccordionModule,
+    TagModule,
+    BadgeModule,
+    TooltipModule,
+  ],
   templateUrl: './member-stories.component.html',
   styleUrls: ['./member-stories.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

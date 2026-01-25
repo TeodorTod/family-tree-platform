@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { SliderModule } from 'primeng/slider';
+import { TooltipModule } from 'primeng/tooltip';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 
 @Component({
   selector: 'app-home-control-panel',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    ButtonModule,
+    TooltipModule,
+    SliderModule,
+  ],
   templateUrl: './home-control-panel.component.html',
   styleUrls: ['./home-control-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

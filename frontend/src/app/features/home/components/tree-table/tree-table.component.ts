@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { FamilyMember } from '../../../../shared/models/family-member.model';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -9,7 +11,12 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-tree-table',
   templateUrl: './tree-table.component.html',
   styleUrl: './tree-table.component.scss',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    TableModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeTableComponent {

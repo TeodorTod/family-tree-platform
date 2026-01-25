@@ -4,7 +4,10 @@ import { NgOptimizedImage } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
+import { MenubarModule } from 'primeng/menubar';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../../assets/i18n/language.service';
@@ -15,7 +18,14 @@ import { SharingNotificationsService } from '../../services/sharing-notification
 
 @Component({
   selector: 'app-navbar',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, NgOptimizedImage],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    MenubarModule,
+    MenuModule,
+    ButtonModule,
+    InputTextModule,
+    NgOptimizedImage,
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

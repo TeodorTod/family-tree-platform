@@ -1,12 +1,23 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TableModule } from 'primeng/table';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { TooltipModule } from 'primeng/tooltip';
 import { SharingApiService, UpsertMemberConsentDto, UpdateUserSettingsDto } from '../../core/services/sharing-api.service';
 import { CONSTANTS } from '../../shared/constants/constants';
 
 @Component({
   selector: 'app-settings-sharing-page',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    ToggleSwitchModule,
+    TableModule,
+    CheckboxModule,
+    TooltipModule,
+    ButtonModule,
+  ],
   templateUrl: './settings-sharing.page.html',
   styleUrls: ['./settings-sharing.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

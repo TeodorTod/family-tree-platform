@@ -10,7 +10,11 @@ import {
   ViewChild,
   input,
 } from '@angular/core';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
+import { FileUploadModule } from 'primeng/fileupload';
+import { GalleriaModule } from 'primeng/galleria';
+import { TooltipModule } from 'primeng/tooltip';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { MediaService } from '../../../../core/services/media.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,7 +26,14 @@ import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-member-media-gallery',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    FileUploadModule,
+    DividerModule,
+    GalleriaModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   templateUrl: './member-media-gallery.component.html',
   styleUrls: ['./member-media-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -11,7 +11,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { FamilyService } from '../../../core/services/family.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TabsModule } from 'primeng/tabs';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { MemberAchievementsComponent } from '../components/member-achievements/member-achievements.component';
@@ -38,7 +43,12 @@ import { Roles } from '../../../shared/enums/roles.enum';
   selector: 'app-member-info',
   imports: [
     ...SHARED_ANGULAR_IMPORTS,
-    ...SHARED_PRIMENG_IMPORTS,
+    TabsModule,
+    SelectModule,
+    DatePickerModule,
+    CheckboxModule,
+    InputTextModule,
+    ButtonModule,
     MemberBioComponent,
     MemberCareerComponent,
     MemberAchievementsComponent,

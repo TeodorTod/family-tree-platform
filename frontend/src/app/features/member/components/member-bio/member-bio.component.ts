@@ -17,7 +17,12 @@ import { firstValueFrom } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { EditorModule } from 'primeng/editor';
+import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 import { Editor } from 'primeng/editor';
 
 import { MediaService } from '../../../../core/services/media.service';
@@ -30,7 +35,15 @@ type QuillInstance = any;
 
 @Component({
   selector: 'app-member-bio',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    CardModule,
+    EditorModule,
+    DialogModule,
+    InputTextModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   templateUrl: './member-bio.component.html',
   styleUrls: ['./member-bio.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

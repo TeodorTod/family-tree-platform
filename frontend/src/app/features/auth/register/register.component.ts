@@ -3,7 +3,12 @@ import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
+import { SelectModule } from 'primeng/select';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,7 +17,15 @@ import { Lang } from '../../../shared/types/lang.type';
 
 @Component({
   selector: 'app-register',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    SelectModule,
+    InputTextModule,
+    FloatLabelModule,
+    PasswordModule,
+    MessageModule,
+    ButtonModule,
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['../login/login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

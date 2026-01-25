@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
 import { CONSTANTS } from '../../shared/constants/constants';
 import { SUBSCRIPTION_PLAN_OPTION_MAP } from '../../shared/constants/subscription-plan-options';
 import {
@@ -31,7 +31,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-subscription-payment',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, ButtonModule],
   templateUrl: './subscription-payment.page.html',
   styleUrls: ['./subscription-payment.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

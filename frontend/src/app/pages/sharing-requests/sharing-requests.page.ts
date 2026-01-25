@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { TableModule } from 'primeng/table';
+import { TabsModule } from 'primeng/tabs';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { SharingApiService } from '../../core/services/sharing-api.service';
 import { SharingNotificationsService } from '../../core/services/sharing-notifications.service';
 import { CONSTANTS } from '../../shared/constants/constants';
@@ -18,7 +23,16 @@ import { SanitizedShareRequestDto } from '../../core/services/sharing-dto-saniti
 
 @Component({
   selector: 'app-sharing-requests-page',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS, AddRelativeDialogComponent],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    TabsModule,
+    TableModule,
+    TagModule,
+    TooltipModule,
+    ButtonModule,
+    ConfirmDialog,
+    AddRelativeDialogComponent,
+  ],
   templateUrl: './sharing-requests.page.html',
   styleUrls: ['./sharing-requests.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

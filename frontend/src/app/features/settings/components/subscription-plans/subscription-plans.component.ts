@@ -10,7 +10,8 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { FieldsetModule } from 'primeng/fieldset';
 import { SUBSCRIPTION_PLAN_OPTIONS } from '../../../../shared/constants/subscription-plan-options';
 import {
   SubscriptionPlanCode,
@@ -24,7 +25,7 @@ import { SUBSCRIPTION_PLAN_OPTION_MAP } from '../../../../shared/constants/subsc
 
 @Component({
   selector: 'app-subscription-plans',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, FieldsetModule, ButtonModule],
   templateUrl: './subscription-plans.component.html',
   styleUrls: ['./subscription-plans.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

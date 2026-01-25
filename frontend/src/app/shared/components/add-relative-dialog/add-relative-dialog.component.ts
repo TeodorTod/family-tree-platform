@@ -10,7 +10,12 @@ import {
   signal,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { FamilyMember } from '../../../shared/models/family-member.model';
 import { Gender } from '../../../shared/enums/gender.enum';
@@ -31,7 +36,15 @@ import { ShareRequestStatus } from '../../enums/share-request-status.enum';
   selector: 'app-add-relative-dialog',
   templateUrl: './add-relative-dialog.component.html',
   styleUrls: ['./add-relative-dialog.component.scss'],
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    DialogModule,
+    CheckboxModule,
+    SelectModule,
+    DatePickerModule,
+    InputTextModule,
+    ButtonModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRelativeDialogComponent implements OnInit {

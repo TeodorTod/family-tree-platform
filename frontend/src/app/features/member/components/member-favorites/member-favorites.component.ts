@@ -9,7 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { TextareaModule } from 'primeng/textarea';
+import { TooltipModule } from 'primeng/tooltip';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
 import { FavoriteItem } from '../../../../shared/models/favorite-item.model';
@@ -22,7 +28,16 @@ import { UnsavedAware } from '../../../../shared/interfaces/unsaved-aware';
 
 @Component({
   selector: 'app-member-favorites',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    CardModule,
+    SelectModule,
+    InputTextModule,
+    TextareaModule,
+    TableModule,
+    ButtonModule,
+    TooltipModule,
+  ],
   templateUrl: './member-favorites.component.html',
   styleUrls: ['./member-favorites.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

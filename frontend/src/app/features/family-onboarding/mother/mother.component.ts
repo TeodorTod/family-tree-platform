@@ -3,7 +3,12 @@ import { Router } from '@angular/router';
 import { FamilyStateService } from '../../../core/services/family-state.service';
 import { FamilyService } from '../../../core/services/family.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FileUploadModule } from 'primeng/fileupload';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
@@ -15,7 +20,15 @@ import { BirthDeathDateMode } from '../../../shared/enums/birth-death-date.enum'
 
 @Component({
   selector: 'app-mother',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    InputTextModule,
+    SelectModule,
+    DatePickerModule,
+    CheckboxModule,
+    FileUploadModule,
+    ButtonModule,
+  ],
   templateUrl: './mother.component.html',
   styleUrls: ['./mother.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -9,7 +9,12 @@ import {
   input,
 } from '@angular/core';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../../shared/imports/shared-primeng-imports';
+import { CardModule } from 'primeng/card';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { MemberProfileService } from '../../../../core/services/member-profile.service';
 import { MemberProfile } from '../../../../shared/models/member-profile.model';
 import { take } from 'rxjs/operators';
@@ -21,7 +26,15 @@ import { SmokingStatus } from '../../../../shared/enums/smoking-status.enum';
 
 @Component({
   selector: 'app-member-personal-info',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [
+    ...SHARED_ANGULAR_IMPORTS,
+    CardModule,
+    DatePickerModule,
+    InputNumberModule,
+    SelectModule,
+    InputTextModule,
+    TextareaModule,
+  ],
   templateUrl: './member-personal-info.component.html',
   styleUrls: ['./member-personal-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,13 +3,13 @@ import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/cor
 import { TranslateService } from '@ngx-translate/core';
 import { CONSTANTS } from '../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../shared/imports/shared-angular-imports';
-import { SHARED_PRIMENG_IMPORTS } from '../../../shared/imports/shared-primeng-imports';
+import { AccordionModule } from 'primeng/accordion';
 
 type FaqItem = { qKey: string; aKey: string };
 
 @Component({
   selector: 'app-faq-page',
-  imports: [...SHARED_ANGULAR_IMPORTS, ...SHARED_PRIMENG_IMPORTS],
+  imports: [...SHARED_ANGULAR_IMPORTS, AccordionModule],
   templateUrl: './faq-page.component.html',
   styleUrls: ['./faq-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
