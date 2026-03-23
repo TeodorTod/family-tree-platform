@@ -45,10 +45,9 @@ BREVO_SENDER_EMAIL=
 BREVO_SENDER_NAME=
 BREVO_REPLYTO_EMAIL=
 BREVO_REPLYTO_NAME=
-ADMIN_EMAIL=
 ```
 
-Tip: you can set `ADMIN_EMAIL` in a separate `.enf` file to keep it out of source control; it is loaded before `.env`.
+Admin access is now database-backed via the `User.isAdmin` boolean column.
 
 ## Run
 

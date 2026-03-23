@@ -52,6 +52,7 @@ model User {
   picture              String?
   provider             String?
   language             String            @default("bg")
+  isAdmin              Boolean           @default(false)
   subscriptionPlan     SubscriptionPlan?
   subscriptionStartAt  DateTime?
   subscriptionEndAt    DateTime?

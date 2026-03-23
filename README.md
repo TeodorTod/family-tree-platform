@@ -87,7 +87,7 @@ OAuth and email:
 - `BREVO_REPLYTO_NAME` (optional)
 
 Admin:
-- `ADMIN_EMAIL` (optional, can be set in `backend/.enf` to keep it out of source control)
+- Admin role is stored in the database as `User.isAdmin` (managed via Prisma/DB tools)
 
 ### Frontend (`frontend/src/environments/environment.ts`)
 

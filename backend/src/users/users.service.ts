@@ -6,7 +6,6 @@ import {
   SubscriptionSource,
   SUBSCRIPTION_SOURCE,
 } from 'src/shared/enums/subscription-source.enum';
-import { isAdminEmail } from '../shared/constants/admin.constants';
 
 type LanguageCode = 'bg' | 'en';
 
@@ -119,7 +118,7 @@ export class UsersService {
   }
 
   toPublicUser<
-    T extends { password?: string | null; email?: string | null },
+    T extends { password?: string | null; isAdmin?: boolean | null },
   >(
     user: T | null,
   ): (Omit<T, 'password'> & { hasPassword: boolean; isAdmin: boolean }) | null {
@@ -128,12 +127,12 @@ export class UsersService {
     }
     const { password, ...rest } = user as T & {
       password?: string | null;
-      email?: string | null;
+      isAdmin?: boolean | null;
     };
     return {
       ...(rest as Omit<T, 'password'>),
       hasPassword: !!password,
-      isAdmin: isAdminEmail(rest.email),
+      isAdmin: rest.isAdmin === true,
     };
   }
 

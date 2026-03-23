@@ -9,4 +9,3 @@ import { SharingService } from './sharing.service';
   providers: [SharingService],
 })
 export class SharingModule {}
-

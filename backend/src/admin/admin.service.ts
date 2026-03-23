@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Prisma } from 'generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
-import { isAdminEmail } from '../shared/constants/admin.constants';
 import {
   SUBSCRIPTION_PLAN_DURATIONS,
   SubscriptionPlanCode,
@@ -11,27 +11,31 @@ import { SUBSCRIPTION_SOURCE } from 'src/shared/enums/subscription-source.enum';
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private static readonly userSummarySelect =
+    Prisma.validator<Prisma.UserSelect>()({
+      id: true,
+      email: true,
+      displayName: true,
+      isAdmin: true,
+      createdAt: true,
+      updatedAt: true,
+      language: true,
+      subscriptionPlan: true,
+      subscriptionStartAt: true,
+      subscriptionEndAt: true,
+      subscriptionSource: true,
+      userSettings: {
+        select: {
+          allowAdminSupportAccess: true,
+        },
+      },
+    });
+
   async getUserSummaries() {
     const [users, memberStats, profileMembers] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          displayName: true,
-          createdAt: true,
-          updatedAt: true,
-          language: true,
-          subscriptionPlan: true,
-          subscriptionStartAt: true,
-          subscriptionEndAt: true,
-          subscriptionSource: true,
-          userSettings: {
-            select: {
-              allowAdminSupportAccess: true,
-            },
-          },
-        },
+        select: AdminService.userSummarySelect,
       }),
       this.prisma.familyMember.groupBy({
         by: ['userId'],
@@ -77,11 +81,10 @@ export class AdminService {
       const stats = statsMap.get(user.id);
       const memberCount = stats?.count ?? 0;
       const profileCount = profileCountMap.get(user.id) ?? 0;
+      const allowAdminSupportAccess = userSettings?.allowAdminSupportAccess;
       return {
         ...user,
-        isAdmin: isAdminEmail(user.email),
-        allowAdminSupportAccess:
-          userSettings?.allowAdminSupportAccess ?? false,
+        allowAdminSupportAccess: allowAdminSupportAccess ?? false,
         memberCount,
         profileCount,
         dataRecords: memberCount + profileCount,
@@ -94,14 +97,14 @@ export class AdminService {
     const [user, settings] = await Promise.all([
       this.prisma.user.findUnique({
         where: { id: userId },
-        select: { email: true },
+        select: { isAdmin: true },
       }),
       this.prisma.userSettings.findUnique({
         where: { userId },
         select: { allowAdminSupportAccess: true },
       }),
     ]);
-    if (!settings?.allowAdminSupportAccess && !isAdminEmail(user?.email)) {
+    if (!settings?.allowAdminSupportAccess && user?.isAdmin !== true) {
       throw new ForbiddenException(
         'Admin support access is disabled for this account.',
       );

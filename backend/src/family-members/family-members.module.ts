@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { FamilyMembersController } from './family-members.controller';
 import { FamilyMembersService } from './family-members.service';
-import { RelationshipService } from 'src/relationships/relationship.service';
-
+import { RelationshipModule } from 'src/relationships/relationship.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, RelationshipModule],
   controllers: [FamilyMembersController],
-  providers: [FamilyMembersService, RelationshipService],
+  providers: [FamilyMembersService],
 })
 export class FamilyMembersModule {}

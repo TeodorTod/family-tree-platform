@@ -16,6 +16,7 @@ import { SharingModule } from './sharing/sharing.module';
 import { BillingModule } from './billing/billing.module';
 import { ContactModule } from './contact/contact.module';
 import { AdminModule } from './admin/admin.module';
+import { RelationshipModule } from './relationships/relationship.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AdminModule } from './admin/admin.module';
     BillingModule,
     ContactModule,
     AdminModule,
+    RelationshipModule,
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
       serveRoot: '/',
