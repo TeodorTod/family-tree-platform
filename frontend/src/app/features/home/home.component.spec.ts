@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 
 import { HomeComponent } from './home.component';
 
@@ -8,9 +9,26 @@ describe('HomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeComponent]
-    })
-    .compileComponents();
+      imports: [HomeComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: { get: () => null },
+              url: [{ path: 'chart', parameters: {} }],
+            },
+            parent: {
+              snapshot: {
+                url: [],
+                params: {},
+                queryParamMap: { get: () => null },
+              },
+            },
+          },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;

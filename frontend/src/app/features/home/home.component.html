@@ -68,154 +68,27 @@
 
 <!-- Hover Action Buttons on Node -->
 @if (hoveredNode() && !showTableView()) {
-<div
-  class="node-actions"
-  (click)="handleActionClick($event)"
-  [style.top.px]="hoveredNode()?.y"
-  [style.left.px]="hoveredNode()?.x"
-  tabindex="0"
-  role="group"
-  (keydown.enter)="handleActionClick($event)"
-  (keydown.space)="handleActionClick($event)"
->
-  <button
-    pButton
-    icon="pi pi-user-plus"
-    class="p-button-rounded p-button-sm"
-    (click)="openAddDialog(hoveredNode()?.id)"
-    pTooltip="{{ CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate }}"
-    tooltipPosition="top"
-  ></button>
-
-  <button
-    pButton
-    icon="pi pi-pencil"
-    class="p-button-rounded p-button-sm"
-    (click)="editMember()"
-    pTooltip="{{ CONSTANTS.INFO_EDIT_MEMBER | translate }}"
-    tooltipPosition="top"
-  ></button>
-</div>
+<app-node-hover-actions
+  [topPx]="hoveredNode()?.y"
+  [leftPx]="hoveredNode()?.x"
+  (addRequested)="openAddDialog(hoveredNode()?.id)"
+  (editRequested)="editMember()"
+/>
 } @if (exportMode()) {
-<div class="export-overlay" (click)="$event.stopPropagation()">
-  <div class="export-toolbar">
-    <div class="bg-pan-wrapper">
-      <span class="control-label">
-        {{ CONSTANTS.HOME_EXPORT_BACKGROUND | translate }}
-      </span>
-      <div class="bg-pan-controls">
-        <button
-          pButton
-          icon="pi pi-arrow-up"
-          (click)="nudgeBg(0, -20)"
-          class="p-button-text"
-          type="button"
-        ></button>
-        <div class="row">
-          <button
-            pButton
-            icon="pi pi-arrow-left"
-            (click)="nudgeBg(-20, 0)"
-            class="p-button-text"
-            type="button"
-          ></button>
-          <button
-            pButton
-            icon="pi pi-refresh"
-            (click)="resetBgOffset()"
-            class="p-button-text"
-            type="button"
-            pTooltip="Reset"
-          ></button>
-          <button
-            pButton
-            icon="pi pi-arrow-right"
-            (click)="nudgeBg(20, 0)"
-            class="p-button-text"
-            type="button"
-          ></button>
-        </div>
-        <button
-          pButton
-          icon="pi pi-arrow-down"
-          (click)="nudgeBg(0, 20)"
-          class="p-button-text"
-          type="button"
-        ></button>
-      </div>
-    </div>
-
-    <div class="export-preview-controls">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        [label]="CONSTANTS.HOME_EXPORT_REFRESH | translate"
-        class="p-button-outlined"
-        (click)="refreshExportPreview()"
-        [disabled]="exportBuilding()"
-      ></button>
-      @if (exportMeta(); as meta) {
-      <div class="export-meta">
-        {{ meta.width }} x {{ meta.height }} px
-      </div>
-      }
-    </div>
-
-    <span class="flex-1"></span>
-
-    @if (exportBuilding()) {
-    <span class="export-status">
-      {{ CONSTANTS.HOME_EXPORT_PREPARING | translate }}
-    </span>
-    }
-
-    <button
-      pButton
-      icon="pi pi-download"
-      label="PNG"
-      (click)="downloadPNG()"
-      [disabled]="!exportDataUrl() || exportBuilding()"
-    ></button>
-    <button
-      pButton
-      icon="pi pi-file-pdf"
-      label="PDF"
-      (click)="downloadPDF()"
-      [disabled]="!exportDataUrl() || exportBuilding()"
-    ></button>
-    <button
-      pButton
-      icon="pi pi-times"
-      label="{{ CONSTANTS.INFO_CANCEL | translate }}"
-      (click)="closeExportView()"
-    ></button>
-  </div>
-
-  <div
-    class="export-content"
-    (mousedown)="beginBgDrag($event)"
-    (mousemove)="moveBgDrag($event)"
-    (mouseup)="endBgDrag()"
-    (mouseleave)="endBgDrag()"
-    (touchstart)="beginBgDrag($event)"
-    (touchmove)="moveBgDrag($event)"
-    (touchend)="endBgDrag()"
-  >
-    @if (exportDataUrl()) {
-    <img [src]="exportDataUrl()!" alt="Rodostoria Export" />
-    @if (exportMeta(); as meta) {
-    <div class="export-meta-chip">
-      {{ meta.width }} x {{ meta.height }} px
-    </div>
-    }
-    } @else if (exportBuilding()) {
-    <p>{{ CONSTANTS.INFO_IMAGE_GENERATION | translate }}</p>
-    } @else {
-    <p>{{ CONSTANTS.INFO_IMAGE_GENERATION | translate }}</p>
-    }
-  </div>
-</div>
+<app-export-overlay
+  [exportBuilding]="exportBuilding()"
+  [exportDataUrl]="exportDataUrl()"
+  [exportMeta]="exportMeta()"
+  (nudgeBg)="onExportNudge($event)"
+  (resetBg)="resetBgOffset()"
+  (refreshPreview)="refreshExportPreview()"
+  (downloadPng)="onDownloadPng()"
+  (downloadPdf)="onDownloadPdf()"
+  (close)="closeExportView()"
+  (bgDragStart)="beginBgDrag($event)"
+  (bgDragMove)="moveBgDrag($event)"
+  (bgDragEnd)="endBgDrag()"
+/>
 }
 
 <!-- Table View -->

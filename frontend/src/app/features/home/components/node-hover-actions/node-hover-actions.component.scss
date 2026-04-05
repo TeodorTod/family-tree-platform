@@ -1,0 +1,52 @@
+.node-actions {
+  position: absolute;
+  transform: translate(-50%, -8%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 9999;
+}
+
+:host ::ng-deep .p-button.p-button-rounded {
+  background-color: var(--surface-card);
+  border: none;
+  padding: 0.25rem;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s;
+
+  .pi {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+  }
+
+  &:hover {
+    background-color: var(--accent-color);
+    color: var(--primary-color-text);
+  }
+
+  &:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .node-actions {
+    transform: translate(-50%, -4%);
+    gap: 0.25rem;
+
+    :host ::ng-deep .p-button.p-button-rounded {
+      padding: 0.2rem;
+      width: 20px;
+      height: 20px;
+
+      .pi {
+        font-size: 0.6875rem;
+      }
+    }
+  }
+}

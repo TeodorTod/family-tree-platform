@@ -1,0 +1,119 @@
+<div class="export-overlay" (click)="$event.stopPropagation()">
+  <div class="export-toolbar">
+    <div class="bg-pan-wrapper">
+      <span class="control-label">
+        {{ constants.HOME_EXPORT_BACKGROUND | translate }}
+      </span>
+      <div class="bg-pan-controls">
+        <button
+          pButton
+          icon="pi pi-arrow-up"
+          (click)="onNudge(0, -20)"
+          class="p-button-text"
+          type="button"
+        ></button>
+        <div class="row">
+          <button
+            pButton
+            icon="pi pi-arrow-left"
+            (click)="onNudge(-20, 0)"
+            class="p-button-text"
+            type="button"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-refresh"
+            (click)="onResetBg()"
+            class="p-button-text"
+            type="button"
+            pTooltip="Reset"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-arrow-right"
+            (click)="onNudge(20, 0)"
+            class="p-button-text"
+            type="button"
+          ></button>
+        </div>
+        <button
+          pButton
+          icon="pi pi-arrow-down"
+          (click)="onNudge(0, 20)"
+          class="p-button-text"
+          type="button"
+        ></button>
+      </div>
+    </div>
+
+    <div class="export-preview-controls">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-refresh"
+        [label]="constants.HOME_EXPORT_REFRESH | translate"
+        class="p-button-outlined"
+        (click)="refreshPreview.emit()"
+        [disabled]="exportBuilding()"
+      ></button>
+      @if (exportMeta(); as meta) {
+        <div class="export-meta">
+          {{ meta.width }} x {{ meta.height }} px
+        </div>
+      }
+    </div>
+
+    <span class="flex-1"></span>
+
+    @if (exportBuilding()) {
+      <span class="export-status">
+        {{ constants.HOME_EXPORT_PREPARING | translate }}
+      </span>
+    }
+
+    <button
+      pButton
+      icon="pi pi-download"
+      label="PNG"
+      (click)="downloadPng.emit()"
+      [disabled]="!exportDataUrl() || exportBuilding()"
+    ></button>
+    <button
+      pButton
+      icon="pi pi-file-pdf"
+      label="PDF"
+      (click)="downloadPdf.emit()"
+      [disabled]="!exportDataUrl() || exportBuilding()"
+    ></button>
+    <button
+      pButton
+      icon="pi pi-times"
+      label="{{ constants.INFO_CANCEL | translate }}"
+      (click)="close.emit()"
+    ></button>
+  </div>
+
+  <div
+    class="export-content"
+    (mousedown)="bgDragStart.emit($event)"
+    (mousemove)="bgDragMove.emit($event)"
+    (mouseup)="bgDragEnd.emit()"
+    (mouseleave)="bgDragEnd.emit()"
+    (touchstart)="bgDragStart.emit($event)"
+    (touchmove)="bgDragMove.emit($event)"
+    (touchend)="bgDragEnd.emit()"
+  >
+    @if (exportDataUrl(); as url) {
+      <img [src]="url" alt="Rodostoria Export" />
+      @if (exportMeta(); as meta) {
+        <div class="export-meta-chip">
+          {{ meta.width }} x {{ meta.height }} px
+        </div>
+      }
+    } @else if (exportBuilding()) {
+      <p>{{ constants.INFO_IMAGE_GENERATION | translate }}</p>
+    } @else {
+      <p>{{ constants.INFO_IMAGE_GENERATION | translate }}</p>
+    }
+  </div>
+</div>

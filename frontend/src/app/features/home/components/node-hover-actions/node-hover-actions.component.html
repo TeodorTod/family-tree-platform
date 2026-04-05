@@ -1,0 +1,28 @@
+<div
+  class="node-actions"
+  (click)="handleContainerInteraction($event)"
+  [style.top.px]="topPx()"
+  [style.left.px]="leftPx()"
+  tabindex="0"
+  role="group"
+  (keydown.enter)="handleContainerInteraction($event)"
+  (keydown.space)="handleContainerInteraction($event)"
+>
+  <button
+    pButton
+    icon="pi pi-user-plus"
+    class="p-button-rounded p-button-sm"
+    (click)="addRequested.emit()"
+    pTooltip="{{ constants.RELATION_ADD_RELATIVE_HEADER | translate }}"
+    tooltipPosition="top"
+  ></button>
+
+  <button
+    pButton
+    icon="pi pi-pencil"
+    class="p-button-rounded p-button-sm"
+    (click)="editRequested.emit()"
+    pTooltip="{{ constants.INFO_EDIT_MEMBER | translate }}"
+    tooltipPosition="top"
+  ></button>
+</div>

@@ -9,6 +9,49 @@
   }
 }
 
+/* Chart (and default): light controls — PrimeNG default uses primary fill (#2d4c2f) which looks heavy on the tree. */
+:host:not(.table-mode) {
+  ::ng-deep .p-button.p-button-rounded.p-button-sm {
+    background-color: var(--surface-card) !important;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    width: 30px;
+    height: 30px;
+    padding: 0.25rem;
+    color: var(--primary-color) !important;
+
+    .p-button-icon {
+      color: var(--primary-color) !important;
+    }
+
+    &:not(:disabled):hover {
+      background-color: var(--accent-color) !important;
+      color: var(--primary-color) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    &.p-button-outlined {
+      background-color: var(--surface-card) !important;
+      border: 1px solid var(--primary-color) !important;
+    }
+  }
+
+  ::ng-deep .p-slider {
+    .p-slider-range {
+      background: rgba(51, 65, 85, 0.35) !important;
+    }
+
+    .p-slider-handle {
+      background: var(--surface-card) !important;
+      border: 2px solid var(--primary-color) !important;
+    }
+  }
+}
+
 .slider-block {
   display: flex;
   flex-direction: column;
@@ -26,4 +69,16 @@
 .slider {
   flex: 1;
   min-width: 0;
+}
+
+@media (max-width: 768px) {
+  :host:not(.table-mode) ::ng-deep .p-button.p-button-rounded.p-button-sm {
+    width: 20px;
+    height: 20px;
+    padding: 0.2rem;
+
+    .p-button-icon {
+      font-size: 0.6875rem;
+    }
+  }
 }
