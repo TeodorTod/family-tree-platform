@@ -455,6 +455,7 @@ export interface ComputeFamilyGraphLayoutParams {
   showBirthInfo: boolean;
   distanceBoostX: number;
   distanceBoostY: number;
+  invertVertical?: boolean;
 }
 
 export function computeFamilyGraphLayout(
@@ -469,6 +470,7 @@ export function computeFamilyGraphLayout(
     showBirthInfo,
     distanceBoostX,
     distanceBoostY,
+    invertVertical = false,
   } = params;
 
   const isMobile = W < 1400;
@@ -820,12 +822,25 @@ export function computeFamilyGraphLayout(
   const yBoost = showBirthInfo ? distanceBoostY + 0.35 : distanceBoostY;
   boostPosMap(posMap, anchorX, anchorY, distanceBoostX, yBoost);
 
+  let tierYsOut = tierYs;
+  if (invertVertical) {
+    posMap.forEach((p, key) => {
+      p.y = H - p.y;
+      posMap.set(key, p);
+    });
+    tierYsOut = {
+      grandparents: H - tierYs.grandparents,
+      parents: H - tierYs.parents,
+      owner: H - tierYs.owner,
+    };
+  }
+
   return {
     posMap,
     pairs,
     mateOf,
     dynamic,
-    tierYs,
+    tierYs: tierYsOut,
     isMobile,
     W,
     H,

@@ -104,6 +104,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   exportMeta = signal<{ width: number; height: number } | null>(null);
   exportBuilding = signal(false);
   showBirthInfo = signal<boolean>(true);
+  treeInvertVertical = signal(false);
   soundConsent = signal(false);
   readonly soundPlaying = this.ambientSound.playing;
   private exportRebuildTimer: ReturnType<typeof setTimeout> | null = null;
@@ -287,6 +288,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       showBirthInfo: this.showBirthInfo(),
       distanceBoostX: this.distanceBoostXValue,
       distanceBoostY: this.distanceBoostYValue,
+      invertVertical: this.treeInvertVertical(),
     });
 
     const elements = buildFamilyGraphElements({
@@ -312,7 +314,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this.cy.zoom(isMobile ? 0.7 : 0.9);
     this.cy.center();
-    this.cy.panBy({ x: 0, y: container.clientHeight * 0.2 });
+    const panY = container.clientHeight * 0.2;
+    this.cy.panBy({
+      x: 0,
+      y: this.treeInvertVertical() ? -panY : panY,
+    });
     this.cy.resize();
     this.cy.fit();
 
@@ -602,6 +608,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       showBirthInfo: this.showBirthInfo(),
       distanceBoostX: this.distanceBoostXValue,
       distanceBoostY: this.distanceBoostYValue,
+      invertVertical: this.treeInvertVertical(),
     });
 
     layout.posMap.forEach((pos, role) => {
@@ -915,6 +922,17 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.refreshNodeLabels();
   }
 
+  toggleTreeInvertVertical(): void {
+    const next = !this.treeInvertVertical();
+    this.treeInvertVertical.set(next);
+    this.platformStorage.setItem(
+      'familyTreeInvertVertical',
+      next ? '1' : '0'
+    );
+    this.reapplyGraphLayout();
+    this.scheduleExportRebuild();
+  }
+
   private hydratePersistedPreferencesFromBrowser() {
     if (!this.platformStorage.isBrowserEnvironment()) {
       return;
@@ -987,6 +1005,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         0.65,
         1.55
       );
+    }
+
+    const savedInvert = this.platformStorage.getItemFromStorage(
+      'familyTreeInvertVertical'
+    );
+    if (savedInvert === '1') {
+      this.treeInvertVertical.set(true);
     }
 
     const savedPhoto = this.platformStorage.getItemFromStorage(

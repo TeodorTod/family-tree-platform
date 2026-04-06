@@ -172,6 +172,8 @@
     "DOD_NOTE_LABEL": "Свободен текст",
     "HIDE_BIRTH_DATE": "Скрий датите на раждане/смърт",
     "SHOW_BIRTH_DATE": "Покажи датите на раждане/смърт",
+    "TREE_PUT_DESCENDANTS_AT_TOP": "Наследниците отгоре",
+    "TREE_PUT_ANCESTORS_AT_TOP": "Предците отгоре",
     "DELETE_MEMBER": "Изтрий член",
     "CONFIRM_DELETE_TITLE": "Потвърди изтриването",
     "CONFIRM_DELETE_MESSAGE": "Сигурен ли си, че искаш да изтриеш този член от семейството?",

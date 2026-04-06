@@ -107,6 +107,20 @@
   tooltipPosition="left"
 ></button>
 
+<button
+  pButton
+  icon="pi pi-arrows-v"
+  class="p-button-rounded p-button-sm"
+  [class.p-button-outlined]="!treeInvertVertical()"
+  (click)="treeInvertToggled.emit()"
+  pTooltip="{{
+    treeInvertVertical()
+      ? (constants.INFO_TREE_PUT_ANCESTORS_AT_TOP | translate)
+      : (constants.INFO_TREE_PUT_DESCENDANTS_AT_TOP | translate)
+  }}"
+  tooltipPosition="left"
+></button>
+
 <!-- Sliders -->
 <div class="slider-block">
   <div

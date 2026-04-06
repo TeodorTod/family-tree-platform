@@ -26,6 +26,7 @@ export class HomeControlPanelComponent {
   soundPlaying = input(false);
   showConnections = input(false);
   showBirthInfo = input(true);
+  treeInvertVertical = input(false);
   circleSizeValue = input(80);
   textSizeValue = input(14);
   backgroundOpacityValue = input(0.6);
@@ -41,6 +42,7 @@ export class HomeControlPanelComponent {
   photoDialogRequested = output<void>();
   connectionsToggled = output<void>();
   birthInfoToggled = output<void>();
+  treeInvertToggled = output<void>();
   circleSizeChanged = output<number>();
   textSizeChanged = output<number>();
   backgroundOpacityChanged = output<number>();

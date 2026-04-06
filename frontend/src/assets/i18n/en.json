@@ -210,6 +210,8 @@
     "DOD_NOTE_LABEL": "Free Text",
     "HIDE_BIRTH_DATE": "Hide Birth/Death Dates",
     "SHOW_BIRTH_DATE": "Show Birth/Death Dates",
+    "TREE_PUT_DESCENDANTS_AT_TOP": "Put descendants at top",
+    "TREE_PUT_ANCESTORS_AT_TOP": "Put ancestors at top",
     "DELETE_MEMBER": "Delete Member",
     "CONFIRM_DELETE_TITLE": "Confirm Deletion",
     "CONFIRM_DELETE_MESSAGE": "Are you sure you want to delete this family member?",
