@@ -136,6 +136,8 @@ export class GlobalSearchPage implements OnInit {
       return;
     }
 
+    this.showAddDialog.set(false);
+
     const relationshipType =
       event.relation === 'partner'
         ? 'partner'
@@ -170,11 +172,9 @@ export class GlobalSearchPage implements OnInit {
               this.family
                 .setPartner(this.baseOwner.id, newId, PartnerStatus.UNKNOWN)
                 .subscribe(() => {
-                  this.showAddDialog.set(false);
                   this.clonedMemberId = null;
                 });
             } else {
-              this.showAddDialog.set(false);
               this.clonedMemberId = null;
             }
           });

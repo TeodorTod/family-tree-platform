@@ -327,6 +327,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const base = this.selectedMember();
     if (!base) return;
 
+    this.showAddDialog.set(false);
+    this.selectedMember.set(null);
+    this.hoveredNode.set(null);
+
     const ensureCloned = (cb: (id: string) => void) => {
       if (event.clonedMemberId) return cb(event.clonedMemberId);
       if (event.approvedRequestId) {
@@ -380,16 +384,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
                     this.familyService
                       .setPartner(base.id!, newId, PartnerStatus.UNKNOWN)
                       .subscribe(() => {
-                        this.showAddDialog.set(false);
-                        this.selectedMember.set(null);
                         this.familyService.getMyFamily().subscribe((members) => {
                           this.familyMembersStore.setMembers(members as FamilyMember[]);
                           this.renderGraph(members as FamilyMember[]);
                         });
                       });
                   } else {
-                    this.showAddDialog.set(false);
-                    this.selectedMember.set(null);
                     this.familyService.getMyFamily().subscribe((members) => {
                       this.familyMembersStore.setMembers(members as FamilyMember[]);
                       this.renderGraph(members as FamilyMember[]);
@@ -493,8 +493,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.showAddDialog.set(false);
-          this.selectedMember.set(null);
           this.familyService.getMyFamily().subscribe((members) => {
             this.familyMembersStore.setMembers(members as FamilyMember[]);
             this.renderGraph(members as FamilyMember[]);

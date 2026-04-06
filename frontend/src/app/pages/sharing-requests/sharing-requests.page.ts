@@ -171,6 +171,8 @@ export class SharingRequestsPage implements OnInit {
       return;
     }
 
+    this.showAddDialog.set(false);
+
     const relationshipType =
       event.relation === 'partner'
         ? 'partner'
@@ -206,11 +208,9 @@ export class SharingRequestsPage implements OnInit {
                 this.family
                   .setPartner(baseOwner.id, newId, PartnerStatus.UNKNOWN)
                   .subscribe(() => {
-                    this.showAddDialog.set(false);
                     this.clonedMemberId = null;
                   });
               } else {
-                this.showAddDialog.set(false);
                 this.clonedMemberId = null;
               }
             });

@@ -318,12 +318,6 @@ export class AddRelativeDialogComponent implements OnInit {
       };
       this.saved.emit({ member, relation: val.relation });
     }
-    this.form.reset();
-    // Keep some sensible defaults after reset
-    this.form.patchValue({
-      lastName: this.baseMember()?.lastName ?? null,
-      dobMode: BirthDeathDateMode.EXACT,
-    });
   }
 
   useImported(): boolean {
