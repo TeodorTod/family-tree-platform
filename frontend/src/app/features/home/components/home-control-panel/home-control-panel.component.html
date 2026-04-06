@@ -1,211 +1,285 @@
-<!-- Toggle between chart/table -->
-<button
-  pButton
-  [icon]="showTableView() ? 'pi pi-chart-bar' : 'pi pi-table'"
-  class="p-button-rounded p-button-sm"
-  (click)="viewToggled.emit()"
-  pTooltip="{{
-    showTableView()
-      ? (constants.INFO_SHOW_CHART | translate)
-      : (constants.INFO_SHOW_TABLE | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+<div class="control-rail">
+  @if (!showTableView()) {
+    <div class="chart-dock-cluster">
+      <button
+        pButton
+        type="button"
+        [rounded]="true"
+        [icon]="
+          chartToolsOpen() ? 'pi pi-angle-double-right' : 'pi pi-arrows-h'
+        "
+        class="p-button-sm dock-btn dock-btn--layout-toggle chart-dock__expand-over"
+        (click)="toggleChartTools()"
+        [attr.aria-expanded]="chartToolsOpen()"
+        aria-controls="home-chart-layout"
+        pTooltip="{{
+          chartToolsOpen()
+            ? (constants.HOME_CONTROL_COLLAPSE_CHART_TOOLS | translate)
+            : (constants.HOME_CONTROL_EXPAND_CHART_TOOLS | translate)
+        }}"
+        tooltipPosition="top"
+      ></button>
 
-<!-- Ambient sound -->
-<button
-  pButton
-  [icon]="soundConsent() && soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
-  class="p-button-rounded p-button-sm"
-  (click)="soundToggled.emit()"
-  pTooltip="{{
-    soundConsent()
-      ? (soundPlaying()
-          ? (constants.HOME_SOUND_MUTE | translate)
-          : (constants.HOME_SOUND_PLAY | translate))
-      : (constants.HOME_SOUND_PLAY | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+      <div
+        class="chart-dock"
+        [class.chart-dock--collapsed]="!chartToolsOpen()"
+      >
+        <div class="chart-dock__stack">
+          <button
+            pButton
+            icon="pi pi-table"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="viewToggled.emit()"
+            pTooltip="{{ constants.INFO_SHOW_TABLE | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-@if (!showTableView()) {
-<!-- Export -->
-<button
-  pButton
-  icon="pi pi-print"
-  class="p-button-rounded p-button-sm"
-  (click)="exportRequested.emit()"
-  pTooltip="{{ constants.INFO_FOR_PRINT | translate }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            [icon]="soundConsent() && soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="soundToggled.emit()"
+            pTooltip="{{
+              soundConsent()
+                ? (soundPlaying()
+                    ? (constants.HOME_SOUND_MUTE | translate)
+                    : (constants.HOME_SOUND_PLAY | translate))
+                : (constants.HOME_SOUND_PLAY | translate)
+            }}"
+            tooltipPosition="top"
+          ></button>
 
-<!-- Zoom -->
-<button
-  pButton
-  icon="pi pi-search-plus"
-  class="p-button-rounded p-button-sm"
-  (click)="zoomInRequested.emit()"
-  pTooltip="{{ constants.INFO_ZOOM_IN | translate }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            icon="pi pi-print"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="exportRequested.emit()"
+            pTooltip="{{ constants.INFO_FOR_PRINT | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-<button
-  pButton
-  icon="pi pi-search-minus"
-  class="p-button-rounded p-button-sm"
-  (click)="zoomOutRequested.emit()"
-  pTooltip="{{ constants.INFO_ZOOM_OUT | translate }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            icon="pi pi-search-plus"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="zoomInRequested.emit()"
+            pTooltip="{{ constants.INFO_ZOOM_IN | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-<!-- Background / photo -->
-<button
-  pButton
-  icon="pi pi-image"
-  class="p-button-rounded p-button-sm"
-  (click)="backgroundDialogRequested.emit()"
-  pTooltip="{{ constants.INFO_CHANGE_BG | translate }}"
-  tooltipPosition="right"
-></button>
+          <button
+            pButton
+            icon="pi pi-search-minus"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="zoomOutRequested.emit()"
+            pTooltip="{{ constants.INFO_ZOOM_OUT | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-<button
-  pButton
-  icon="pi pi-camera"
-  class="p-button-rounded p-button-sm"
-  (click)="photoDialogRequested.emit()"
-  pTooltip="{{ constants.INFO_CHANGE_PROFILE_IMAGE | translate }}"
-  tooltipPosition="right"
-></button>
+          <button
+            pButton
+            icon="pi pi-image"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="backgroundDialogRequested.emit()"
+            pTooltip="{{ constants.INFO_CHANGE_BG | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-<!-- Connections toggle -->
-<button
-  pButton
-  type="button"
-  [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
-  class="p-button-rounded p-button-sm"
-  (click)="connectionsToggled.emit()"
-  pTooltip="{{
-    showConnections()
-      ? (constants.INFO_HIDE_LINKS | translate)
-      : (constants.INFO_SHOW_LINKS | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            icon="pi pi-camera"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="photoDialogRequested.emit()"
+            pTooltip="{{ constants.INFO_CHANGE_PROFILE_IMAGE | translate }}"
+            tooltipPosition="top"
+          ></button>
 
-<!-- Birth info toggle -->
-<button
-  pButton
-  icon="pi pi-calendar"
-  class="p-button-rounded p-button-sm"
-  [class.p-button-outlined]="!showBirthInfo()"
-  (click)="birthInfoToggled.emit()"
-  pTooltip="{{
-    showBirthInfo()
-      ? (constants.INFO_HIDE_BIRTH_DATE | translate)
-      : (constants.INFO_SHOW_BIRTH_DATE | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            type="button"
+            [icon]="showConnections() ? 'pi pi-minus-circle' : 'pi pi-link'"
+            class="p-button-rounded p-button-sm dock-btn"
+            (click)="connectionsToggled.emit()"
+            pTooltip="{{
+              showConnections()
+                ? (constants.INFO_HIDE_LINKS | translate)
+                : (constants.INFO_SHOW_LINKS | translate)
+            }}"
+            tooltipPosition="top"
+          ></button>
 
-<button
-  pButton
-  icon="pi pi-arrows-v"
-  class="p-button-rounded p-button-sm"
-  [class.p-button-outlined]="!treeInvertVertical()"
-  (click)="treeInvertToggled.emit()"
-  pTooltip="{{
-    treeInvertVertical()
-      ? (constants.INFO_TREE_PUT_ANCESTORS_AT_TOP | translate)
-      : (constants.INFO_TREE_PUT_DESCENDANTS_AT_TOP | translate)
-  }}"
-  tooltipPosition="left"
-></button>
+          <button
+            pButton
+            icon="pi pi-calendar"
+            class="p-button-rounded p-button-sm dock-btn"
+            [class.p-button-outlined]="!showBirthInfo()"
+            (click)="birthInfoToggled.emit()"
+            pTooltip="{{
+              showBirthInfo()
+                ? (constants.INFO_HIDE_BIRTH_DATE | translate)
+                : (constants.INFO_SHOW_BIRTH_DATE | translate)
+            }}"
+            tooltipPosition="top"
+          ></button>
 
-<!-- Sliders -->
-<div class="slider-block">
-  <div
-    class="slider-row slider-first"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      class="slider"
-      [ngModel]="circleSizeValue()"
-      (ngModelChange)="circleSizeChanged.emit($event)"
-      [min]="40"
-      [max]="120"
-      [step]="5"
-      pTooltip="{{ constants.INFO_CHANGE_NODE_SIZE | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
+          <button
+            pButton
+            icon="pi pi-arrows-v"
+            class="p-button-rounded p-button-sm dock-btn"
+            [class.p-button-outlined]="!treeInvertVertical()"
+            (click)="treeInvertToggled.emit()"
+            pTooltip="{{
+              treeInvertVertical()
+                ? (constants.INFO_TREE_PUT_ANCESTORS_AT_TOP | translate)
+                : (constants.INFO_TREE_PUT_DESCENDANTS_AT_TOP | translate)
+            }}"
+            tooltipPosition="top"
+          ></button>
+        </div>
 
-  <div
-    class="slider-row slider-second"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      class="slider"
-      [ngModel]="textSizeValue()"
-      (ngModelChange)="textSizeChanged.emit($event)"
-      [min]="8"
-      [max]="24"
-      [step]="1"
-      pTooltip="{{ constants.INFO_CHANGE_TEXT_SIZE | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
+        @if (chartToolsOpen()) {
+          <div
+            id="home-chart-layout"
+            class="chart-dock__layout"
+            role="region"
+            [attr.aria-label]="constants.HOME_CONTROL_SECTION_LAYOUT | translate"
+          >
+            <div class="chart-dock__layout-divider" aria-hidden="true"></div>
+            <p class="layout-section-heading">
+              {{ constants.HOME_CONTROL_SECTION_LAYOUT | translate }}
+            </p>
+            <div class="slider-block">
+              <div
+                class="slider-field"
+                (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+              >
+                <span class="slider-label">{{
+                  constants.HOME_CONTROL_LABEL_NODE_SIZE | translate
+                }}</span>
+                <p-slider
+                  class="slider"
+                  [ngModel]="circleSizeValue()"
+                  (ngModelChange)="circleSizeChanged.emit($event)"
+                  [min]="40"
+                  [max]="120"
+                  [step]="5"
+                  pTooltip="{{ constants.INFO_CHANGE_NODE_SIZE | translate }}"
+                  tooltipPosition="top"
+                ></p-slider>
+              </div>
 
-  <div
-    class="slider-row slider-third"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      class="slider"
-      [ngModel]="backgroundOpacityValue()"
-      (onChange)="onBackgroundOpacityChange($event)"
-      [min]="0.1"
-      [max]="1"
-      [step]="0.05"
-      pTooltip="{{ constants.INFO_CHANGE_OPACITY | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
+              <div
+                class="slider-field"
+                (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+              >
+                <span class="slider-label">{{
+                  constants.HOME_CONTROL_LABEL_TEXT_SIZE | translate
+                }}</span>
+                <p-slider
+                  class="slider"
+                  [ngModel]="textSizeValue()"
+                  (ngModelChange)="textSizeChanged.emit($event)"
+                  [min]="8"
+                  [max]="24"
+                  [step]="1"
+                  pTooltip="{{ constants.INFO_CHANGE_TEXT_SIZE | translate }}"
+                  tooltipPosition="top"
+                ></p-slider>
+              </div>
 
-  <div
-    class="slider-row slider-fourth"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      class="slider"
-      [ngModel]="distanceBoostXValue()"
-      (ngModelChange)="distanceBoostXChanged.emit($event)"
-      [min]="1"
-      [max]="2.5"
-      [step]="0.05"
-      pTooltip="{{ constants.INFO_CHANGE_HORIZONTAL_SPACING | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
+              <div
+                class="slider-field"
+                (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+              >
+                <span class="slider-label">{{
+                  constants.HOME_CONTROL_LABEL_BG_OPACITY | translate
+                }}</span>
+                <p-slider
+                  class="slider"
+                  [ngModel]="backgroundOpacityValue()"
+                  (onChange)="onBackgroundOpacityChange($event)"
+                  [min]="0.1"
+                  [max]="1"
+                  [step]="0.05"
+                  pTooltip="{{ constants.INFO_CHANGE_OPACITY | translate }}"
+                  tooltipPosition="top"
+                ></p-slider>
+              </div>
 
-  <div
-    class="slider-row slider-fifth"
-    (mousedown)="$event.stopPropagation()"
-    (touchstart)="$event.stopPropagation()"
-  >
-    <p-slider
-      class="slider"
-      [ngModel]="distanceBoostYValue()"
-      (ngModelChange)="distanceBoostYChanged.emit($event)"
-      [min]="0.65"
-      [max]="1.55"
-      [step]="0.05"
-      pTooltip="{{ constants.INFO_CHANGE_VERTICAL_SPACING | translate }}"
-      tooltipPosition="top"
-    ></p-slider>
-  </div>
+              <div
+                class="slider-field"
+                (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+              >
+                <span class="slider-label">{{
+                  constants.HOME_CONTROL_LABEL_H_SPACING | translate
+                }}</span>
+                <p-slider
+                  class="slider"
+                  [ngModel]="distanceBoostXValue()"
+                  (ngModelChange)="distanceBoostXChanged.emit($event)"
+                  [min]="1"
+                  [max]="2.5"
+                  [step]="0.05"
+                  pTooltip="{{ constants.INFO_CHANGE_HORIZONTAL_SPACING | translate }}"
+                  tooltipPosition="top"
+                ></p-slider>
+              </div>
+
+              <div
+                class="slider-field"
+                (mousedown)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+              >
+                <span class="slider-label">{{
+                  constants.HOME_CONTROL_LABEL_V_SPACING | translate
+                }}</span>
+                <p-slider
+                  class="slider"
+                  [ngModel]="distanceBoostYValue()"
+                  (ngModelChange)="distanceBoostYChanged.emit($event)"
+                  [min]="0.65"
+                  [max]="1.55"
+                  [step]="0.05"
+                  pTooltip="{{ constants.INFO_CHANGE_VERTICAL_SPACING | translate }}"
+                  tooltipPosition="top"
+                ></p-slider>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="chart-dock chart-dock--table">
+      <div class="chart-dock__stack">
+        <button
+          pButton
+          icon="pi pi-chart-bar"
+          class="p-button-rounded p-button-sm dock-btn"
+          (click)="viewToggled.emit()"
+          pTooltip="{{ constants.INFO_SHOW_CHART | translate }}"
+          tooltipPosition="top"
+        ></button>
+
+        <button
+          pButton
+          [icon]="soundConsent() && soundPlaying() ? 'pi pi-volume-up' : 'pi pi-volume-off'"
+          class="p-button-rounded p-button-sm dock-btn"
+          (click)="soundToggled.emit()"
+          pTooltip="{{
+            soundConsent()
+              ? (soundPlaying()
+                  ? (constants.HOME_SOUND_MUTE | translate)
+                  : (constants.HOME_SOUND_PLAY | translate))
+              : (constants.HOME_SOUND_PLAY | translate)
+          }}"
+          tooltipPosition="top"
+        ></button>
+      </div>
+    </div>
+  }
 </div>
-}

@@ -631,6 +631,16 @@
     }
   },
   "HOME": {
+    "CONTROL": {
+      "COLLAPSE_CHART_TOOLS": "Hide layout & appearance",
+      "EXPAND_CHART_TOOLS": "Show layout & appearance",
+      "SECTION_LAYOUT": "Layout and appearance",
+      "LABEL_NODE_SIZE": "Icon size",
+      "LABEL_TEXT_SIZE": "Text size",
+      "LABEL_BG_OPACITY": "Background brightness",
+      "LABEL_H_SPACING": "Horizontal spacing",
+      "LABEL_V_SPACING": "Vertical spacing"
+    },
     "SOUND": {
       "MUTE": "Stop music",
       "PLAY": "Play music"

@@ -76,21 +76,28 @@
   cursor: pointer; /* Ensure clickability */
 }
 
-.p-button.p-button-rounded {
-  background-color: var(--surface-card);
-  color: var(--primary-color);
+.tree-table-actions .p-button.p-button-rounded {
+  background-color: var(--primary-color);
+  border: none;
+  color: var(--primary-color-text);
   padding: 0.25rem;
   width: 24px;
   height: 24px;
   line-height: 1;
 
-  &:hover {
-    background-color: var(--accent-color);
+  .pi {
+    font-size: 0.75rem;
     color: var(--primary-color-text);
   }
 
-  .pi {
-    font-size: 0.75rem;
+  &:hover {
+    background-color: var(--primary-color-hover);
+    color: var(--primary-color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color-hover);
+    outline-offset: 2px;
   }
 }
 
@@ -125,7 +132,7 @@
     min-height: 32px;
   }
 
-  .p-button.p-button-rounded {
+  .tree-table-actions .p-button.p-button-rounded {
     padding: 0.2rem;
     width: 20px;
     height: 20px;

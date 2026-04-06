@@ -593,6 +593,16 @@
     }
   },
   "HOME": {
+    "CONTROL": {
+      "COLLAPSE_CHART_TOOLS": "Скрий подредба и външен вид",
+      "EXPAND_CHART_TOOLS": "Покажи подредба и външен вид",
+      "SECTION_LAYOUT": "Подредба и външен вид",
+      "LABEL_NODE_SIZE": "Размер на иконата",
+      "LABEL_TEXT_SIZE": "Размер на текста",
+      "LABEL_BG_OPACITY": "Яркост на фона",
+      "LABEL_H_SPACING": "Хоризонтално разстояние",
+      "LABEL_V_SPACING": "Вертикално разстояние"
+    },
     "SOUND": {
       "MUTE": "Спри музиката",
       "PLAY": "Пусни музиката"

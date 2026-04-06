@@ -1,84 +1,315 @@
-.control-panel {
+:host {
   position: fixed;
-  right: 1rem;
-  top: 6rem;
-  z-index: 10;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  /* Clear bottom navbar / tab bar (~56–72px) + breathing room */
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  top: auto;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  max-height: min(85vh, calc(100vh - 7.5rem));
+  overflow-x: visible;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   &.table-mode {
-    top: 4.5rem;
+    top: auto;
+  }
+
+  &.control-panel--chart-collapsed {
+    overflow-y: visible;
+    max-height: none;
   }
 }
 
-/* Chart (and default): light controls — PrimeNG default uses primary fill (#2d4c2f) which looks heavy on the tree. */
-:host:not(.table-mode) {
-  ::ng-deep .p-button.p-button-rounded.p-button-sm {
-    background-color: var(--surface-card) !important;
-    border: none !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    width: 30px;
-    height: 30px;
-    padding: 0.25rem;
-    color: var(--primary-color) !important;
+.control-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+}
+
+/* Expand control centered above dock, overlapping top edge */
+.chart-dock-cluster {
+  display: inline-grid;
+  justify-items: center;
+  align-items: start;
+  max-width: calc(100vw - 2rem);
+}
+
+.chart-dock-cluster > .chart-dock__expand-over {
+  grid-row: 1;
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+}
+
+.chart-dock-cluster > .chart-dock {
+  grid-row: 2;
+  position: relative;
+  z-index: 1;
+}
+
+/* One surface for chart tools: avoids scattered white pills vs dark panel clash */
+.chart-dock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  max-width: min(220px, calc(100vw - 2.5rem));
+}
+
+.chart-dock:not(.chart-dock--table) {
+  position: relative;
+  padding: 0.65rem 0.6rem;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.chart-dock--table {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.chart-dock__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.42rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.chart-dock__layout {
+  width: 100%;
+  margin-top: 0.2rem;
+  min-width: 0;
+  padding: 0.55rem 0.5rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-sizing: border-box;
+}
+
+.chart-dock__layout-divider {
+  width: 100%;
+  height: 1px;
+  margin: 0 0 0.45rem;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.18) 25%,
+    rgba(255, 255, 255, 0.18) 75%,
+    transparent
+  );
+}
+
+.layout-section-heading {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(254, 243, 199, 0.92);
+  line-height: 1.2;
+}
+
+/* Chart dock: soft glass tool buttons */
+:host:not(.table-mode) .chart-dock:not(.chart-dock--table) {
+  ::ng-deep .dock-btn.p-button.p-button-rounded.p-button-sm {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.92) !important;
 
     .p-button-icon {
-      color: var(--primary-color) !important;
+      color: rgba(255, 255, 255, 0.92) !important;
+      font-size: 0.95rem;
     }
 
     &:not(:disabled):hover {
-      background-color: var(--accent-color) !important;
-      color: var(--primary-color) !important;
+      background: rgba(255, 255, 255, 0.18) !important;
+      border-color: rgba(255, 255, 255, 0.35) !important;
     }
 
     &:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid rgba(255, 255, 255, 0.55);
       outline-offset: 2px;
     }
 
     &.p-button-outlined {
-      background-color: var(--surface-card) !important;
-      border: 1px solid var(--primary-color) !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.35) !important;
     }
   }
 
-  ::ng-deep .p-slider {
-    .p-slider-range {
-      background: rgba(51, 65, 85, 0.35) !important;
-    }
+  .chart-dock__layout ::ng-deep .p-slider.p-slider-horizontal {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
 
-    .p-slider-handle {
-      background: var(--surface-card) !important;
-      border: 2px solid var(--primary-color) !important;
-    }
+  .chart-dock__layout ::ng-deep .p-slider-horizontal .p-slider-range {
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0.42) !important;
+    border-radius: 999px !important;
+  }
+
+  .chart-dock__layout ::ng-deep .p-slider-horizontal .p-slider-handle {
+    width: 16px !important;
+    height: 16px !important;
+    background: #f8fafc !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    inset-block-start: 50% !important;
+    margin-block-start: -8px !important;
+    margin-inline-start: -8px !important;
+  }
+
+  .chart-dock__layout ::ng-deep .p-slider-horizontal .p-slider-handle::before {
+    display: none !important;
+  }
+}
+
+/* Layout toggle: circular, slate + sky accent (arrows read as open/close strip) */
+:host:not(.table-mode) .control-rail ::ng-deep .dock-btn--layout-toggle.p-button.p-button-sm {
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: linear-gradient(
+    165deg,
+    rgba(51, 65, 85, 0.98) 0%,
+    rgba(30, 41, 59, 0.99) 100%
+  ) !important;
+  border: 2px solid rgba(56, 189, 248, 0.65) !important;
+  box-shadow:
+    0 0 0 2px rgba(15, 23, 42, 0.85),
+    0 0 22px rgba(14, 165, 233, 0.35),
+    0 4px 14px rgba(0, 0, 0, 0.45);
+
+  .p-button-icon {
+    font-size: 1.1rem !important;
+    color: #e0f2fe !important;
+  }
+
+  &:not(:disabled):hover {
+    background: linear-gradient(
+      165deg,
+      rgba(71, 85, 105, 0.98) 0%,
+      rgba(51, 65, 85, 0.99) 100%
+    ) !important;
+    border-color: rgba(125, 211, 252, 0.95) !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #7dd3fc;
+    outline-offset: 3px;
   }
 }
 
 .slider-block {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  margin-top: 0.75rem;
-  width: 150px;
-  align-self: flex-end;
+  gap: 0.65rem;
+  width: 100%;
 }
 
-.slider-row {
+.slider-field {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.28rem;
+  align-items: stretch;
+  padding-block: 0.15rem;
+  min-height: auto;
+}
+
+.slider-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.2;
+  padding-inline-end: 2px;
 }
 
 .slider {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+:host.table-mode .chart-dock__stack {
+  gap: 0.5rem;
 }
 
 @media (max-width: 768px) {
-  :host:not(.table-mode) ::ng-deep .p-button.p-button-rounded.p-button-sm {
-    width: 20px;
-    height: 20px;
-    padding: 0.2rem;
+  :host {
+    right: max(0.5rem, env(safe-area-inset-right, 0px));
+    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    max-height: min(82vh, calc(100vh - 7rem));
+  }
+
+  :host.table-mode {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  :host:not(.table-mode) .chart-dock:not(.chart-dock--table) {
+    padding: 0.55rem 0.5rem;
+    max-width: min(210px, calc(100vw - 1rem));
+
+    ::ng-deep .dock-btn.p-button.p-button-rounded.p-button-sm {
+      width: 30px;
+      height: 30px;
+
+      .p-button-icon {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  :host:not(.table-mode) .control-rail ::ng-deep .dock-btn--layout-toggle.p-button.p-button-sm {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
 
     .p-button-icon {
-      font-size: 0.6875rem;
+      font-size: 1rem !important;
     }
+  }
+
+  .chart-dock-cluster {
+    max-width: calc(100vw - 1rem);
+  }
+
+  .chart-dock-cluster > .chart-dock__expand-over {
+    margin-bottom: 0.18rem;
   }
 }

@@ -82,17 +82,8 @@
   }
 }
 
+/* Positioning lives on app-home-control-panel (:host) to avoid top/bottom conflicts. */
 .control-panel {
-  position: fixed;
-  bottom: 50px; 
-  right: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  z-index: 15; /* Below header/paginator */
-  transition: all 0.3s ease-in-out;
-
   button {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
@@ -134,13 +125,6 @@
   }
 
   .control-panel {
-    bottom: 36px;
-    right: 0.25rem;
-
-    &.table-mode {
-      bottom: 110px;
-    }
-
     .opacity-slider-container {
       min-width: 80px;
     }
