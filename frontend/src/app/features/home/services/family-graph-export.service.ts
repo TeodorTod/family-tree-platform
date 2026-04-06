@@ -11,6 +11,8 @@ export interface BuildExportImageParams {
   bgOffsetX: number;
   bgOffsetY: number;
   backgroundOpacity: string;
+  /** 0–1 darkening over background (not graph), when links shown on chart. */
+  backgroundLinkContrastDim?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,7 +41,8 @@ export class FamilyGraphExportService {
     bgImg: HTMLImageElement | null,
     bgOffsetX: number,
     bgOffsetY: number,
-    backgroundOpacity: string
+    backgroundOpacity: string,
+    linkContrastDim = 0
   ): void {
     if (!bgImg) {
       ctx.fillStyle = '#fff';
@@ -80,6 +83,14 @@ export class FamilyGraphExportService {
       ctx.fillRect(0, 0, cw, ch);
       ctx.restore();
     }
+
+    if (linkContrastDim > 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = `rgba(15, 23, 42, ${Math.min(1, linkContrastDim)})`;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.restore();
+    }
   }
 
   async buildExportImage(
@@ -94,6 +105,7 @@ export class FamilyGraphExportService {
       bgOffsetX,
       bgOffsetY,
       backgroundOpacity,
+      backgroundLinkContrastDim = 0,
     } = params;
 
     const dpr = window.devicePixelRatio || 2;
@@ -124,7 +136,8 @@ export class FamilyGraphExportService {
         bgImg,
         bgOffsetX,
         bgOffsetY,
-        backgroundOpacity
+        backgroundOpacity,
+        backgroundLinkContrastDim
       );
       ctx.drawImage(cyImg, padPx, padPx);
       return {
@@ -161,7 +174,8 @@ export class FamilyGraphExportService {
       bgImg,
       bgOffsetX,
       bgOffsetY,
-      backgroundOpacity
+      backgroundOpacity,
+      backgroundLinkContrastDim
     );
 
     ctx.drawImage(

@@ -7,13 +7,14 @@ import {
   ViewChild,
   inject,
   signal,
+  computed,
 } from '@angular/core';
 import cytoscape from 'cytoscape';
 import { FamilyService } from '../../core/services/family.service';
 import { FamilyMember } from '../../shared/models/family-member.model';
 import { environment } from '../../../environments/environment';
 import { AddRelativeDialogComponent } from '../../shared/components/add-relative-dialog/add-relative-dialog.component';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, switchMap, take } from 'rxjs';
 import { SharingApiService } from '../../core/services/sharing-api.service';
 import { SHARED_ANGULAR_IMPORTS } from '../../shared/imports/shared-angular-imports';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -69,11 +70,24 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   selectedMember = signal<FamilyMember | null>(null);
   showAddDialog = signal(false);
+  /** Snapshot tree backdrop while add-relative dialog open (avoids CD/layout/mask timing changing .bg-overlay). */
+  private addDialogBackdropOpacityFreeze = signal<string | null>(null);
+  private addDialogLinkDimFreeze = signal<boolean | null>(null);
+  readonly chartBackdropOpacityDisplay = computed(() => {
+    const f = this.addDialogBackdropOpacityFreeze();
+    return f !== null ? f : this.backgroundOpacity();
+  });
+  readonly chartLinkDimActive = computed(() => {
+    const f = this.addDialogLinkDimFreeze();
+    return f !== null ? f : this.showConnections();
+  });
   readonly members = this.familyMembersStore.members;
   showConnections = signal(false);
   backgroundIndex = signal(0);
   backgroundOpacityValue = 0.6;
   backgroundOpacity = signal(this.backgroundOpacityValue.toString());
+  /** Export dim strength; match `.bg-overlay-dim` alpha in `home.component.scss`. */
+  private readonly chartLinkContrastDim = 0.38;
   showPhotoPickerDialog = signal(false);
   showBackgroundDialog = signal(false);
   showTableView = signal(false);
@@ -93,8 +107,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   soundConsent = signal(false);
   readonly soundPlaying = this.ambientSound.playing;
   private exportRebuildTimer: ReturnType<typeof setTimeout> | null = null;
-  private distanceBoostX = 1.6;
-  private distanceBoostY = 1.0;
+  distanceBoostXValue = 1.6;
+  distanceBoostYValue = 1.0;
   private readonly textSizeMin = 8;
   private readonly textSizeMax = 24;
 
@@ -122,6 +136,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());
 
     this.hydratePersistedPreferencesFromBrowser();
+
+    // Warm outgoing share requests so Add Relative does not apply options 1–2s late (layout/CD flash).
+    this.sharingApi
+      .getOutgoingRequests()
+      .pipe(take(1))
+      .subscribe({
+        error: () => this.sharingApi.resetOutgoingRequestsCache(),
+      });
 
     // 4) Load family + render
     const isTableNow = this.showTableView();
@@ -263,8 +285,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       circleSize: this.circleSize(),
       textSize: this.textSize(),
       showBirthInfo: this.showBirthInfo(),
-      distanceBoostX: this.distanceBoostX,
-      distanceBoostY: this.distanceBoostY,
+      distanceBoostX: this.distanceBoostXValue,
+      distanceBoostY: this.distanceBoostYValue,
     });
 
     const elements = buildFamilyGraphElements({
@@ -328,6 +350,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (!base) return;
 
     this.showAddDialog.set(false);
+    this.clearAddRelativeDialogBackdropSnapshot();
     this.selectedMember.set(null);
     this.hoveredNode.set(null);
 
@@ -509,10 +532,24 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (!role || currentMembers.length === 0) return;
     const member = currentMembers.find((m) => m.role === role);
     if (member) {
+      this.addDialogBackdropOpacityFreeze.set(
+        this.backgroundOpacityValue.toString(),
+      );
+      this.addDialogLinkDimFreeze.set(this.showConnections());
       this.selectedMember.set(member);
       this.showAddDialog.set(true);
     }
     this.hoveredNode.set(null);
+  }
+
+  onAddRelativeDialogClose(): void {
+    this.showAddDialog.set(false);
+    this.clearAddRelativeDialogBackdropSnapshot();
+  }
+
+  private clearAddRelativeDialogBackdropSnapshot(): void {
+    this.addDialogBackdropOpacityFreeze.set(null);
+    this.addDialogLinkDimFreeze.set(null);
   }
 
   editMember() {
@@ -530,6 +567,48 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   toggleConnections() {
     this.showConnections.set(!this.showConnections());
     this.toggleEdgeVisibility();
+    this.scheduleExportRebuild();
+  }
+
+  updateDistanceBoostLayout(): void {
+    this.distanceBoostXValue = this.clamp(this.distanceBoostXValue, 1, 2.5);
+    this.distanceBoostYValue = this.clamp(this.distanceBoostYValue, 0.65, 1.55);
+    this.platformStorage.setItem(
+      'familyDistanceBoostX',
+      String(this.distanceBoostXValue)
+    );
+    this.platformStorage.setItem(
+      'familyDistanceBoostY',
+      String(this.distanceBoostYValue)
+    );
+    this.reapplyGraphLayout();
+    this.scheduleExportRebuild();
+  }
+
+  private reapplyGraphLayout(): void {
+    if (!this.cy || this.showTableView()) return;
+    const members = this.members();
+    const container = this.cyRef.nativeElement;
+    const W = container.clientWidth;
+    const H = container.clientHeight;
+    if (W <= 0 || H <= 0) return;
+
+    const layout = computeFamilyGraphLayout({
+      members,
+      W,
+      H,
+      circleSize: this.circleSize(),
+      textSize: this.textSize(),
+      showBirthInfo: this.showBirthInfo(),
+      distanceBoostX: this.distanceBoostXValue,
+      distanceBoostY: this.distanceBoostYValue,
+    });
+
+    layout.posMap.forEach((pos, role) => {
+      const el = this.cy!.getElementById(role);
+      if (el.nonempty()) el.position(pos);
+    });
+    this.cy.fit();
   }
 
   private toggleEdgeVisibility() {
@@ -720,6 +799,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         bgOffsetX: this.bgOffsetX(),
         bgOffsetY: this.bgOffsetY(),
         backgroundOpacity: this.backgroundOpacity(),
+        backgroundLinkContrastDim: this.showConnections()
+          ? this.chartLinkContrastDim
+          : 0,
       });
       if (result) {
         this.exportDataUrl.set(result.dataUrl);
@@ -884,6 +966,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       if (this.platformStorage.isBrowserEnvironment()) {
         requestAnimationFrame(() => this.setInitialTextSizeByWidth());
       }
+    }
+
+    const savedBoostX = this.platformStorage.getItemFromStorage(
+      'familyDistanceBoostX'
+    );
+    if (savedBoostX && !Number.isNaN(parseFloat(savedBoostX))) {
+      this.distanceBoostXValue = this.clamp(
+        parseFloat(savedBoostX),
+        1,
+        2.5
+      );
+    }
+    const savedBoostY = this.platformStorage.getItemFromStorage(
+      'familyDistanceBoostY'
+    );
+    if (savedBoostY && !Number.isNaN(parseFloat(savedBoostY))) {
+      this.distanceBoostYValue = this.clamp(
+        parseFloat(savedBoostY),
+        0.65,
+        1.55
+      );
     }
 
     const savedPhoto = this.platformStorage.getItemFromStorage(

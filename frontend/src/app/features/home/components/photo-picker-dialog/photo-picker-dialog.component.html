@@ -3,6 +3,7 @@
   [visible]="visible()"
   [modal]="true"
   [style]="{ width: '30rem' }"
+  [maskStyleClass]="'p-dialog-mask--instant'"
   [focusOnShow]="false"
   (onHide)="cancel()"
   (visibleChange)="close.emit()"

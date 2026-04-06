@@ -157,6 +157,8 @@
     "SHOW_TABLE": "Покажи таблицата",
     "CHANGE_NODE_SIZE": "Размер на иконите",
     "CHANGE_TEXT_SIZE": "Размер на текста",
+    "CHANGE_HORIZONTAL_SPACING": "Хоризонтално разстояние",
+    "CHANGE_VERTICAL_SPACING": "Вертикално разстояние",
     "FOR_PRINT": "Печат / Експорт",
     "IMAGE_GENERATION": "Генериране на изображение…",
     "CUSTOM_RELATION_LABEL": "Име на връзката",

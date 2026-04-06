@@ -195,6 +195,8 @@
     "SHOW_TABLE": "Show Table",
     "CHANGE_NODE_SIZE": "Icon Size",
     "CHANGE_TEXT_SIZE": "Text Size",
+    "CHANGE_HORIZONTAL_SPACING": "Horizontal spacing",
+    "CHANGE_VERTICAL_SPACING": "Vertical spacing",
     "FOR_PRINT": "Print / Export",
     "IMAGE_GENERATION": "Generating Image…",
     "CUSTOM_RELATION_LABEL": "Relation Name",

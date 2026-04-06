@@ -761,5 +761,10 @@ body {
   padding: 0;                      
 }
 
-
+/* PrimeNG: skip mask fade-in (mask is appendTo body; theme .p-overlay-mask supplies final background). */
+.p-dialog-mask.p-dialog-mask--instant,
+.p-dialog-mask.p-dialog-mask--instant.p-overlay-mask-enter {
+  animation: none !important;
+  transition: none !important;
+}
 

@@ -95,6 +95,7 @@ export class SharingRequestsPage implements OnInit {
   }
 
   refresh() {
+    this.api.resetOutgoingRequestsCache();
     this.api.getIncomingRequests().subscribe((d) => this.incoming.set(d));
     this.api.getOutgoingRequests().subscribe((d) => this.outgoing.set(d));
     this.notifications.refresh();

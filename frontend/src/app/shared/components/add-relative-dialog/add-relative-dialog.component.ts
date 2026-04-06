@@ -31,6 +31,7 @@ import {
   ImportedPatchSource,
 } from './add-relative-dialog.types';
 import { ShareRequestStatus } from '../../enums/share-request-status.enum';
+import { SanitizedShareRequestDto } from '../../../core/services/sharing-dto-sanitizer.service';
 
 @Component({
   selector: 'app-add-relative-dialog',
@@ -196,20 +197,14 @@ export class AddRelativeDialogComponent implements OnInit {
         }
       });
 
+    this.importedOptions.set(
+      this.mapRequestsToImportedOptions(this.sharing.outgoingRequests()),
+    );
     this.sharing
       .getOutgoingRequests()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((reqs) => {
-        const options: AddRelativeImportedOption[] = (reqs || [])
-          .filter((r) => r.status === ShareRequestStatus.Approved)
-          .map((r) => ({
-            label: `${r.target.firstName ?? ''} ${
-              r.target.lastName ?? ''
-            }`.trim(),
-            value: r.id,
-            meta: r.target,
-          }));
-        this.importedOptions.set(options);
+        this.importedOptions.set(this.mapRequestsToImportedOptions(reqs));
       });
 
     if (initialClonedId) {
@@ -322,6 +317,18 @@ export class AddRelativeDialogComponent implements OnInit {
 
   useImported(): boolean {
     return this.showImported();
+  }
+
+  private mapRequestsToImportedOptions(
+    reqs: SanitizedShareRequestDto[],
+  ): AddRelativeImportedOption[] {
+    return (reqs || [])
+      .filter((r) => r.status === ShareRequestStatus.Approved)
+      .map((r) => ({
+        label: `${r.target.firstName ?? ''} ${r.target.lastName ?? ''}`.trim(),
+        value: r.id,
+        meta: r.target,
+      }));
   }
 
   private buildImportedPatch(

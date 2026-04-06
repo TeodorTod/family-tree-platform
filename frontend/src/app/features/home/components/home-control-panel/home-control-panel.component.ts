@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { ButtonModule } from 'primeng/button';
 import { SliderModule } from 'primeng/slider';
+import { SliderChangeEvent } from 'primeng/types/slider';
 import { TooltipModule } from 'primeng/tooltip';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 
@@ -28,6 +29,8 @@ export class HomeControlPanelComponent {
   circleSizeValue = input(80);
   textSizeValue = input(14);
   backgroundOpacityValue = input(0.6);
+  distanceBoostXValue = input(1.6);
+  distanceBoostYValue = input(1);
 
   viewToggled = output<void>();
   soundToggled = output<void>();
@@ -41,4 +44,13 @@ export class HomeControlPanelComponent {
   circleSizeChanged = output<number>();
   textSizeChanged = output<number>();
   backgroundOpacityChanged = output<number>();
+  distanceBoostXChanged = output<number>();
+  distanceBoostYChanged = output<number>();
+
+  /** Use onChange instead of ngModelChange so layout/CD (e.g. modal open) does not echo bogus values to parent. */
+  onBackgroundOpacityChange(ev: SliderChangeEvent): void {
+    const v = ev.value;
+    if (v === undefined || !Number.isFinite(v)) return;
+    this.backgroundOpacityChanged.emit(v);
+  }
 }

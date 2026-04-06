@@ -28,6 +28,42 @@ export function getFamilyGraphStylesheet(options: {
         'text-outline-color': '#000',
         'text-outline-width': 2,
         'border-width': 2,
+        'border-color': '#94a3b8',
+      },
+    },
+    {
+      selector: 'node.graph-lineage',
+      style: {
+        'border-color': '#cbd5e1',
+        'border-width': 3,
+      },
+    },
+    {
+      selector: 'node.graph-child',
+      style: {
+        'border-color': '#7dd3fc',
+        'border-width': 3,
+      },
+    },
+    {
+      selector: 'node.graph-sibling',
+      style: {
+        'border-color': '#c4b5fd',
+        'border-width': 3,
+      },
+    },
+    {
+      selector: 'node.graph-partner',
+      style: {
+        'border-color': '#fbbf24',
+        'border-width': 3,
+      },
+    },
+    {
+      selector: 'node.graph-extended',
+      style: {
+        'border-color': '#64748b',
+        'border-width': 2,
       },
     },
     {
@@ -42,11 +78,43 @@ export function getFamilyGraphStylesheet(options: {
       },
     },
     {
+      selector: 'edge[relationship = "partner"]',
+      style: {
+        width: 3,
+        'line-color': '#fbbf24',
+        'line-style': 'dashed',
+        'curve-style': 'bezier',
+        opacity: 0.95,
+        'target-arrow-shape': 'none',
+      },
+    },
+    {
+      selector: 'edge[relationship = "sibling"]',
+      style: {
+        width: 2.5,
+        'line-color': '#a78bfa',
+        'curve-style': 'bezier',
+        opacity: 0.95,
+        'target-arrow-shape': 'none',
+      },
+    },
+    {
+      selector: 'edge[relationship = "parent"]',
+      style: {
+        width: 3.5,
+        'line-color': '#f1f5f9',
+        'curve-style': 'bezier',
+        opacity: 0.98,
+        'target-arrow-shape': 'none',
+      },
+    },
+    {
       selector: 'edge',
       style: {
-        width: 2,
-        'line-color': '#666',
-        'curve-style': 'straight',
+        width: 3,
+        'line-color': '#e2e8f0',
+        'curve-style': 'bezier',
+        opacity: 0.92,
         'target-arrow-shape': 'none',
       },
     },

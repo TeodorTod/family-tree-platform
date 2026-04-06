@@ -6,7 +6,12 @@
     [style.backgroundImage]="'url(' + backgroundUrl() + ')'"
     [style.backgroundSize]="'cover'"
     [style.backgroundPosition]="'center'"
-    [style.opacity]="backgroundOpacity()"
+    [style.opacity]="chartBackdropOpacityDisplay()"
+  ></div>
+  <div
+    class="bg-overlay-dim"
+    [class.bg-overlay-dim--on]="chartLinkDimActive()"
+    aria-hidden="true"
   ></div>
 
   <!-- Actual Cytoscape canvas -->
@@ -24,6 +29,8 @@
   [circleSizeValue]="circleSizeValue"
   [textSizeValue]="textSizeValue"
   [backgroundOpacityValue]="backgroundOpacityValue"
+  [distanceBoostXValue]="distanceBoostXValue"
+  [distanceBoostYValue]="distanceBoostYValue"
   (viewToggled)="toggleView()"
   (soundToggled)="toggleAmbientSound()"
   (exportRequested)="openExportView()"
@@ -36,6 +43,12 @@
   (circleSizeChanged)="circleSizeValue = $event; updateCircleSize()"
   (textSizeChanged)="textSizeValue = $event; updateTextSize()"
   (backgroundOpacityChanged)="backgroundOpacityValue = $event; updateBackgroundOpacity()"
+  (distanceBoostXChanged)="
+    distanceBoostXValue = $event; updateDistanceBoostLayout()
+  "
+  (distanceBoostYChanged)="
+    distanceBoostYValue = $event; updateDistanceBoostLayout()
+  "
 />
 
 <!-- Add Relative Dialog -->
@@ -43,7 +56,7 @@
 <app-add-relative-dialog
   [visible]="showAddDialog()"
   [baseMember]="selectedMember()!"
-  (close)="showAddDialog.set(false)"
+  (close)="onAddRelativeDialogClose()"
   (saved)="handleAddRelative($event)"
 />
 }

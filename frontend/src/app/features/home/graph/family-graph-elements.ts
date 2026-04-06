@@ -4,6 +4,51 @@ import { Roles } from '../../../shared/enums/roles.enum';
 import { computeNodeLabel, parseRole } from './family-graph-labels';
 import { FamilyGraphLayoutResult } from './family-graph-layout';
 
+const LINEAGE_ROLES = new Set<string>([
+  Roles.MOTHER,
+  Roles.FATHER,
+  Roles.MATERNAL_GRANDMOTHER,
+  Roles.MATERNAL_GRANDFATHER,
+  Roles.PATERNAL_GRANDMOTHER,
+  Roles.PATERNAL_GRANDFATHER,
+]);
+
+function relationshipKind(
+  type: string | undefined
+): 'parent' | 'partner' | 'sibling' {
+  if (type === 'partner') return 'partner';
+  if (type === 'sibling') return 'sibling';
+  return 'parent';
+}
+
+/** Cytoscape node `classes` for stylesheet (owner uses id selector only). */
+function graphNodeClasses(role: string): string {
+  if (role === Roles.OWNER) return '';
+  if (LINEAGE_ROLES.has(role)) return 'graph-lineage';
+  const { relationType } = parseRole(role);
+  if (relationType === 'partner') return 'graph-partner';
+  if (relationType === 'son' || relationType === 'daughter') return 'graph-child';
+  if (relationType === 'brother' || relationType === 'sister')
+    return 'graph-sibling';
+  if (relationType === 'mother' || relationType === 'father')
+    return 'graph-lineage';
+  return 'graph-extended';
+}
+
+type EdgeRelationship = 'parent' | 'partner' | 'sibling';
+
+function canonicalEdgeKey(
+  source: string,
+  target: string,
+  relationship: EdgeRelationship
+): string {
+  if (relationship === 'partner' || relationship === 'sibling') {
+    const [a, b] = [source, target].sort();
+    return `${relationship}::${a}::${b}`;
+  }
+  return `parent::${source}::${target}`;
+}
+
 export interface BuildFamilyGraphElementsParams {
   members: FamilyMember[];
   layout: FamilyGraphLayoutResult;
@@ -18,6 +63,23 @@ export function buildFamilyGraphElements(
   const { members, layout, defaultPhoto, apiUrl, showBirthInfo } = params;
   const { posMap, dynamic } = layout;
   const elements: ElementDefinition[] = [];
+  const seenEdgeKeys = new Set<string>();
+
+  const addEdge = (
+    source: string,
+    target: string,
+    relationship: EdgeRelationship
+  ): void => {
+    if (!posMap.has(source) || !posMap.has(target) || source === target) {
+      return;
+    }
+    const key = canonicalEdgeKey(source, target, relationship);
+    if (seenEdgeKeys.has(key)) return;
+    seenEdgeKeys.add(key);
+    elements.push({
+      data: { source, target, relationship },
+    });
+  };
 
   members.forEach((m) => {
     const pos = posMap.get(m.role);
@@ -25,7 +87,7 @@ export function buildFamilyGraphElements(
 
     const label = computeNodeLabel(m, showBirthInfo);
 
-    elements.push({
+    const nodeDef: ElementDefinition = {
       data: {
         id: m.role,
         label,
@@ -33,21 +95,18 @@ export function buildFamilyGraphElements(
         photo: m.photoUrl ? `${apiUrl}${m.photoUrl}` : defaultPhoto,
       },
       position: { x: pos.x, y: pos.y },
-    });
+    };
+    const cls = graphNodeClasses(m.role);
+    if (cls) nodeDef.classes = cls;
+    elements.push(nodeDef);
   });
 
-  const connect = (s: string, t: string) => {
-    if (posMap.has(s) && posMap.has(t)) {
-      elements.push({ data: { source: s, target: t } });
-    }
-  };
-  connect(Roles.MATERNAL_GRANDMOTHER, Roles.MOTHER);
-  connect(Roles.MATERNAL_GRANDFATHER, Roles.MOTHER);
-  connect(Roles.PATERNAL_GRANDMOTHER, Roles.FATHER);
-  connect(Roles.PATERNAL_GRANDFATHER, Roles.FATHER);
-  connect(Roles.MOTHER, Roles.FATHER);
-  connect(Roles.MOTHER, Roles.OWNER);
-  connect(Roles.FATHER, Roles.OWNER);
+  addEdge(Roles.MATERNAL_GRANDMOTHER, Roles.MOTHER, 'parent');
+  addEdge(Roles.MATERNAL_GRANDFATHER, Roles.MOTHER, 'parent');
+  addEdge(Roles.PATERNAL_GRANDMOTHER, Roles.FATHER, 'parent');
+  addEdge(Roles.PATERNAL_GRANDFATHER, Roles.FATHER, 'parent');
+  addEdge(Roles.MOTHER, Roles.OWNER, 'parent');
+  addEdge(Roles.FATHER, Roles.OWNER, 'parent');
 
   const corePartnerPairs: [string, string][] = [
     [Roles.MATERNAL_GRANDMOTHER, Roles.MATERNAL_GRANDFATHER],
@@ -56,11 +115,7 @@ export function buildFamilyGraphElements(
   ];
 
   corePartnerPairs.forEach(([r1, r2]) => {
-    if (posMap.has(r1) && posMap.has(r2)) {
-      elements.push({
-        data: { source: r1, target: r2, relationship: 'partner' },
-      });
-    }
+    addEdge(r1, r2, 'partner');
   });
 
   dynamic.forEach((m) => {
@@ -78,48 +133,30 @@ export function buildFamilyGraphElements(
       });
 
       childMembers.forEach((child) => {
-        elements.push({
-          data: { source: m.role, target: child.role },
-        });
+        addEdge(m.role, child.role, 'parent');
       });
 
-      elements.push({
-        data: { source: m.role, target: base },
-      });
+      addEdge(m.role, base, 'parent');
 
       const partnerRel = relationType === 'father' ? 'mother' : 'father';
       const partnerRole =
         `${base}_${partnerRel}` + (suffix ? `_${suffix}` : '');
       if (posMap.has(partnerRole)) {
-        elements.push({
-          data: {
-            source: m.role,
-            target: partnerRole,
-            relationship: 'partner',
-          },
-        });
+        addEdge(m.role, partnerRole, 'partner');
       }
     } else if (m.role.endsWith('_partner')) {
-      elements.push({
-        data: { source: base, target: m.role, relationship: 'partner' },
-      });
+      addEdge(base, m.role, 'partner');
     } else if (relationType === 'brother' || relationType === 'sister') {
-      elements.push({
-        data: { source: base, target: m.role, relationship: 'sibling' },
-      });
+      addEdge(base, m.role, 'sibling');
 
       const possibleParents = [`${base}_mother`, `${base}_father`];
       possibleParents.forEach((parentRole) => {
         if (posMap.has(parentRole)) {
-          elements.push({
-            data: { source: parentRole, target: m.role },
-          });
+          addEdge(parentRole, m.role, 'parent');
         }
       });
     } else if (relationType === 'son' || relationType === 'daughter') {
-      elements.push({
-        data: { source: base, target: m.role },
-      });
+      addEdge(base, m.role, 'parent');
     }
   });
 
@@ -128,41 +165,23 @@ export function buildFamilyGraphElements(
     .forEach((m) => {
       const { base } = parseRole(m.role);
       if (posMap.has(base)) {
-        elements.push({
-          data: {
-            source: base,
-            target: m.role,
-            relationship: 'partner',
-          },
-        });
+        addEdge(base, m.role, 'partner');
       }
     });
 
   members.forEach((m) => {
     (m.parentOf || []).forEach((rel) => {
-      const source = m;
       const target = members.find((x) => x.id === rel.toMemberId);
       if (!target) return;
-      elements.push({
-        data: {
-          source: source.role,
-          target: target.role,
-          relationship: rel.type,
-        },
-      });
+      const rk = relationshipKind(rel.type);
+      addEdge(m.role, target.role, rk);
     });
 
     (m.childOf || []).forEach((rel) => {
       const source = members.find((x) => x.id === rel.fromMemberId);
-      const target = m;
       if (!source) return;
-      elements.push({
-        data: {
-          source: source.role,
-          target: target.role,
-          relationship: rel.type,
-        },
-      });
+      const rk = relationshipKind(rel.type);
+      addEdge(source.role, m.role, rk);
     });
   });
 

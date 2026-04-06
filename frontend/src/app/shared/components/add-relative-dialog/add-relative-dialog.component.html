@@ -4,6 +4,8 @@
   [style]="{ width: '400px' }"
   [closable]="true"
   [focusOnShow]="false"
+  [maskStyleClass]="'p-dialog-mask--instant'"
+  [transitionOptions]="'0ms'"
   (visibleChange)="onVisibleChange($event)"
   [header]="CONSTANTS.RELATION_ADD_RELATIVE_HEADER | translate"
 >

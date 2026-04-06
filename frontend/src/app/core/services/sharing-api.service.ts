@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ShareRequestStatus } from '../../shared/enums/share-request-status.enum';
-import { map, tap } from 'rxjs';
+import { map, shareReplay, tap, type Observable } from 'rxjs';
 import {
   SanitizedShareRequestDto,
   ShareRequestDto,
@@ -65,6 +65,9 @@ export class SharingApiService {
   readonly incomingRequests = this.incomingRequestsSignal.asReadonly();
   private readonly requestCountersSignal = signal<ShareRequestCounters | null>(null);
   readonly requestCounters = this.requestCountersSignal.asReadonly();
+  /** One in-flight/completed stream so Add Relative + prefetch share HTTP; avoids late CD 1–2s after open. */
+  private outgoingRequestsShared$: Observable<SanitizedShareRequestDto[]> | null =
+    null;
 
   searchDeceased(q?: string, page = 0, size = 20) {
     const params: any = {};
@@ -109,13 +112,22 @@ export class SharingApiService {
       );
   }
 
-  getOutgoingRequests() {
-    return this.http
-      .get<ShareRequestDto[]>(`${this.api}/sharing/requests/outgoing`)
-      .pipe(
-        map((res) => this.sanitizer.sanitizeRequests(res)),
-        tap((requests) => this.outgoingRequestsSignal.set(requests)),
-      );
+  getOutgoingRequests(): Observable<SanitizedShareRequestDto[]> {
+    if (!this.outgoingRequestsShared$) {
+      this.outgoingRequestsShared$ = this.http
+        .get<ShareRequestDto[]>(`${this.api}/sharing/requests/outgoing`)
+        .pipe(
+          map((res) => this.sanitizer.sanitizeRequests(res)),
+          tap((requests) => this.outgoingRequestsSignal.set(requests)),
+          shareReplay({ bufferSize: 1, refCount: false }),
+        );
+    }
+    return this.outgoingRequestsShared$;
+  }
+
+  /** Next getOutgoingRequests() starts a new HTTP call (e.g. sharing page refresh). */
+  resetOutgoingRequestsCache(): void {
+    this.outgoingRequestsShared$ = null;
   }
 
   decideRequest(id: string, status: 'APPROVED' | 'REJECTED') {
