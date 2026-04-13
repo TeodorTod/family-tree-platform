@@ -20,7 +20,6 @@ export class ExportOverlayComponent {
 
   nudgeBg = output<{ dx: number; dy: number }>();
   resetBg = output<void>();
-  refreshPreview = output<void>();
   downloadPng = output<void>();
   downloadPdf = output<void>();
   close = output<void>();

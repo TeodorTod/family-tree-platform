@@ -21,8 +21,7 @@
     flex: 1;
   }
 
-  .bg-pan-wrapper,
-  .export-preview-controls {
+  .bg-pan-wrapper {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
@@ -53,18 +52,14 @@
     }
   }
 
-  .export-preview-controls {
-    min-width: 220px;
-
-    button {
-      width: 100%;
-    }
-
-    .export-meta {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-color-secondary);
-    }
+  .export-meta-under-pan {
+    width: 100%;
+    text-align: center;
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    white-space: nowrap;
   }
 
   .export-status {
@@ -88,15 +83,6 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     background: #fff;
     border-radius: 8px;
-  }
-
-  .export-meta-chip {
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.06);
-    font-size: 0.85rem;
-    font-weight: 600;
   }
 }
 

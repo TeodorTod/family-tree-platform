@@ -847,10 +847,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     if (!skipRebuild) this.scheduleExportRebuild();
   }
 
-  refreshExportPreview() {
-    this.buildExportImage(true);
-  }
-
   private draggingBg = false;
   private dragStartX = 0;
   private dragStartY = 0;

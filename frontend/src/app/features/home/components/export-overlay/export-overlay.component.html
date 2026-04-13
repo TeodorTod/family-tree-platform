@@ -44,21 +44,9 @@
           type="button"
         ></button>
       </div>
-    </div>
-
-    <div class="export-preview-controls">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-refresh"
-        [label]="constants.HOME_EXPORT_REFRESH | translate"
-        class="p-button-outlined"
-        (click)="refreshPreview.emit()"
-        [disabled]="exportBuilding()"
-      ></button>
       @if (exportMeta(); as meta) {
-        <div class="export-meta">
-          {{ meta.width }} x {{ meta.height }} px
+        <div class="export-meta-under-pan">
+          {{ meta.width }} × {{ meta.height }} px
         </div>
       }
     </div>
@@ -105,11 +93,6 @@
   >
     @if (exportDataUrl(); as url) {
       <img [src]="url" alt="Rodostoria Export" />
-      @if (exportMeta(); as meta) {
-        <div class="export-meta-chip">
-          {{ meta.width }} x {{ meta.height }} px
-        </div>
-      }
     } @else if (exportBuilding()) {
       <p>{{ constants.INFO_IMAGE_GENERATION | translate }}</p>
     } @else {
