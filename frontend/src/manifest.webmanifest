@@ -1,17 +1,9 @@
 {
-  "name": "Rodostoria",
-  "short_name": "Rodostoria",
+  "name": "Family Tree Platform",
+  "short_name": "Family Tree",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0F3A2F",
-  "description": "Rodostoria keeps your family history safe in a digital tree.",
-  "icons": [
-    {
-      "src": "/assets/images/logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+  "description": "A full-stack application for exploring and organising family history."
 }

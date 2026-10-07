@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <base href="/" />
-    <title>Родостория • Дигитално родословно дърво</title>
+    <title>Family Tree Platform</title>
     <meta
       name="description"
-      content="Родостория е приложение за дигитално пазене на родовата памет. Помни рода си, съхрани паметта им."
+      content="A full-stack application for exploring and organising family history."
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
@@ -15,35 +15,28 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://example.invalid font-src 'self' https://example.invalid script-src 'self' 'unsafe-inline' https://example.invalid https://example.invalid https://example.invalid connect-src 'self' https://example.invalid https://example.invalid https://example.invalid https://example.invalid https://example.invalid https://example.invalid https://example.invalid https://example.invalid frame-src https://example.invalid https://example.invalid https://example.invalid"
+      content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://example.invalid font-src 'self' https://example.invalid script-src 'self' 'unsafe-inline' https://example.invalid https://example.invalid https://example.invalid connect-src 'self' https://example.invalid https://example.invalid https://example.invalid https://example.invalid https://example.invalid frame-src https://example.invalid https://example.invalid https://example.invalid"
     />
 
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Родостория • Дигитално родословно дърво"
+      content="Family Tree Platform"
     />
     <meta
       property="og:description"
-      content="Родостория е приложение за дигитално пазене на родовата памет. Помни рода си, съхрани паметта им."
+      content="A full-stack application for exploring and organising family history."
     />
-    <meta property="og:url" content="https://example.invalid" />
-    <meta property="og:image" content="/assets/social/share.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta
       name="twitter:title"
-      content="Родостория • Дигитално родословно дърво"
+      content="Family Tree Platform"
     />
     <meta
       name="twitter:description"
-      content="Родостория е приложение за дигитално пазене на родовата памет. Помни рода си, съхрани паметта им."
+      content="A full-stack application for exploring and organising family history."
     />
-    <meta name="twitter:image" content="/assets/social/share.png" />
-
-    <link rel="canonical" href="https://example.invalid" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
     <link
       href="https://example.invalid"
       rel="stylesheet"
@@ -53,27 +46,14 @@
       {
         "@context": "https://example.invalid",
         "@type": "SoftwareApplication",
-        "name": "Родостория",
+        "name": "Family Tree Platform",
         "applicationCategory": "LifestyleApplication",
         "operatingSystem": "Web",
-        "url": "https://example.invalid",
-        "description": "Родостория е приложение за дигитално пазене на родовата памет. Помни рода си, съхрани паметта им."
+        "description": "A full-stack application for exploring and organising family history."
       }
     </script>
   </head>
   <body>
     <app-root></app-root>
-    <script>
-      if (
-        'serviceWorker' in navigator &&
-        window.location.hostname !== 'localhost'
-      ) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('/service-worker.js')
-            .catch((err) => console.error('SW registration failed', err));
-        });
-      }
-    </script>
   </body>
 </html>

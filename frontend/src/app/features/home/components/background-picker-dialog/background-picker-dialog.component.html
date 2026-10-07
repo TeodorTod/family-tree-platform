@@ -15,7 +15,11 @@
         [class.selected]="bg === selectedBg"
         (click)="selectBg(bg)"
       >
-        <img [src]="bg" alt="Background option" class="small-image" />
+        <div
+          class="background-preview"
+          [style.backgroundImage]="bg"
+          aria-hidden="true"
+        ></div>
       </div>
     } @empty {
       <div class="no-results">

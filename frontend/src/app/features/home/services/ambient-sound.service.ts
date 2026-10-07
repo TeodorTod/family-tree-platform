@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class AmbientSoundService {
   private audio: HTMLAudioElement | null = null;
-  private padShiftTimer: any = null;
+  private padShiftTimer: ReturnType<typeof setInterval> | null = null;
   private unlockHandlersAttached = false;
 
   readonly playing = signal(false);
@@ -71,11 +71,8 @@ export class AmbientSoundService {
     if (this.audio) {
       return;
     }
-    const audio = new Audio('assets/i18n/forrest-realms-365891.mp3');
-    audio.loop = true;
-    audio.volume = 0.35;
-    audio.preload = 'auto';
-    this.audio = audio;
+    // Audio is intentionally not bundled in the public source release until
+    // its licensing can be documented.
   }
 
   private attachUnlockHandlers() {

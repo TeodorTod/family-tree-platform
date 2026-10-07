@@ -30,8 +30,13 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: url("/assets/images/tree-of-life-tile.svg") 0 0 / 96px 96px
-      repeat;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.08) 0,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px,
+      transparent 16px
+    );
   }
 
   .member-title {

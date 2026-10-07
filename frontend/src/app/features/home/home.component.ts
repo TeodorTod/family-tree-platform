@@ -115,7 +115,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   customPhotoUrl =
     this.platformStorage.getItem('familyPhotoUrl') ??
-    'assets/images/user-image/user.svg';
+    '';
 
   ngAfterViewInit(): void {
     // 1) Determine view mode: query > route segment > responsive default
@@ -643,14 +643,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   handleBackgroundSelection(url: string) {
     const index = this.backgroundImages.indexOf(url);
     if (index !== -1) {
-      console.log('Selected background URL:', url, 'Index:', index);
       this.backgroundIndex.set(index);
     } else {
-      console.warn(
-        'Background URL not found in backgroundImages:',
-        url,
-        'Falling back to default index 0'
-      );
       this.backgroundIndex.set(0);
     }
     this.backgroundOpacity.set(this.backgroundOpacityValue.toString());

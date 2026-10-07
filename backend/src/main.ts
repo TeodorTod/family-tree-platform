@@ -10,9 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger(bootstrap.name);
   const allowedOrigins: ReadonlySet<string> = new Set([
-    'https://example.invalid',
-    'https://example.invalid',
-    'https://example.invalid',
+    process.env.FRONTEND_URL ?? 'https://example.invalid',
   ]);
   const localhostPattern = /^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d{1,5})?$/;
 

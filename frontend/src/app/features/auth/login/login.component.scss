@@ -14,6 +14,15 @@
 .login-image {
   flex: 1;
   max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #edf6f0, #cce3d5);
+
+  i {
+    color: var(--primary-color);
+    font-size: clamp(5rem, 15vw, 12rem);
+  }
 
   img {
     width: 100%;

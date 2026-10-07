@@ -4,12 +4,13 @@ import { AccountSettingsComponent } from './account-settings.component';
 import { AccountService } from '../services/account.service';
 import { LanguageService } from '../../../../assets/i18n/language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthUser } from '../../../shared/models/user.model';
 
 describe('AccountSettingsComponent', () => {
   let component: AccountSettingsComponent;
   let fixture: ComponentFixture<AccountSettingsComponent>;
   let accountStub: jasmine.SpyObj<AccountService>;
-  const profile = {
+  const profile: AuthUser = {
     id: 'user-1',
     email: 'redacted@example.invalid',
     createdAt: new Date().toISOString(),

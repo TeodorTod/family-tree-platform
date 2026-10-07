@@ -1,126 +1,94 @@
-# Rodostoria
+# Family Tree Platform
 
-Rodostoria is a full-stack family tree and genealogy platform for building, exploring, and sharing family histories. It includes a rich Angular front end, a NestJS API, and media storage for photos and stories.
+A full-stack family-history application built with Angular, TypeScript, NestJS, Prisma, and PostgreSQL. It supports family-tree visualisation, member profiles, relationship management, sharing workflows, authentication, and optional third-party integrations.
 
-## Features
+This public source release contains no production database, uploaded media, user accounts, or deployment credentials.
 
-- Interactive family tree visualization with relationship management
-- Member profiles with bio, personal info, education, career, achievements, favorites, and stories
-- Media gallery and photo uploads for members
-- Family onboarding flow to build the initial tree
-- Global search across members and profiles
-- Sharing requests and privacy controls
-- Authentication with email/password and Google OAuth
-- Subscription billing with Stripe
-- Contact and support forms protected by reCAPTCHA
-- Admin dashboard tools
-- Multi-language UI via ngx-translate
+## Highlights
 
-## Tech stack
+- Angular 21 application with Signals, reactive forms, route guards, i18n, and Cytoscape graph visualisation
+- NestJS 11 API organised by feature modules
+- Prisma/PostgreSQL data layer with versioned migrations
+- JWT and Google OAuth authentication flows
+- Optional Stripe billing, reCAPTCHA, and transactional email integrations
+- Unit, integration, and end-to-end test coverage
 
-- Frontend: Angular 20, PrimeNG, ngx-translate, Cytoscape, Stripe.js
-- Backend: NestJS 11, Prisma, PostgreSQL, JWT auth, Google OAuth, Brevo email
-- Storage: local media folder configured via `MEDIA_ROOT`
+## Architecture
 
-## Repository layout
+- `frontend/` — Angular client application
+- `backend/` — NestJS API, Prisma schema, migrations, and tests
+- `.github/workflows/ci.yml` — install, lint, test, and build checks
 
-- `frontend/` Angular application
-- `backend/` NestJS API
-- `media/` local storage for uploaded files (path is configurable)
+Uploaded media is runtime data. Configure `MEDIA_ROOT` outside the repository; it is intentionally ignored by Git.
 
-## Quick start
+## Prerequisites
 
-### Prerequisites
+- Node.js 22
+- PostgreSQL
 
-- Node.js 18+ (20+ recommended)
-- PostgreSQL database
-
-### 1) Backend
-
-```bash
-cd backend
-npm install
-```
-
-Create `backend/.env` and set required values (see Configuration). Then:
-
-```bash
-npm run start:dev
-```
-
-### 2) Frontend
-
-```bash
-cd frontend
-npm install
-```
-
-Update `frontend/src/environments/environment.ts` with your API URL and keys, then:
-
-```bash
-npm start
-```
-
-The UI runs at `https://example.invalid and connects to the API at `https://example.invalid by default.
-
-## Configuration
-
-### Backend (`backend/.env`)
-
-Required:
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `JWT_EXPIRES_IN`
-- `MEDIA_ROOT`
-- `FRONTEND_URL`
-- `RECAPTCHA_SECRET_KEY`
-- `RECAPTCHA_MIN_SCORE`
-
-OAuth and email:
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_CALLBACK_URL`
-- `BREVO_API_KEY`
-- `BREVO_SENDER_EMAIL`
-- `BREVO_SENDER_NAME`
-- `BREVO_REPLYTO_EMAIL` (optional)
-- `BREVO_REPLYTO_NAME` (optional)
-
-Admin:
-- Admin role is stored in the database as `User.isAdmin` (managed via Prisma/DB tools)
-
-### Frontend (`frontend/src/environments/environment.ts`)
-
-- `apiUrl`
-- `stripePublishableKey`
-- `recaptchaSiteKey`
-
-## Scripts
+## Local setup
 
 ### Backend
 
 ```bash
-npm run start
-npm run start:dev
-npm run build
-npm run test
+cd backend
+npm ci
+copy .env.example .env
 ```
+
+Set safe local values in `.env`, then run:
+
+```bash
+npm run start:dev
+```
+
+Run database migrations against your local database before using the API.
 
 ### Frontend
 
 ```bash
-npm start
-npm run build
-npm run test
+cd frontend
+npm ci
 ```
 
-## Media storage
+For local development, update `src/environments/environment.ts` with your local API URL and optional client-side integration keys. `frontend/.env.example` documents the expected values; Angular environment files are used at build time.
 
-Uploaded files are stored on disk at the path configured by `MEDIA_ROOT`. Ensure the API process has read/write access to that directory.
+```bash
+npm start
+```
 
-## Deployment notes
+The default local API URL is `https://example.invalid
 
-- Build and serve the frontend separately (static hosting or CDN).
-- Configure `FRONTEND_URL` so the API can handle redirects and CORS.
-- Provide production-ready database and email provider credentials.
+## Optional integrations
 
+Stripe, reCAPTCHA, Google OAuth, and Brevo email are disabled until configured. Do not commit real keys, tokens, OAuth credentials, database URLs, or deployment URLs.
+
+For production builds, configure `src/environments/environment.prod.ts` as part of your deployment process. It intentionally contains no production values.
+
+## Quality checks
+
+```bash
+# backend
+cd backend
+npm run lint
+npm test
+npm run build
+
+# frontend
+cd frontend
+npm run lint
+npm test
+npm run build
+```
+
+`npm run lint:fix` is available in the backend for local autofixes. CI always uses check-only linting.
+
+## Privacy and assets
+
+This repository intentionally excludes uploaded user media, database data, runtime files, screenshots, and unverified visual/audio assets. The interface uses code-only fallbacks where those assets were removed.
+
+Add replacement assets only when their authorship or license is documented.
+
+## License
+
+No license is included yet. Reuse is not granted until the project owner selects and adds one.

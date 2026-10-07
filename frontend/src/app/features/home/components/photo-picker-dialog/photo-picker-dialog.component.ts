@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CONSTANTS } from '../../../../shared/constants/constants';
 import { SHARED_ANGULAR_IMPORTS } from '../../../../shared/imports/shared-angular-imports';
 import { ButtonModule } from 'primeng/button';
@@ -18,12 +18,8 @@ export class PhotoPickerDialogComponent {
   photoSelected = output<string>();
   CONSTANTS = CONSTANTS;
 
-  availablePhotos = [
-    'assets/images/user-image/user1.svg',
-    'assets/images/user-image/user2.svg',
-    'assets/images/user-image/user3.svg',
-    'assets/images/user-image/user4.svg',
-  ];
+  // The public source build intentionally ships without bundled avatar assets.
+  availablePhotos: string[] = [];
 
   selectedPhoto: string | null = null;
 

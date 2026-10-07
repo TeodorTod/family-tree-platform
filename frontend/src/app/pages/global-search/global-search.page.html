@@ -13,7 +13,11 @@
     <ng-template pTemplate="body" let-item>
       <tr>
         <td>
-          <img [src]="item.photoUrl || 'assets/images/user-image/user.svg'" width="40" height="40" />
+          @if (item.photoUrl) {
+          <img [src]="item.photoUrl" width="40" height="40" alt="" />
+          } @else {
+          <i class="pi pi-user" aria-hidden="true"></i>
+          }
         </td>
         <td>{{ item.firstName }} {{ item.lastName }}</td>
         <td>{{ item.ownerDisplayName || '-' }}</td>

@@ -17,6 +17,8 @@
       >
         <img [src]="photo" alt="Avatar option" />
       </div>
+    } @empty {
+      <div class="no-results">No bundled avatars are included in this public build.</div>
     }
   </div>
 

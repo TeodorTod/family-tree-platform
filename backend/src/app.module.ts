@@ -22,7 +22,7 @@ import { RelationshipModule } from './relationships/relationship.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.enf', '.env'],
+      envFilePath: '.env',
     }),
     PrismaModule,
     AuthModule,

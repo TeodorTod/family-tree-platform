@@ -1,18 +1,36 @@
-# Angular
-/frontend/dist/
-/frontend/.angular/cache/
-/frontend/node_modules/
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.angular/
+**/test-results/
+**/generated/
 
-# NestJS
-/backend/dist/
-/backend/node_modules/
-
-# Uploaded media (do not commit user photos)
-/backend/public/uploads/
-
-# Environment
+# Environment and credentials
 **/.env
-.env*
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/*.p12
 
-# Logs
+# Runtime and user-generated data
+**/public/uploads/
+**/uploads/
+**/media/
+**/runtime-media/
+**/logs/
 **/*.log
+**/*.pid
+**/*.sqlite
+**/*.db
+**/*.dump
+**/*.backup
+**/*.bak
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

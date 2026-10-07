@@ -111,7 +111,6 @@ export class SeoService {
       name: appName,
       applicationCategory: 'LifestyleApplication',
       operatingSystem: 'Web',
-      url: 'https://example.invalid',
       description,
     };
 
